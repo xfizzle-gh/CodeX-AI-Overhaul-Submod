@@ -1,0 +1,37 @@
+{game_entity
+	(include "/properties/construction.inc")
+	{props "sand" "ignore_obstacles" "sandbag" "-construction"}
+	{DynCmpPersistent}
+	{extension "sandbag_framed_straight.mdl"}
+	{volume "body"
+		{Tags "body" "delete_point"}
+		{thickness 120}
+		{able {visible 1} {touch 1}}
+		{Tags "cut"}
+		{material "wood"}
+	}
+	{volume "frame"
+		{Tags "fire"}
+		{thickness 10}
+		{able {visible 1} {touch 1}}
+		{Tags "cut"}
+		{material "wood"}
+	}
+	{Volume "box015"
+		{Tags "body" "delete_point" "fire"}
+		{thickness 50}
+		{able {visible 1} {touch 1}}
+		{Tags "cut"}
+		{material "wood"}
+	}
+	{Volume "box016"
+		{Tags "body" "delete_point" "fire"}
+		{thickness 50}
+		{able {visible 1} {touch 1}}
+		{Tags "cut"}
+		{material "wood"}
+	}
+	{extender "land_patch"
+	}
+	;{lodclass "decor_medium"}
+}

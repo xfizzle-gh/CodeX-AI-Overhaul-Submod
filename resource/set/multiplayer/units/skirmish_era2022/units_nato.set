@@ -1,0 +1,30 @@
+; Genuine skirmish purchase definitions. No conquest fields or research stages.
+{"codex_bz_rifle_squad(nato)"
+	{charge
+		{delay 0}
+		{interval 30}
+	}
+	{content "mp/nato/2022s/inf2_squadlead mp/nato/2022s/inf2_teamlead mp/nato/2022s/inf2_rifleman:4 mp/nato/2022s/inf2_autorifle mp/nato/2022s/inf2_antitank mp/nato/2022s/inf2_medic"}
+	{tags "all era2022 nato infantry"}
+	{group "squad_1"}
+	{button "inf1"}
+	{level 1}
+	{cost 150}
+	{score 15}
+	{squad_cost_factor 0}
+}
+
+{"codex_bz_fireteam(nato)"
+	{charge
+		{delay 0}
+		{interval 20}
+	}
+	{content "mp/nato/2022s/inf2_teamlead mp/nato/2022s/inf2_rifleman:2 mp/nato/2022s/inf2_autorifle"}
+	{tags "all era2022 nato infantry"}
+	{group "squad_1"}
+	{button "inf1"}
+	{level 1}
+	{cost 80}
+	{score 8}
+	{squad_cost_factor 0}
+}

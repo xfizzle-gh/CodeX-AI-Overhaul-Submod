@@ -1,0 +1,380 @@
+{mission
+	{Entity "flag_point_1" 0xc001
+		{Position 974.64 -51.74}
+		{xform zl -38.62}
+		{Extender "map_point"
+			{name f1}
+			{zone
+				{radius 0}
+				{zoneId "f1"}
+			}
+			{phase 0}
+			{order 1}
+			{show All}
+			{visor MapPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 1}
+	}
+	{Entity "flag_point_2" 0xa000
+		{Position -1412.28 -288.47}
+		{xform zl -88.57}
+		{Extender "map_point"
+			{name f2}
+			{zone
+				{radius 0}
+				{zoneId "f2"}
+			}
+			{phase 0}
+			{order 2}
+			{show All}
+			{visor MapPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 2}
+	}
+	{Entity "flag_point_3" 0xd000
+		{Position 3476.88 -1898.01}
+		{xform zl -31.46}
+		{Extender "map_point"
+			{name f3}
+			{zone
+				{radius 0}
+				{zoneId "f3"}
+			}
+			{phase 0}
+			{order 3}
+			{show All}
+			{visor MapPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 3}
+	}
+	{Entity "flag_point_4" 0x8014
+		{Position -3749.49 3974.87}
+		{xform zl -89.5}
+		{Extender "map_point"
+			{name f4}
+			{zone
+				{radius 0}
+				{zoneId "f4"}
+			}
+			{phase 0}
+			{order 4}
+			{show All}
+			{visor MapPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 4}
+	}
+	{Entity "flag_point_5" 0xe000
+		{Position -4235.5 1206.81}
+		{xform zl -37.49}
+		{Extender "map_point"
+			{name f5}
+			{zone
+				{radius 0}
+				{zoneId "f5"}
+			}
+			{phase 0}
+			{order 5}
+			{show All}
+			{visor MapPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 5}
+	}
+	{Entity "map_point" 0x802f
+		{Position 944.88 7072.34}
+		{xform zl -107.03}
+		{Extender "map_point"
+			{name a1}
+			{team a}
+			{zone
+				{radius 0}
+				{zoneId ""}
+			}
+			{phase 0}
+			{order 1}
+			{visor SpawnPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 6}
+	}
+	{Entity "map_point" 0xa001
+		{Position 5935.02 6883.16}
+		{xform zl -104.61}
+		{Extender "map_point"
+			{name a2}
+			{team a}
+			{zone
+				{radius 0}
+				{zoneId ""}
+			}
+			{phase 0}
+			{order 2}
+			{visor SpawnPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 7}
+	}
+	{Entity "map_point" 0x8011
+		{Position 6956.92 4773.14}
+		{xform zl -152.27}
+		{Extender "map_point"
+			{name a3}
+			{team a}
+			{zone
+				{radius 0}
+				{zoneId ""}
+			}
+			{phase 0}
+			{order 3}
+			{visor SpawnPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 8}
+	}
+	{Entity "map_point" 0x8010
+		{Position 7045.48 2994.92}
+		{xform zl -163.89}
+		{Extender "map_point"
+			{name a4}
+			{team a}
+			{zone
+				{radius 0}
+				{zoneId ""}
+			}
+			{phase 0}
+			{order 4}
+			{visor SpawnPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 9}
+	}
+	{Entity "map_point" 0x800d
+		{Position 469.48 -6984.16}
+		{xform zl 89.52}
+		{Extender "map_point"
+			{name b1}
+			{team b}
+			{zone
+				{radius 0}
+				{zoneId ""}
+			}
+			{phase 0}
+			{order 1}
+			{visor SpawnPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 10}
+	}
+	{Entity "map_point" 0x800c
+		{Position -2325.44 -6992.84}
+		{xform zl 76.19}
+		{Extender "map_point"
+			{name b2}
+			{team b}
+			{zone
+				{radius 0}
+				{zoneId ""}
+			}
+			{phase 0}
+			{order 2}
+			{visor SpawnPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 11}
+	}
+	{Entity "map_point" 0x800e
+		{Position -5282.92 -7018.09}
+		{xform zl 73.94}
+		{Extender "map_point"
+			{name b3}
+			{team b}
+			{zone
+				{radius 0}
+				{zoneId ""}
+			}
+			{phase 0}
+			{order 3}
+			{visor SpawnPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 12}
+	}
+	{Entity "map_point" 0x800f
+		{Position -7103.62 -4865.21}
+		{xform zl 33.12}
+		{Extender "map_point"
+			{name b4}
+			{team b}
+			{zone
+				{radius 0}
+				{zoneId ""}
+			}
+			{phase 0}
+			{order 4}
+			{visor SpawnPoint}
+			{allow
+				{enableCapture}
+				{enableRelease}
+			}
+		}
+		{Player 0}
+		{MID 13}
+	}
+	{Tags "flag" 0xc001}
+	{Tags "flag" 0xa000}
+	{Tags "flag" 0xd000}
+	{Tags "flag" 0x8014}
+	{Tags "flag" 0xe000}
+	{Tags "spawn_b" "b2" 0x800c}
+	{Tags "spawn_b" "b1" 0x800d}
+	{Tags "spawn_b" "b3" 0x800e}
+	{Tags "spawn_b" "b4" 0x800f}
+	{Tags "spawn_a" "a4" 0x8010}
+	{Tags "spawn_a" "a3" 0x8011}
+	{Tags "spawn_a" "a2" 0xa001}
+	{Tags "spawn_a" "a1" 0x802f}
+	{Environment "goh/multi/4v4_swamp/var4"}
+	{Helpers
+		(include "../bz_events.inc")
+		{zone "poly"
+			{position 974.64 -51.74 0}
+			{Name "f1"}
+			{Point -900 -900}
+			{Point -900 900}
+			{Point 900 900}
+			{Point 900 -900}
+		}
+		{zone "poly"
+			{position -1412.28 -288.47 0}
+			{Name "f2"}
+			{Point -900 -900}
+			{Point -900 900}
+			{Point 900 900}
+			{Point 900 -900}
+		}
+		{zone "poly"
+			{position 3476.88 -1898.01 0}
+			{Name "f3"}
+			{Point -900 -900}
+			{Point -900 900}
+			{Point 900 900}
+			{Point 900 -900}
+		}
+		{zone "poly"
+			{position -3749.49 3974.87 0}
+			{Name "f4"}
+			{Point -900 -900}
+			{Point -900 900}
+			{Point 900 900}
+			{Point 900 -900}
+		}
+		{zone "poly"
+			{position -4235.5 1206.81 0}
+			{Name "f5"}
+			{Point -900 -900}
+			{Point -900 900}
+			{Point 900 900}
+			{Point 900 -900}
+		}
+		{zone "poly"
+			{position 0 0 0}
+			{Name "global"}
+			{Point -9000 -9000}
+			{Point -9000 9000}
+			{Point 9000 9000}
+			{Point 9000 -9000}
+		}
+		{reinforcements
+			{scoreTotal 0}
+			{scoreCurrent 0}
+		}
+		{vars
+			(include "../bz_vars.inc")
+		}
+		{mission_options
+			{"any_weather"}
+			{"day_weather"}
+			{"night_weather"}
+		}
+		{triggers
+			(include "../bz_triggers.inc")
+		}
+	}
+	{Players
+		{count 17}
+		{diplomacy
+			1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+			0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+		}
+	}
+	{Fog 0}
+	{EntityManager {Enabled}
+	}
+}

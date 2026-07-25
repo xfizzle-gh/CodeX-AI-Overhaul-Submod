@@ -1,0 +1,11 @@
+;created by Nikral
+
+{action
+	{target ground}
+	{able_vehicle}
+	{button "weather_switch_back"}
+	{NotifySelect}
+	{instant
+		{effect "weather_switch_back"}
+	}
+}

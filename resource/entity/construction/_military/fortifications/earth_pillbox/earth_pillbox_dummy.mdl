@@ -1,0 +1,168 @@
+;Exported by:	 guita
+;Date:			 01.04.2022 20:12:18
+;File:			 D:\Git\3D_Scenes\GoH_3D_environment_export\3d_environment\_military\fortifications\pillbox\earth_pillbox\earth_pillbox.max
+{skeleton
+	{bone "basic"
+		{matrix34
+			1 	 0 	 0
+			0 	 1 	 0
+			0 	 0 	 1
+			0 	 0 	 0
+		}
+	{bone "land"
+		{parameters "commonmesh;land;align;"}
+		{orientation
+			1 	 0 	 0
+			0 	 -1 	 0
+			0 	 0 	 1
+		}
+		{VolumeView "land.ply"
+			{Layer entity_opaque_biased}
+		}
+		{bone "outside"
+			{parameters "commonmesh;land;align;"}
+			{VolumeView "outside.ply"}
+		}
+		{bone "body"
+			{VolumeView "body.ply"}
+			{bone "attach1"
+				{matrix34
+					0 	 1 	 0
+					-1 	 0 	 0
+					0 	 0 	 1
+					-1.815 	 16.0322 	 0
+				}
+			}
+		}
+		{bone "exterior"
+			{parameters "commonmesh;align;"}
+			{VolumeView "exterior.ply"}
+		}
+		{bone "exterior2"
+			{VolumeView "exterior2.ply"}
+		}	
+		{bone "weapon_stage"
+			{matrix34
+				0 	-1 	 0
+				1 	 0 	 0
+				0 	 0 	 1
+				0 	 17 	 11 ;x z
+			}
+			{bone "mg_tripod_stage"
+				{matrix34
+					1 	 0	 0
+					0	 1 	 0
+					0 	 0 	 1
+					0 	 0 	 0
+				}
+				{bone "mg_tripod_slot"
+					{matrix34
+						-1 	 0 	 0
+						0 	 -1  0
+						0 	 0 	 1
+						-7	 1.5	 -16 ; -z -x y
+					}
+				}
+			}
+			{bone "maxim_stage"
+				{matrix34
+					1 	 0 	 0
+					0 	 1 	 0
+					0 	 0 	 1
+					0 	 0 	 0
+				}
+				{bone "maxim_slot"
+					{matrix34
+						-1 	 0 	 0
+						0 	 -1  0
+						0 	 0 	 1
+						-4	 0	 0 ; -z -x y
+					}
+				}
+				{bone "maxim_platform"
+					{matrix34
+						1 	 0 	 0
+						0 	 1 	 0
+						0 	 0 	 1
+						-7	 0 	 -21
+					}
+				}
+			}
+			{bone "m2_30cal_stage"
+				{matrix34
+					1 	 0 	 0
+					0 	 1 	 0
+					0 	 0 	 1
+					0 	 0 	 1
+				}
+				{bone "m2_30cal_slot"
+					{matrix34
+						-1 	 0 	 0
+						0 	 -1  0
+						0 	 0 	 1
+						-3	 0	 0 ; -z -x y
+					}
+				}
+				{bone "m2_30cal_platform"
+					{matrix34
+						1 	 0 	 0
+						0 	 1 	 0
+						0 	 0 	 1
+						-5	 0 	 -21
+					}
+				}
+			}
+		}
+		{bone "flag"
+			{matrix34
+				1 	 0 	 0
+				0 	 1   0
+				0 	 0 	 1
+				-40  15	 24
+			}
+		}
+		{bone "trench_stage"
+			{matrix34
+				0	-1	 0
+				1 	 0 	 0
+				0 	 0 	 1
+				0 	 -5 	 0.0 ;x z
+			}
+			{bone "trench_01"
+			;{parameters "commonmesh;land;align;"}
+				{matrix34
+					1 	 0 	 0
+					0 	 1 	 0
+					0 	 0 	 1
+					0 	 0 	 0
+				}
+			}
+			{bone "trench_02"
+			;{parameters "commonmesh;land;align;"}
+				{matrix34
+					-1 	 0 	 0
+					0 	 -1 	 0
+					0 	 0 	 1
+					0 	 0 	 0
+				}
+			}
+			{bone "trench_floor"
+				{matrix34
+					0 	 1 	 0
+					1 	 0	 0
+					0 	 0 	 1
+					0 	 0 	 -13
+				}
+			}
+			{bone "trench_floor_mg_slot"
+				{matrix34
+					0 	 1 	 0
+					1 	 0	 0
+					0 	 0 	 1
+					0 	 0 	 -12
+				}
+			}
+		}
+	}
+	}
+}

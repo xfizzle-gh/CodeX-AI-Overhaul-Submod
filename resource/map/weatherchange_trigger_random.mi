@@ -1,0 +1,641 @@
+;created by Nikral????
+
+;=============================================
+;
+;            WEATHER SWITCH BEGIN
+;
+;=============================================
+
+{"weather switch"
+				{condition
+					{terms
+						{"1.entities"
+							{selector
+								{ignore_captured_by_user 0}
+								{tag weather_switch}
+							}
+						}
+					}
+				}
+				{actions
+					{"switch"  ; Conditional probability
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0182}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/1"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0185}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/2"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0189}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/3"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0192}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/4"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0196}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/5"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.02}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/6"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0204}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/7"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0208}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/8"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0213}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/9"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0217}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/10"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0222}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/11"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0227}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/12"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0233}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/13"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0238}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/14"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0244}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/15"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.025}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/1"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0256}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/2"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0263}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/3"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.027}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/4"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0278}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/5"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0286}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/6"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0294}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/7"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0303}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/8"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0312}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/9"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0323}
+							}
+							{"environment"
+								{name "bright_colored/goh_original/10"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0333}
+							}
+							{"environment"
+								{name "bright_colored/green/1"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0345}
+							}
+							{"environment"
+								{name "bright_colored/green/2"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0357}
+							}
+							{"environment"
+								{name "bright_colored/green/3"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.037}
+							}
+							{"environment"
+								{name "bright_colored/green/4"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0385}
+							}
+							{"environment"
+								{name "bright_colored/green/5"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.04}
+							}
+							{"environment"
+								{name "bright_colored/green/6"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0417}
+							}
+							{"environment"
+								{name "bright_colored/green/7"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0435}
+							}
+							{"environment"
+								{name "bright_colored/green/1"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0455}
+							}
+							{"environment"
+								{name "bright_colored/green/2"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0476}
+							}
+							{"environment"
+								{name "bright_colored/green/10"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.05}
+							}
+							{"environment"
+								{name "bright_colored/other/1"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0526}
+							}
+							{"environment"
+								{name "bright_colored/other/2"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0556}
+							}
+							{"environment"
+								{name "bright_colored/other/3"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0588}
+							}
+							{"environment"
+								{name "bright_colored/other/4"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0625}
+							}
+							{"environment"
+								{name "bright_colored/other/5"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0667}
+							}
+							{"environment"
+								{name "bright_colored/other/6"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0714}
+							}
+							{"environment"
+								{name "bright_colored/other/7"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0769}
+							}
+							{"environment"
+								{name "bright_colored/other/thunderstorm"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0833}
+							}
+							{"environment"
+								{name "bright_colored/other/thunderstorm"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.0909}
+							}
+							{"environment"
+								{name "bright_colored/yellow/1"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.1}
+							}
+							{"environment"
+								{name "bright_colored/yellow/1"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.1111}
+							}
+							{"environment"
+								{name "bright_colored/yellow/3"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.125}
+							}
+							{"environment"
+								{name "bright_colored/yellow/4"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.1429}
+							}
+							{"environment"
+								{name "bright_colored/yellow/5"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.1667}
+							}
+							{"environment"
+								{name "bright_colored/yellow/6"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.2}
+							}
+							{"environment"
+								{name "bright_colored/yellow/7"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.25}
+							}
+							{"environment"
+								{name "bright_colored/yellow/8"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.3333}
+							}
+							{"environment"
+								{name "bright_colored/yellow/9"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"case"
+							{condition
+								{type rand}
+								{value 0.5}
+							}
+							{"environment"
+								{name "bright_colored/yellow/10"}
+								{time -1}
+								{apply}
+							}
+						}
+						{"default"  ; nearly impossible to reach "default"
+							{"environment"
+								{name "bright_colored/other/1"}
+								{time -1}
+								{apply}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{ignore_captured_by_user 0}
+							{tag weather_switch}
+						}
+						{tag_remove weather_switch}
+					}
+					{"trigger"
+						{name "weather switch"}
+					}
+				}
+}
+
+;=============================================
+;
+;            WEATHER SWITCH END
+;
+;=============================================

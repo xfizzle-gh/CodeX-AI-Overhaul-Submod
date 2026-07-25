@@ -1,0 +1,7 @@
+{mod
+	{name "CodeX Conquest AI Overhaul 1.5"}
+	{tags "multiplayer"}
+	{desc "CodeX Conquest AI overhaul for modern armies"}
+	{minGameVersion "any"}
+	{maxGameVersion "any"}
+}

@@ -1,0 +1,38 @@
+{game
+	{teammatch}
+	{parameters "flag_time=30;flag_time_small=15;score_flag=500;score_phase=0;score_slaveFlag=150;score_defBonus=0.25;teamsize_cp_factor=1:1.0,2:1.0,3:0.9,4:0.8"}
+	{settings
+		{options			enableSpectators enableHardcore preparationTime}
+		{optionsAdvanced	gameDuration friendlyFire fogOfWar showPiercing showDamageReports}
+		{optionsRanked		}
+		{fogOfWar			fog_realistic}
+		{difficulty			multiplayer}
+		{gameDuration		"50 min"}
+		{impregnableTimeout	10}
+		{floraRespawn		0}
+		{preparationTime	210}
+		{preparationTimeMin	180}
+		{preparationTimeMax	300}
+		{enableBots}
+		{friendlyFire}
+		{showPiercing}
+		{showDamageReports}
+		{useUnitLevelRestrictions 0}
+	}
+	{teamSettings
+		{teamsMode normal}
+		{armySelectionMode team}
+		{teams
+			{"a"
+				{title "mp/settings/teama#attackers"}
+			}
+			{"b"
+				{title "mp/settings/teamb#defenders"}
+			}
+		}
+		{alliances
+			(include "presets/alliances_generic.inc")
+		}
+	}
+	(include "presets/frontlines_codex.inc")
+}

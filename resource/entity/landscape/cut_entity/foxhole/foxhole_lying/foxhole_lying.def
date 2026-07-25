@@ -1,0 +1,57 @@
+{game_entity
+	(include "/properties/trench.inc")
+	{Extension "foxhole_lying.mdl"}
+	{props "sand"}
+
+	("volume" args "body1")
+	("volume" args "body2")
+	("volume" args "body3")
+	
+	{Volume "detail1"
+		{able clear {visible 1}}
+	}
+	{Volume "detail2a"
+		{Tags  "detail2"}
+		{Thickness 30}
+		{able {contact 0}}
+	}
+	{Volume "detail2b"
+		{Tags  "detail2"}
+		{Thickness 30}
+		{able {contact 0}}
+	}
+	{Volume "detail2d"
+		{Tags  "detail2"}
+		{Thickness 30}
+		{able {contact 0}}
+	}
+	{Volume "detail2e"
+		{Tags  "detail2"}
+		{Thickness 30}
+		{able {contact 0}}
+	}
+	{Volume "detail2f"
+		{Tags  "detail2"}
+		{Thickness 30}
+		{able {contact 0}}
+	}
+	{Volume "detail2g"
+		{Tags  "detail2"}
+		{Thickness 30}
+		{able {contact 0}}
+	}
+	{Volume "detail2h"
+		{Tags  "detail2"}
+		{Thickness 30}
+		{able {contact 0}}
+	}
+	{Volume "detail2i"
+		{Tags  "detail2"}
+		{Thickness 30}
+		{able {contact 0}}
+	}
+	
+	{extender "detail"
+		{random 1}
+	}
+}

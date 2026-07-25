@@ -1,0 +1,19 @@
+; Minimal multiplayer metadata for the NATO soldiers used by the smoke-test squads.
+{"mp/nato/2022s/inf2_squadlead"
+	{tags "2022s era2022 nato infantry man"} {cp 1} {basic} {breed} {cw 0.5} {score_factor 0.05} {cost 9.0}
+}
+{"mp/nato/2022s/inf2_teamlead"
+	{tags "2022s era2022 nato infantry man"} {cp 1} {basic} {breed} {cw 0.5} {score_factor 0.05} {cost 9.0}
+}
+{"mp/nato/2022s/inf2_rifleman"
+	{tags "2022s era2022 nato infantry man"} {cp 1} {basic} {breed} {cw 0.5} {score_factor 0.05} {cost 11.5}
+}
+{"mp/nato/2022s/inf2_autorifle"
+	{tags "2022s era2022 nato infantry man"} {cp 1} {basic} {breed} {cw 0.5} {score_factor 0.05} {cost 30.5}
+}
+{"mp/nato/2022s/inf2_antitank"
+	{tags "2022s era2022 nato infantry man"} {cp 1} {basic} {breed} {cw 0.5} {score_factor 0.05} {cost 23.0}
+}
+{"mp/nato/2022s/inf2_medic"
+	{tags "2022s era2022 nato infantry man medic"} {cp 1} {basic} {breed} {cw 0.5} {score_factor 0.05} {cost 28.0}
+}

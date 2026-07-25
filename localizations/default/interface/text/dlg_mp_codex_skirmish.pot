@@ -1,0 +1,31 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: CodeX AI Overhaul Skirmish\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "mp/alliance/west"
+msgid "West"
+msgstr "West"
+
+msgctxt "mp/alliance/east"
+msgid "East"
+msgstr "East"
+
+msgctxt "mp/army/nato"
+msgid "NATO"
+msgstr "NATO"
+
+msgctxt "mp/army/ukr"
+msgid "Ukraine"
+msgstr "Ukraine"
+
+msgctxt "mp/army/rusa"
+msgid "Russia"
+msgstr "Russia"
+
+msgctxt "mp/army/prc"
+msgid "PRC"
+msgstr "PRC"

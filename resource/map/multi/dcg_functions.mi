@@ -1,0 +1,712 @@
+
+{"fpc_inf_react1"
+	{"while"
+		{condition
+			{type entities}
+			{selector
+				{tag fpc_react1}
+				{state "not dead"}
+			}
+		}
+		{"entity_state"
+			{selector
+				{source standart}
+				{amount 1
+				}
+				{tag fpc_react1}
+				{state "not dead"}
+			}
+			{tag_add fpc_selected1}
+			{tag_remove fpc_react1}
+		}
+		{"call"
+		{function "fpc_inf_to_flag1"}
+			{context
+				{specified}
+				{selector
+					{source standart}
+					{tag fpc_selected1}
+				}
+			}
+		}
+		{"delay"
+			{time 0.1}
+		}
+		{"entity_state"
+			{selector
+				{source standart}
+				{tag fpc_selected1}
+			}
+			{tag_remove fpc_selected1}
+		}
+	}
+}
+{"fpc_inf_react2"
+	{"while"
+		{condition
+			{type entities}
+			{selector
+				{tag fpc_react2}
+				{state "not dead"}
+			}
+		}
+
+		{"entity_state"
+			{selector
+				{source standard}
+				{amount 1}
+				{tag fpc_react2}
+				{state "not dead"}
+			}
+			{tag_add fpc_selected2}
+			{tag_remove fpc_react2}
+		}
+
+		{"call"
+			{function "fpc_inf_to_flag2"}
+			{context
+				{specified}
+				{selector
+					{source standard}
+					{tag fpc_selected2}
+				}
+			}
+		}
+
+		{"delay" {time 0.1}}
+
+		{"entity_state"
+			{selector
+				{source standard}
+				{tag fpc_selected2}
+			}
+			{tag_remove fpc_selected2}
+		}
+	}
+}
+
+{"fpc_inf_react3"
+	{"while"
+		{condition
+			{type entities}
+			{selector
+				{tag fpc_react3}
+				{state "not dead"}
+			}
+		}
+
+		{"entity_state"
+			{selector
+				{source standard}
+				{amount 1}
+				{tag fpc_react3}
+				{state "not dead"}
+			}
+			{tag_add fpc_selected3}
+			{tag_remove fpc_react3}
+		}
+
+		{"call"
+			{function "fpc_inf_to_flag3"}
+			{context
+				{specified}
+				{selector
+					{source standard}
+					{tag fpc_selected3}
+				}
+			}
+		}
+
+		{"delay" {time 0.1}}
+
+		{"entity_state"
+			{selector
+				{source standard}
+				{tag fpc_selected3}
+			}
+			{tag_remove fpc_selected3}
+		}
+	}
+}
+
+{"fpc_inf_react4"
+	{"while"
+		{condition
+			{type entities}
+			{selector
+				{tag fpc_react4}
+				{state "not dead"}
+			}
+		}
+
+		{"entity_state"
+			{selector
+				{source standard}
+				{amount 1}
+				{tag fpc_react4}
+				{state "not dead"}
+			}
+			{tag_add fpc_selected4}
+			{tag_remove fpc_react4}
+		}
+
+		{"call"
+			{function "fpc_inf_to_flag4"}
+			{context
+				{specified}
+				{selector
+					{source standard}
+					{tag fpc_selected4}
+				}
+			}
+		}
+
+		{"delay" {time 0.1}}
+
+		{"entity_state"
+			{selector
+				{source standard}
+				{tag fpc_selected4}
+			}
+			{tag_remove fpc_selected4}
+		}
+	}
+}
+
+{"fpc_inf_react5"
+	{"while"
+		{condition
+			{type entities}
+			{selector
+				{tag fpc_react5}
+				{state "not dead"}
+			}
+		}
+
+		{"entity_state"
+			{selector
+				{source standard}
+				{amount 1}
+				{tag fpc_react5}
+				{state "not dead"}
+			}
+			{tag_add fpc_selected5}
+			{tag_remove fpc_react5}
+		}
+
+		{"call"
+			{function "fpc_inf_to_flag5"}
+			{context
+				{specified}
+				{selector
+					{source standard}
+					{tag fpc_selected5}
+				}
+			}
+		}
+
+		{"delay" {time 0.1}}
+
+		{"entity_state"
+			{selector
+				{source standard}
+				{tag fpc_selected5}
+			}
+			{tag_remove fpc_selected5}
+		}
+	}
+}
+
+{"fpc_inf_to_flag1"
+	{"ables"
+		{remove talk}
+	}
+	{"action"
+		{drop orders}
+		{action advance}
+		{target
+			{tag fpc1}
+		}
+	}
+	{"actor_state"
+		{move_mode free}
+		{movement
+			{speed fast}
+			{kind fast}
+			{type normal}
+		}
+		{ai
+			{no_retreat on}
+		}
+	}
+	{"entity_state"
+		{tag_remove cmp_def}
+	}
+	{"ables"
+		{add talk}
+	}
+}
+{"fpc_inf_to_flag2"
+	{"ables"
+		{remove talk}
+	}
+	{"action"
+		{drop orders}
+		{action advance}
+		{target
+			{tag fpc2}
+		}
+	}
+	{"actor_state"
+		{move_mode free}
+		{movement
+			{speed fast}
+			{kind fast}
+			{type normal}
+		}
+		{ai
+			{no_retreat on}
+		}
+	}
+	{"entity_state"
+		{tag_remove cmp_def}
+	}
+	{"ables"
+		{add talk}
+	}
+}
+{"fpc_inf_to_flag3"
+	{"ables"
+		{remove talk}
+	}
+	{"action"
+		{drop orders}
+		{action advance}
+		{target
+			{tag fpc3}
+		}
+	}
+	{"actor_state"
+		{move_mode free}
+		{movement
+			{speed fast}
+			{kind fast}
+			{type normal}
+		}
+		{ai
+			{no_retreat on}
+		}
+	}
+	{"entity_state"
+		{tag_remove cmp_def}
+	}
+	{"ables"
+		{add talk}
+	}
+}
+{"fpc_inf_to_flag4"
+	{"ables"
+		{remove talk}
+	}
+	{"action"
+		{drop orders}
+		{action advance}
+		{target
+			{tag fpc4}
+		}
+	}
+	{"actor_state"
+		{move_mode free}
+		{movement
+			{speed fast}
+			{kind fast}
+			{type normal}
+		}
+		{ai
+			{no_retreat on}
+		}
+	}
+	{"entity_state"
+		{tag_remove cmp_def}
+	}
+	{"ables"
+		{add talk}
+	}
+}
+{"fpc_inf_to_flag5"
+	{"ables"
+		{remove talk}
+	}
+	{"action"
+		{drop orders}
+		{action advance}
+		{target
+			{tag fpc5}
+		}
+	}
+	{"actor_state"
+		{move_mode free}
+		{movement
+			{speed fast}
+			{kind fast}
+			{type normal}
+		}
+		{ai
+			{no_retreat on}
+		}
+	}
+	{"entity_state"
+		{tag_remove cmp_def}
+	}
+	{"ables"
+		{add talk}
+	}
+}
+
+{"attack_at_tank_charge"
+	{"action"
+		{drop "orders sensor senseless"}
+		{action attack}
+		{target
+			{amount 1}
+			{tag _z_tank_target}
+		}
+		{volume engine}
+	}
+	{"actor_state"
+		{movement
+			{speed assault}
+			{kind fast}
+			{type normal}
+		}
+		{ai {no_retreat on}}
+	}
+	{"entity_state"
+		{selector {source standard} {tag _z_tank_inf}}
+		{tag_add _z_charge_ordered}
+		{tag_remove _z_tank_inf}
+	}
+	{"entity_state"
+		{selector {source standard} {tag _z_tank_target}}
+		{tag_remove _z_tank_target}
+	}
+	{"delay" {time 7}}
+	{"entity_state"
+		{selector {source standard} {tag _z_charge_ordered}}
+		{tag_remove _z_charge_ordered}
+	}
+}
+
+{"attack_at_inf_grenade"
+	{"action"
+		{drop "orders sensor senseless"}
+		{action attack}
+		{target
+			{amount 1}
+			{tag _z_inf_target}
+		}
+		{volume engine}
+	}
+	{"actor_state"
+		{movement
+			{speed assault}
+			{kind fast}
+			{type normal}
+		}
+		{ai {no_retreat on}}
+	}
+	{"entity_state"
+		{selector {source standard} {tag _z_inf_thrower}}
+		{tag_add _z_grenade_ordered}
+		{tag_remove _z_inf_thrower}
+	}
+	{"entity_state"
+		{selector {source standard} {tag _z_inf_target}}
+		{tag_remove _z_inf_target}
+	}
+	{"delay" {time 6}}
+	{"entity_state"
+		{selector {source standard} {tag _z_grenade_ordered}}
+		{tag_remove _z_grenade_ordered}
+	}
+}
+
+
+
+{"attack_stop_orders"
+	{"actor_state"
+		{drop orders}
+		{ai
+			{no_retreat on}
+			{advance_ratio "0.01"}
+		}
+	}
+}
+; === v1.064 prep default_spawns (from vanilla) ===
+
+			{"default_spawns"
+				{"spawn"
+					{entity "conquest_spawn_helper"}
+					{waypoint "0"}
+					{disable_random_spawn_position}
+				}
+				{"delay"
+					{time 0.01}
+				}
+				{"entity_state"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{amount 1
+						}
+						{tag conquest_spawn_helper}
+					}
+					{tag_add _default_a1}
+					{tag_remove conquest_spawn_helper}
+				}
+				{"delay"
+					{time 0.05}
+				}
+				{"placement"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{tag _default_a1}
+					}
+					{target
+						{ignore_captured_by_user 0}
+						{tag a1}
+					}
+				}
+				{"spawn"
+					{entity "conquest_spawn_helper"}
+					{waypoint "0"}
+					{disable_random_spawn_position}
+				}
+				{"delay"
+					{time 0.01}
+				}
+				{"entity_state"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{amount 1
+						}
+						{tag conquest_spawn_helper}
+					}
+					{tag_add _default_a2}
+					{tag_remove conquest_spawn_helper}
+				}
+				{"delay"
+					{time 0.01}
+				}
+				{"placement"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{tag _default_a2}
+					}
+					{target
+						{ignore_captured_by_user 0}
+						{tag a2}
+					}
+				}
+				{"spawn"
+					{entity "conquest_spawn_helper"}
+					{waypoint "0"}
+					{disable_random_spawn_position}
+				}
+				{"delay"
+					{time 0.01}
+				}
+				{"entity_state"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{amount 1
+						}
+						{tag conquest_spawn_helper}
+					}
+					{tag_add _default_a3}
+					{tag_remove conquest_spawn_helper}
+				}
+				{"delay"
+					{time 0.05}
+				}
+				{"placement"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{tag _default_a3}
+					}
+					{target
+						{ignore_captured_by_user 0}
+						{tag a3}
+					}
+				}
+				{"spawn"
+					{entity "conquest_spawn_helper"}
+					{waypoint "0"}
+					{disable_random_spawn_position}
+				}
+				{"delay"
+					{time 0.01}
+				}
+				{"entity_state"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{amount 1
+						}
+						{tag conquest_spawn_helper}
+					}
+					{tag_add _default_a4}
+					{tag_remove conquest_spawn_helper}
+				}
+				{"delay"
+					{time 0.05}
+				}
+				{"placement"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{tag _default_a4}
+					}
+					{target
+						{ignore_captured_by_user 0}
+						{tag a4}
+					}
+				}
+				{"spawn"
+					{entity "conquest_spawn_helper"}
+					{waypoint "0"}
+					{disable_random_spawn_position}
+				}
+				{"delay"
+					{time 0.01}
+				}
+				{"entity_state"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{amount 1
+						}
+						{tag conquest_spawn_helper}
+					}
+					{tag_add _default_b1}
+					{tag_remove conquest_spawn_helper}
+				}
+				{"delay"
+					{time 0.05}
+				}
+				{"placement"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{tag _default_b1}
+					}
+					{target
+						{ignore_captured_by_user 0}
+						{tag b1}
+					}
+				}
+				{"spawn"
+					{entity "conquest_spawn_helper"}
+					{waypoint "0"}
+					{disable_random_spawn_position}
+				}
+				{"delay"
+					{time 0.01}
+				}
+				{"entity_state"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{amount 1
+						}
+						{tag conquest_spawn_helper}
+					}
+					{tag_add _default_b2}
+					{tag_remove conquest_spawn_helper}
+				}
+				{"delay"
+					{time 0.05}
+				}
+				{"placement"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{tag _default_b2}
+					}
+					{target
+						{ignore_captured_by_user 0}
+						{tag b2}
+					}
+				}
+				{"spawn"
+					{entity "conquest_spawn_helper"}
+					{waypoint "0"}
+					{disable_random_spawn_position}
+				}
+				{"delay"
+					{time 0.01}
+				}
+				{"entity_state"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{amount 1
+						}
+						{tag conquest_spawn_helper}
+					}
+					{tag_add _default_b3}
+					{tag_remove conquest_spawn_helper}
+				}
+				{"delay"
+					{time 0.05}
+				}
+				{"placement"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{tag _default_b3}
+					}
+					{target
+						{ignore_captured_by_user 0}
+						{tag b3}
+					}
+				}
+				{"spawn"
+					{entity "conquest_spawn_helper"}
+					{waypoint "0"}
+					{disable_random_spawn_position}
+				}
+				{"delay"
+					{time 0.01}
+				}
+				{"entity_state"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{amount 1
+						}
+						{tag conquest_spawn_helper}
+					}
+					{tag_add _default_b4}
+					{tag_remove conquest_spawn_helper}
+				}
+				{"delay"
+					{time 0.05}
+				}
+				{"placement"
+					{selector
+						{source standart}
+						{ignore_captured_by_user 0}
+						{tag _default_b4}
+					}
+					{target
+						{ignore_captured_by_user 0}
+						{tag b4}
+					}
+				}
+			}

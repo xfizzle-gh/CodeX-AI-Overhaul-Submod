@@ -1,0 +1,1184 @@
+;SDL
+
+;////////////////// INSTRUCTIONS //////////////////
+;Buttons go as follows, displayed in-game in this order:
+
+; inf1       - infantry squads
+; inf2       - infantry single units
+; empl       - Emplacements, AA, AT, Mortars, Howitzers
+; vehicles   - vehicles, armoured cars, supplies
+; tanks      - main battle tanks, TDs, SPGs
+; doctrine   - specific doctrine setups
+
+; TEMP: Note all levels have been brought down to 1 to remove unit locks.
+; Squads currently have an MP cost of 0 - their cost is currently calculated as the sum of their soldiers cost, see inf_ger.set
+; Check ../settings.set for syntax instructions!!
+; unit limits per game are not defined here but in gamemode presets
+
+;user defined set tags that should be featured on units:
+;all artillery heavyart cannon mediumcan heavycan light medium heavy infantry supply
+;these tags allow player to disable certain sets for custom setups like "no heavy artillery" 
+;//////////////////////////////////////////////////
+
+
+;_________________________________________________
+;|        	Default Strategic Abilities           |
+;|________________________________________________|
+
+;// Artillery Supports
+
+
+
+{"artillery_barrage_smoke_csa"
+	("offmap_support" side(csa) period(era1960) min_stage(1) max_stage(99) cw(0) cp(0) vehicle(105mm_m101a1) crew(sup_guncrew:0))
+	{cost 2}{action "airstrike:flare_artillery_smoke"}
+}
+
+{"artillery_barrage_light_csa"
+	("offmap_support" side(csa) period(era1960) min_stage(1) max_stage(99) cw(0) cp(0) vehicle(105mm_m101a1) crew(sup_guncrew:0))
+	{cost 5}{action "airstrike:flare_artillery_105"}
+}
+
+{"artillery_barrage_medium_csa"
+	("offmap_support" side(csa) period(era1960) min_stage(1) max_stage(99) cw(0) cp(0) vehicle(155mm_m114) crew(sup_guncrew:0))
+	{cost 8}{action "airstrike:flare_artillery_150"}
+}
+
+{"artillery_barrage_heavy_csa"
+	("offmap_support" side(csa) period(era1960) min_stage(1) max_stage(99) cw(0) cp(0) vehicle(203mm_m115) crew(sup_guncrew:0))
+	{cost 12}{action "airstrike:flare_artillery_203"}
+}
+
+;// Helicopter CAS runs
+
+; removed
+
+;// Airstrike sorties
+
+
+
+{"airstrike_medium_csa"
+	("squad_vehicle" side(csa) period(era1960) min_stage(1) max_stage(99) cw(0) cp(2) vehicle(a-4e_airstrike) crew(sup_pilot:0))
+	{cost 4}{action "airstrike:flare_airstrike_medium_bomb_csa"}
+}
+
+{"airstrike_heavy_csa"
+	("squad_vehicle" side(csa) period(era1960) min_stage(1) max_stage(99) cw(0) cp(4) vehicle(f-105_airstrike) crew(sup_pilot:0))
+	{cost 8}{action "airstrike:flare_airstrike_heavy_bomb_csa"}
+}
+
+
+
+{"airstrike_napalm_csa"
+	("squad_vehicle" side(csa) period(era1960) min_stage(1) max_stage(99) cw(0) cp(2) vehicle(a-4e_airstrike) crew(sup_pilot:0))
+	{cost 3}{action "airstrike:flare_airstrike_light_napalm_csa"}
+}
+
+
+
+;// OTHER OFFMAP Supports
+
+
+{"a-10c_bomber"
+	("squad_vehicle" side(csa) period(era1960) min_stage(8) max_stage(99) cw(0) cp(4) vehicle(a-10c_bomber) crew(sup_pilot:1))
+	{cost 8}{action "airstrike:airsupport_trigger"}
+}
+
+{"a-10c_support"
+	("squad_vehicle" side(csa) period(era1960) min_stage(10) max_stage(99) cw(0) cp(4) vehicle(a-10c_support) crew(sup_pilot:1))
+	{cost 12}{action "airstrike:airsupport_trigger"}
+}
+
+{"a-10c_at"
+	("squad_vehicle" side(csa) period(era1960) min_stage(10) max_stage(99) cw(0) cp(4) vehicle(a-10c_at) crew(sup_pilot:1))
+	{cost 12}{action "airstrike:airsupport_trigger"}
+}
+
+{"c130_paratrooper"
+	("squad_vehicle11" period(era1960) min_stage(12) max_stage(99) side(csa) vehicle(c130_para) crew1(sup_pilot:3) crew2(82nd_teamlead:1) crew3(82nd_squadlead:1) crew4(82nd_mg:1) crew5(82nd_mgassist:1) crew6(82nd_lat:2) crew7(82nd_guncrew_entac:1) crew8(82nd_grenadier:1) crew9(82nd_rifleman:2) crew10(82nd_antitank:1) crew11(82nd_atassist:1) cw(0) cp(10))
+	{cost 15}
+	{squad_cost_factor 0}
+	{round_multiple 0}
+	{action "airstrike:paratank_trigger"}
+}
+
+{"c130_lav25_para"
+	("squad_vehicle8" period(era1960) min_stage(12) max_stage(99) side(csa) vehicle(c130_lav25) crew1(sup_pilot:3) crew2(82nd_vehicleman:3) crew3(82nd_squadlead:1) crew4(82nd_mg:1) crew5(82nd_mgassist:1) crew6(82nd_rifleman:1) crew7(82nd_grenadier:1) crew8(82nd_antitank:1) cw(0) cp(10))
+	{cost 12}
+	{squad_cost_factor 0}
+	{round_multiple 0}
+	{action "airstrike:paratank_trigger"}
+}
+
+; ________________________________________________
+;|             inf1                               |
+;|________________________________________________|
+
+;;;1960s Period
+;// BASIC SQUADS
+
+("squad_with4types_conquest" side(csa) period(era1960)   min_stage(0) max_stage(20) name(squad_reservist_con)				c1(rsv_squadlead:1) c2(rsv_autorifle:2) c3(rsv_grenadier:2) c4(rsv_rifleman:5))
+("squad_with4types_conquest" side(csa) period(era1960)   min_stage(0) max_stage(20) name(squad_reservist_weapon_con)		c1(rsv_squadlead:1) c2(rsv_mg:2) c3(rsv_antitank:2) c4(rsv_rifleman:5))
+
+("squad_with4types_conquest" side(csa) period(era1960)   min_stage(0) max_stage(20) name(squad_natguard_con)			c1(nat_squadlead:1) c2(nat_autorifle:1) c3(nat_grenadier:1) c4(nat_rifleman:7))
+("squad_with3types_conquest" side(csa) period(era1960)   min_stage(0) max_stage(20) name(squad_natguard_mg_con)			c1(nat_squadlead:1) c2(nat_mg:2) c3(nat_rifleman:7))
+("squad_with3types_conquest" side(csa) period(era1960)   min_stage(0) max_stage(20) name(squad_natguard_at_con)			c1(nat_squadlead:1) c2(nat_antitank:2) c3(nat_rifleman:7))
+
+
+
+
+
+;// REGULAR SQUADS
+
+("squad_with6types_conquest" side(csa) period(era1960) min_stage(1) max_stage(5) name(squad_rifle_con)					c1(reg_squadlead:1) c2(reg_grenadier:2) c3(reg_autorifle:2) c4(reg_teamlead:1) c5(reg_lat:2) c6(reg_rifleman:2))
+("squad_with6types_conquest" side(csa) period(era1960) min_stage(1) max_stage(5) name(squad_weapon_con)				c1(reg_squadlead:1) c2(reg_antitank:2) c3(reg_atassist:2) c4(reg_teamlead:1) c5(reg_mg:2) c6(reg_mgassist:2))
+{"squad_rifle_moto_con(csa)" 
+	("squad_vehicle7"		 side(csa) period(era1960) min_stage(2) max_stage(5) vehicle(m113) cw(0) cp(4) 		crew1(sup_vehicleman:2) crew2(reg_squadlead:1) crew3(reg_grenadier:2) crew4(reg_autorifle:2) crew5(reg_teamlead:1) crew6(reg_lat:2) crew7(reg_rifleman:2))
+}
+{"squad_weapon_moto_con(csa)" 
+	("squad_vehicle7"		 side(csa) period(era1960) min_stage(8) max_stage(99) vehicle(bredly) cw(0) cp(4) 		crew1(sup_vehicleman:3) crew2(reg_squadlead:1) crew3(reg_antitank:2) crew4(reg_atassist:1) crew5(reg_teamlead:1) crew6(reg_mg:1) crew7(reg_mgassist:1))
+}
+
+
+
+
+;//ADVANCED SQUADS
+; Armored Cavalry
+{"squad_acav_moto_con(csa)" 
+	("squad_vehicle7"		 side(csa) period(era1960) min_stage(3) max_stage(10) vehicle(m113_acav) cw(0) cp(4) 		crew1(acav_vehicleman:2) crew2(acav_squadlead:1) crew3(acav_grenadier:2) crew4(acav_autorifle:2) crew5(acav_FGM148_operator:1) crew6(acav_lat:2) crew7(acav_rifleman:2))
+}
+{"squad_acav_weapon_moto_con(csa)" 
+	("squad_vehicle7"		 side(csa) period(era1960) min_stage(3) max_stage(10) vehicle(m113_acav) cw(0) cp(4) 		crew1(acav_vehicleman:2) crew2(acav_squadlead:1) crew3(acav_antitank:2) crew4(acav_atassist:2) crew5(acav_FGM148_operator:1) crew6(acav_mg:2) crew7(acav_mgassist:2))
+}
+
+;add by ordos
+{"squad_acav_assault_moto_adv_con(csa)"
+	("squad_vehicle7" 		 side(csa) period(era1960) min_stage(9) max_stage(99)  vehicle(hmmwv_m998_tent) cw(0) cp(5) 		crew1(acav_vehicleman:1) crew2(acav_squadlead:1) crew3(acav_mg:1) crew4(acav_antitank:1) crew5(acav_atassist:1) crew6(acav_grenadier:1) crew7(acav_FGM148_operator:1))
+}
+; Airborne
+("squad_with5types_conquest" side(csa) period(era1960) min_stage(3) max_stage(20) name(squad_airborne_fireteam_con)	c1(82nd_teamlead:1) c2(82nd_antitank:1) c3(82nd_mg:1) c4(82nd_mgassist:1) c5(82nd_rifleman:1))
+("squad_with7types_conquest" side(csa) period(era1960) min_stage(3) max_stage(19) name(squad_airborne_con)			c1(82nd_squadlead:1) c2(82nd_antitank:1) c3(82nd_mg:1) c4(82nd_mgassist:1) c5(82nd_teamlead:1) c6(82nd_rifleman:3) c7(82nd_lat:2))
+{"squad_82airborne_con(csa)" 
+	("squad_vehicle11"		 side(csa) period(era1960) min_stage(10) max_stage(99) vehicle(ch-47_chinook) cw(0) cp(4) 		crew1(sup_pilot:4) crew2(82nd_teamlead:1) crew3(82nd_squadlead:1) crew4(82nd_mg:1) crew5(82nd_mgassist:1) crew6(82nd_lat:2) crew7(82nd_guncrew_entac:1) crew8(82nd_grenadier:1) crew9(82nd_rifleman:2) crew10(82nd_antitank:1) crew11(82nd_atassist:1))
+}
+
+{"squad_seal_heli_con(csa)"
+	("squad_vehicle8" 		 side(csa) period(era1960) min_stage(18) max_stage(99)  vehicle(uh-60m_blackhawk_mg) cw(0) cp(4) crew1(sup_pilot:4) crew2(spec_squadlead:1) crew3(spec_sniper:1) crew4(spec_mg:1) crew5(spec_antitank:2) crew6(spec_grenadier:1) crew7(spec_rifleman:3) crew8(spec_ammo:1))
+}
+
+{"squad_82airborne_lav25_con(csa)" 
+	("squad_vehicle7"		 side(csa) period(era1960) min_stage(8) max_stage(99) vehicle(lav25) cw(0) cp(4) 		crew1(82nd_vehicleman:3) crew2(82nd_squadlead:1) crew3(82nd_mg:1) crew4(82nd_mgassist:1) crew5(82nd_rifleman:1) crew6(82nd_grenadier:1) crew7(82nd_antitank:1))
+}
+
+
+
+
+
+; USMC
+("squad_with7types_conquest" side(csa) period(era1960) min_stage(2) max_stage(15) name(squad_usmc_con)				c1(usmc_squadlead:1) c2(usmc_autorifle:3) c3(usmc_grenadier:3) c4(usmc_teamlead:1) c5(usmc_antitank:1) c6(usmc_atassist:1) c7(usmc_rifleman:2))
+("squad_with7types_conquest" side(csa) period(era1960) min_stage(3) max_stage(15) name(squad_usmc_mg_con)			c1(usmc_squadlead:1) c2(usmc_mg:3) c3(usmc_mgassist:3) c4(usmc_teamlead:1) c5(usmc_grenadier:1) c6(usmc_ammo:1) c7(usmc_rifleman:2))
+("squad_with4types_conquest" side(csa) period(era1960) min_stage(3) max_stage(99) name(squad_fr_at_con)				c1(fr_squadlead:1) c2(fr_rifleman:1) c3(fr_antitank:2) c4(sup_FGM148_operator:1))
+;("squad_with5types_conquest" side(csa) period(era1960) min_stage(6) max_stage(10) name(squad_usmc_m16_con)			c1(usmc_squadlead:1) c2(usmc_grenadier:3) c3(usmc_lat:3) c4(usmc_teamlead:1) c5(usmc_rifleman:4))
+("squad_with4types_conquest" side(csa) period(era1960) min_stage(3) max_stage(10) name(squad_usmc_scout_con)		c1(fr_squadlead:1) c2(fr_marksman:1) c3(fr_spotter:1) c4(fr_rifleman:1))
+("squad_with1types_conquest" 	side(csa) name(single_corpsman_con)			period(era1960) min_stage(4) 	max_stage(99) c1(usmc_corpsman:1)							) ;M2 Carbine
+{"squad_usmc_moto_con(csa)" 
+	("squad_vehicle8"		 side(csa) period(era1960) min_stage(3) max_stage(12) vehicle(m113) cw(0) cp(4) 		crew1(usmc_vehicleman:2) crew2(usmc_squadlead:1) crew3(usmc_antitank:1) crew4(usmc_autorifle:1) crew5(usmc_atassist:1) crew6(usmc_teamlead:1) crew7(usmc_rifleman:3) crew8(usmc_grenadier:2))
+}
+
+
+{"squad_usmc_lav25_con(csa)" 
+	("squad_vehicle7"		 side(csa) period(era1960) min_stage(8) max_stage(99) vehicle(lav25) cw(0) cp(4) 		crew1(usmc_vehicleman:3) crew2(usmc_squadlead:1) crew3(usmc_mg:1) crew4(usmc_mgassist:1) crew5(usmc_rifleman:1) crew6(usmc_grenadier:1) crew7(usmc_antitank:1))
+}
+
+{"squad_usmc_aavp7_con(csa)" 
+	("squad_vehicle8"		 side(csa) period(era1960) min_stage(8) max_stage(99) vehicle(aavp7) cw(0) cp(4) 		crew1(usmc_vehicleman:3) crew2(usmc_squadlead:1) crew3(usmc_antitank:6) crew4(usmc_mg:3) crew5(usmc_mgassist:3) crew6(usmc_teamlead:3) crew7(usmc_rifleman:6) crew8(usmc_grenadier:3))
+}
+
+{"squad_usmc_huey_con(csa)" 
+	("squad_vehicle8"		 side(csa) period(era1960) min_stage(4) max_stage(99) vehicle(uh-1h) cw(0) cp(4) 		crew1(sup_pilot:4) crew2(usmc_squadlead:1) crew3(usmc_antitank:1) crew4(usmc_autorifle:1) crew5(usmc_atassist:1) crew6(usmc_teamlead:1) crew7(usmc_rifleman:3) crew8(usmc_grenadier:2))
+}
+{"squad_usmc_m16_huey_con(csa)" 
+	("squad_vehicle7"		 side(csa) period(era1960) min_stage(6) max_stage(99) vehicle(uh-1h) cw(0) cp(4) 		crew1(sup_pilot:4) crew2(fr_squadlead:1) crew3(fr_mg:1) crew4(fr_marksman:1) crew5(fr_rifleman:3) crew6(fr_grenadier:2) crew7(fr_antitank:2))
+}
+
+
+
+;//ELITE SQUADS
+; US Army Rangers
+
+("squad_with5types_conquest" side(csa) period(era1960) min_stage(3) max_stage(99) name(squad_ranger_lrrp_con)				c1(rng_squadlead:1) c2(rng_ammo:1) c3(rng_grenadier:1) c4(rng_mg:1) c5(rng_rifleman:1))
+{"squad_lrrp_moto_con(csa)" 
+	("squad_vehicle4"		 side(csa) period(era1960) min_stage(3) max_stage(99) vehicle(humvee_m2hb) cw(0) cp(4) 		crew1(rng_squadlead:1) crew2(rng_ammo:1) crew3(rng_antitank:1) crew4(rng_mg:1))
+}
+("squad_with4types_conquest" side(csa) period(era1960) min_stage(3) max_stage(99) name(squad_ranger_demo_con)				c1(rng_squadlead:1) c2(rng_demo:2) c3(rng_antitank:1) c4(rng_rifleman:1))
+("squad_with7types_conquest" side(csa) period(era1960) min_stage(3) max_stage(99) name(squad_ranger_con)					c1(rng_squadlead:1) c2(rng_ammo:1) c3(rng_grenadier:1) c4(rng_mg:1) c5(rng_antitank:1) c6(rng_rifleman:4) c7(rng_marksman:1))
+
+{"squad_ranger_huey_con(csa)" 
+	("squad_vehicle8"		 side(csa) period(era1960) min_stage(6) max_stage(99) vehicle(uh-1h) cw(0) cp(4) 		crew1(sup_pilot:4) crew2(rng_squadlead:1) crew3(rng_ammo:1) crew4(rng_grenadier:1) crew5(rng_mg:1) crew6(rng_antitank:1) crew7(rng_rifleman:4) crew8(rng_marksman:1))
+}
+;add by ordos
+{"squad_ranger_moto_con(csa)"
+	("squad_vehicle8" 		 side(csa) period(era1960) min_stage(13) max_stage(99)  vehicle(m2a2ods) cw(0) cp(4) 		crew1(sup_vehicleman:3) crew2(rng_squadlead:1) crew3(rng_mg:1) crew4(rng_antitank:1) crew5(rng_marksman:1) crew6(rng_grenadier:1) crew7(rng_FGM148_operator:1) crew8(rng_rifleman:1))
+}
+; US Special Forces
+
+
+; // OTHER Squads
+
+{"squad_engineer_moto_con(csa)" 
+	("squad_vehicle"		 side(csa) period(era1960) min_stage(1) max_stage(3) vehicle(dodge_m37_eng) cw(0) cp(4) 		crew(reg_engineer:2) )
+}
+
+{"squad_medic_moto_con(csa)" 
+	("squad_vehicle"		 side(csa) period(era1960) min_stage(1) max_stage(3) vehicle(dodge_m37) cw(0) cp(4) 		crew(reg_medic:4) )
+}
+
+
+("squad_with4types_conquest" 	side(csa) period(era1960)  min_stage(7) max_stage(99) name(fgm148_fire_team)	c1(sup_FGM148_operator:1) c2(sup_FGM148_supporter:1) c3(reg_rifleman:1) c4(reg_squadlead:1))
+
+
+;//west germany
+
+
+("squad_with7types_conquest_warsaw" nation(frg) side(csa) period(era1960) min_stage(1) max_stage(4) name(squad_rifle_con_nato) 			c1(reg_squadlead:1) c2(reg_mg:1) c3(reg_antitank:1) c4(reg_atassist:1) c5(reg_mgassist:1) c6(reg_rifleman:4) c7(reg_teamlead:1))
+{"squad_pzgren_moto2_con_nato(frg)"
+	("squad_vehicle8_warsaw" period(era1960) min_stage(3) max_stage(99) nation(frg) side(csa) vehicle(m113g) cw(0) cp(4) crew1(pzg_vehicleman:2) crew2(pzg_squadlead:1) crew3(pzg_mg:1) crew4(pzg_antitank:1) crew5(pzg_atassist:1) crew6(pzg_mgassist:1) crew7(pzg_rifleman:4) crew8(pzg_teamlead:1))
+}
+{"squad_pzgren_mech_con3_nato(frg)"
+	("squad_vehicle8_warsaw" period(era1960) min_stage(5) max_stage(99) nation(frg) side(csa) vehicle(hsl) cw(0) cp(4) crew1(pzg_vehicleman:3) crew2(pzg_squadlead:1) crew3(pzg_mg:1) crew4(pzg_antitank:1) crew5(pzg_atassist:1) crew6(pzg_mgassist:1) crew7(pzg_rifleman:2) crew8(pzg_teamlead:1))
+}
+
+{"squad_jager_moto_con(frg)"
+	("squad_vehicle8_warsaw" period(era1960) min_stage(5) max_stage(99) nation(frg) side(csa) vehicle(tpz1a6) cw(0) cp(4) crew1(pzg_vehicleman:2) crew2(jag_squadlead:1) crew3(jag_mg:1) crew4(jag_mgassist:1) crew5(jag_rifleman:4) crew6(jag_antitank:1) crew7(jag_atassist:1) crew8(jag_marksman:1))
+}
+
+
+{"m113g"
+	("vehicle_warsaw"  period(era1960) min_stage(3) max_stage(99) nation(frg) side(csa) crew(sup_vehicleman:2) cw(0) cp(6))
+	{cost 90}
+}
+
+{"aaleo"
+	("vehicle_warsaw" period(era1960) min_stage(6) max_stage(99) nation(frg) side(csa) crew(sup_tankman:3) cw(0) cp(15))
+	{cost 700}
+}
+
+{"hsl"
+	("vehicle_warsaw"  period(era1960) min_stage(5) max_stage(99) nation(frg) side(csa) crew(sup_tankman:3) cw(0) cp(10))
+	{cost 500}
+}
+
+{"m109g"
+	("vehicle_warsaw" period(era1960) min_stage(5) max_stage(99) nation(frg) side(csa) crew(sup_vehicleman:4) cw(0) cp(14))
+	{cost 900}
+}
+
+{"spz_523"
+	("vehicle_warsaw"  period(era1960) min_stage(5) max_stage(99) nation(frg) side(csa) crew(sup_vehicleman:4) b(tanks) cw(0) cp(8))
+	{cost 350}
+}
+
+{"leopard_1a1"
+	("vehicle_warsaw" period(era1960) min_stage(7) max_stage(99) nation(frg) side(csa) crew(sup_tankman:4)   cw(0) cp(14))
+	{cost 700}
+}
+
+{"leopard_1a5"
+	("vehicle_warsaw" period(era1960) min_stage(9) max_stage(99) nation(frg) side(csa) crew(sup_tankman:4)   cw(0) cp(14))
+	{cost 800}
+}
+
+{"leopard_2a4"
+	("vehicle_warsaw" period(era1960) min_stage(9) max_stage(99) nation(frg) side(csa) crew(pzg_vehicleman:4)  cw(0) cp(16))
+	{cost 1350}
+}
+
+{"leopard_2a5"
+	("vehicle_warsaw" period(era1960) min_stage(12) max_stage(99) nation(frg) side(csa) crew(pzg_vehicleman:4)  cw(0) cp(18))
+	{cost 1450}
+}
+
+{"tpz1a6"
+	("vehicle_warsaw" period(era1960) min_stage(5) max_stage(25) nation(frg) side(csa) crew(sup_vehicleman:2)  cw(0) cp(7)) 
+	{cost 165}
+}
+
+{"alouette_ii_ss10_frg"
+	("vehicle_warsaw"  period(era1960) min_stage(7) max_stage(99) nation(frg) side(csa) crew(sup_pilot:2) cw(0) cp(6) )
+	{cost 650}
+}
+
+;_________________________________________________
+;|             inf2                               |
+;|________________________________________________|
+
+("squad_with1types_conquest"	side(csa) name(single_tankman)				period(era1960) min_stage(1) 	max_stage(4)  c1(sup_tankman:3)								) ;M3 Greaseguns
+("squad_with2types_conquest"	side(csa) name(single_mg_con)				period(era1960) min_stage(1) 	max_stage(99) c1(reg_mg:1) c2(reg_mgassist:1)				) ;M60 GPMG
+("squad_with2types_conquest" 	side(csa) name(single_at_con)				period(era1960) min_stage(2) 	max_stage(99) c1(reg_antitank:1) c2(reg_atassist:1)		)
+("squad_with2types_conquest" 	side(csa) name(single_m47at_con)					period(era1960) min_stage(3) 	max_stage(99) c1(acav_antitank:1) c2(acav_atassist:1)			) ;M67 RCL
+("squad_with1types_conquest" 	side(csa) name(single_lat_con)				period(era1960) min_stage(4) 	max_stage(99) c1(acav_lat:2)								)
+("squad_with1types_conquest" 	side(csa) name(single_grenadier_m7_con)		period(era1960) min_stage(1) 	max_stage(20) c1(reg_grenadier:1) 						) ;M72 LAW
+("squad_with1types_conquest" 	side(csa) name(single_grenadier_con)		period(era1960) min_stage(2) 	max_stage(99) c1(rng_grenadier:2) 							) ;M203
+("squad_with1types_conquest" 	side(csa) name(single_flamer_con)			period(era1960) min_stage(2) 	max_stage(15) c1(reg_flamer:1) 								) ;M2 Flamethrower
+("squad_with1types_conquest" 	side(csa) name(single_scout_con)			period(era1960) min_stage(5) 	max_stage(99) c1(reg_scout:1)								) ;M16A1
+("squad_with1types_conquest" 	side(csa) name(single_marksman_con)			period(era1960) min_stage(2) 	max_stage(99) c1(rng_marksman:1)							) ;M1C
+("squad_with2types_conquest" 	side(csa) name(single_sniper)				period(era1960) min_stage(6) 	max_stage(10) c1(spec_sniper:1) c2(spec_spotter:1)			) ;M21
+("squad_with1types_conquest" 	side(csa) name(single_medic_con)			period(era1960) min_stage(1) 	max_stage(99) c1(reg_medic:1)								) ;M2 Carbine
+("squad_with1types_conquest" 	side(csa) name(single_sapperap_con)			period(era1960) min_stage(1) 	max_stage(99) c1(reg_sapper-ap:2)							) ;M2 Carbine
+("squad_with1types_conquest" 	side(csa) name(single_sapperat_con)			period(era1960) min_stage(1) 	max_stage(99) c1(reg_sapper-at:2)							) ;M2 Carbine	
+("squad_with1types_conquest" 	side(csa) name(single_engineer_con)			period(era1960) min_stage(1) 	max_stage(99) c1(reg_engineer:2)							) ;M2 Carbine
+("squad_with2types_conquest" 	side(csa) name(manpad_operator)				period(era1960) min_stage(6) 	max_stage(99) c1(sup_manpad_operator:1) c2(sup_manpad_supporter:1)			) ;FIM-92A
+
+
+;_________________________________________________
+;|                  Emplacements                  |
+;|________________________________________________|
+
+; AI DEFENSIVE EMPLACEMENTS
+
+{"defense_mg_browning"
+	("emplacement" side(csa) period(era1960) min_stage(1) max_stage(10) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(mg_stand_m1919))
+	{cost 50}{not_for_player_sale 1}
+}
+
+{"defense_mg_m60"
+	("emplacement" side(csa) period(era1960) min_stage(2) max_stage(12) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(mg_stand_m60))
+	{cost 50}{not_for_player_sale 1}
+}
+
+{"defense_mg_m41"
+	("emplacement" side(csa) period(era1960) min_stage(1) max_stage(3) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(m41_defence))
+	{cost 100}{not_for_player_sale 1}
+}
+
+{"defense_mg_m2"
+	("emplacement" side(csa) period(era1960) min_stage(2) max_stage(10) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(mg_stand_m2))
+	{cost 100}{not_for_player_sale 1}
+}
+
+{"defense_mg_m45"
+	("emplacement" side(csa) period(era1960) min_stage(3) max_stage(15) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(m45_maxson))
+	{cost 200}{not_for_player_sale 1}
+}
+
+{"defense_mg_m48a3"
+	("emplacement" side(csa) period(era1960) min_stage(4) max_stage(7) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(m48a3_defence))
+	{cost 200}{not_for_player_sale 1}
+}
+
+{"defense_mg_rcl_m20"
+	("emplacement" side(csa) period(era1960) min_stage(5) max_stage(8) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(m20_rcl))
+	{cost 160}{not_for_player_sale 1}
+}
+
+{"defense_mg_rcl_m40"
+	("emplacement" side(csa) period(era1960) min_stage(5) max_stage(10) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(m40))
+	{cost 220}{not_for_player_sale 1}
+}
+
+{"defense_mg_m60a3"
+	("emplacement" side(csa) period(era1960) min_stage(8) max_stage(12) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(m60a3_defence))
+	{cost 200}{not_for_player_sale 1}
+}
+
+{"defense_mg_mk19"
+	("emplacement" side(csa) period(era1960) min_stage(8) max_stage(99) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(mk19_stan_ai))
+	{cost 220}{not_for_player_sale 1}
+}
+
+{"defense_mg_bgm71tow"
+	("emplacement" side(csa) period(era1960) min_stage(8) max_stage(99) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(bgm71_tow_ai))
+	{cost 320}{not_for_player_sale 1}
+}
+
+{"defense_mg_m1abrams"
+	("emplacement" side(csa) period(era1960) min_stage(10) max_stage(99) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(m1_abrams_defence))
+	{cost 200}{not_for_player_sale 1}
+}
+
+{"defense_mg_challenger"
+	("emplacement" side(csa) period(era1960) min_stage(10) max_stage(99) cw(2) cp(0) crew(sup_supporter:0) condition(barricade) action(challenger1_defence))
+	{cost 200}{not_for_player_sale 1}
+}
+
+;AUTOMATIC WEAPONRY
+
+("squad_weaponteam_conquest" 	side(csa) name(deploy_m1919_con)			period(era1960) 	min_stage(1) max_stage(5)			c1(sup_guncrew_m1919:1) c2(sup_guncrew:1) cost(60))
+("squad_weaponteam_conquest" 	side(csa) name(deploy_m60_con)				period(era1960) 	min_stage(2) max_stage(99)			c1(sup_guncrew_m60:1) 	c2(sup_guncrew:1) cost(75))
+("squad_weaponteam_conquest" 	side(csa) name(deploy_m2_con)				period(era1960) 	min_stage(3) max_stage(99)			c1(sup_guncrew_m2:1) c2(sup_guncrew:1) cost(100))
+("squad_weaponteam_conquest" 	side(csa) name(deploy_mk19_con)				period(era1960) 	min_stage(8) max_stage(99)			c1(sup_guncrew_mk19:1) c2(sup_guncrew:1) cost(180))
+
+{"m45_maxson"
+	("vehicle"  period(era1960) min_stage(3) max_stage(20) side(csa) crew(sup_supporter:2) cw(0) cp(2))
+	{cost 200}
+}
+
+; AT WEAPONRY
+
+("squad_weaponteam_conquest" 	side(csa) name(deploy_m20_con)				period(era1960) 	min_stage(4) max_stage(99)			c1(sup_guncrew_m20:1) c2(sup_guncrew:1) cost(160))
+
+{"m40"
+	("vehicle"  period(era1960) min_stage(5) max_stage(99) side(csa) crew(sup_supporter:4) cw(0) cp(2))
+	{cost 220}
+}
+
+;{"uh-1h_transport_m40"
+;	("vehicle2" period(era1960) min_stage(6) max_stage(99) side(csa) crew1(sup_pilot:4) crew2(aircav_guncrew:4) cw(0) cp(12))
+;	{cost 320}
+;}
+
+("squad_weaponteam_conquest" 	side(csa) name(deploy_entac_con)				period(era1960) 	min_stage(4) max_stage(99)			c1(sup_guncrew_entac:1) c2(sup_guncrew:1) cost(220))
+
+;{"entac_launcher"
+;	("emplacement" side(csa) period(era1960) min_stage(99) max_stage(99) cw(2) cp(0) crew(sup_supporter:0) condition(gunbag_csa_entac_launcher) action(entac_launcher))
+;	{cost 0}{not_for_player_sale 1}
+;}
+("squad_weaponteam_conquest" 	side(csa) name(deploy_bgm71_con)				period(era1960) 	min_stage(10) max_stage(99)			c1(sup_guncrew_bgm71:1) c2(sup_guncrew:1) cost(280))
+;{"bgm71_tow"
+;	("vehicle"  period(mid) min_stage(18) max_stage(99) side(csa) crew(sup_supporter:2) cw(0) cp(2))
+;	{cost 300}
+;}
+;MORTARS
+
+("squad_weaponteam_conquest" 	side(csa) name(deploy_m29_con)				period(era1960) 	min_stage(2) max_stage(99)			c1(sup_guncrew_m29:1) c2(sup_guncrew:1) cost(225))
+
+{"m30_mortar"
+	("vehicle"  period(era1960) min_stage(3) max_stage(99) side(csa) crew(sup_supporter:2) cw(0) cp(2))
+	{cost 300}
+}
+
+{"uh-1h_transport_m30_mortar"
+	("vehicle2" period(era1960) min_stage(6) max_stage(99) side(csa) crew1(sup_pilot:4) crew2(82nd_guncrew:2) cw(0) cp(12))
+	{cost 320}
+}
+
+
+;HOWITZERS
+
+{"75mm_m116"
+	("vehicle"  period(era1960) min_stage(1) max_stage(5) side(csa) crew(sup_supporter:4) cw(0) cp(6))
+	{cost 300}
+}
+
+{"105mm_m101a1"
+	("vehicle"  period(era1960) min_stage(3) max_stage(7) side(csa) crew(sup_guncrew:4) cw(0) cp(8))
+	{cost 500}
+}
+
+{"m119"
+	("vehicle"  period(era1960) min_stage(6) max_stage(99) side(csa) crew(sup_guncrew:2) cw(0) cp(8))
+	{cost 700}
+}
+
+{"ch-47_transport_m119"
+	("vehicle2" period(era1960) min_stage(6) max_stage(99) side(csa) crew1(sup_pilot:4) crew2(82nd_guncrew:2) cw(0) cp(12))
+	{cost 750}
+}
+
+{"155mm_m114"
+	("vehicle"  period(era1960) min_stage(4) max_stage(99) side(csa) crew(sup_guncrew:5) cw(0) cp(12))
+	{cost 650}
+}
+
+{"155mm_m59_longtom"
+	("vehicle"  period(era1960) min_stage(6) max_stage(99) side(csa) crew(sup_guncrew:5) cw(0) cp(12))
+	{cost 750}
+}
+
+{"203mm_m115"
+	("vehicle"  period(era1960) min_stage(6) max_stage(99) side(csa) crew(sup_guncrew:5) cw(0) cp(18))
+	{cost 800}
+}
+
+;{"mgr-3"
+;	("vehicle"  period(era1960) min_stage(3) max_stage(25) side(csa) crew(82nd_guncrew:4) cw(0) cp(6))
+;	{cost 1000}
+;}
+
+;{"uh-1h_transport_mgr3"
+;	("vehicle2" period(era1960) min_stage(6) max_stage(99) side(csa) crew1(sup_pilot:4) crew2(82nd_guncrew:4) cw(0) cp(12))
+;	{cost 1500}
+;}
+
+{"m-28"
+	("vehicle"  period(era1960) min_stage(5) max_stage(25) side(csa) crew(sup_guncrew:4) cw(0) cp(8))
+	{cost 2000}
+}
+
+
+
+
+
+;_________________________________________________
+;|               Support vehicles                 |
+;|________________________________________________|
+
+{"m416"
+	("vehicle"  period(era1960) min_stage(1) max_stage(99) side(csa) crew(sup_supporter:0) cw(0) cp(2))
+	{cost 75}
+}
+
+;{"m416_m388"
+;	("vehicle"  period(era1960) min_stage(3) max_stage(99) side(csa) crew(sup_supporter:0) cw(0) cp(2))
+;	{cost 800}
+;}
+
+{"m151"
+	("vehicle"  period(era1960) min_stage(1) max_stage(99) side(csa) crew(sup_supporter:1) cw(0) cp(2))
+	{cost 5}
+}
+
+{"dodge_m37"
+	("vehicle"  period(era1960) min_stage(1) max_stage(25) side(csa) crew(sup_supporter:1) cw(0) cp(2))
+	{cost 10}
+}
+
+{"dodge_m37_ammo"
+	("vehicle"  period(era1960) min_stage(1) max_stage(25) side(csa) crew(sup_supporter:1) cw(0) cp(2))
+	{cost 125}
+}
+
+{"m35"
+	("vehicle"  period(era1960) min_stage(1) max_stage(99) side(csa) crew(sup_supporter:1) cw(0) cp(2))
+	{cost 40}
+}
+
+{"m49c_fuel"
+	("vehicle"  period(era1960) min_stage(1) max_stage(99) side(csa) crew(sup_supporter:1) cw(0) cp(2))
+	{cost 200}
+}
+
+{"m35_ammo"
+	("vehicle"  period(era1960) min_stage(1) max_stage(99) side(csa) crew(sup_supporter:1) cw(0) cp(2))
+	{cost 200}
+}
+
+{"m35_arty"
+	("vehicle"  period(era1960) min_stage(2) max_stage(99) side(csa) crew(sup_supporter:1) cw(0) cp(2))
+	{cost 300}
+}
+
+;{"uh-1h_transport_supplies"
+;	("vehicle"  period(era1960) min_stage(3) max_stage(99) side(csa) crew(sup_pilot:4) cw(0) cp(2))
+;	{cost 400}
+;}
+
+{"m113"
+	("vehicle"  period(era1960) min_stage(2) max_stage(99) side(csa) crew(sup_vehicleman:2) cw(0) cp(6))
+	{cost 100}
+}
+
+;_________________________________________________
+;|        		 Fighting Vehicles                |
+;|________________________________________________|
+
+;LIGHT
+
+{"m151_m1919"
+	("vehicle"  period(era1960) min_stage(1) max_stage(5) side(csa) crew(sup_supporter:2) cw(0) cp(4))
+	{cost 50}
+}
+
+{"m151_m60"
+	("vehicle"  period(era1960) min_stage(1) max_stage(5) side(csa) crew(sup_supporter:2) cw(0) cp(4))
+	{cost 60}
+}
+
+{"m151_m2"
+	("vehicle"  period(era1960) min_stage(2) max_stage(7) side(csa) crew(sup_supporter:3) cw(0) cp(4))
+	{cost 80}
+}
+
+{"m151_m40"
+	("vehicle"  period(era1960) min_stage(3) max_stage(8) side(csa) crew(sup_supporter:3) cw(0) cp(4))
+	{cost 130}
+}
+
+;{"uh-1h_transport_m151_m40"
+;	("vehicle2" period(era1960) min_stage(3) max_stage(10) side(csa) crew1(sup_pilot:4) crew2(aircav_guncrew:3) cw(0) cp(12))
+;	{cost 575}
+;}
+
+;{"m35_guntruck"
+;	("vehicle"  period(era1960) min_stage(2) max_stage(25) side(csa) crew(sup_supporter:3) cw(0) cp(7))
+;	{cost 175}
+;}
+
+
+
+{"m113_acav"
+	("vehicle"  period(era1960) min_stage(4) max_stage(20) side(csa) crew(acav_vehicleman:2) cw(0) cp(6))
+	{cost 150}
+}
+
+{"m113_m40"
+	("vehicle"  period(era1960) min_stage(3) max_stage(12) side(csa) crew(sup_vehicleman:3) cw(0) cp(6))
+	{cost 225}
+}
+
+{"m113_acav_m40"
+	("vehicle"  period(era1960) min_stage(5) max_stage(12) side(csa) crew(acav_vehicleman:3) cw(0) cp(6))
+	{cost 275}
+}
+
+{"m150"
+	("vehicle"  period(era1960) min_stage(6) max_stage(99) side(csa) crew(acav_vehicleman:4) cw(0) cp(8))
+	{cost 400}
+}
+
+{"m114a1"
+	("vehicle"  period(era1960) min_stage(2) max_stage(12) side(csa) crew(sup_vehicleman:2) cw(0) cp(6))
+	{cost 175}
+}
+
+{"m114a2"
+	("vehicle"  period(era1960) min_stage(8) max_stage(14) side(csa) crew(acav_vehicleman:2) cw(0) cp(6))
+	{cost 300}
+}
+
+{"m125"
+	("vehicle"  period(era1960) min_stage(3) max_stage(99) side(csa) crew(sup_vehicleman:4) cw(0) cp(6))
+	{cost 250}
+}
+
+{"m106"
+	("vehicle"  period(era1960) min_stage(4) max_stage(99) side(csa) crew(sup_vehicleman:4) cw(0) cp(6))
+	{cost 350}
+}
+
+{"m106_acav"
+	("vehicle"  period(era1960) min_stage(5) max_stage(99) side(csa) crew(acav_vehicleman:4) cw(0) cp(6))
+	{cost 380}
+}
+
+{"m132_zippo"
+	("vehicle"  period(era1960) min_stage(4) max_stage(30) side(csa) crew(acav_vehicleman:3) cw(0) cp(6))
+	{cost 300}
+}
+
+{"m42"
+	("vehicle" period(era1960) min_stage(3) max_stage(10) side(csa) crew(sup_tankman:4) cw(0) cp(6))
+	{cost 500}
+}
+
+{"m41_early"
+	("vehicle" period(era1960) min_stage(0) max_stage(1) side(csa) crew(sup_tankman:4) cw(0) cp(6))
+	{cost 250}
+}
+
+{"m41"
+	("vehicle" period(era1960) min_stage(1) max_stage(2) side(csa) crew(sup_tankman:4) cw(0) cp(6))
+	{cost 275}
+}
+
+;{"m56"
+;	("vehicle" period(era1960) min_stage(3) max_stage(8) side(csa) crew(sup_tankman:3) cw(0) cp(10))
+;	{cost 275}
+;}
+
+;{"ch-47_transport_m56"
+;	("vehicle2" period(era1960) min_stage(6) max_stage(8) side(csa) crew1(sup_pilot:4) crew2(aircav_vehicleman:3) cw(0) cp(12))
+;	{cost 575}
+;}
+
+{"m50"
+	("vehicle" period(era1960) min_stage(3) max_stage(8) side(csa) crew(usmc_vehicleman:3) cw(0) cp(6))
+	{cost 375}
+}
+
+{"m551"
+	("vehicle" period(era1960) min_stage(6) max_stage(10) side(csa) crew(sup_tankman:4) cw(0) cp(8))
+	{cost 400}
+}
+
+{"m551_acav"
+	("vehicle" period(era1960) min_stage(7) max_stage(12) side(csa) crew(acav_vehicleman:4) cw(0) cp(8))
+	{cost 425}
+}
+
+{"ch-47_airlift_m551"
+	("vehicle2" period(era1960) min_stage(6) max_stage(12) side(csa) crew1(sup_pilot:4) crew2(acav_vehicleman:4) cw(0) cp(8))
+	{cost 700}
+}
+
+;add by ordos
+{"bredly"
+	("vehicle"  period(era1960) min_stage(8) max_stage(99) side(csa) crew(acav_vehicleman:3) cw(0) cp(12))
+	{cost 800}
+}
+
+{"m2a2ods"
+	("vehicle"  period(era1960) min_stage(9) max_stage(99) side(csa) crew(acav_vehicleman:3) cw(0) cp(14))
+	{cost 900}
+}
+
+{"m3a2"
+	("vehicle"  period(era1960) min_stage(8) max_stage(99) side(csa) crew(sup_tankman:3) cw(0) cp(12))
+	{cost 850}
+}
+
+{"lav25"
+	("vehicle"  period(era1960) min_stage(8) max_stage(99) side(csa) crew(usmc_vehicleman:3) cw(0) cp(8))
+	{cost 400}
+}
+
+{"aavp7"
+	("vehicle"  period(era1960) min_stage(8) max_stage(99) side(csa) crew(usmc_vehicleman:3) cw(0) cp(8))
+	{cost 500}
+}
+
+{"humvee_m240"
+	("vehicle"  period(era1960) min_stage(5) max_stage(99) side(csa) crew(sup_supporter:3) cw(0) cp(5))
+	{cost 150}
+}
+
+{"humvee_m2hb"
+	("vehicle"  period(era1960) min_stage(5) max_stage(99) side(csa) crew(sup_supporter:3) cw(0) cp(5))
+	{cost 200}
+}
+
+{"humvee_mk19"
+	("vehicle"  period(era1960) min_stage(6) max_stage(99) side(csa) crew(sup_supporter:3) cw(0) cp(6))
+	{cost 280}
+}
+
+{"humvee_tow"
+	("vehicle"  period(era1960) min_stage(8) max_stage(99) side(csa) crew(sup_supporter:3) cw(0) cp(8))
+	{cost 350}
+}
+
+{"m1097_avenger"
+	("vehicle"  period(era1960) min_stage(8) max_stage(99) side(csa) crew(sup_supporter:3) cw(0) cp(6))
+	{cost 350}
+}
+
+{"ch-47_transport_humvee_tow"
+	("vehicle2" period(era1960) min_stage(3) max_stage(10) side(csa) crew1(sup_pilot:4) crew2(82nd_guncrew:3) cw(0) cp(8))
+	{cost 650}
+}
+
+{"m901_itv"
+	("vehicle"  period(era1960) min_stage(9) max_stage(99) side(csa) crew(sup_supporter:3) cw(0) cp(8))
+	{cost 450}
+}
+
+;Medium
+
+{"m47_patton"
+	("vehicle" period(era1960) min_stage(1) max_stage(5) side(csa) crew(sup_tankman:5) cw(0) cp(8))
+	{cost 390}
+}
+
+{"m48"
+	("vehicle" period(era1960) min_stage(2) max_stage(7) side(csa) crew(sup_tankman:4) cw(0) cp(8))
+	{cost 400}
+}
+
+{"m48a1"
+	("vehicle" period(era1960) min_stage(3) max_stage(7) side(csa) crew(sup_tankman:4) cw(0) cp(8))
+	{cost 425}
+}
+
+{"m67_zippo"
+	("vehicle" period(era1960) min_stage(4) max_stage(10) side(csa) crew(sup_tankman:3) cw(0) cp(8))
+	{cost 425}
+}
+
+{"m48a3"
+	("vehicle" period(era1960) min_stage(3) max_stage(8) side(csa) crew(sup_tankman:4) cw(0) cp(9))
+	{cost 500}
+}
+
+{"m60_patton"
+	("vehicle" period(era1960) min_stage(4) max_stage(10) side(csa) crew(sup_tankman:4) cw(0) cp(9))
+	{cost 610}
+}
+
+{"m60a1"
+	("vehicle" period(era1960) min_stage(4) max_stage(8) side(csa) crew(sup_tankman:4) cw(0) cp(10))
+	{cost 650}
+}
+
+{"m60a1_mcb"
+	("vehicle" period(era1960) min_stage(4) max_stage(8) side(csa) crew(sup_tankman:4) cw(0) cp(10))
+	{cost 700}
+}
+ 
+{"m60a1e2"
+	("vehicle" period(era1960) min_stage(10) max_stage(10) side(csa) crew(sup_tankman:4) cw(0) cp(12))
+	{cost 1050}
+}
+
+{"m728"
+	("vehicle" period(era1960) min_stage(5) max_stage(99) side(csa) crew(acav_engineer:4) cw(0) cp(14))
+	{cost 900}
+}
+
+{"m163"
+	("vehicle"  period(era1960) min_stage(7) max_stage(99) side(csa) crew(sup_tankman:4) cw(0) cp(8))
+	{cost 675}
+}
+;--------add by ordos -------
+;{"leopord_1"
+;	("vehicle" period(mid) min_stage(10) max_stage(99) side(csa) crew(sup_tankman:4) cw(0) cp(10))
+;	{cost 475}
+;}
+
+{"centurion3"
+	("vehicle" period(era1960) min_stage(3) max_stage(5) side(csa) crew(sup_tankman_eng:4) cw(0) cp(8))
+	{cost 400}
+}
+
+{"chieftain5"
+	("vehicle" period(era1960) min_stage(7) max_stage(12) side(csa) crew(sup_tankman_eng:4) cw(0) cp(8))
+	{cost 675}
+}
+
+{"challenger1"
+	("vehicle" period(era1960) min_stage(9) max_stage(99) side(csa) crew(sup_tankman_eng:4) cw(0) cp(14))
+	{cost 1250}
+}
+
+{"m60a1_rise"
+	("vehicle" period(era1960) min_stage(6) max_stage(99) side(csa) crew(sup_tankman:4) cw(0) cp(12))
+	{cost 700}
+}
+
+{"m60a3"
+	("vehicle" period(era1960) min_stage(6) max_stage(99) side(csa) crew(sup_tankman:4) cw(0) cp(12))
+	{cost 750}
+}
+
+{"m1_abrams"
+	("vehicle" period(era1960) min_stage(8) max_stage(99) side(csa) crew(sup_tankman:4) cw(0) cp(12))
+	{cost 1000}
+}
+
+{"m1_abrams_mcb"
+	("vehicle" period(era1960) min_stage(8) max_stage(99) side(csa) crew(sup_tankman:4) cw(0) cp(12))
+	{cost 1100}
+}
+
+{"m1ip_1"
+	("vehicle" period(era1960) min_stage(10) max_stage(99) side(csa) crew(sup_tankman:4) cw(0) cp(13))
+	{cost 1100}
+}
+
+{"m1a1_new"
+	("vehicle" period(era1960) min_stage(10) max_stage(99) side(csa) crew(sup_tankman:4) cw(0) cp(14))
+	{cost 1200}
+}
+
+{"m1a1_fep"
+	("vehicle" period(era1960) min_stage(12) max_stage(99) side(csa) crew(sup_tankman:4) cw(0) cp(16))
+	{cost 1500}
+}
+
+{"m1a2_sep"
+	("vehicle" period(era1960) min_stage(13) max_stage(99) side(csa) crew(sup_tankman:4) cw(0) cp(18))
+	{cost 1600}
+}
+;--------add by ordos -------
+
+;Heavy
+
+{"m103"
+	("vehicle" period(era1960) min_stage(4) max_stage(10) side(csa) crew(sup_tankman:5) cw(0) cp(14))
+	{cost 600}
+}
+
+{"m103a2_usmc"
+	("vehicle" period(era1960) min_stage(4) max_stage(10) side(csa) crew(usmc_vehicleman:5) cw(0) cp(14))
+	{cost 650}
+}
+
+{"m108"
+	("vehicle" period(era1960) min_stage(3) max_stage(15) side(csa) crew(sup_tankman:4) cw(0) cp(12))
+	{cost 650}
+}
+
+{"m109"
+	("vehicle" period(era1960) min_stage(4) max_stage(99) side(csa) crew(sup_tankman:4) cw(0) cp(12))
+	{cost 700}
+}
+
+{"m109_acav"
+	("vehicle" period(era1960) min_stage(5) max_stage(15) side(csa) crew(sup_tankman:4) cw(0) cp(12))
+	{cost 750}
+}
+
+{"paladin"
+	("vehicle" period(era1960) min_stage(9) max_stage(99) side(csa) crew(sup_tankman:4) cw(0) cp(14))
+	{cost 900}
+}
+
+{"m110"
+	("vehicle" period(era1960) min_stage(6) max_stage(99) side(csa) crew(sup_tankman:5) cw(0) cp(14))
+	{cost 1000}
+}
+
+{"mrls"
+	("vehicle" period(era1960) min_stage(10) max_stage(99) side(csa) crew(sup_tankman:2) cw(0) cp(16))
+	{cost 1200}
+}
+
+;HElis
+
+{"uh-1h"
+	("vehicle" period(era1960) min_stage(1) max_stage(99) side(csa) crew(sup_pilot:4) cw(0) cp(10))
+	{cost 200}
+}
+
+{"uh-1b"
+	("vehicle" period(era1960) min_stage(4) max_stage(99) side(csa) crew(sup_pilot:2) cw(0) cp(10))
+	{cost 300}
+}
+
+{"uh-1b_ara"
+	("vehicle" period(era1960) min_stage(5) max_stage(99) side(csa) crew(sup_pilot:2) cw(0) cp(10))
+	{cost 400}
+}
+
+{"uh-1b_maxwell"
+	("vehicle" period(era1960) min_stage(6) max_stage(99) side(csa) crew(sup_pilot:2) cw(0) cp(10))
+	{cost 500}
+}
+
+{"uh-1b_m22"
+	("vehicle" period(era1960) min_stage(6) max_stage(99) side(csa) crew(sup_pilot:2) cw(0) cp(10))
+	{cost 500}
+}
+
+{"ch-47_chinook"
+	("vehicle" period(era1960) min_stage(3) max_stage(99) side(csa) crew(sup_pilot:4) cw(0) cp(12))
+	{cost 400}
+}
+
+;add by ordos
+{"ah1"
+	("vehicle" period(era1960) min_stage(10) max_stage(99) side(csa) crew(sup_pilot:2) cw(0) cp(14))
+	{cost 600}
+}
+
+{"ah1s_at"
+	("vehicle" period(era1960) min_stage(12) max_stage(99) side(csa) crew(sup_pilot:2) cw(0) cp(18))
+	{cost 1600}
+}
+{"uh-60m_blackhawk_mg"
+	("vehicle" period(era1960) min_stage(10) max_stage(99) side(csa) crew(sup_pilot:4) cw(0) cp(12))
+	{cost 600}
+}
+
+{"ah-64_apache_heavy"
+	("vehicle" period(era1960) min_stage(12) max_stage(99) side(csa) crew(sup_pilot:2) cw(0) cp(22))
+	{cost 2400}
+}
+
+;anti-air systems
+
+
+{"m192"
+	("vehicle_none"  period(era1960) min_stage(11) max_stage(99) side(csa)  cw(0) cp(8))
+	{cost 1600}
+}
+
+{"mpq46_hpir"
+	("vehicle_none"  period(era1960) min_stage(11) max_stage(99) side(csa)  cw(0) cp(8))
+	{cost 1000}
+}
+
+{"hawk_cwar"
+	("vehicle_none"  period(era1960) min_stage(11) max_stage(99) side(csa)  cw(0) cp(8))
+	{cost 1200}
+}
+
+
+
+
+
+
+;_________________________________________________
+;|        		 AI ONLY for purchase             |
+;|________________________________________________|
+
+
+
+{"mg_stand_m1919_ai"
+	("vehicle"  period(era1960) min_stage(1) max_stage(5) side(csa) crew(sup_supporter:2) cw(0) cp(2))
+	{cost 70}{not_for_player_sale 1}
+}
+
+{"mg_stand_m60_ai"
+	("vehicle"  period(era1960) min_stage(2) max_stage(99) side(csa) crew(sup_supporter:2) cw(0) cp(2))
+	{cost 80}{not_for_player_sale 1}
+}
+
+{"mk19_stan_ai"
+	("vehicle"  period(era1960) min_stage(8) max_stage(99) side(csa) crew(sup_supporter:2) cw(0) cp(2))
+	{cost 360}{not_for_player_sale 1}
+}
+
+{"mg_stand_m2_ai"
+	("vehicle"  period(era1960) min_stage(1) max_stage(99) side(csa) crew(sup_supporter:2) cw(0) cp(2))
+	{cost 100}{not_for_player_sale 1}
+}
+
+{"m29_mortar_ai"
+	("vehicle"  period(era1960) min_stage(1) max_stage(99) side(csa) crew(sup_supporter:2) cw(0) cp(2))
+	{cost 175}{not_for_player_sale 1}
+}
+
+{"m20_rcl_ai"
+	("vehicle"  period(era1960) min_stage(1) max_stage(99) side(csa) crew(sup_supporter:2) cw(0) cp(2))
+	{cost 160}{not_for_player_sale 1}
+}
+
+{"uh-1b_airborne"
+	("vehicle"  period(era1960) min_stage(4) max_stage(6) side(csa) t(helicopter) g(heli) crew(sup_pilot:1) cw(0) cp(6))
+	{cost 450}{not_for_player_sale 1}
+}
+
+{"uh-1b_ara_airborne"
+	("vehicle"  period(era1960) min_stage(5) max_stage(7) side(csa) t(helicopter) g(heli) crew(sup_pilot:1) cw(0) cp(6))
+	{cost 550}{not_for_player_sale 1}
+}
+
+{"uh-1b_maxwell_airborne"
+	("vehicle"  period(era1960) min_stage(6) max_stage(8) side(csa) t(helicopter) g(heli) crew(sup_pilot:1) cw(0) cp(6))
+	{cost 550}{not_for_player_sale 1}
+}
+
+{"dodge_m37_eng"
+	("vehicle"  period(era1960) min_stage(1) max_stage(99) side(csa) crew(sup_supporter:0) cw(0) cp(2))
+	{cost 200}{not_for_player_sale 1}
+}
+
+;west81 ai battle group+++++
+
+{"tank_platoon_m47"
+	("squad_vehicle_ai"  period(era1960) min_stage(1) max_stage(2) side(csa) vehicle(m47_patton) crew(sup_tankman:5) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"tank_platoon_m48"
+	("squad_vehicle_ai"  period(era1960) min_stage(3) max_stage(4) side(csa) vehicle(m48) crew(sup_tankman:4) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"tank_platoon_m48a1"
+	("squad_vehicle_ai"  period(era1960) min_stage(4) max_stage(5) side(csa) vehicle(m48a1) crew(sup_tankman:4) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+
+
+{"tank_platoon_m60a1"
+	("squad_vehicle_ai"  period(era1960) min_stage(5) max_stage(6) side(csa) vehicle(m60a1) crew(sup_tankman:4) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"tank_platoon_m60a3"
+	("squad_vehicle_ai"  period(era1960) min_stage(6) max_stage(7) side(csa) vehicle(m60a3) crew(sup_tankman:4) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"tank_platoon_m1"
+	("squad_vehicle_ai"  period(era1960) min_stage(8) max_stage(10) side(csa) vehicle(m1_abrams) crew(sup_tankman:4) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"tank_platoon_british"
+	("squad_vehicle_ai"  period(era1960) min_stage(7) max_stage(12) side(csa) vehicle(challenger1) crew(sup_tankman:4) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"tank_platoon_m1a1"
+	("squad_vehicle_ai"  period(era1960) min_stage(11) max_stage(99) side(csa) vehicle(m1a1_new) crew(sup_tankman:4) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"tank_platoon_m1a1ha"
+	("squad_vehicle_ai"  period(era1960) min_stage(12) max_stage(99) side(csa) vehicle(m1a1_fep) crew(sup_tankman:4) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"tank_platoon_m1a2"
+	("squad_vehicle_ai"  period(era1960) min_stage(13) max_stage(99) side(csa) vehicle(m1a2_sep) crew(sup_tankman:4) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"composite_mechanized_Unit_m1a1"
+	("squad_vehicle_ai6"  period(era1960) min_stage(11) max_stage(99) side(csa) vehicle(bredly) crew1(acav_vehicleman:3) crew2(acav_squadlead:1) crew3(acav_antitank:2) crew4(acav_atassist:2) crew5(acav_mg:1) crew6(acav_teamlead:1) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"composite_mechanized_unit_m1a1ha"
+	("squad_vehicle_ai6"  period(era1960) min_stage(12) max_stage(99) side(csa) vehicle(m2a2ods) crew1(acav_vehicleman:3) crew2(acav_squadlead:1) crew3(acav_antitank:1) crew4(acav_atassist:1) crew5(acav_mg:3) crew6(acav_teamlead:1) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"composite_mechanized_unit_aavp7"
+	("squad_vehicle_ai8"  period(era1960) min_stage(12) max_stage(99) side(csa) vehicle(aavp7) crew1(usmc_vehicleman:3) crew2(usmc_squadlead:1) crew3(usmc_antitank:6) crew4(usmc_mg:3) crew5(usmc_mgassist:3) crew6(usmc_teamlead:3) crew7(usmc_rifleman:6) crew8(usmc_grenadier:3) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"arty_platoon_m119"
+	("squad_vehicle_ai"  period(era1960) min_stage(8) max_stage(99) side(csa) vehicle(m119) crew(sup_guncrew:2) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"rocket_platoon_mrls"
+	("squad_vehicle_ai"  period(era1960) min_stage(10) max_stage(99) side(csa) vehicle(mrls) crew(sup_tankman:2) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"spg_platoon_m109"
+	("squad_vehicle_ai"  period(era1960) min_stage(5) max_stage(99) side(csa) vehicle(m119) crew(sup_tankman:4) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"spaag_platoon_m163"
+	("squad_vehicle_ai"  period(era1960) min_stage(7) max_stage(99) side(csa) vehicle(m163) crew(sup_tankman:4) cw(0) cp(3))
+	{not_for_player_sale 1}
+}
+
+{"ah-64_apache_heavy_airborne"
+	("vehicle"  period(era1960) min_stage(10) max_stage(99) side(csa) t(helicopter) g(heli) crew(sup_pilot:2) cw(0) cp(6))
+	{cost 650}{not_for_player_sale 1}
+}
+
+
+
+{"a-10c_bomber_ai"
+	("vehicle"  period(era1960) min_stage(8) max_stage(99) side(csa) crew(sup_pilot:1) cw(0) cp(6))
+	{cost 650}{not_for_player_sale 1}
+}
+
+{"a-10c_at_ai"
+	("vehicle"  period(era1960) min_stage(10) max_stage(99) side(csa) crew(sup_pilot:1) cw(0) cp(6))
+	{cost 850}{not_for_player_sale 1}
+}
+
+{"a-10c_support_ai"
+	("vehicle"  period(era1960) min_stage(10) max_stage(99) side(csa) crew(sup_pilot:1) cw(0) cp(6))
+	{cost 950}{not_for_player_sale 1}
+}
+
+{"ah1_airborne"
+	("vehicle"  period(era1960) min_stage(7) max_stage(99) side(csa) t(helicopter) g(heli) crew(sup_pilot:2) cw(0) cp(6))
+	{cost 550}{not_for_player_sale 1}
+}
+
+
+{"c130_para_ai"
+	("squad_vehicle_ai11" period(era1960) min_stage(12) max_stage(99) side(csa) vehicle(c130_para_ai) crew1(sup_pilot:1) crew2(82nd_teamlead:1) crew3(82nd_squadlead:1) crew4(82nd_mg:1) crew5(82nd_mgassist:1) crew6(82nd_lat:2) crew7(82nd_guncrew_entac:1) crew8(82nd_grenadier:1) crew9(82nd_rifleman:2) crew10(82nd_antitank:1) crew11(82nd_atassist:1) cw(0) cp(10))
+	{cost 150}
+	{not_for_player_sale 1}
+}
+
+
+;west81-----
+{"conquest_blank"
+	("vehicle" 	side(csa) period(era1960) min_stage(1) max_stage(99) crew(sup_tankman:0) cw(0) cp(0))
+	{cost 0} {not_for_player_sale 1}
+}

@@ -1,0 +1,45 @@
+{game_entity
+	(include "/properties/building.inc")
+	{Extension "hesco_defense_tower_base.mdl"}
+	{props  "concrete" "construction" "big" "parts" "no_destroyed_stamp"}
+	{obstacleID "unbreakable"}
+
+	("armor_heavy")
+
+	{Volume "body1"
+		{Tags  "body"}
+		{Thickness 10000}
+	}
+	{Volume "body2"
+		{Tags  "body"}
+		{Thickness 10000}
+	}
+	{Volume "body3"
+		{Tags  "body"}
+		{Thickness 10000}
+	}
+	{Volume "body4"
+		{Tags  "body"}
+		{Thickness 10000}
+	}
+	{Volume "body5"
+		{Tags  "body"}
+		{Thickness 10000}
+	}
+	{Volume "body6"
+		{Tags  "body"}
+		{Thickness 10000}
+	}
+    {extender "land_patch"
+		{TerrainType "road" "bridge"} 
+		{RemoveEntities 1}
+	}
+	{extender "fortification"
+		{level ;// level 0
+			{steps 0}
+			{radius 0}
+			{buildTime 60}
+			{entity "hesco_defense_tower_roof"}
+		}
+	}
+}

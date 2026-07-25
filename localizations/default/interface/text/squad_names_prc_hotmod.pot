@@ -1,0 +1,197 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PRC Squad Names\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+msgctxt "squad_pla112_rifle"
+msgid "步兵班"
+msgstr ""
+
+msgctxt "squad_pla112_rifle(prc)"
+msgid "步兵班"
+msgstr ""
+
+msgctxt "squad_pla112_rifle_dzj08"
+msgid "步兵班[DZA-11]"
+msgstr ""
+
+msgctxt "squad_pla112_rifle_dzj08(prc)"
+msgid "步兵班[DZA-11]"
+msgstr ""
+
+msgctxt "squad_pla112_rifle_hj12"
+msgid "步兵班[HJ-12]"
+msgstr ""
+
+msgctxt "squad_pla112_rifle_hj12(prc)"
+msgid "步兵班[HJ-12]"
+msgstr ""
+
+msgctxt "squad_pla112_qbu11"
+msgid "火力组[QLU-11]"
+msgstr ""
+
+msgctxt "squad_pla112_qbu11(prc)"
+msgid "火力组[QLU-11]"
+msgstr ""
+
+msgctxt "squad_pla112_pf98"
+msgid "火力组[PF-98]"
+msgstr ""
+
+msgctxt "squad_pla112_pf98(prc)"
+msgid "火力组[PF-98]"
+msgstr ""
+
+msgctxt "squad_pla112_mg"
+msgid "火力组[QJY-201]"
+msgstr ""
+
+msgctxt "squad_pla112_mg(prc)"
+msgid "火力组[QJY-201]"
+msgstr ""
+
+msgctxt "squad_pla112_eng"
+msgid "工程兵"
+msgstr ""
+
+msgctxt "squad_pla112_eng(prc)"
+msgid "工程兵"
+msgstr ""
+
+msgctxt "squad_pla112_eng_at"
+msgid "工程兵[WPF-89-1]"
+msgstr ""
+
+msgctxt "squad_pla112_eng_at(prc)"
+msgid "工程兵[WPF-89-1]"
+msgstr ""
+
+msgctxt "squad_pla112_recon"
+msgid "侦察班"
+msgstr ""
+
+msgctxt "squad_pla112_recon(prc)"
+msgid "侦察班"
+msgstr ""
+
+msgctxt "squad_pla112_sniper"
+msgid "狙击手"
+msgstr ""
+
+msgctxt "squad_pla112_sniper(prc)"
+msgid "狙击手"
+msgstr ""
+
+msgctxt "squad_pla112_sniper_qbu10"
+msgid "狙击手[反器材][QBU-10]"
+msgstr ""
+
+msgctxt "squad_pla112_sniper_qbu10(prc)"
+msgid "狙击手[反器材][QBU-10]"
+msgstr ""
+
+msgctxt "squad_pla112_csk131"
+msgid "侦查班[CSK-131]"
+msgstr ""
+
+msgctxt "squad_pla112_csk131(prc)"
+msgid "侦查班[CSK-131]"
+msgstr ""
+
+msgctxt "squad_pla112_04a"
+msgid "机械化步兵班[ZBD-04A]"
+msgstr ""
+
+msgctxt "squad_pla112_04a(prc)"
+msgid "机械化步兵班[ZBD-04A]"
+msgstr ""
+
+msgctxt "squad_pla112_04a_hj12"
+msgid "机械化步兵班[ZBD-04A][HJ-12]"
+msgstr ""
+
+msgctxt "squad_pla112_04a_hj12(prc)"
+msgid "机械化步兵班[ZBD-04A][HJ-12]"
+msgstr ""
+
+msgctxt "squad_pla112_zbl08"
+msgid "摩托化步兵班[ZBL-08]"
+msgstr ""
+
+msgctxt "squad_pla112_zbl08(prc)"
+msgid "摩托化步兵班[ZBL-08]"
+msgstr ""
+
+msgctxt "squad_pla112_zbl08_hj73"
+msgid "摩托化步兵班[ZBL-08 HJ-73]"
+msgstr ""
+
+msgctxt "squad_pla112_zbl08_hj73(prc)"
+msgid "摩托化步兵班[ZBL-08 HJ-73]"
+msgstr ""
+
+msgctxt "squad_pla112_ztz96a"
+msgid "ZTZ-96A"
+msgstr ""
+
+msgctxt "squad_pla112_ztz96a(prc)"
+msgid "ZTZ-96A"
+msgstr ""
+
+msgctxt "squad_pla112_ztz99a"
+msgid "ZTZ-99A"
+msgstr ""
+
+msgctxt "squad_pla112_ztz99a(prc)"
+msgid "ZTZ-99A"
+msgstr ""
+
+msgctxt "squad_pla112_ztz99ap"
+msgid "WZ1001(E)"
+msgstr ""
+
+msgctxt "squad_pla112_ztz99ap(prc)"
+msgid "WZ1001(E)"
+msgstr ""
+
+msgctxt "squad_pla112_plz05"
+msgid "PLZ-05"
+msgstr ""
+
+msgctxt "squad_pla112_plz05(prc)"
+msgid "PLZ-05"
+msgstr ""
+
+msgctxt "squad_pla112_phl03"
+msgid "PHL-03"
+msgstr ""
+
+msgctxt "squad_pla112_phl03(prc)"
+msgid "PHL-03"
+msgstr ""
+
+msgctxt "squad_pla112_aft10"
+msgid "AFT-10"
+msgstr ""
+
+msgctxt "squad_pla112_aft10(prc)"
+msgid "AFT-10"
+msgstr ""
+
+msgctxt "wingloong_ii"
+msgid "翼龙-2"
+msgstr ""
+
+msgctxt "wingloong_ii_kab"
+msgid "翼龙-2[YL-14]"
+msgstr ""
+

@@ -1,0 +1,5 @@
+{army
+	{id 90}
+	{title "mp/army/nato"}
+	{icon "/interface/pages/multi/flag_nato"}
+}

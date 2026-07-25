@@ -1,0 +1,6 @@
+{material bump
+	{diffuse "barricade"}
+	{bump "barricade_bump"}
+	{color "229 229 229 25"}
+	{blend none}
+}

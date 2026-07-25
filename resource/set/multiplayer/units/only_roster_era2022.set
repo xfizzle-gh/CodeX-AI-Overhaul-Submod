@@ -1,0 +1,4 @@
+; Code:X minimal skirmish roster apply surface.
+{units
+	(include "roster_era2022.set")
+}

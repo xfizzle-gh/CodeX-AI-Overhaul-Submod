@@ -1,0 +1,97 @@
+;Nikral Edit History
+;Added (include "medic.inc")
+
+{entities
+	(define "spawn")
+	(include "generic.inc")
+	(include "dummy.inc")
+	(include "explosive.inc")
+	(include "grenade.inc")
+	(include "flora.inc")
+	(include "fauna.inc")
+	(include "human.inc")
+	(include "weapons-defines.inc")
+	(include "weapons-defines_mw.inc")
+	(include "vehicle/animation-defines.inc")
+	(include "icon.inc")
+	(include "human_mod.inc")
+
+	(include "tank/sound-defines.inc")
+	(include "vehicle/vehicle-main_codex.inc")
+	(include "vehicle/car-main.inc")
+	(include "vehicle/moto.inc")
+	(include "tank/tank-main_codex.inc")
+	(include "tank/tank-main_ce.inc")
+
+	(include "JSDF_Set.inc")
+	;(include "cannon.inc")
+	(include "airborne.inc")
+	(include "railway.inc")
+	(include "dogs.inc")
+	(include "skirmish.inc")
+	(include "marine.inc")
+	(include "stuff.inc")
+	(include "multiplayer.inc")
+	(include "muzzle.inc")
+	(include "shell.inc")
+
+	(include "construction/post.inc")
+	(include "construction/fence.inc")
+	(include "construction/target.inc")
+	(include "construction/shed.inc")
+	(include "construction/dummy.inc")
+	(include "construction/generic.inc")
+	(include "construction/windows.inc")
+	(include "construction/parts.inc")
+	(include "construction/foxhole.inc")
+	(include "construction/sandbag.inc")
+	(include "construction/staged.inc")
+	(include "construction/special.inc")
+	(include "construction/building.inc")
+	(include "construction/burning.inc")
+	(include "construction/bridge.inc")
+	(include "construction/placement.inc")
+	(include "construction/button.inc")
+	(include "construction/fpv.inc")
+	(include "construction/robot.inc")	
+	(include "paradrop.inc")
+	(include "callin-bombs.inc")
+	(include "callin-artillery.inc")
+	(include "airborne_goh.inc")
+	(include "airborne_helicopter.inc")
+	(include "hotmod-vehicles.inc")
+	(include "hotmod-cannons.inc")
+	(include "hotmod-strike.inc")
+	(include "hotmod-grenade.inc")
+	(include "helicopter-transport.inc")
+	(include "helicopter.inc")
+	(include "hotmod-deployables.inc")
+	(include "hotmod-signals.inc")
+	(include "hotmod-stuff.inc")	
+	(include "medic.inc") ; Added by Nikral
+	;(include "Missile_M.inc") ;add by ordos
+	(include "airborne_cw.inc")
+	(include "airborne_M.inc") ;add by ordos
+	(include "point_defence.inc") ;add by ordos
+
+	(include "opdnz.inc") ;add by north
+	(include "opdnz_d.inc") ;add by diesel
+	(include "opdnz-paradrop.inc") ;add by north
+	(include "era_new.inc") ;made by lethe add by north
+	(include "cod_weapon.inc") ;add by north
+
+	;/*===== Conquest V2 / AI Overhaul Files ==========*/
+	(include "dummy_ce.inc")
+	(include "explosives_ce.inc")
+	(include "human_ce.inc")
+	
+	(include "vehicle/vehicle_ce.inc")
+	(include "tank/tank_ce.inc")
+	(include "tank/tank_specifics_ce.inc")
+
+	(include "cannon_ce.inc")
+	(include "airborne_ce.inc")
+	(include "chat_wheel_command_pointers_ce.inc")
+
+	(include "construction/placement_ce.inc")
+}

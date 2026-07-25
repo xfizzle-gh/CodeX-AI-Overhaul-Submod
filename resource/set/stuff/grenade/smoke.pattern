@@ -1,0 +1,14 @@
+{from "pattern throwable"
+	{mass 0.6}
+
+	{special
+		{PrepareCursor "grenade_sm"}
+	}
+	{throw
+		{range 23.7} ;in-game 25m
+		{startAngle 45}
+		{spreading 0.3
+			{SpreadPower 2}
+		}
+	}
+}

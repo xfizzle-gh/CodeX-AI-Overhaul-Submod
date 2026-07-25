@@ -1,0 +1,167 @@
+;Exported by: caps
+;Date:        Fri May  4 07:59:02 2018
+;File:        G:\!_Work\Foxholes_2\3D\foxholes_crouch.max
+{Skeleton
+	{bone "foxhole_crouch"
+		{parameters "Ground;Land;Align;"}
+		{Orientation
+			1	0	0
+			0	-1	0
+			0	0	1
+		}
+		{LODView
+			{VolumeView "foxhole_crouch.ply" {Ground}}
+			{VolumeView "foxhole_crouch_lod1.ply"}
+			{VolumeView "foxhole_crouch_lod2.ply"}
+		}
+		{bone "detail1"
+			{Orientation
+				0.973694	0.15397	-0.167969
+				-0.156189	0.987727	0
+				0.165908	0.0262349	0.985792
+			}
+			{VolumeView "detail1.ply"}
+		}
+		{bone "detail2"
+			{Matrix34
+				-0.0275592	0.989042	-0.145043
+				-0.989092	-0.047984	-0.139267
+				-0.1447	0.139622	0.979575
+				-2.95383	27.1928	3.39061
+			}
+			{VolumeView "detail2.ply"}
+		}
+		{bone "detail3"
+			{Matrix34
+				-0.99231	0.123777	0
+				-0.123777	-0.99231	0
+				0	0	1
+				-3.17593	-5.73254	-11.1779
+			}
+			{VolumeView "detail3.ply"}
+		}
+	}
+}
+{Obstacle "body1"
+	{Obb2
+		{Center -12.4671 -3.76381}
+		{Extent 2.52951 16.752}
+		{Axis 1 0}
+	}
+	{Rotate}
+	{Rotate}
+}
+{Obstacle "body2"
+	{Obb2
+		{Center 15.1302 -3.96217}
+		{Extent 2.52951 16.752}
+		{Axis 1 0}
+	}
+	{Rotate}
+	{Rotate}
+}
+{Obstacle "body3"
+	{Obb2
+		{Center 1.69578 -23.0761}
+		{Extent 16.0978 2.52951}
+		{Axis 1 0}
+	}
+	{Rotate}
+	{Rotate}
+}
+{Area "cut"
+	{Polygon2
+		{Radius 0}
+		{Vertex 15.1839 -20.1763}
+		{Vertex 18.3041 -9.19371}
+		{Vertex 18.0399 14.07}
+		{Vertex 11.3115 24.7744}
+		{Vertex 1.60083 26.2957}
+		{Vertex -11.3472 23.9422}
+		{Vertex -15.6157 7.39611}
+		{Vertex -14.2175 -11.6376}
+		{Vertex -7.31227 -19.2567}
+		{Vertex 2.4024 -21.5152}
+	}
+	{Rotate}
+}
+{Volume "body1"
+	{Box 5.05902 33.5039 17.2638}
+	{Bone "foxhole_crouch"}
+	{Position -12.4671	3.76381	-3.96839}
+}
+{Volume "body2"
+	{Box 5.05902 33.5039 17.2638}
+	{Bone "foxhole_crouch"}
+	{Position 15.1302	3.96217	-3.96839}
+}
+{Volume "body3"
+	{Box 5.05902 32.1955 17.2638}
+	{Bone "foxhole_crouch"}
+	{Matrix34
+		0	-1	0
+		1	0	0
+		0	0	1
+		1.69578	23.0761	-3.96839
+	}
+}
+{Volume "detail1"
+	{Box 54.5978 56.381 42.3478}
+	{Bone "detail1"}
+	{Matrix34
+		0.973694	-0.156189	0.165908
+		0.15397	0.987727	0.0262349
+		-0.167969	0	0.985792
+		-0.771888	5.05517	9.28916
+	}
+}
+{Volume "detail2a"
+	{Box 9.50941 6.57712 2.76419}
+	{Bone "detail2"}
+	{Matrix34
+		0.0271246	-0.870553	-0.491326
+		0.989041	-0.0479842	0.139622
+		-0.145125	-0.48973	0.859711
+		-9.86114	-28.3982	-7.55912
+	}
+}
+{Volume "detail2b"
+	{Box 11.5064 7.36638 3.2341}
+	{Bone "detail2"}
+	{Matrix34
+		0.669137	-0.604532	-0.4322
+		0.724996	0.65877	0.201006
+		0.163206	-0.447843	0.87909
+		2.12528	-25.6033	-3.26759
+	}
+}
+{Volume "detail2c"
+	{Box 11.5064 7.36638 3.2341}
+	{Bone "detail2"}
+	{Matrix34
+		0.0444632	-0.996501	-0.0707712
+		0.998993	0.0447768	-0.00284864
+		0.00600751	-0.0705732	0.997489
+		-1.33272	-15.0457	-2.15355
+	}
+}
+{Volume "detail2d"
+	{Box 11.5064 7.36638 3.2341}
+	{Bone "detail2"}
+	{Matrix34
+		0.949455	-0.150345	-0.275557
+		0.175378	0.98212	0.0684299
+		0.260343	-0.113298	0.958846
+		2.34784	14.7599	1.12551
+	}
+}
+{Volume "detail2e"
+	{Box 11.5064 7.36638 3.2341}
+	{Bone "detail2"}
+	{Matrix34
+		0.635145	0.731469	-0.248081
+		-0.76124	0.647192	-0.0407039
+		0.130782	0.214702	0.967884
+		-3.71124	19.719	2.36092
+	}
+}

@@ -1,0 +1,54 @@
+;Exported by: Vorabat
+;Date:        Wed Mar 24 03:32:02 2010
+;File:        C:\Users\Vorabat\Documents\3dsmax\scenes\barricade_concrete_new.max
+{Skeleton
+	{bone "barricade_concrete_new"
+		{Orientation
+			1	0	0
+			0	-1	0
+			0	0	1
+		}
+		{VolumeView "barricade_concrete_new.ply"}
+			{bone "climb13"
+				{Matrix34
+					0	-1	0
+					1	0	0
+					0	0	1
+					19.1835	11.2096	0
+				}
+				{visibility 0}
+			}
+			{bone "climb14"
+				{Matrix34
+					0	-1	0
+					1	0	0
+					0	0	1
+					-17.7905	11.2096	0
+				}
+				{visibility 0}
+			}
+			{bone "climb15"
+				{Matrix34
+					0	1	0
+					-1	0	0
+					0	0	1
+					19.1835	-11.0432	0
+				}
+				{visibility 0}
+			}
+			{bone "climb16"
+				{Matrix34
+					0	1	0
+					-1	0	0
+					0	0	1
+					-17.7905	-11.0432	0
+				}
+				{visibility 0}
+			}
+	}
+}
+{Volume "box01"
+	{Polyhedron "box01.vol"}
+	{Bone "barricade_concrete_new"}
+	{Position 0.289036	-0.0838156	0}
+}

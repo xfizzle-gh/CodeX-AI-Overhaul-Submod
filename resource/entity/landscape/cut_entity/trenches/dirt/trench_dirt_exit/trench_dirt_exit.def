@@ -1,0 +1,10 @@
+{
+	(include "/properties/trench.inc")
+	{extension "trench_dirt_exit.mdl"}
+	{props "trench_upgrade" "sand"}
+	{DynCmpPersistent}
+	("boneLand"  args "trench")
+	("volume" args "body1")
+	("volume" args "body2")
+	
+}

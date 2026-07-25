@@ -1,0 +1,20 @@
+{game_entity
+	(include "/properties/construction.inc")
+	{props "wood" "small" "parts" "construction" "no_destroyed_stamp" "barbed_wire" "ignore_obstacles"}
+	{DynCmpPersistent}
+	{extension "../../../construction/_military/obstacles/wired_obstacle7/wired_obstacle7.mdl"}
+	{ObstacleId "construction"}
+	{lodclass "decor_medium"}
+	{constrain surface}
+	("armor_wires")
+	{ZClipVisibility 1}
+	{TPC_ZClip 1}
+	{NoGroupMesh 1}
+
+	{volume "wire"
+		{Tags "body"}
+		{thickness 5}
+		{Tags "cut"}
+		{able {visible 0}{bullet 0}{obstacle 0}{touch 1}}
+	}
+}

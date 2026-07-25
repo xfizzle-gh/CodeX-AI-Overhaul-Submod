@@ -1,0 +1,14 @@
+{squads
+	{competitive
+		{placerMin				11}	;// min distance between units in cluster, meters
+		{placerMax				500.0}	;// max distance between units in cluster, meters
+		{placerRadius			500.0}	;// max distance between units allowed for placer, meters
+		{placerCommanderAhead	-8}		;// distance between commander and his squad
+	}
+	{cooperative
+		{placerMin 11}
+		{placerMax 500.0}
+		{placerRadius 500.0}
+		{placerCommanderAhead -8}
+	}
+}

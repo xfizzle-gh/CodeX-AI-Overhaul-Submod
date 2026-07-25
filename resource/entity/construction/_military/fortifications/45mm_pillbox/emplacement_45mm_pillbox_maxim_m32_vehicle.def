@@ -1,0 +1,12 @@
+{game_entity
+	(include "/properties/fortification_vehicle.ext")
+	{extension "45mm_pillbox_dummy.mdl"}
+	;{DynCmpPersistent}
+	{placer
+		{place "mg_tripod_slot"
+			{entity "heavy_mg_maxim_m32_33"}
+			{Linkbone "mg_tripod_slot"}
+			{handlebone "body"}
+		}		
+	}
+}

@@ -1,0 +1,108 @@
+;SDL
+
+; {position column row}
+
+;-----------------------------------------------------------------------------------------------------------------------;
+; conditions                                                                                                            ;
+;-----------------------------------------------------------------------------------------------------------------------;
+; "vehicle" "tank" "cannon" "tractor" "human"   :   show this control based on actors properties                      ;
+; "single"                                      :   show this control only if a single actor is selected              ;
+; "multiple"                                    :   show this control only if multiple actors (squad) is selected     ;
+; "commander"                                   :   show this control only if the selected actor is a squad commander ;
+; "disabled"                                    :   show this control even if it is disabled                          ;
+;-----------------------------------------------------------------------------------------------------------------------;
+
+{panel_control
+
+; // first row-------------------------
+    {barricade_sq
+        {position 0 0}
+        {condition "human barricade disabled"}
+    }
+
+    {extft_bastion_small
+        {position 1 0}
+        {condition "human barricade"}
+    }
+
+    {barbwire
+        {position 2 0}
+        {condition "human barricade disabled"}
+    }
+
+    ; Trench Short (engineer deep vs soldier shallow)
+    {trench_short
+        {position 3 0}
+        {condition "human barricade"}
+    }
+    {trench_short_soldier
+        {position 3 0}
+        {condition "human barricade"}
+    }
+
+; // second row-------------------------
+    {hedgehog
+        {position 0 1}
+        {condition "human barricade"}
+    }
+    {foxhole_big
+        {position 0 1}
+        {condition "human barricade"}
+    }
+
+	{pillbox_earth
+        {position 1 1}
+        {condition "human barricade"}
+    }
+    {foxhole
+        {position 1 1}
+        {condition "human barricade"}
+    }
+
+    {trench_intersection
+        {position 2 1}
+        {condition "human barricade"}
+    }
+    {trench_intersection_soldier
+        {position 2 1}
+        {condition "human barricade"}
+    }
+
+    {trench_turn
+        {position 3 1}
+        {condition "human barricade"}
+    }
+    {trench_turn_soldier
+        {position 3 1}
+        {condition "human barricade"}
+    }
+
+; // third row-------------------------
+    {extft_defense
+        {position 0 2}
+        {condition "human barricade"}
+    }
+
+	{mortar_pit
+        {position 0 2}
+        {condition "human barricade"}
+    }
+
+    {tank_cover
+        {position 1 2}
+        {condition "human barricade"}
+    }
+
+    {trench_end
+        {position 2 2}
+        {condition "human barricade"}
+    }
+    {trench_end_soldier
+        {position 2 2}
+        {condition "human barricade"}
+    }
+
+    {gc_cp_browse_back
+        {position 3 2}
+    }
+}

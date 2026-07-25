@@ -1,0 +1,136 @@
+;Exported by:	 Carlos
+;Date:			 09.06.2022 14:02:34
+;File:			 T:\GoH_3d_environment_fin\3d_buildings\bunkers\45mm_pillbox\artillyry_bunker_45mm_Stand_lower.max
+{skeleton
+	{bone "basic"
+		{orientation
+			1 	 0 	 0
+			0 	 1 	 0
+			0 	 0 	 1
+		}
+		{bone "basis"
+			{orientation
+				1 	 0 	 0
+				0 	 -1 	 0
+				0 	 0 	 1
+			}
+			{bone "exterior"
+				{Position -2.5 	 0 	 50.6649}
+				{VolumeView "exterior.ply"}
+			}
+			{bone "body"
+				{Position -2.5 	 0 	 25.1575}
+				{VolumeView "body.ply"}
+				{bone "land"
+					{parameters "land;ground;"}
+					{Position 0 	 0 	 -28.3939}
+					{VolumeView "land.ply" {Ground}}
+				}
+			}
+		}
+		{bone "flag"
+			{matrix34
+				1 	 0 	 0
+				0 	 -1  0
+				0 	 0 	 1
+				0	 0 	61.2; z  x    y
+			}
+		}
+		{bone "weapon_stage"
+			{matrix34
+				-1 	 0 	 0
+				0 	 -1 	 0
+				0 	 0 	 1
+				12 	 0 	16 ;x z
+			}
+			{bone "mg_tripod_stage"
+				{matrix34
+					1 	 0	 0
+					0	 1 	 0
+					0 	 0 	 1
+					0 	 0 	 -5
+				}
+				{bone "mg_tripod_slot"
+					{matrix34
+						-1 	 0 	 0
+						0 	 1  0
+						0 	 0 	 1
+						-2	 -1.5	 0 ; -z -x y
+					}
+				}
+				{bone "mg_tripod_platform"
+					{matrix34
+						1 	 0 	 0
+						0 	 1 	 0
+						0 	 0 	 1
+						-7	 1.5 	 -22
+					}
+				}
+			}
+			{bone "maxim_stage"
+				{matrix34
+					1 	 0 	 0
+					0 	 1 	 0
+					0 	 0 	 1
+					0 	 0 	 2
+				}
+				{bone "maxim_slot"
+					{matrix34
+						-1 	 0 	 0
+						0 	 -1  0
+						0 	 0 	 1
+						-4	 -1.5	 0; -z -x y
+					}
+				}
+				{bone "maxim_platform"
+					{matrix34
+						-1 	 0 	 0
+						0 	 -1 	 0
+						0 	 0 	 1
+						-7	 -3 	 -19
+					}
+				}
+			}
+			{bone "m2_30cal_stage"
+				{matrix34
+					1 	 0 	 0
+					0 	 1 	 0
+					0 	 0 	 1
+					0 	 0 	 1
+				}
+				{bone "m2_30cal_slot"
+					{matrix34
+						-1 	 0 	 0
+						0 	 -1  0
+						0 	 0 	 1
+						-4	 -2	 0 ; -z -x y
+					}
+				}
+				{bone "m2_30cal_platform_stage"
+					{matrix34
+						1 	 0 	 0
+						0 	 1 	 0
+						0 	 0 	 1
+						7	 0 	 -3.5
+					}
+				{bone "m2_30cal_floor"
+					{matrix34
+						1 	 0 	 0
+						0 	 1 	 0
+						0 	 0 	 1
+						0	 0	 0; -z -x y
+					}
+				}
+				{bone "m2_30cal_floor_stair"
+					{matrix34
+						0 	 1 	 0
+						-1 	 0 	 0
+						0 	 0 	 1
+						36	 0 	 -11
+					}
+				}
+				}
+			}
+		}
+	}
+}

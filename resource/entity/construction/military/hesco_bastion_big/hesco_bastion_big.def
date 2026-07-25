@@ -1,0 +1,18 @@
+{game_entity
+	(include "/properties/construction.inc")
+	{props  "concrete" "construction" "no_destroyed_stamp"}
+	{Extension "hesco_bastion_big.mdl"}
+	
+	{obstacleID "unbreakable"}
+	
+	("armor_heavy")
+	
+	{Volume "body"
+		{thickness 10000}
+		{Tags  "body"}
+	}
+    {extender "land_patch"
+		{TerrainType "road" "bridge"} 
+		{RemoveEntities 1}
+	}
+}

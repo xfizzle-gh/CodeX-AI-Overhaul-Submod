@@ -1,0 +1,9 @@
+{game_entity
+        (include "/properties/building.inc")
+        {obstacleid "unbreakable" "construction" }
+	{props "sand" "no_destroyed_stamp"}
+	{Extension "box_sand_fortification.mdl"}
+
+	{Volume "box01"
+	}
+}

@@ -1,0 +1,4 @@
+{material bump
+	{diffuse "$/flora/norway_spruce_stem"}
+	{blend none}
+}

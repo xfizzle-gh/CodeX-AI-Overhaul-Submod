@@ -1,0 +1,237 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Gates of Hell PRC Hotmod\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+msgctxt "desc/squad/squad_pla112_rifle(prc)"
+msgid "步兵班"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_rifle_dzj08(prc)"
+msgid "步兵班[DZA-11]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_rifle_hj12(prc)"
+msgid "步兵班[HJ-12]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_qbu11(prc)"
+msgid "火力组[QLU-11]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_pf98(prc)"
+msgid "火力组[PF-98]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_mg(prc)"
+msgid "火力组[QJY-201]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_eng(prc)"
+msgid "工程兵"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_eng_at(prc)"
+msgid "工程兵[WPF-89-1]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_recon(prc)"
+msgid "侦察班"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_sniper(prc)"
+msgid "狙击手"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_sniper_qbu10(prc)"
+msgid "狙击手[反器材][QBU-10]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_csk131(prc)"
+msgid "侦查班[CSK-131]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_04a(prc)"
+msgid "机械化步兵班[ZBD-04A]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_04a_hj12(prc)"
+msgid "机械化步兵班[ZBD-04A][HJ-12]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_zbl08(prc)"
+msgid "摩托化步兵班[ZBL-08]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_zbl08_hj73(prc)"
+msgid "摩托化步兵班[ZBL-08 HJ-73]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_ztz96a(prc)"
+msgid "ZTZ-96A"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_ztz99a(prc)"
+msgid "ZTZ-99A"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_ztz99ap(prc)"
+msgid "WZ1001(E)"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_plz05(prc)"
+msgid "PLZ-05"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_phl03(prc)"
+msgid "PHL-03"
+msgstr ""
+
+msgctxt "desc/squad/squad_pla112_aft10(prc)"
+msgid "AFT-10"
+msgstr ""
+
+msgctxt "desc/entity/phl-03"
+msgid "PHL-03"
+msgstr ""
+
+msgctxt "info/special/phl-03"
+msgid "<c(c3baae)>Multiple Launch Rocket System</c>"
+msgstr ""
+
+msgctxt "info/special/ztz99a"
+msgid "<c(c3baae)>Main Battle Tank</c>"
+msgstr ""
+
+msgctxt "desc/entity/ztz99a"
+msgid "ZTZ-99A"
+msgstr ""
+
+msgctxt "info/special/wz1001"
+msgid "<c(c3baae)>Main Battle Tank</c>"
+msgstr ""
+
+msgctxt "desc/entity/wz1001"
+msgid "WZ1001(E)"
+msgstr ""
+
+msgctxt "desc/entity/zbd04_a"
+msgid "ZBD-04A"
+msgstr ""
+
+msgctxt "info/special/zbd04_a"
+msgid "<c(c3baae)>Infantry Fighting Vehicle</c>"
+msgstr ""
+
+msgctxt "desc/entity/zbl08"
+msgid "ZBL-08"
+msgstr ""
+
+msgctxt "info/special/zbl08"
+msgid "<c(c3baae)>Armored Transport</c>"
+msgstr ""
+
+msgctxt "desc/entity/zbl08_atgm"
+msgid "ZBL-08[HJ-73]"
+msgstr ""
+
+msgctxt "desc/entity/wingloong_ii"
+msgid "翼龙-2"
+msgstr ""
+
+msgctxt "info/special/wingloong_ii"
+msgid "<c(c3baae)>UCAV</c>"
+msgstr ""
+
+msgctxt "desc/entity/wingloong_ii_kab"
+msgid "翼龙-2[YL-14]"
+msgstr ""
+
+msgctxt "info/special/wingloong_ii_kab"
+msgid "<c(c3baae)>UCAV</c>"
+msgstr ""
+
+msgctxt "desc/entity/dongfeng__mengshi_sk131"
+msgid "CSK-131"
+msgstr ""
+
+msgctxt "info/special/dongfeng__mengshi_sk131"
+msgid "<c(c3baae)>Armored Car</c>"
+msgstr ""
+
+msgctxt "desc/entity/dongfeng_mengshi_hj8"
+msgid "CSK-131[HJ-8H]"
+msgstr ""
+
+msgctxt "info/special/dongfeng_mengshi_hj8"
+msgid "<c(c3baae)>Armored Car</c>"
+msgstr ""
+
+msgctxt "desc/entity/AFT-10"
+msgid "AFT-10"
+msgstr ""
+
+msgctxt "info/special/AFT-10"
+msgid "<c(c3baae)>Tank Destroyer</c>"
+msgstr ""
+
+msgctxt "desc/entity/PLZ05"
+msgid "PLZ-05"
+msgstr ""
+
+msgctxt "info/special/PLZ05"
+msgid "<c(c3baae)>Self-propelled artillery</c>"
+msgstr ""
+
+msgctxt "main_menu2/dynamic_campaign/VIVO50"
+msgid "疯狂星期四!V我50解锁合成旅"
+msgstr ""
+
+msgctxt "main_menu2/dynamic_campaign/pla122"
+msgid "中国人民解放军陆军合成第一一二旅”英勇胜利”"
+msgstr ""
+
+msgctxt "main_menu2/dynamic_campaign/pla122inf"
+msgid "步兵"
+msgstr ""
+
+msgctxt "main_menu2/dynamic_campaign/pla122rec"
+msgid "侦查"
+msgstr ""
+
+msgctxt "main_menu2/dynamic_campaign/pla122mech"
+msgid "机械化步兵"
+msgstr ""
+
+msgctxt "main_menu2/dynamic_campaign/pla122tank"
+msgid "坦克"
+msgstr ""
+
+msgctxt "main_menu2/dynamic_campaign/pla122art"
+msgid "火炮"
+msgstr ""
+
+msgctxt "desc/entity/ztz96a"
+msgid "ZTZ-96A"
+msgstr ""
+
+msgctxt "info/special/ztz96a"
+msgid "<c(c3baae)>Main Battle Tank</c>"
+msgstr ""
+
+msgctxt "desc/entity/plz05"
+msgid "PLZ-05"
+msgstr ""
+
+msgctxt "desc/entity/aft-10"
+msgid "AFT-10"
+msgstr ""
+

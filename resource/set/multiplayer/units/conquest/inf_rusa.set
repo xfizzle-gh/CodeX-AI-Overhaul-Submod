@@ -1,0 +1,563 @@
+{item "rus_fsb_abody_13"};SDL
+;// CP + Scores + CW
+
+;////////////////// INSTRUCTIONS //////////////////
+; In this file onee configures the humans which are spawned in vehicles or squads
+; The humans have a CP and cost associated with them which collectively add up for the final squad value
+; Check ../settings.set for syntax instructions!!
+;//////////////////////////////////////////////////
+
+(define "rusa_radioman"
+	{tags "2022s %side infantry man signaller"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.2}
+)
+
+(define "rusa_crew"
+	{tags "2022s %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+(define "rusa_wepcrew"
+	{tags "2022s %side infantry man"}
+	{cp 5}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+(define "rusa_basic"
+	{tags "2022s %side infantry man lvl1 lvl2"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+(define "rusa_regular"
+	{tags "2022s %side infantry man lvl1 lvl2"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 1.0}
+	{score_factor 0.05}
+	{research_stage 1}
+	{research_stage_max 99}
+)
+
+(define "rusa_regular1"
+	{tags "2022s %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 1.0}
+	{score_factor 0.05}
+)
+
+(define "rusa_regular_advanced"
+	{tags "2022s %side infantry man lvl3 lvl4"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 1.5}
+	{score_factor 0.05}
+	{research_stage 10}
+	{research_stage_max 99}
+)
+
+
+
+(define "rusa_vdv"
+	{tags "2022s %side infantry man lvl3 lvl4"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 2.0}
+	{score_factor 0.05}
+	{research_stage 10}
+	{research_stage_max 99}
+)
+
+(define "rusa_vdve"
+	{tags "2022s %side infantry man lvl3 lvl4"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 3.0}
+	{score_factor 0.1}
+	{research_stage 10}
+	{research_stage_max 99}
+)
+
+
+(define "rusa_guards"
+	{tags "2022s %side infantry man lvl3 lvl4"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 3.0}
+	{score_factor 0.05}
+	{research_stage 20}
+	{research_stage_max 99}
+)
+
+
+(define "rusa_vmf"
+	{tags "2022s %side infantry man lvl3 lvl4"}
+	{cp 2}
+	{basic}
+	{breed}
+	{cw 4.0}
+	{score_factor 0.05}
+	{research_stage 20}
+	{research_stage_max 99}
+)
+
+(define "rusa_banner"
+	{tags "2022s %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 4.0}
+	{score_factor 0.05}
+)
+
+
+(define "rusa_spetsnaz"
+	{tags "2022s %side infantry man lvl3 lvl4"}
+	{cp 2}
+	{basic}
+	{breed}
+	{cw 2}
+	{score_factor 0.05}
+	{research_stage 20}
+	{research_stage_max 99}
+)
+
+
+(define "rusa_medic"
+	{tags "2022s %side infantry man"}
+	{cp 2}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor -0.2}
+)
+
+
+
+(define "rusa_officer"
+	{tags "2022s %side infantry man officer"}
+	{cp -25}
+	{basic}
+	{breed}
+	{cw 5}
+	{score_factor 0.2}
+)
+
+
+
+(define "rusa_sniper"
+	{tags "2022s %side infantry man sniper"}
+	{cp 3}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+(define "rusa_guncrew1"
+	{tags "2022s %side infantry man officer"}
+	{cp 6}
+	{basic}
+	{breed}
+	{cw 5}
+	{score_factor 0.2}
+)
+
+(define "rusa_guncrew2"
+	{tags "2022s %side infantry man officer"}
+	{cp 8}
+	{basic}
+	{breed}
+	{cw 5}
+	{score_factor 0.2}
+)
+
+;////////////////////////22/////////////////////////
+{"mp/rusa/2022s/rus_eng"		("rusa_radioman" side(rusa) ) {cost 35.0}}
+{"mp/rusa/2022s/rus_eng_ap"		("rusa_radioman" side(rusa) ) {cost 21.0}}
+{"mp/rusa/2022s/rus_eng_at"		("rusa_radioman" side(rusa) ) {cost 28.0}}
+{"mp/rusa/2022s/rus_manpad_operator"		("rusa_radioman" side(rusa)) {cost 17.5}} ; M3
+{"mp/rusa/2022s/rus_manpad_supporter"		("rusa_radioman" side(rusa)) {cost 17.5}} ; M3
+
+
+{"mp/rusa/2022s/rus_guncrew_nsvt"			("rusa_regular1" side(rusa) ) {cost 150.0}}
+{"mp/rusa/2022s/rus_guncrew_ags30"		("rusa_regular1" side(rusa) ) {cost 190.0}} 
+{"mp/rusa/2022s/rus_guncrew_2b14"			("rusa_guncrew1" side(rusa) ) {cost 240.0}}
+{"mp/rusa/2022s/rus_guncrew_2b11"		("rusa_guncrew2" side(rusa) ) {cost 289.0}} 
+{"mp/rusa/2022s/rus_guncrew_9m133"		("rusa_guncrew2" side(rusa) ) {cost 320.0}} 
+
+
+{"mp/rusa/2022s/rus_lmg"			("rusa_regular" side(rusa) ) {cost 17.5}}
+{"mp/rusa/2022s/rus_rifleman"		("rusa_regular" side(rusa) ) {cost 10.5}} 
+{"mp/rusa/2022s/rus_marksman"	("rusa_radioman" side(rusa) ) {cost 38.5}} 
+{"mp/rusa/2022s/rus_antitank"		("rusa_regular" side(rusa) ) {cost 10.5}} 
+{"mp/rusa/2022s/rus_squadlead"			("rusa_regular" side(rusa) ) {cost 14.0}}
+{"mp/rusa/2022s/rus_atassist"			("rusa_regular" side(rusa) ) {cost 10.5}}
+{"mp/rusa/2022s/rus_medic"			("rusa_radioman" side(rusa) ) {cost 14.0}}
+{"mp/rusa/2022s/rus_vehicleman"			("rusa_crew" side(rusa) ) {cost 10.0}}
+{"mp/rusa/2022s/rus_vehicleman_cmd"			("rusa_officer" side(rusa) ) {cost 140.0}}
+{"mp/rusa/2022s/ldnr_vehicleman"			("rusa_crew" side(rusa) ) {cost 10.5}}
+{"mp/rusa/2022s/rus_recon"		("rusa_radioman" side(rusa) ) {cost 50.0}}
+{"mp/rusa/2022s/rus_guncrew_spg9"		("rusa_guncrew2" side(rusa)) {cost 220.0}} ; Stechkin
+{"mp/rusa/2022s/rus_supporter"			("rusa_crew" side(rusa)) {cost 10.5}} ; SKS
+{"mp/rusa/2022s/rus_vehicleman1"			("rusa_crew" side(rusa) ) {cost 10.5}}
+{"mp/rusa/2022s/rus_vehicleman2"			("rusa_crew" side(rusa) ) {cost 10.5}}
+{"mp/rusa/2022s/rus_vehicleman3"			("rusa_crew" side(rusa) ) {cost 10.5}}
+{"mp/rusa/2022s/vdv_vehicleman"			("rusa_crew" side(rusa) ) {cost 10.5}}
+{"mp/rusa/2022s/vdv_vehicleman1"			("rusa_crew" side(rusa) ) {cost 10.5}}
+
+{"mp/rusa/2022s/vdv76_antitank"		("rusa_vdve" side(rusa)) {cost 28.0}}
+{"mp/rusa/2022s/vdv76_antitank_rpg28"		("rusa_vdve" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/vdv76_assault"		("rusa_vdve" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/vdv76_greenader"		("rusa_radioman" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/vdv76_metis_crew"		("rusa_radioman" side(rusa)) {cost 136.5}}
+{"mp/rusa/2022s/vdv76_recon"		("rusa_radioman" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/vdv76_saperi"		("rusa_radioman" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/vdv76_saperi_rpo"		("rusa_radioman" side(rusa)) {cost 38.5}}
+{"mp/rusa/2022s/vdv76_saperi_rpo_mg"		("rusa_radioman" side(rusa)) {cost 24.5}}
+
+{"mp/rusa/2022s/vdv76_marksman"		("rusa_radioman" side(rusa)) {cost 52.5}}
+{"mp/rusa/2022s/vdv76_rifleman"		("rusa_vdve" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/vdv76_ammo"		("rusa_radioman" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/vdv76_medic"		("rusa_vdve" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/vdv76_squadlead"		("rusa_vdve" side(rusa)) {cost 31.5}}
+{"mp/rusa/2022s/vdv76_mg"		("rusa_vdve" side(rusa)) {cost 45.5}}
+{"mp/rusa/2022s/vdv76_lmg"		("rusa_vdve" side(rusa)) {cost 31.5}}
+
+
+
+
+
+{"mp/rusa/2022s/106vdv_antitank"		("rusa_vdve" side(rusa)) {cost 28.0}}
+{"mp/rusa/2022s/106vdv_kordcrew"		("rusa_radioman" side(rusa)) {cost 126.0}}
+{"mp/rusa/2022s/106vdv_ags17crew"		("rusa_radioman" side(rusa)) {cost 133.0}}
+{"mp/rusa/2022s/106vdv_rifleman3"		("rusa_vdve" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/106vdv_greenader"		("rusa_radioman" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/106vdv_rifleman"		("rusa_vdve" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/106vdv_medic"		("rusa_vdve" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/106vdv_squadlead"		("rusa_vdve" side(rusa)) {cost 31.5}}
+{"mp/rusa/2022s/106vdv_mg"		("rusa_vdve" side(rusa)) {cost 45.5}}
+
+
+
+
+{"mp/rusa/2022s/rusc_marksman"		("rusa_radioman" side(rusa)) {cost 64.5}}
+{"mp/rusa/2022s/rusc_mg"		("rusa_banner" side(rusa)) {cost 52.5}}
+{"mp/rusa/2022s/rusc_rifleman3"		("rusa_banner" side(rusa)) {cost 44.5}}
+{"mp/rusa/2022s/rusc_rifleman2"		("rusa_banner" side(rusa)) {cost 44.5}}
+{"mp/rusa/2022s/rusc_rifleman"		("rusa_banner" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/rusc_medic"		("rusa_banner" side(rusa)) {cost 44.5}}
+{"mp/rusa/2022s/rusc_squadlead"		("rusa_banner" side(rusa)) {cost 36.0}}
+{"mp/rusa/2022s/rusc_antitank"		("rusa_banner" side(rusa)) {cost 36.0}}
+
+
+{"mp/rusa/2022s/spz_marsman"		("rusa_radioman" side(rusa)) {cost 72.5}}
+{"mp/rusa/2022s/spz_mg"		("rusa_spetsnaz" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/spz_eng"		("rusa_spetsnaz" side(rusa)) {cost 36.0}}
+{"mp/rusa/2022s/spz_demo"		("rusa_spetsnaz" side(rusa)) {cost 36.0}}
+{"mp/rusa/2022s/spz_rifleman"		("rusa_spetsnaz" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/spz_medic"		("rusa_spetsnaz" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/spz_squadlead"		("rusa_spetsnaz" side(rusa)) {cost 40.0}}
+{"mp/rusa/2022s/spz_spotter"		("rusa_spetsnaz" side(rusa)) {cost 40.0}}
+
+{"mp/rusa/2022s/sso_rifleman1"		("rusa_spetsnaz" side(rusa)) {cost 52.0}}
+{"mp/rusa/2022s/sso_rifleman"		("rusa_spetsnaz" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/sso_squadlead"		("rusa_spetsnaz" side(rusa)) {cost 40.0}}
+{"mp/rusa/2022s/sso_assault"		("rusa_spetsnaz" side(rusa)) {cost 46.0}}
+{"mp/rusa/2022s/sso_9m133_crew"		("rusa_spetsnaz" side(rusa)) {cost 300.0}}
+
+
+
+{"mp/rusa/2022s/45vdv_antitank"		("rusa_vmf" side(rusa)) {cost 36.0}}
+{"mp/rusa/2022s/45vdv_spg9crew"		("rusa_vmf" side(rusa)) {cost 96.5}}
+{"mp/rusa/2022s/45vdv_lmg"		("rusa_vmf" side(rusa)) {cost 48.5}}
+{"mp/rusa/2022s/45vdv_manpad"		("rusa_vmf" side(rusa)) {cost 40.0}}
+{"mp/rusa/2022s/45vdv_assault"		("rusa_vmf" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/45vdv_rifleman"		("rusa_vmf" side(rusa)) {cost 24.0}}
+{"mp/rusa/2022s/45vdv_medic"		("rusa_vmf" side(rusa)) {cost 24.0}}
+{"mp/rusa/2022s/45vdv_squadlead"		("rusa_vmf" side(rusa)) {cost 28.0}}
+{"mp/rusa/2022s/45vdv_marksman"		("rusa_radioman" side(rusa)) {cost 68.5}}
+{"mp/rusa/2022s/45vdv_recon"		("rusa_vmf" side(rusa)) {cost 52.5}}
+
+{"mp/rusa/2022s/kor_squadlead"			("rusa_spetsnaz" side(rusa)) {cost 36.0}}
+{"mp/rusa/2022s/kor_seniorrifleman"			("rusa_spetsnaz" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/kor_medic"			("rusa_spetsnaz" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/kor_grenadier"				("rusa_spetsnaz" side(rusa)) {cost 36.0}}
+{"mp/rusa/2022s/kor_mg"			("rusa_spetsnaz" side(rusa)) {cost 60.5}}
+{"mp/rusa/2022s/kor_rifleman"			("rusa_spetsnaz" side(rusa)) {cost 28.0}}
+{"mp/rusa/2022s/kor_rifleman3"			("rusa_spetsnaz" side(rusa)) {cost 28.0}}
+{"mp/rusa/2022s/kor_atassist"			("rusa_spetsnaz" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/kor_mgunasst"			("rusa_spetsnaz" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/kor_atassist_rpg29"			("rusa_spetsnaz" side(rusa)) {cost 40.0}}
+{"mp/rusa/2022s/kor_assault_rpg30"			("rusa_spetsnaz" side(rusa)) {cost 44.5}}
+{"mp/rusa/2022s/kor_antitank_rpg7"			("rusa_spetsnaz" side(rusa)) {cost 36.0}}
+{"mp/rusa/2022s/kor_antitank_rpg29"			("rusa_spetsnaz" side(rusa)) {cost 52.5}}
+{"mp/rusa/2022s/kor_antitank_rpg30"			("rusa_spetsnaz" side(rusa)) {cost 44.5}}
+{"mp/rusa/2022s/kor_assault_rpg26"			("rusa_spetsnaz" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/kor_assault_rpg27"			("rusa_spetsnaz" side(rusa)) {cost 36.0}}
+{"mp/rusa/2022s/kor_recon"			("rusa_spetsnaz" side(rusa)) {cost 44.5}}
+{"mp/rusa/2022s/kor_recon1"			("rusa_spetsnaz" side(rusa)) {cost 60.5}}
+{"mp/rusa/2022s/kor_marksman"			("rusa_radioman" side(rusa)) {cost 68.5}}
+{"mp/rusa/2022s/kor_marksman1"			("rusa_radioman" side(rusa)) {cost 84.5}}
+
+
+{"mp/rusa/2022s/wgn_antitank"		("rusa_guards" side(rusa)) {cost 24.0}}
+{"mp/rusa/2022s/wgn_atassist"		("rusa_guards" side(rusa)) {cost 28.0}}
+{"mp/rusa/2022s/wgn_lmg"		("rusa_guards" side(rusa)) {cost 48.5}}
+{"mp/rusa/2022s/wgn_lmgassist"		("rusa_guards" side(rusa)) {cost 28.0}}
+{"mp/rusa/2022s/wgn_marksman"		("rusa_radioman" side(rusa)) {cost 60.5}}
+{"mp/rusa/2022s/wgn_rifleman"		("rusa_guards" side(rusa)) {cost 24.0}}
+{"mp/rusa/2022s/wgn_medic"		("rusa_guards" side(rusa)) {cost 24.0}}
+{"mp/rusa/2022s/wgn_assault"		("rusa_guards" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/wgn_squadlead"		("rusa_guards" side(rusa)) {cost 24.0}}
+{"mp/rusa/2022s/wgn_vehicleman"		("rusa_crew" side(rusa)) {cost 8.0}}
+{"mp/rusa/2022s/wgn_ammo"		("rusa_guards" side(rusa)) {cost 24.0}}
+{"mp/rusa/2022s/wgn_wepcrew"		("rusa_guards" side(rusa)) {cost 4.0}}      
+{"mp/rusa/2022s/wgn_rifleman2"		("rusa_guards" side(rusa)) {cost 16.0}}
+{"mp/rusa/2022s/wgn_rifleman3"		("rusa_guards" side(rusa)) {cost 16.0}}
+
+{"mp/rusa/2022s/wgn2_antitank"		("rusa_banner" side(rusa)) {cost 44.5}}
+{"mp/rusa/2022s/wgn2_lmg"		("rusa_banner" side(rusa)) {cost 56.5}}
+{"mp/rusa/2022s/wgn2_rifleman2"		("rusa_banner" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/wgn2_rifleman3"		("rusa_banner" side(rusa)) {cost 32.0}}
+{"mp/rusa/2022s/wgn2_marksman"		("rusa_radioman" side(rusa)) {cost 64.5}}
+{"mp/rusa/2022s/wgn2_rifleman"		("rusa_banner" side(rusa)) {cost 40.0}}
+{"mp/rusa/2022s/wgn2_medic"		("rusa_banner" side(rusa)) {cost 40.0}}
+{"mp/rusa/2022s/wgn2_assault"		("rusa_banner" side(rusa)) {cost 40.0}}
+{"mp/rusa/2022s/wgn2_squadlead"		("rusa_banner" side(rusa)) {cost 40.0}}
+
+
+{"mp/rusa/2022s/lud_rifleman"			("rusa_basic" side(rusa)) {cost 3.5}} ; 
+{"mp/rusa/2022s/lud_mg"				("rusa_basic" side(rusa)) {cost 10.5}} ;
+{"mp/rusa/2022s/lud_mgunasst"				("rusa_basic" side(rusa)) {cost 7.0}} ;
+{"mp/rusa/2022s/lud_lmgunasst"				("rusa_basic" side(rusa)) {cost 7.0}} ;
+{"mp/rusa/2022s/lud_lmg"				("rusa_basic" side(rusa)) {cost 7.0}} ;
+{"mp/rusa/2022s/lud_marksman"				("rusa_radioman" side(rusa)) {cost 10.5}} ; 
+{"mp/rusa/2022s/lud_atassist"			("rusa_basic" side(rusa)) {cost 7.0}} ; 
+{"mp/rusa/2022s/lud_antitank"			("rusa_basic" side(rusa)) {cost 10.5}} ; 
+{"mp/rusa/2022s/lud_squadlead"			("rusa_basic" side(rusa)) {cost 7.0}} ; 
+{"mp/rusa/2022s/lud_medic"			("rusa_basic" side(rusa)) {cost 7.0}} ; 
+{"mp/rusa/2022s/lud_ptrs"			("rusa_basic" side(rusa)) {cost 7.0}} ; 
+
+
+
+{"mp/rusa/2022s/dpr100_152ob"			("rusa_radioman" side(rusa)) {cost 94.5}} ; 
+{"mp/rusa/2022s/dpr100_rifleman"			("rusa_basic" side(rusa)) {cost 10.5}} ; 
+{"mp/rusa/2022s/dpr100_mg"				("rusa_basic" side(rusa)) {cost 17.5}} ;
+{"mp/rusa/2022s/dpr100_mgunasst"				("rusa_basic" side(rusa)) {cost 14.0}} ;
+{"mp/rusa/2022s/dpr100_antitankasst"			("rusa_basic" side(rusa)) {cost 14.0}} ; 
+{"mp/rusa/2022s/dpr100_antitank"			("rusa_basic" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/dpr100_squadlead"			("rusa_radioman" side(rusa)) {cost 14.0}} ; 
+{"mp/rusa/2022s/dpr100_medic"			("rusa_basic" side(rusa)) {cost 14.0}} ; 
+{"mp/rusa/2022s/dpr100_seniorrifleman"			("rusa_radioman" side(rusa)) {cost 14.0}} ; 
+
+{"mp/rusa/2022s/rus110_203ob"			("rusa_radioman" side(rusa)) {cost 129.5}} ; 
+{"mp/rusa/2022s/rus110_rifleman"			("rusa_banner" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus110_mg"				("rusa_banner" side(rusa)) {cost 45.5}} ;
+{"mp/rusa/2022s/rus110_mgunasst"				("rusa_banner" side(rusa)) {cost 28.0}} ;
+{"mp/rusa/2022s/rus110_antitankasst"			("rusa_banner" side(rusa)) {cost 28.0}} ; 
+{"mp/rusa/2022s/rus110_antitank"			("rusa_banner" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus110_squadlead"			("rusa_banner" side(rusa)) {cost 105.0}} ; 
+{"mp/rusa/2022s/rus110_medic"			("rusa_banner" side(rusa)) {cost 21.0}} ; 
+{"mp/rusa/2022s/rus110_seniorrifleman"			("rusa_radioman" side(rusa)) {cost 21.0}} ; 
+
+{"mp/rusa/2022s/spd_rifleman1"			("rusa_basic" side(rusa)) {cost 10.5}} ; 
+{"mp/rusa/2022s/spd_rifleman"			("rusa_basic" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/spd_mg"				("rusa_basic" side(rusa)) {cost 17.5}} ;
+{"mp/rusa/2022s/spd_mgunasst"				("rusa_basic" side(rusa)) {cost 14.0}} ;
+{"mp/rusa/2022s/spd_antitankasst"			("rusa_basic" side(rusa)) {cost 14.0}} ; 
+{"mp/rusa/2022s/spd_antitank"			("rusa_basic" side(rusa)) {cost 10.5}} ; 
+{"mp/rusa/2022s/spd_squadlead"			("rusa_basic" side(rusa)) {cost 10.5}} ; 
+{"mp/rusa/2022s/spd_medic"			("rusa_basic" side(rusa)) {cost 7.0}} ; 
+{"mp/rusa/2022s/spd_seniorrifleman"			("rusa_radioman" side(rusa)) {cost 10.5}} ; 
+{"mp/rusa/2022s/spd_sniper"			("rusa_radioman" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/spd_fpv"			("rusa_radioman" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/spd_uav"			("rusa_radioman" side(rusa)) {cost 17.5}} ; 
+
+{"mp/rusa/2022s/rus80_rifleman1"			("rusa_banner" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus80_rifleman"			("rusa_banner" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus80_mg"				("rusa_banner" side(rusa)) {cost 45.5}} ;
+{"mp/rusa/2022s/rus80_mg1"				("rusa_banner" side(rusa)) {cost 45.5}} ;
+{"mp/rusa/2022s/rus80_mgunasst"				("rusa_banner" side(rusa)) {cost 28.0}} ;
+{"mp/rusa/2022s/rus80_antitank_rhsg"			("rusa_banner" side(rusa)) {cost 28.0}} ; 
+{"mp/rusa/2022s/rus80_antitank"			("rusa_banner" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus80_squadlead"			("rusa_radioman" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus80_medic"			("rusa_banner" side(rusa)) {cost 14.0}} ; 
+{"mp/rusa/2022s/rus80_seniorrifleman"			("rusa_radioman" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/rus80_sniper"			("rusa_radioman" side(rusa)) {cost 66.5}} ; 
+{"mp/rusa/2022s/rus80_fpv"			("rusa_radioman" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus80_uav"			("rusa_radioman" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus80_spotter"			("rusa_radioman" side(rusa)) {cost 24.5}} ; 
+
+
+
+{"mp/rusa/2022s/rus80_antitank_sso"			("rusa_banner" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus80_squadlead_sso"			("rusa_banner" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus80_rifleman_sso"			("rusa_banner" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus80_mg_sso"				("rusa_banner" side(rusa)) {cost 52.5}} ;
+
+
+
+
+{"mp/rusa/2022s/Serb_marksman"		("rusa_radioman" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/Serb_mg"		("rusa_banner" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/Serb_rifleman2"		("rusa_banner" side(rusa)) {cost 21.0}}
+{"mp/rusa/2022s/Serb_rifleman"		("rusa_banner" side(rusa)) {cost 17.5}}
+{"mp/rusa/2022s/Serb_medic"		("rusa_banner" side(rusa)) {cost 21.0}}
+{"mp/rusa/2022s/Serb_squadlead"		("rusa_banner" side(rusa)) {cost 28.0}}
+{"mp/rusa/2022s/Serb_antitank"		("rusa_banner" side(rusa)) {cost 21.0}}
+
+{"mp/rusa/2022s/sto_marksman"		("rusa_radioman" side(rusa)) {cost 49.0}}
+{"mp/rusa/2022s/sto_mg"		("rusa_basic" side(rusa)) {cost 14.0}}
+{"mp/rusa/2022s/sto_rifleman"		("rusa_basic" side(rusa)) {cost 14.0}}
+{"mp/rusa/2022s/sto_medic"		("rusa_basic" side(rusa)) {cost 10.5}}
+{"mp/rusa/2022s/sto_medic1"		("rusa_basic" side(rusa)) {cost 17.5}}
+{"mp/rusa/2022s/sto_medic2"		("rusa_basic" side(rusa)) {cost 17.5}}
+{"mp/rusa/2022s/sto_squadlead"		("rusa_basic" side(rusa)) {cost 14.0}}
+{"mp/rusa/2022s/sto_antitank"		("rusa_basic" side(rusa)) {cost 14.0}}
+{"mp/rusa/2022s/sto_atassist"			("rusa_basic" side(rusa)) {cost 14.0}} ; 
+{"mp/rusa/2022s/sto_atassist1"			("rusa_basic" side(rusa)) {cost 14.0}} ; 
+{"mp/rusa/2022s/sto_antitank1"		("rusa_basic" side(rusa)) {cost 14.0}}
+{"mp/rusa/2022s/sto_antitank2"		("rusa_basic" side(rusa)) {cost 14.0}}
+{"mp/rusa/2022s/sto_eng"		("rusa_radioman" side(rusa)) {cost 31.5}}
+{"mp/rusa/2022s/sto_sniper"		("rusa_radioman" side(rusa)) {cost 42.0}}
+{"mp/rusa/2022s/sto_sniper1"		("rusa_radioman" side(rusa)) {cost 63.0}}
+{"mp/rusa/2022s/sto_rifleman1"		("rusa_regular_advanced" side(rusa)) {cost 21.0}}
+{"mp/rusa/2022s/sto_squadlead1"		("rusa_regular_advanced" side(rusa)) {cost 24.5}}
+{"mp/rusa/2022s/sto_mg2"		("rusa_basic" side(rusa)) {cost 21.0}}
+{"mp/rusa/2022s/sto_recon"		("rusa_basic" side(rusa)) {cost 14.0}}
+
+{"mp/rusa/2022s/aeng_mg"		("rusa_radioman" side(rusa)) {cost 52.5}}
+{"mp/rusa/2022s/aeng_antitank"		("rusa_radioman" side(rusa)) {cost 45.5}}
+{"mp/rusa/2022s/aeng_assault"			("rusa_radioman" side(rusa)) {cost 31.5}} ; 
+
+{"mp/rusa/2022s/rus90_antitank"			("rusa_regular" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus90_antitank_rpg27"			("rusa_regular" side(rusa)) {cost 38.5}} ; 
+{"mp/rusa/2022s/rus90_antitank_rpg26"			("rusa_regular" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus90_assault"			("rusa_regular" side(rusa)) {cost 45.5}} ; 
+
+
+{"mp/rusa/2022s/rus90_mg"			("rusa_regular" side(rusa)) {cost 45.5}} ; 
+{"mp/rusa/2022s/rus90_sniper"			("rusa_regular" side(rusa)) {cost 59.5}} ; 
+{"mp/rusa/2022s/rus90_marksman"				("rusa_radioman" side(rusa)) {cost 52.5}} ; 
+{"mp/rusa/2022s/rus90_medic"				("rusa_regular" side(rusa)) {cost 14.0}} ; 
+
+
+{"mp/rusa/2022s/rus90_rifleman"			("rusa_regular" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/rus90_rifleman_assault"			("rusa_regular" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus90_recon"			("rusa_regular" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus90_squadlead"			("rusa_regular" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/rus90_seniorrifleman"			("rusa_radioman" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/rus90_saperi"				("rusa_regular" side(rusa)) {cost 35.0}} ; 
+{"mp/rusa/2022s/rus90_saperi_mg"			("rusa_radioman" side(rusa)) {cost 38.5}} ; 
+{"mp/rusa/2022s/rus90_saperi_rpo"			("rusa_radioman" side(rusa)) {cost 38.5}} ; 
+{"mp/rusa/2022s/rus90_saperi_squadlead"			("rusa_radioman" side(rusa)) {cost 38.5}} ; 
+
+
+
+
+{"mp/rusa/2022s/rus4_rifleman"			("rusa_regular_advanced" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus4_mg"			("rusa_regular_advanced" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus4_recon"			("rusa_regular_advanced" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus4_squadlead"			("rusa_regular_advanced" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus4_seniorrifleman"			("rusa_radioman" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus4_antitank_rpg27"				("rusa_regular_advanced" side(rusa)) {cost 35.0}} ; 
+{"mp/rusa/2022s/rus4_antitank_rpg22"			("rusa_regular_advanced" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus4_antitank_tbg7"			("rusa_regular_advanced" side(rusa)) {cost 38.5}} ; 
+{"mp/rusa/2022s/rus4_antitank_rpg7vr"			("rusa_regular_advanced" side(rusa)) {cost 45.5}} ; 
+{"mp/rusa/2022s/rus4_antitank"			("rusa_regular_advanced" side(rusa)) {cost 38.5}} ; 
+{"mp/rusa/2022s/rus4_marksman"			("rusa_radioman" side(rusa)) {cost 52.5}} ; 
+
+
+
+{"mp/rusa/2022s/rus114_rez_rifleman1"			("rusa_basic" side(rusa)) {cost 10.5}} ; 
+{"mp/rusa/2022s/rus114_rez_rifleman"			("rusa_basic" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/rus114_rez_mg"				("rusa_basic" side(rusa)) {cost 31.5}} ;
+{"mp/rusa/2022s/rus114_rez_mgunasst"				("rusa_basic" side(rusa)) {cost 14.0}} ;
+{"mp/rusa/2022s/rus114_rez_antitankasst"			("rusa_basic" side(rusa)) {cost 14.0}} ; 
+{"mp/rusa/2022s/rus114_rez_antitank"			("rusa_basic" side(rusa)) {cost 10.5}} ; 
+{"mp/rusa/2022s/rus114_rez_squadlead"			("rusa_basic" side(rusa)) {cost 10.5}} ; 
+{"mp/rusa/2022s/rus114_rez_medic"			("rusa_basic" side(rusa)) {cost 7.0}} ; 
+{"mp/rusa/2022s/rus114_rez_seniorrifleman"			("rusa_radioman" side(rusa)) {cost 10.5}} ; 
+{"mp/rusa/2022s/rus114_rez_sniper"			("rusa_basic" side(rusa)) {cost 66.5}} ; 
+{"mp/rusa/2022s/rus114_rez_2b14crew"			("rusa_radioman" side(rusa)) {cost 136.5}} ; 
+{"mp/rusa/2022s/rus114_rez_spg9crew"			("rusa_radioman" side(rusa)) {cost 122.5}} ; 
+{"mp/rusa/2022s/rus114_rez_antitank_rpg26"			("rusa_basic" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus114_rez_antitank_og7v"			("rusa_basic" side(rusa)) {cost 24.5}} ; 
+
+
+{"mp/rusa/2022s/rus114_rez_rifleman_assault"			("rusa_basic" side(rusa)) {cost 21.0}} ; 
+{"mp/rusa/2022s/rus114_rez_squadlead_assault"			("rusa_basic" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/rus114_rez_seniorrifleman_assault"			("rusa_radioman" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/rus114_rez_mg_assault"				("rusa_basic" side(rusa)) {cost 45.5}} ;
+
+
+{"mp/rusa/2022s/rus114_mg"			("rusa_regular_advanced" side(rusa)) {cost 52.5}} ; 
+{"mp/rusa/2022s/rus114_antitank"			("rusa_regular_advanced" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus114_antitank_javelin"			("rusa_radioman" side(rusa)) {cost 94.5}} ; 
+{"mp/rusa/2022s/rus114_antitank_tbg"			("rusa_regular_advanced" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus114_medic"				("rusa_regular_advanced" side(rusa)) {cost 21.0}} ; 
+{"mp/rusa/2022s/rus114_rifleman"			("rusa_regular_advanced" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus114_rifleman2"			("rusa_regular_advanced" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus114_recon"			("rusa_regular_advanced" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus114_squadlead"			("rusa_radioman" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus114_seniorrifleman"			("rusa_radioman" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus114_marksman"			("rusa_radioman" side(rusa)) {cost 66.5}} ; 
+
+
+
+{"mp/rusa/2022s/rus_cmd"			("rusa_officer" side(rusa)) {cost 2500.0}}
+
+{"mp/rusa/2022s/rus150_antitank"			("rusa_regular_advanced" side(rusa)) {cost 28.0}} ; 
+{"mp/rusa/2022s/rus150_metis"			("rusa_radioman" side(rusa)) {cost 136.5}} ; 
+{"mp/rusa/2022s/rus150_antitank_og7v"			("rusa_regular_advanced" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus150_antitank_rhsg"			("rusa_regular_advanced" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus150_antitank_metis"			("rusa_regular_advanced" side(rusa)) {cost 136.5}} ; 
+{"mp/rusa/2022s/rus150_grenadier_tm62"			("rusa_radioman" side(rusa)) {cost 45.5}} ; 
+{"mp/rusa/2022s/rus150_grenadier_gm94"			("rusa_radioman" side(rusa)) {cost 52.5}} ; 
+{"mp/rusa/2022s/rus150_medic"				("rusa_regular_advanced" side(rusa)) {cost 14.0}} ; 
+{"mp/rusa/2022s/rus150_rifleman"			("rusa_regular_advanced" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/rus150_recon"			("rusa_regular_advanced" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/rus150_squadlead"			("rusa_regular_advanced" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/rus150_seniorrifleman"			("rusa_radioman" side(rusa)) {cost 17.5}} ; 
+{"mp/rusa/2022s/rus150_marksman"			("rusa_radioman" side(rusa)) {cost 66.5}} ; 
+{"mp/rusa/2022s/rus150_mg"			("rusa_regular_advanced" side(rusa)) {cost 45.5}} ; 
+
+
+{"mp/rusa/2022s/rus155_antitank_rpg28"			("rusa_regular_advanced" side(rusa)) {cost 52.5}} ; 
+{"mp/rusa/2022s/rus155_antitank"			("rusa_regular_advanced" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus155_antitank_r"			("rusa_regular_advanced" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus155_rshg"			("rusa_regular_advanced" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus155_rmg"			("rusa_regular_advanced" side(rusa)) {cost 38.5}} ; 
+{"mp/rusa/2022s/rus155_antitank_og7"			("rusa_regular_advanced" side(rusa)) {cost 31.5}} ; 
+{"mp/rusa/2022s/rus155_9k115_crew"			("rusa_radioman" side(rusa)) {cost 136.5}} ; 
+
+{"mp/rusa/2022s/rus155_lmg"			("rusa_regular_advanced" side(rusa)) {cost 52.5}} ; 
+{"mp/rusa/2022s/rus155_marksman"				("rusa_radioman" side(rusa)) {cost 59.5}} ; 
+{"mp/rusa/2022s/rus155_medic"				("rusa_regular_advanced" side(rusa)) {cost 14.0}} ; 
+{"mp/rusa/2022s/rus155_rifleman"			("rusa_regular_advanced" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus155_recon"			("rusa_regular_advanced" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus155_squadlead"			("rusa_regular_advanced" side(rusa)) {cost 24.5}} ; 
+{"mp/rusa/2022s/rus155_seniorrifleman"			("rusa_regular_advanced" side(rusa)) {cost 24.5}} ; 
+;////////////////////////22///////////////////////// CMD不用调整

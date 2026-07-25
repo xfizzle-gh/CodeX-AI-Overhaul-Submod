@@ -1,0 +1,12 @@
+;SDL
+{game
+	{maxPlayers 8}
+	{mission_options
+		{selects
+			{"weather_options_choices"
+				{options "any_weather" "day_weather" "night_weather"}
+				{selected "any_weather"}
+			}
+		}
+	}
+}

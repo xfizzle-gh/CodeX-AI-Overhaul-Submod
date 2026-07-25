@@ -1,0 +1,4 @@
+{material simple
+	{diffuse "$/flora/norway_spruce_2_branches"}
+	{blend test}
+}

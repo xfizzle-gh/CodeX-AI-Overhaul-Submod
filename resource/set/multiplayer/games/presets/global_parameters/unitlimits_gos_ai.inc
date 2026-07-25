@@ -1,0 +1,1 @@
+{unitLimits "officer=2;flamer=3;sniper=5;signaller=1;airsmall=10;airmedium=8;airbig=6;airbomb=8;heavytank=10;eliteheavy=8;bg=10;panther=15;prototype=3;art=8;heavyart=6"}

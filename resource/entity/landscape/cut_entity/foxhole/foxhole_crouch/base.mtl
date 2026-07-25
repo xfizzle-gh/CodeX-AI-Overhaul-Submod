@@ -1,0 +1,7 @@
+{material bump
+	{diffuse "$/landscape/cut_entity/foxhole_crouch"}
+	{bump "$/landscape/cut_entity/foxhole_crouch_bp"}
+	{blend blend}
+}
+
+

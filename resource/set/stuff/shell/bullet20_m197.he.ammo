@@ -1,0 +1,26 @@
+{from "pattern he"
+	{tag "20to25 no_throw -shell he auto"}
+	{tag "auto size1"}
+	{tag "shell he"}
+	{tag "autocannon_small" "shell_antimissile"}
+	{inventory
+		{weight 4}
+		{size 2 2}
+		{block 25}
+	}
+	{entity "20mm_m168_he"}
+	{mass 0.303}
+
+	{view "howitzer_shell_dummy"
+		{tail "shell_tracer_rus_57_apcr" "tail"}
+	}
+	
+	{damage fire
+		{radius 1}
+		{heating 0.25}
+		{time 1}
+		;{ground_interaction_radius 0.3} ;// crashes game if used with fire damage
+	}
+		{desc "20mm M242[<c(ff1200)>HE</c>]"}
+	("he_auto_blast" args 1.0)
+}

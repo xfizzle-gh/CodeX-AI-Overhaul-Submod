@@ -1,0 +1,6 @@
+; Code:X minimal Battle Zones roster.
+; This intentionally does not include conquest/settings.set or conquest unit rosters.
+(include "skirmish_era2022/inf_nato.set")
+(include "skirmish_era2022/inf_rusa.set")
+(include "skirmish_era2022/units_nato.set")
+(include "skirmish_era2022/units_rusa.set")
