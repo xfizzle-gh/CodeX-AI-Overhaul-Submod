@@ -1,4 +1,4 @@
-; Code:X Battle Zones roster registration.
+; Code:X standalone skirmish roster registration.
 {units
-	(include "roster_2022s.set")
+	(include "roster_codex2022.set")
 }

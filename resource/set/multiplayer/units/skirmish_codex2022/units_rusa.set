@@ -1,0 +1,9 @@
+{"codex_bz_rifle_squad(rusa)"
+	("codex2022_squad" side(rusa) delay(0) interval(30) cost(145) score(14.5))
+	{content "mp/rusa/2022s/rus_squadlead mp/rusa/2022s/rus_rifleman:5 mp/rusa/2022s/rus_lmg mp/rusa/2022s/rus_antitank mp/rusa/2022s/rus_medic"}
+}
+
+{"codex_bz_fireteam(rusa)"
+	("codex2022_squad" side(rusa) delay(0) interval(20) cost(75) score(7.5))
+	{content "mp/rusa/2022s/rus_squadlead mp/rusa/2022s/rus_rifleman:2 mp/rusa/2022s/rus_lmg"}
+}

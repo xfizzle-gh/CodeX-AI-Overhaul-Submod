@@ -1,0 +1,9 @@
+; Code:X standalone skirmish era, laid out like SG's roster_gcw.set.
+(include "skirmish_codex2022/settings.set")
+(include "skirmish_codex2022/settings_inf.set")
+
+(include "skirmish_codex2022/inf_nato.set")
+(include "skirmish_codex2022/inf_rusa.set")
+
+(include "skirmish_codex2022/units_nato.set")
+(include "skirmish_codex2022/units_rusa.set")
