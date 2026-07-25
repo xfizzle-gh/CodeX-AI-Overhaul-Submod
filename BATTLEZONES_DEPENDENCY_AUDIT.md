@@ -25,10 +25,13 @@ The four army IDs are copied unchanged from Code:X:
 → four infantry tables
 → four unit tables
 
-The preset deliberately uses:
+The Battle Zones stack now follows Modern Conflict's working skirmish contract:
 
-- `unitMode "conquest"` so bot purchasing resolves the four copied `conquest.<army>.lua` modules.
-- `unitset "2022s"` so the Code:X units are included instead of being excluded by their existing `conquestonly` tag.
+- `armySelectionMode "alliance"` expands each alliance's repeated `armies` entries into the per-slot nation selector.
+- `unitMode "conquest"` remains the mode identity so bot purchasing resolves the four copied `conquest.<army>.lua` modules.
+- The player unit filter is `2022s^conquestonly|doctrineonly`.
+- Imported purchase templates are retagged from `conquestonly` to normal skirmish `all` units while retaining `conquest` for the mode and bot tables.
+- Ukrainian infantry is retagged from the mismatched `era1960` token to `2022s`.
 
 ## Imported parent files
 
