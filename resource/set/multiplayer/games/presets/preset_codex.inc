@@ -1,5 +1,7 @@
 ; Code:X Battle Zones preset.
-; Keep the era token identical across unitMode, unitset, bot period, roster, and AI purchases.
+; Code:X intentionally separates the engine-facing era from the roster period:
+; unitMode selects the era2022.<army> Lua purchase module, while unitset/bot
+; filters select units tagged 2022s.
 (define "codex_bz_standard"
 	{common
 		{unitset
@@ -18,9 +20,9 @@
 )
 
 {presets
-	{"s:2022s_codex_smoke"
+	{"s:era2022_codex_smoke"
 		{gameMode "standard"}
-		{unitMode "2022s"}
+		{unitMode "era2022"}
 		{specMode "all_normal"}
 		{apply "only_roster_2022s"}
 		("codex_bz_standard" start(350) finish(5000) doctrine(0) cp(0:100,900:150,1500:200))
