@@ -1,1 +1,4 @@
-/bin/bash: -c: line 1: unexpected EOF while looking for matching `''
+; Code:X standalone skirmish roster registration.
+{units
+	(include "roster_codex2022.set")
+}
