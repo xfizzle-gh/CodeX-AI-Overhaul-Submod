@@ -1,5 +1,0 @@
-; Code:X minimal Battle Zones roster for the parent mod's 2022s period.
-(include "skirmish_era2022/inf_nato.set")
-(include "skirmish_era2022/inf_rusa.set")
-(include "skirmish_era2022/units_nato.set")
-(include "skirmish_era2022/units_rusa.set")

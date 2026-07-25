@@ -77,13 +77,9 @@ Purchases["conquest.nato"] = {
 
 				{priority = 1.0, type = {"Ifv", "Light",}, unit = "m1126_mk19_n"},
 				{priority = 1.0, type = {"Ifv", "Light",}, unit = "m1126_jav_n"},
-				{priority = 1.0, type = {"Ifv", "Light",}, unit = "lav25"},
 				{priority = 1.0, type = {"Ifv", "Light",}, unit = "lav-atws"},
                 {priority = 1.0, type = {"Tank", "Light",}, unit = "m1134"},
 				
-				{priority = 0.3, type = {"Ifv", "Light",}, unit = "vilkas"},
-				{priority = 0.3, type = {"Ifv", "Light",}, unit = "wiesel1_gun"},
-				{priority = 0.3, type = {"Ifv", "Light",}, unit = "wiesel1_tow"},
 				{priority = 0.3, type = {"Ifv", "Light",}, unit = "m2a3"},
 				{priority = 0.3, type = {"Ifv", "Light",}, unit = "m2a3_brat"},
 				{priority = 0.2, type = {"Ifv", "Light",}, unit = "warrior"},

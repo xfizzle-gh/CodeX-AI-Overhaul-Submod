@@ -1,0 +1,428 @@
+;SDL
+;// CP + Scores + CW
+
+;////////////////// INSTRUCTIONS //////////////////
+; In this file onee configures the humans which are spawned in vehicles or squads
+; The humans have a CP and cost associated with them which collectively add up for the final squad value
+; Check ../settings.set for syntax instructions!!
+;//////////////////////////////////////////////////
+
+(define "nato_radioman"
+	{tags "2022s %side infantry man signaller"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 2}
+	{score_factor 0.2}
+)
+{"mp/nato/2022s/acav_engineer"				("nato_radioman" side(nato)) {cost 35.0}} ; MG1
+{"mp/nato/2022s/usmc_eng"			("nato_radioman" side(nato)) {cost 30.5}} ; M1
+{"mp/nato/2022s/usmc_eng_at"				("nato_radioman" side(nato)) {cost 40.2}} ; MG1
+{"mp/nato/2022s/inf2_engineer"			("nato_radioman" side(nato)) {cost 30.5}} ; M1
+{"mp/nato/2022s/inf2_engineer_at"				("nato_radioman" side(nato)) {cost 40.2}} ; MG1
+{"mp/nato/2022s/1ad_engineer"			("nato_radioman" side(nato)) {cost 30.5}} ; M1
+{"mp/nato/2022s/1ad_engineer_at"				("nato_radioman" side(nato)) {cost 40.2}} ; MG1
+{"mp/nato/2022s/1ad_engineer_javelin"				("nato_radioman" side(nato)) {cost 120.0}} ; MG1
+{"mp/nato/2022s/82nd_engineer"			("nato_radioman" side(nato)) {cost 35.5}} ; M1
+{"mp/nato/2022s/82nd_engineer_at"				("nato_radioman" side(nato)) {cost 45.2}} ; MG1
+{"mp/nato/2022s/pzgd_eng"			("nato_radioman" side(nato)) {cost 25.5}} ; M1
+{"mp/nato/2022s/pzgd_eng_at"				("nato_radioman" side(nato)) {cost 35.2}} ; MG1
+{"mp/nato/2022s/fj_engineer"			("nato_radioman" side(nato)) {cost 35.5}} ; M1
+{"mp/nato/2022s/fj_engineer_at"				("nato_radioman" side(nato)) {cost 45.2}} ; MG1
+{"mp/nato/2022s/gb_eng"			("nato_radioman" side(nato)) {cost 20.5}} ; M1
+{"mp/nato/2022s/gb_eng_at"				("nato_radioman" side(nato)) {cost 30.2}} ; MG1
+{"mp/nato/2022s/dg_eng"			("nato_radioman" side(nato)) {cost 20.5}} ; M1
+{"mp/nato/2022s/dg_eng_at"				("nato_radioman" side(nato)) {cost 30.2}} ; MG1
+
+{"mp/nato/2022s/nato_eng"		("nato_radioman" side(nato)) {cost 35.0}}
+{"mp/nato/2022s/nato_eng_at"		("nato_radioman" side(nato)) {cost 35.0}}
+{"mp/nato/2022s/inf2_javelin"			("nato_radioman" side(nato)) {cost 130.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/1ad_javelin"			("nato_radioman" side(nato)) {cost 130.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/dg_antitank_javelin"			("nato_radioman" side(nato)) {cost 130.0}} ; 
+{"mp/nato/2022s/nato_javelin"		("nato_radioman" side(nato)) {cost 130.0}} ; 
+{"mp/nato/2022s/gbpf_javelin"				("nato_radioman" side(nato)) {cost 130.0}} ; MG3
+{"mp/nato/2022s/gb_antitank_javelin"				("nato_radioman" side(nato)) {cost 130.0}} ; MG3
+{"mp/nato/2022s/rg_javelin"			("nato_radioman" side(nato)) {cost 55.5}} ; G3A3 & DM34
+{"mp/nato/2022s/82nd_javelin"			("nato_radioman" side(nato)) {cost 130.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/lrs_javelin"			("nato_radioman" side(nato)) {cost 130.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/usmc_antitank_javelin"			("nato_radioman" side(nato)) {cost 130.0}} ; M20 Super Bazooka
+(define "nato_guncrew"
+	{tags "2022s %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+(define "nato_guncrew2"
+	{tags "2022s %side infantry man"}
+	{cp 8}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+(define "nato_guncrew3"
+	{tags "2022s %side infantry man"}
+	{cp 6}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+(define "nato_guncrew4"
+	{tags "2022s %side infantry man"}
+	{cp 4}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+(define "nato_cmd"
+	{tags "2022s %side infantry man"}
+	{cp -25}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+{"mp/nato/2022s/usmc_supcrew"			("nato_guncrew" side(nato)) {cost 3.5}} ; MP2
+{"mp/nato/2022s/usmc_mk19_crew"		("nato_guncrew" side(nato)) {cost 185.0}} ; MP2
+{"mp/nato/2022s/usmc_m2hb_crew"		("nato_guncrew" side(nato)) {cost 149.0}} ; MP2
+{"mp/nato/2022s/ger_m2hbcrew"		("nato_guncrew" side(nato)) {cost 149.0}} ; MP2
+{"mp/nato/2022s/usmc_tow_crew"		("nato_guncrew2" side(nato)) {cost 245.0}} ; MP2
+{"mp/nato/2022s/ger_milancrew"		("nato_guncrew2" side(nato)) {cost 210.0}} ; MP2
+{"mp/nato/2022s/nato_cmd"			("nato_cmd" side(nato)) {cost 2500.0}} ; MP2
+{"mp/nato/2022s/rg_m2hb_crew"		("nato_guncrew2" side(nato)) {cost 100.0}} ; MP2
+
+{"mp/nato/2022s/usmc_m224_crew"		("nato_guncrew4" side(nato)) {cost 126.0}} ; MP2
+{"mp/nato/2022s/usmc_m252_crew"		("nato_guncrew3" side(nato)) {cost 140.0}} ; MP2
+{"mp/nato/2022s/usmc_m120_crew"		("nato_guncrew2" side(nato)) {cost 182.0}} ; MP2
+{"mp/nato/2022s/usmc_sniper"		("nato_guncrew4" side(nato)) {cost 42.0}} ; MP2
+
+
+{"mp/nato/2022s/nato_supcrew_tow"		("nato_guncrew4" side(nato)) {cost 350.0}} ; MP2
+{"mp/nato/2022s/nato_supcrew_m252"		("nato_guncrew3" side(nato)) {cost 240.0}} ; MP2
+{"mp/nato/2022s/nato_supcrew_m120"		("nato_guncrew2" side(nato)) {cost 280.0}} ; MP2
+{"mp/nato/2022s/nato_supcrew_m2hb"		("nato_guncrew3" side(nato)) {cost 150.0}} ; MP2
+{"mp/nato/2022s/nato_supcrew_mk19"		("nato_guncrew2" side(nato)) {cost 190.0}} ; MP2
+
+
+(define "nato_supporter"
+	{tags "2022s %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+{"mp/nato/2022s/nato_vehicleman"		("nato_supporter" side(nato)) {cost 10.0}} ; MP2 
+{"mp/nato/2022s/acav_vehicleman"		("nato_supporter" side(nato)) {cost 10.5}} ; MP2 
+{"mp/nato/2022s/usmc_vehicleman"		("nato_supporter" side(nato)) {cost 10.5}} ; MP2 
+{"mp/nato/2022s/usmc_pilot"				("nato_supporter" side(nato)) {cost 10.5}} ; MP2
+{"mp/nato/2022s/ger_vehicleman"		("nato_supporter" side(nato)) {cost 10.5}} ; MP2 
+{"mp/nato/2022s/gb_vehicleman"		("nato_supporter" side(nato)) {cost 10.5}} ; MP2 
+{"mp/nato/2022s/usmc_manpad"		("nato_supporter" side(nato)) {cost 17.5}}
+{"mp/nato/2022s/usmc_manpad_ass"		("nato_supporter" side(nato)) {cost 17.5}}
+
+(define "nato_basic"
+	{tags "2022s %side infantry man lvl1 lvl2 lvl3 lvl4"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+
+{"mp/nato/2022s/inf2_rifleman"			("nato_basic" side(nato)) {cost 11.5}} ; M1
+{"mp/nato/2022s/inf2_grenadier"			("nato_basic" side(nato)) {cost 26.0}} ; M1 + M31 HEAT Grenade
+{"mp/nato/2022s/inf2_antitank"			("nato_basic" side(nato)) {cost 23.0}} ; M20 Super Bazooka (原21.0×1.3=27.3→27)
+
+{"mp/nato/2022s/inf2_marksman"			("nato_basic" side(nato)) {cost 51.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/inf2_marksman_m82"			("nato_basic" side(nato)) {cost 72.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/inf2_mg"				("nato_basic" side(nato)) {cost 30.5}} ; MG1
+{"mp/nato/2022s/inf2_autorifle"				("nato_basic" side(nato)) {cost 30.5}} ; MG1
+{"mp/nato/2022s/inf2_mgassist"			("nato_basic" side(nato)) {cost 6.0}} ; M1 & MG Ammo
+{"mp/nato/2022s/inf2_squadlead"			("nato_basic" side(nato)) {cost 9.0}} ; M1
+{"mp/nato/2022s/inf2_scout"				("nato_basic" side(nato)) {cost 42.5}} ; MG1
+{"mp/nato/2022s/inf2_teamlead"			("nato_basic" side(nato)) {cost 9.0}} ; M1
+
+
+
+
+{"mp/nato/2022s/1ad_rifleman"			("nato_basic" side(nato)) {cost 13.5}} ; M1
+{"mp/nato/2022s/1ad_grenadier"			("nato_basic" side(nato)) {cost 30.5}} ; M1 + M31 HEAT Grenade
+{"mp/nato/2022s/1ad_antitank"			("nato_basic" side(nato)) {cost 27}} ; M20 Super Bazooka (原21.0×1.3=27.3→27)
+{"mp/nato/2022s/1ad_marksman"			("nato_basic" side(nato)) {cost 60.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/1ad_mg"				("nato_basic" side(nato)) {cost 36}} ; MG1
+{"mp/nato/2022s/1ad_autorifle"				("nato_basic" side(nato)) {cost 36}} ; MG1
+{"mp/nato/2022s/1ad_mgassist"			("nato_basic" side(nato)) {cost 7.0}} ; M1 & MG Ammo
+{"mp/nato/2022s/1ad_squadlead"			("nato_basic" side(nato)) {cost 10.5}} ; M1
+{"mp/nato/2022s/1ad_scout"				("nato_basic" side(nato)) {cost 50}} ; MG1
+{"mp/nato/2022s/1ad_teamlead"			("nato_basic" side(nato)) {cost 10.5}} ; M1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{"mp/nato/2022s/nato_teamlead"	("nato_basic" side(nato)) {cost 15.5}} ; 
+{"mp/nato/2022s/nato_squadlead"	("nato_basic" side(nato)) {cost 20.5}} ; 
+{"mp/nato/2022s/nato_rifleman"		("nato_basic" side(nato)) {cost 15.5}} ; 
+{"mp/nato/2022s/nato_mg"			("nato_basic" side(nato)) {cost 48}} ; 
+{"mp/nato/2022s/nato_mg_mg3"			("nato_basic" side(nato)) {cost 28}} ; 
+{"mp/nato/2022s/nato_antitank"		("nato_basic" side(nato)) {cost 23}} ; (原17.5×1.3=22.75→23)
+{"mp/nato/2022s/nato_antitank_spike"		("nato_basic" side(nato)) {cost 90}} ; (原120.5×1.3=156.65→157)
+
+{"mp/nato/2022s/nato_grenadier" 	("nato_basic" side(nato)) {cost 17.5}} ; 
+{"mp/nato/2022s/nato_ammo"	("nato_basic" side(nato)) {cost 21.0}} ; 
+{"mp/nato/2022s/nato_spotter"		("nato_basic" side(nato)) {cost 50}} ; 
+{"mp/nato/2022s/nato_sniper"		("nato_basic" side(nato)) {cost 28.0}}
+
+(define "nato_regular"
+	{tags "2022s %side infantry man lvl3 lvl4"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 1.0}
+	{score_factor 0.05}
+)
+
+{"mp/nato/2022s/inf2_teamlead_ngsw"			("nato_basic" side(nato)) {cost 30.5}} ; M1
+{"mp/nato/2022s/inf2_squadlead_ngsw"			("nato_basic" side(nato)) {cost 30.5}} ; M1
+{"mp/nato/2022s/inf2_autorifle_ngsw"				("nato_basic" side(nato)) {cost 96}} ; MG1
+{"mp/nato/2022s/inf2_rifleman_ngsw"			("nato_basic" side(nato)) {cost 23.5}} ; M1
+{"mp/nato/2022s/inf2_antitank_ngsw"			("nato_basic" side(nato)) {cost 57}} ; M1 (原43.5×1.3=56.55→57)
+
+
+
+
+{"mp/nato/2022s/usmc_rifleman"			("nato_basic" side(nato)) {cost 13.5}} ; M1
+{"mp/nato/2022s/usmc_grenadier"			("nato_basic" side(nato)) {cost 10.5}} ; M1 + M31 HEAT Grenade
+{"mp/nato/2022s/usmc_antitank"			("nato_basic" side(nato)) {cost 27}} ; M20 Super Bazooka 
+{"mp/nato/2022s/usmc_antitank_smaw"			("nato_basic" side(nato)) {cost 40}} ; M20 Super Bazooka 
+{"mp/nato/2022s/usmc_atassist"			("nato_basic" side(nato)) {cost 27}} ; M20 Super Bazooka
+{"mp/nato/2022s/usmc_marksman"			("nato_basic" side(nato)) {cost 70.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/usmc_mg"				("nato_basic" side(nato)) {cost 36}} ; MG1
+{"mp/nato/2022s/usmc_mg_m27"				("nato_basic" side(nato)) {cost 36}} ; MG1
+{"mp/nato/2022s/usmc_mgassist"			("nato_basic" side(nato)) {cost 7.0}} ; M1 & MG Ammo
+{"mp/nato/2022s/usmc_squadlead"			("nato_basic" side(nato)) {cost 10.5}} ; M1
+{"mp/nato/2022s/usmc_spotter"				("nato_basic" side(nato)) {cost 50}} ; MG1
+{"mp/nato/2022s/usmc_teamlead"			("nato_basic" side(nato)) {cost 10.5}} ; M1
+
+
+{"mp/nato/2022s/gb_grenadier"			("nato_regular" side(nato)) {cost 37.5}} ; M79
+{"mp/nato/2022s/gb_mg"				("nato_regular" side(nato)) {cost 45}} ; MG3
+{"mp/nato/2022s/gb_rifleman"			("nato_regular" side(nato)) {cost 10.5}} ; G3
+{"mp/nato/2022s/gb_squadlead"			("nato_regular" side(nato)) {cost 21.0}} ; G3
+{"mp/nato/2022s/gb_teamleader"			("nato_regular" side(nato)) {cost 21.0}} ; G3
+{"mp/nato/2022s/gb_marksman"				("nato_regular" side(nato)) {cost 65.0}} ; MG3
+{"mp/nato/2022s/gb_antitank"				("nato_regular" side(nato)) {cost 27}} ; MG3 
+{"mp/nato/2022s/gb_antitank_nlaw"			("nato_regular" side(nato)) {cost 37.5}} ; G3
+{"mp/nato/2022s/gb_antitank_at4"			("nato_regular" side(nato)) {cost 22.5}} ; G3
+{"mp/nato/2022s/gb_scout"			("nato_regular" side(nato)) {cost 30.5}} ; G3
+
+
+
+(define "nato_pzgren"
+	{tags "2022s %side infantry man lvl3 lvl4"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 4.0}
+	{score_factor 0.05}
+)
+{"mp/nato/2022s/pzgd_antitank"			("nato_pzgren" side(nato)) {cost 27}} ; (原21.0×1.3=27.3→27)
+{"mp/nato/2022s/pzgd_antitank_rgw"			("nato_pzgren" side(nato)) {cost 27}} ; (原21.0×1.3=27.3→27)
+{"mp/nato/2022s/pzgd_antitank_pzf3"			("nato_pzgren" side(nato)) {cost 40}} ; (原31.0×1.3=40.3→40)
+{"mp/nato/2022s/pzgd_grenadier"	("nato_pzgren" side(nato)) {cost 41.0}} ; 
+{"mp/nato/2022s/pzgd_marksman"		("nato_pzgren" side(nato)) {cost 22.4}} ; 
+{"mp/nato/2022s/pzgd_mg"		("nato_pzgren" side(nato)) {cost 49}} ; 
+{"mp/nato/2022s/pzgd_rifleman" 	("nato_pzgren" side(nato)) {cost 17.5}} ; 
+{"mp/nato/2022s/pzgd_rifleman_puma" 	("nato_pzgren" side(nato)) {cost 37.5}} ; 
+{"mp/nato/2022s/pzgd_sniper"		("nato_pzgren" side(nato)) {cost 31.5}} ; 
+{"mp/nato/2022s/pzgd_spotter"			("nato_pzgren" side(nato)) {cost 17.5}} ; 
+{"mp/nato/2022s/pzgd_squadlead"	("nato_pzgren" side(nato)) {cost 21.0}} ; 
+{"mp/nato/2022s/pzgd_teamlead"	("nato_pzgren" side(nato)) {cost 21.0}} ; 
+
+{"mp/nato/2022s/jager_antitank"			("nato_pzgren" side(nato)) {cost 33}} ; (原25.0×1.3=32.5→33)
+{"mp/nato/2022s/jager_antitank_rgw"			("nato_pzgren" side(nato)) {cost 33}} ; (原25.0×1.3=32.5→33)
+{"mp/nato/2022s/jager_antitank_pzf3"			("nato_pzgren" side(nato)) {cost 43}} ; (原33.0×1.3=42.9→43)
+{"mp/nato/2022s/jager_grenadier"	("nato_pzgren" side(nato)) {cost 41.0}} ; 
+{"mp/nato/2022s/jager_marksman"		("nato_pzgren" side(nato)) {cost 22.4}} ; 
+{"mp/nato/2022s/jager_mg"		("nato_pzgren" side(nato)) {cost 49}} ; 
+{"mp/nato/2022s/jager_rifleman" 	("nato_pzgren" side(nato)) {cost 17.5}} ; 
+{"mp/nato/2022s/jager_rifleman_puma" 	("nato_pzgren" side(nato)) {cost 37.5}} ; 
+{"mp/nato/2022s/jager_sniper"		("nato_pzgren" side(nato)) {cost 31.5}} ; 
+{"mp/nato/2022s/jager_spotter"			("nato_pzgren" side(nato)) {cost 17.5}} ; 
+{"mp/nato/2022s/jager_squadlead"	("nato_pzgren" side(nato)) {cost 21.0}} ; 
+{"mp/nato/2022s/jager_teamlead"	("nato_pzgren" side(nato)) {cost 21.0}} ; 
+
+
+{"mp/nato/2022s/dg_antitank"			("nato_pzgren" side(nato)) {cost 27}} ; (原21.0×1.3=27.3→27)
+
+{"mp/nato/2022s/dg_marksman"		("nato_pzgren" side(nato)) {cost 70.4}} ; 
+{"mp/nato/2022s/dg_mg"		("nato_pzgren" side(nato)) {cost 49}} ; 
+{"mp/nato/2022s/dg_rifleman" 	("nato_pzgren" side(nato)) {cost 17.5}} ; 
+{"mp/nato/2022s/dg_grenadier" 	("nato_pzgren" side(nato)) {cost 37.5}} ; 
+{"mp/nato/2022s/dg_antitank"		("nato_pzgren" side(nato)) {cost 41}} ; (原31.5×1.3=40.95→41) 注：此条与上面dg_antitank重复，为区分保留两条
+{"mp/nato/2022s/dg_antitank_nlaw"		("nato_pzgren" side(nato)) {cost 41}} ; (原31.5×1.3=40.95→41)
+{"mp/nato/2022s/dg_scout"			("nato_pzgren" side(nato)) {cost 17.5}} ; 
+{"mp/nato/2022s/dg_squadlead"	("nato_pzgren" side(nato)) {cost 21.0}} ; 
+{"mp/nato/2022s/dg_teamlead"	("nato_pzgren" side(nato)) {cost 21.0}} ; 
+
+
+
+
+
+
+
+
+(define "nato_fernspah"
+	{tags "2022s %side infantry man lvl3 lvl4"}
+	{cp 2}
+	{basic}
+	{breed}
+	{cw 2}
+	{score_factor 0.05}
+)
+{"mp/nato/2022s/fr_spotter"		("nato_fernspah" side(nato)) {cost 32.4}} ; MP2/Binos
+{"mp/nato/2022s/fr_mg"			("nato_fernspah" side(nato)) {cost 130}} ; MG3
+{"mp/nato/2022s/fr_rifleman"		("nato_fernspah" side(nato)) {cost 37.5}} ; G3A3
+{"mp/nato/2022s/fr_operator"			("nato_fernspah" side(nato)) {cost 45.0}} ; G3A3 & DM34
+{"mp/nato/2022s/fr_antitank"		("nato_fernspah" side(nato)) {cost 118}} ; (原91.0×1.3=118.3→118)
+{"mp/nato/2022s/fr_grenadier"			("nato_fernspah" side(nato)) {cost 52.0}} ; G3A3/PzF 44
+{"mp/nato/2022s/fr_sniper"		("nato_fernspah" side(nato)) {cost 45.0}} ; G3A3ZF
+{"mp/nato/2022s/fr_squadlead"		("nato_fernspah" side(nato)) {cost 38.0}} ; G3A3
+
+{"mp/nato/2022s/rng_squadlead_r"		("nato_fernspah" side(nato)) {cost 34.5}} ; MP2/Binos
+{"mp/nato/2022s/rng_spotter_r"			("nato_fernspah" side(nato)) {cost 34.5}} ; MG3
+{"mp/nato/2022s/rng_rifleman_r"		("nato_fernspah" side(nato)) {cost 31.0}} ; G3A3
+{"mp/nato/2022s/rng_mg_r"			("nato_fernspah" side(nato)) {cost 83}} ; MG3
+{"mp/nato/2022s/rng_javelin"		("nato_fernspah" side(nato)) {cost 118}} ; (原91.0×1.3=118.3→118)
+{"mp/nato/2022s/rng_grenadier_r"			("nato_fernspah" side(nato)) {cost 34.5}} ; G3A3/PzF 44
+{"mp/nato/2022s/rng_antitank_r"		("nato_fernspah" side(nato)) {cost 40}} ; (原31.0×1.3=40.3→40)
+
+{"mp/nato/2022s/gbpf_rifleman"				("nato_pzgren" side(nato)) {cost 32.9}} ; MG3
+{"mp/nato/2022s/gbpf_teamleader"			("nato_pzgren" side(nato)) {cost 35.0}} ; G3
+
+
+{"mp/nato/2022s/gbpf_squadlead"				("nato_pzgren" side(nato)) {cost 35.0}} ; MG1
+
+{"mp/nato/2022s/82nd_rifleman"			("nato_fernspah" side(nato)) {cost 23}} ; M1
+{"mp/nato/2022s/82nd_grenadier"			("nato_fernspah" side(nato)) {cost 38}} ; M1 + M31 HEAT Grenade
+{"mp/nato/2022s/82nd_antitank"			("nato_fernspah" side(nato)) {cost 46}} ; (原35×1.3=45.5→46)
+
+{"mp/nato/2022s/82nd_marksman"			("nato_fernspah" side(nato)) {cost 78.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/82nd_marksman_m82"			("nato_fernspah" side(nato)) {cost 111.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/82nd_mg"				("nato_fernspah" side(nato)) {cost 62}} ; 
+{"mp/nato/2022s/82nd_autorifle"				("nato_fernspah" side(nato)) {cost 62}} ; 
+{"mp/nato/2022s/82nd_mgassist"			("nato_fernspah" side(nato)) {cost 12}} ; M1 & MG Ammo
+{"mp/nato/2022s/82nd_squadlead"			("nato_fernspah" side(nato)) {cost 18}} ; M1
+{"mp/nato/2022s/82nd_scout"				("nato_fernspah" side(nato)) {cost 85}} ; MG1
+{"mp/nato/2022s/82nd_teamlead"			("nato_fernspah" side(nato)) {cost 18}} ; M1
+
+
+{"mp/nato/2022s/fj_rifleman"			("nato_fernspah" side(nato)) {cost 23}} ; M1
+{"mp/nato/2022s/fj_grenadier"			("nato_fernspah" side(nato)) {cost 38}} ; M1 + M31 HEAT Grenade
+{"mp/nato/2022s/fj_antitank"			("nato_fernspah" side(nato)) {cost 46}} ; (原35×1.3=45.5→46)
+
+{"mp/nato/2022s/fj_marksman"			("nato_fernspah" side(nato)) {cost 78.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/fj_marksman_m82"			("nato_fernspah" side(nato)) {cost 111.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/fj_mg"				("nato_fernspah" side(nato)) {cost 62}} ; 
+{"mp/nato/2022s/fj_autorifle"				("nato_fernspah" side(nato)) {cost 62}} ; 
+{"mp/nato/2022s/fj_mgassist"			("nato_fernspah" side(nato)) {cost 12}} ; M1 & MG Ammo
+{"mp/nato/2022s/fj_squadlead"			("nato_fernspah" side(nato)) {cost 18}} ; M1
+{"mp/nato/2022s/fj_spotter"				("nato_fernspah" side(nato)) {cost 85}} ; MG1
+{"mp/nato/2022s/fj_teamlead"			("nato_fernspah" side(nato)) {cost 18}} ; M1
+
+
+{"mp/nato/2022s/lrs_rifleman"			("nato_fernspah" side(nato)) {cost 24}} ; M1
+{"mp/nato/2022s/lrs_antitank"			("nato_fernspah" side(nato)) {cost 35}} ; (原27×1.3=35.1→35)
+{"mp/nato/2022s/lrs_marksman"			("nato_fernspah" side(nato)) {cost 78.0}} ; M20 Super Bazooka
+{"mp/nato/2022s/lrs_mg"				("nato_fernspah" side(nato)) {cost 64}} ; 
+{"mp/nato/2022s/lrs_squadlead"			("nato_fernspah" side(nato)) {cost 19}} ; M1
+
+(define "nato_specops"
+	{tags "2022s %side infantry man"}
+	{cp 2}
+	{basic}
+	{breed}
+	{cw 2}
+	{score_factor 0.05}
+)
+
+{"mp/nato/2022s/rng_squadlead"		("nato_pzgren" side(nato)) {cost 29.5}} ; MP2/Binos
+{"mp/nato/2022s/rng_spotter"			("nato_pzgren" side(nato)) {cost 29.5}} ; MG3
+{"mp/nato/2022s/rng_rifleman"		("nato_pzgren" side(nato)) {cost 29.5}} ; G3A3
+{"mp/nato/2022s/rng_mg"			("nato_pzgren" side(nato)) {cost 58}} ; 
+{"mp/nato/2022s/rng_rifleman1"		("nato_pzgren" side(nato)) {cost 29.5}} ; G3A3
+{"mp/nato/2022s/rng_grenadier"			("nato_pzgren" side(nato)) {cost 26.0}} ; G3A3/PzF 44
+{"mp/nato/2022s/rng_antitank"		("nato_pzgren" side(nato)) {cost 38}} ; (原29.5×1.3=38.35→38)
+
+
+{"mp/nato/2022s/rg_squadlead"		("nato_pzgren" side(nato)) {cost 40.5}} ; MP2/Binos
+{"mp/nato/2022s/rg_teamleader"		("nato_pzgren" side(nato)) {cost 35.5}} ; G3A3
+{"mp/nato/2022s/rg_rifleman"			("nato_pzgren" side(nato)) {cost 25}} ; 
+
+
+
+
+
+
+(define "nato_medic"
+	{tags "2022s %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor -0.2}
+)
+{"mp/nato/2022s/usmc_medic"			("nato_medic" side(nato)) {cost 28.0}}
+{"mp/nato/2022s/fr_medic"			("nato_medic" side(nato)) {cost 28.0}}
+{"mp/nato/2022s/nato_medic"			("nato_medic" side(nato)) {cost 28.0}} ; M1
+{"mp/nato/2022s/1ad_medic"			("nato_medic" side(nato)) {cost 28.0}} ; M1
+{"mp/nato/2022s/inf2_medic"			("nato_medic" side(nato)) {cost 28.0}} ; M1
+{"mp/nato/2022s/82nd_medic"			("nato_medic" side(nato)) {cost 28.0}} ; M1
+{"mp/nato/2022s/pzgd_medic"			("nato_medic" side(nato)) {cost 28.0}} ; M1
+{"mp/nato/2022s/gb_medic"			("nato_medic" side(nato)) {cost 28.0}} ; M1
+{"mp/nato/2022s/inf2_medic_ngsw"			("nato_medic" side(nato)) {cost 28.0}} ; M1
+{"mp/nato/2022s/dg_medic"			("nato_medic" side(nato)) {cost 28.0}} ; M1
+{"mp/nato/2022s/rng_medic_r"			("nato_medic" side(nato)) {cost 28.0}} ; M1
+{"mp/nato/2022s/rng_medic"			("nato_medic" side(nato)) {cost 28.0}} ; M1
+
+(define "nato_officer"
+	{tags "2022s %side infantry man officer"}
+	{cp -25}
+	{basic}
+	{breed}
+	{cw 5}
+	{score_factor 0.2}
+)
+{"mp/nato/2022s/usmc_officer"		("nato_officer" side(nato)) {cost 45.5}} ; Pistol; High-value officer target.
+
+(define "nato_sniper"
+	{tags "2022s %side infantry man sniper"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 2}
+	{score_factor 0.05}
+)
+{"mp/nato/2022s/frn_sniper"		("nato_sniper" side(nato)) {cost 98.0}} ; Kar 98K scope

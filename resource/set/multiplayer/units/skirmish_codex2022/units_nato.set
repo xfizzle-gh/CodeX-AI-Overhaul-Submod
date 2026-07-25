@@ -1,9 +1,0 @@
-{"codex_bz_rifle_squad(nato)"
-	("codex2022_squad" side(nato) delay(0) interval(30) cost(150) score(15))
-	{content "mp/nato/2022s/inf2_squadlead mp/nato/2022s/inf2_teamlead mp/nato/2022s/inf2_rifleman:4 mp/nato/2022s/inf2_autorifle mp/nato/2022s/inf2_antitank mp/nato/2022s/inf2_medic"}
-}
-
-{"codex_bz_fireteam(nato)"
-	("codex2022_squad" side(nato) delay(0) interval(20) cost(80) score(8))
-	{content "mp/nato/2022s/inf2_teamlead mp/nato/2022s/inf2_rifleman:2 mp/nato/2022s/inf2_autorifle"}
-}

@@ -5,7 +5,6 @@ Purchases["conquest.rusa"] = {
 			-- Infantry
 		--{priority = 2.0, type = {"Infantry", "Team",}, unit = "rus_manpad_operator(rusa)"},
 
-{priority = 0.8, type = {"Infantry", "Squad",}, unit = "squad_rus90_bmp1(rusa)"},
                                {priority = 0.8, type = {"Infantry", "Squad",}, unit = "squad_rus90_bmp1am(rusa)"},							   
                                 {priority = 0.5, type = {"Infantry", "Squad",}, unit = "squad_rus90_bmp2(rusa)"},
                                 {priority = 0.5, type = {"Infantry", "Squad",}, unit = "squad_rus90_bmp2m(rusa)"},
@@ -70,8 +69,6 @@ Purchases["conquest.rusa"] = {
 								
 								
                                 {priority = 0.5, type = {"Infantry", "Squad",}, unit = "sto_22_1(rusa)"},
-                                {priority = 0.5, type = {"Infantry", "Squad",}, unit = "sto_22_2(rusa)"},
-                                {priority = 0.5, type = {"Infantry", "Squad",}, unit = "sto_22_3(rusa)"},
 
                                 {priority = 0.5, type = {"Infantry", "Squad",}, unit = "squad_btr80_sto(rusa)"},
 
