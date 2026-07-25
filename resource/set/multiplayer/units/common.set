@@ -1,4 +1,1 @@
-; Code:X Battle Zones roster registration.
-{units
-	(include "roster_2022s.set")
-}
+/bin/bash: -c: line 1: unexpected EOF while looking for matching `''
