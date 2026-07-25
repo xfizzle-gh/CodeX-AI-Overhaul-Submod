@@ -1,7 +1,7 @@
 (define "codex_battlezones_standard"
 	{common
 		{unitset
-			{value "2022s"}
+			{value "2022s^conquestonly|doctrineonly"}
 		}
 		{commandPoints "*=%cp"}
 		(include "global_parameters/unitlimits.inc")

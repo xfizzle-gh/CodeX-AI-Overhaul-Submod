@@ -27,7 +27,7 @@
 
 (define "generic_v_conquest"
 	{score_factor 0.0075}
-	{tags "conquest conquestonly %t"}
+	{tags "all conquest %t"}
 	{charge {delay 0}{interval 0}}
 	{cw %cw}
 	{cp %cp}
@@ -233,7 +233,7 @@
 (define "squad_weaponteam_conquest"
 	{"%name(%side)"
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost %cost}
 		{research_stage %min_stage}
@@ -247,7 +247,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 %vehicle () "}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -261,7 +261,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 %vehicle () "}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -275,7 +275,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 %vehicle () "}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -290,7 +290,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -304,7 +304,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -318,7 +318,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -332,7 +332,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -346,7 +346,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -360,7 +360,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -374,7 +374,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -388,7 +388,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 %vehicle ()" }
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -404,7 +404,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 mp/%side/%period/%c8 %vehicle ()" }
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -419,7 +419,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 mp/%side/%period/%c8"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -433,7 +433,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 mp/%side/%period/%c8 mp/%side/%period/%c9"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -447,7 +447,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 mp/%side/%period/%c8 mp/%side/%period/%c9 %vehicle ()"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -461,7 +461,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 %vehicle ()" }
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -475,7 +475,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 mp/%side/%period/%c8 mp/%side/%period/%c9 mp/%side/%period/%c10"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -489,7 +489,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 mp/%side/%period/%c8 mp/%side/%period/%c9 mp/%side/%period/%c10 mp/%side/%period/%c11"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -503,7 +503,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "%vehicle ( mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 )"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -517,7 +517,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "%vehicle ( mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 )"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -531,7 +531,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "%vehicle ( mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 mp/%side/%period/%c8 )"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -545,7 +545,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "%vehicle ( mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 mp/%side/%period/%c8 mp/%side/%period/%c9 mp/%side/%period/%c10 )"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -559,7 +559,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 %vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 ) "}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -573,7 +573,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 %vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 ) "}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -588,7 +588,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "%vehicle1 ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%c1 ) %vehicle2 ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%c2 mp/%side/%period/%c3 ) %vehicle3 ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%c4 mp/%side/%period/%c5 )"}
-		{tags "conquest conquestonly %side %period %tag"}
+		{tags "all conquest infantry %side %period %tag"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -602,7 +602,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "%vehicle1 ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%c1 ) %vehicle2 ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%c2 mp/%side/%period/%c3 ) %vehicle3 ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%c4 mp/%side/%period/%c5 )"}
-		{tags "conquest conquestonly %side %period %tag"}
+		{tags "all conquest infantry %side %period %tag"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -616,7 +616,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "%vehicle1 ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%c1 ) %vehicle2 ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%c2 mp/%side/%period/%c3 )"}
-		{tags "conquest conquestonly %side %period %tag"}
+		{tags "all conquest infantry %side %period %tag"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -642,7 +642,7 @@
 	{"%name(%side)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%side/%period/%c1 mp/%side/%period/%c2"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost %cost}
 		{research_stage %min_stage}
@@ -664,7 +664,7 @@
 
 (define "generic_ai_conquest"
 	{score_factor 0.002}
-	{tags "conquest conquestonly %t"}
+	{tags "all conquest %t"}
 	{charge {delay 0}{interval 0}}
 	{cw %cw}
 	{cp %cp}
@@ -833,7 +833,7 @@
 	{"%name(%nation)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%nation/%period/%c1 mp/%nation/%period/%c2 mp/%nation/%period/%c3 mp/%nation/%period/%c4"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -848,7 +848,7 @@
 	{"%name(%nation)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%nation/%period/%c1 mp/%nation/%period/%c2 mp/%nation/%period/%c3 mp/%nation/%period/%c4 mp/%nation/%period/%c5 mp/%nation/%period/%c6"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
@@ -862,7 +862,7 @@
 	{"%name(%nation)"
 		{charge {delay 0}{interval 0}}
 		{content "mp/%nation/%period/%c1 mp/%nation/%period/%c2 mp/%nation/%period/%c3 mp/%nation/%period/%c4 mp/%nation/%period/%c5 mp/%nation/%period/%c6 mp/%nation/%period/%c7"}
-		{tags "conquest conquestonly %side %period"}
+		{tags "all conquest infantry %side %period"}
 		{level 1}
 		{cost 0}
 		{research_stage %min_stage}
