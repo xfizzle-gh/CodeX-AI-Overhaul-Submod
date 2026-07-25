@@ -1,1 +1,15 @@
-/bin/bash: -c: line 1: unexpected EOF while looking for matching `''
+; Minimal SG-style infantry template for the standalone Code:X skirmish era.
+(define "codex2022_infantry"
+	{tags "codex2022 %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score (* %cost 0.05)}
+	{cost %cost}
+)
+
+(define "codex2022_medic"
+	("codex2022_infantry" side(%side) cost(%cost))
+	{tags "codex2022 %side infantry man medic"}
+)
