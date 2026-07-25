@@ -1,5 +1,1 @@
-{army
-	{id 2}
-	{title "mp/army/nato"}
-	{icon "/interface/pages/multi/flag_nato"}
-}
+/bin/bash: -c: line 1: unexpected EOF while looking for matching `''
