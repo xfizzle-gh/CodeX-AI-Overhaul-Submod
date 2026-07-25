@@ -25,7 +25,7 @@
 	}
 	{teamSettings
 		{teamsMode normal}
-		{armySelectionMode alliance}
+		{armySelectionMode team}
 		{teams
 			{"a"}
 			{"b"}

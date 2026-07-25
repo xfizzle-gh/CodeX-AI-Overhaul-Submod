@@ -1,6 +1,4 @@
 ; Code:X Battle Zones roster registration.
-; The multiplayer lobby resolves selectable armies from the common roster before
-; applying the selected preset's only_roster wrapper.
 {units
-	(include "roster_era2022.set")
+	(include "roster_2022s.set")
 }

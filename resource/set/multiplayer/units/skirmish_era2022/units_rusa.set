@@ -5,7 +5,7 @@
 		{interval 30}
 	}
 	{content "mp/rusa/2022s/rus_squadlead mp/rusa/2022s/rus_rifleman:5 mp/rusa/2022s/rus_lmg mp/rusa/2022s/rus_antitank mp/rusa/2022s/rus_medic"}
-	{tags "all era2022 rusa infantry"}
+	{tags "all 2022s rusa infantry"}
 	{group "squad_1"}
 	{button "inf1"}
 	{level 1}
@@ -20,7 +20,7 @@
 		{interval 20}
 	}
 	{content "mp/rusa/2022s/rus_squadlead mp/rusa/2022s/rus_rifleman:2 mp/rusa/2022s/rus_lmg"}
-	{tags "all era2022 rusa infantry"}
+	{tags "all 2022s rusa infantry"}
 	{group "squad_1"}
 	{button "inf1"}
 	{level 1}
