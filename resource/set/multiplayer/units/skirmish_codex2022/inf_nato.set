@@ -1,6 +1,0 @@
-{"mp/nato/2022s/inf2_squadlead"	("codex2022_infantry" side(nato) cost(9.0))}
-{"mp/nato/2022s/inf2_teamlead"		("codex2022_infantry" side(nato) cost(9.0))}
-{"mp/nato/2022s/inf2_rifleman"		("codex2022_infantry" side(nato) cost(11.5))}
-{"mp/nato/2022s/inf2_autorifle"		("codex2022_infantry" side(nato) cost(30.5))}
-{"mp/nato/2022s/inf2_antitank"		("codex2022_infantry" side(nato) cost(23.0))}
-{"mp/nato/2022s/inf2_medic"			("codex2022_medic" side(nato) cost(28.0))}

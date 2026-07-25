@@ -1,0 +1,494 @@
+;SDL
+;// CP + Scores + CW
+
+;////////////////// INSTRUCTIONS //////////////////
+; In this file onee configures the humans which are spawned in vehicles or squads
+; The humans have a CP and cost associated with them which collectively add up for the final squad value
+; Check ../settings.set for syntax instructions!!
+;//////////////////////////////////////////////////
+
+(define "ukr_radioman"
+	{tags "era1960 %side infantry man signaller"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.2}
+)
+
+
+
+(define "ukr_guncrew"
+	{tags "era1960 %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+(define "ukr_crew"
+	{tags "era1960 %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+(define "ukr_basic"
+	{tags "era1960 %side infantry man lvl1 lvl2"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+
+(define "ukr_basic1"
+	{tags "era1960 %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+
+(define "ukr_regular"
+	{tags "era1960 %side infantry man lvl1 lvl2"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 1.0}
+	{score_factor 0.05}
+	{research_stage 1}
+	{research_stage_max 99}
+)
+
+
+(define "ukr_regular_advanced"
+	{tags "era1960 %side infantry man lvl1 lvl2"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 1.5}
+	{score_factor 0.05}
+		{research_stage 10}
+	{research_stage_max 99}
+)
+
+
+(define "ukr_cav"
+	{tags "era1960 %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 2.0}
+	{score_factor 0.05}
+)
+
+(define "ukr_usmc"
+	{tags "era1960 %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 4.0}
+	{score_factor 0.05}
+)
+
+
+(define "ukr_airborne"
+	{tags "era1960 %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 3.0}
+	{score_factor 0.05}
+)
+
+(define "ukr_rangers"
+	{tags "era1960 %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 2}
+	{score_factor 0.05}
+)
+(define "ukr_specops"
+	{tags "era1960 %side infantry man lvl3 lvl4"}
+	{cp 2}
+	{basic}
+	{breed}
+	{cw 2}
+	{score_factor 0.05}
+	{research_stage 20}
+	{research_stage_max 99}	
+)
+(define "ukr_seals"
+	{tags "era1960 %side infantry man lvl3 lvl4"}
+	{cp 2}
+	{basic}
+	{breed}
+	{cw 2}
+	{score_factor 0.05}
+	{research_stage 20}
+	{research_stage_max 99}	
+)
+
+(define "ukr_medic"
+	{tags "era1960 %side infantry man"}
+	{cp 2}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor -0.2}
+)
+
+
+(define "ukr_officer"
+	{tags "era1960 %side infantry man officer"}
+	{cp -25}
+	{basic}
+	{breed}
+	{cw 5}
+	{score_factor 0.2}
+)
+
+(define "ukr_wepcrew"
+	{tags "era1960 %side infantry man officer"}
+	{cp 8}
+	{basic}
+	{breed}
+	{cw 5}
+	{score_factor 0.2}
+)
+
+(define "ukr_guncrew1"
+	{tags "era1960 %side infantry man officer"}
+	{cp 6}
+	{basic}
+	{breed}
+	{cw 5}
+	{score_factor 0.2}
+)
+
+(define "ukr_guncrew2"
+	{tags "era1960 %side infantry man officer"}
+	{cp 8}
+	{basic}
+	{breed}
+	{cw 5}
+	{score_factor 0.2}
+)
+
+
+
+(define "ukr_sniper"
+	{tags "era1960 %side infantry man sniper"}
+	{cp 4}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+{"mp/ukr/2022s/ukr_eng"		("ukr_radioman" side(ukr)) {cost 35.0}}
+{"mp/ukr/2022s/ukr_eng_at"		("ukr_radioman" side(ukr)) {cost 28.0}}
+{"mp/ukr/2022s/ukr_eng_ap"		("ukr_radioman" side(ukr)) {cost 21.0}}
+{"mp/ukr/2022s/ukr_manpad_operator"		("ukr_radioman" side(ukr)) {cost 17.5}}
+{"mp/ukr/2022s/ukr_manpad_supporter"		("ukr_radioman" side(ukr)) {cost 17.5}}
+
+
+
+{"mp/ukr/2022s/azov3_saperi"			("ukr_radioman" side(ukr)) {cost 21.5}} ; 
+{"mp/ukr/2022s/azov3_saperi_rpo"			("ukr_radioman" side(ukr)) {cost 31.5}} ; 
+{"mp/ukr/2022s/hur_saperi_m72"			("ukr_radioman" side(ukr)) {cost 31.5}} ; 
+{"mp/ukr/2022s/hur_saperi"			("ukr_radioman" side(ukr)) {cost 21.5}} ; 
+{"mp/ukr/2022s/ukr47_saperi"			("ukr_radioman" side(ukr)) {cost 31.5}} ; 
+{"mp/ukr/2022s/ukr47_saperi_m72"			("ukr_radioman" side(ukr)) {cost 21.5}} ; 
+{"mp/ukr/2022s/demon_saperi_RPO"			("ukr_radioman" side(ukr)) {cost 31.5}} ; 
+{"mp/ukr/2022s/demon_saperi"			("ukr_radioman" side(ukr)) {cost 21.5}} ; 
+{"mp/ukr/2022s/ukr21_saperi"			("ukr_radioman" side(ukr)) {cost 21.5}} ; 
+{"mp/ukr/2022s/ukr21_saperi_at"			("ukr_radioman" side(ukr)) {cost 31.5}} ; 
+{"mp/ukr/2022s/ukr13_saperi"			("ukr_radioman" side(ukr)) {cost 21.5}} ; 
+{"mp/ukr/2022s/ukr13_saperi_at"			("ukr_radioman" side(ukr)) {cost 31.5}} ; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{"mp/ukr/2022s/ukr_antitank"			("ukr_regular" side(ukr)) {cost 10.5}} ; 
+{"mp/ukr/2022s/ukr_atassist"			("ukr_regular" side(ukr)) {cost 7.0}} ; 
+{"mp/ukr/2022s/ukr_lmg"			("ukr_regular" side(ukr)) {cost 14.0}} ; 
+{"mp/ukr/2022s/ukr_lmgassist"				("ukr_regular" side(ukr)) {cost 7.0}} ; 
+{"mp/ukr/2022s/ukr_marksman"				("ukr_radioman" side(ukr)) {cost 14.0}} ; 
+{"mp/ukr/2022s/ukr_medic"				("ukr_medic" side(ukr)) {cost 10.5}} ; 
+{"mp/ukr/2022s/ukr_rifleman"			("ukr_regular" side(ukr)) {cost 10.5}} ; 
+{"mp/ukr/2022s/ukr_rifleman2"			("ukr_regular" side(ukr)) {cost 10.5}} ; 
+{"mp/ukr/2022s/ukr_rifleman1"			("ukr_regular" side(ukr)) {cost 10.5}} ; 
+{"mp/ukr/2022s/ukr_squadlead"			("ukr_regular" side(ukr)) {cost 14.0}} ; 
+{"mp/ukr/2022s/ukr_vehicleman"			("ukr_crew" side(ukr)) {cost 10.0}} ; 
+{"mp/ukr/2022s/ukr_wepcrew"			("ukr_crew" side(ukr)) {cost 5.0}}
+{"mp/ukr/2022s/ukr_wepcrew_tow"			("ukr_wepcrew" side(ukr)) {cost 345.0}}
+{"mp/ukr/2022s/ukr_crew"			("ukr_crew" side(ukr)) {cost 5.0}}
+{"mp/ukr/2022s/ukr_recon"		("ukr_radioman" side(ukr)) {cost 50.0}}
+{"mp/ukr/2022s/ukr_cmd"		("ukr_officer" side(ukr)) {cost 140.0}}
+{"mp/ukr/2022s/ukr_seniorrifleman"			("ukr_regular" side(ukr)) {cost 14.0}} 
+{"mp/ukr/2022s/ukr_vehicleman_cmd"			("ukr_officer" side(ukr)) {cost 140.0}} ; 
+{"mp/ukr/2022s/nato_squadlead"	("ukr_regular" side(ukr))  {cost 21.0}} ; 
+{"mp/ukr/2022s/nato_rifleman"		("ukr_regular" side(ukr))  {cost 17.5}} ; 
+{"mp/ukr/2022s/nato_rifleman1"		("ukr_regular" side(ukr))  {cost 17.5}} ; 
+{"mp/ukr/2022s/nato_rifleman2"		("ukr_regular" side(ukr))  {cost 17.5}} ; 
+{"mp/ukr/2022s/nato_rifleman3"		("ukr_regular" side(ukr))  {cost 17.5}} ; 
+{"mp/ukr/2022s/nato_seniorrifleman"		("ukr_regular" side(ukr))  {cost 17.5}} ; 
+{"mp/ukr/2022s/nato_mg"			("ukr_regular" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/nato_antitank"		("ukr_regular" side(ukr))  {cost 28.0}} ; 
+{"mp/ukr/2022s/nato_grenadier" 	("ukr_regular" side(ukr))  {cost 24.5}} ; 
+
+{"mp/ukr/2022s/nato_ammo"	("ukr_regular" side(ukr))  {cost 21.0}} ; 
+{"mp/ukr/2022s/nato_spotter"		("ukr_regular" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/nato_sniper"		("ukr_regular" side(ukr))  {cost 28.0}}
+{"mp/ukr/2022s/nato_eng"		("ukr_regular" side(ukr)) {cost 21.0}}
+{"mp/ukr/2022s/nato_javelin"		("ukr_radioman" side(ukr)) {cost 91.0}}
+
+
+{"mp/ukr/2022s/ter_antitank"			("ukr_basic" side(ukr))  {cost 14.0}} ; 
+{"mp/ukr/2022s/ter_rifleman"			("ukr_basic" side(ukr))  {cost 3.5}} ; 
+{"mp/ukr/2022s/ter_mg"				("ukr_basic" side(ukr))  {cost 10.5}} ;
+{"mp/ukr/2022s/ter_squadlead"			("ukr_basic" side(ukr))  {cost 10.5}} ; 
+{"mp/ukr/2022s/ter_marksman"			("ukr_basic" side(ukr))  {cost 10.5}} ; 
+{"mp/ukr/2022s/ter_antitank2"		("ukr_basic" side(ukr))  {cost 14.0}}
+{"mp/ukr/2022s/ter_medic"		("ukr_basic" side(ukr))  {cost 10.5}}
+
+{"mp/ukr/2022s/ukr_wepcrew_nsvt"		("ukr_basic1" side(ukr)) {cost 150.0}} ; 
+{"mp/ukr/2022s/ukr_wepcrew_mk19"		("ukr_basic1" side(ukr)) {cost 195.0}} ; 
+{"mp/ukr/2022s/ukr_wepcrew_2b11"		("ukr_guncrew2" side(ukr)) {cost 282.0}} ; 
+{"mp/ukr/2022s/ukr_wepcrew_2b14"		("ukr_guncrew1" side(ukr)) {cost 240.0}} ; 
+{"mp/ukr/2022s/ukr_wepcrew_spg9"		("ukr_guncrew1" side(ukr)) {cost 220.0}} ; 
+
+
+
+
+{"mp/ukr/2022s/hur_wepcrew_tow2"			("ukr_regular_advanced" side(ukr))  {cost 269.5}} ; 
+{"mp/ukr/2022s/hur_wepcrew_mk19"			("ukr_regular_advanced" side(ukr))  {cost 108.5}} ; 
+{"mp/ukr/2022s/hur_javelin"			("ukr_radioman" side(ukr))  {cost 94.5}} ; 
+{"mp/ukr/2022s/hur_assault"			("ukr_regular_advanced" side(ukr))  {cost 15.0}} ; 
+{"mp/ukr/2022s/hur_lmg"			("ukr_regular_advanced" side(ukr))  {cost 35.5}} ; 
+
+{"mp/ukr/2022s/hur_grenadier"				("ukr_radioman" side(ukr))  {cost 28.5}} ; 
+{"mp/ukr/2022s/hur_medic"				("ukr_regular_advanced" side(ukr))  {cost 14.0}} ; 
+{"mp/ukr/2022s/hur_rifleman"			("ukr_regular_advanced" side(ukr))  {cost 15.5}} ;
+{"mp/ukr/2022s/hur_seniorrifleman"		("ukr_radioman" side(ukr))  {cost 14.5}} ;  
+{"mp/ukr/2022s/hur_recon"			("ukr_regular_advanced" side(ukr))  {cost 15.5}} ; 
+{"mp/ukr/2022s/hur_squadlead"			("ukr_radioman" side(ukr))  {cost 15.5}} ; 
+{"mp/ukr/2022s/hur_crew"			("ukr_crew" side(ukr))  {cost 3.5}} ; 
+
+
+
+
+{"mp/ukr/2022s/hur_marksman_svd"				("ukr_radioman" side(ukr))  {cost 45.5}} ; 
+{"mp/ukr/2022s/hur_marksman_mk17"				("ukr_radioman" side(ukr))  {cost 52.5}} ; 
+{"mp/ukr/2022s/hur_marksman_ax50"				("ukr_radioman" side(ukr))  {cost 66.5}} ; 
+
+
+
+
+
+
+
+
+
+
+
+{"mp/ukr/2022s/ukr47_antitank"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/ukr47_antitank_h"			("ukr_radioman" side(ukr))  {cost 108.5}} ; 
+{"mp/ukr/2022s/ukr47_antitank_l"			("ukr_regular_advanced" side(ukr))  {cost 21.0}} ; 
+{"mp/ukr/2022s/ukr47_lmg"			("ukr_regular_advanced" side(ukr))  {cost 45.5}} ; 
+{"mp/ukr/2022s/ukr47_marksman"				("ukr_radioman" side(ukr))  {cost 52.5}} ; 
+{"mp/ukr/2022s/ukr47_sniper"				("ukr_radioman" side(ukr))  {cost 52.5}} ; 
+{"mp/ukr/2022s/ukr47_sniper_m107"				("ukr_radioman" side(ukr))  {cost 59.5}} ; 
+{"mp/ukr/2022s/ukr47_medic"				("ukr_regular_advanced" side(ukr))  {cost 14.0}} ; 
+{"mp/ukr/2022s/ukr47_rifleman"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ;
+{"mp/ukr/2022s/ukr47_seniorrifleman"		("ukr_radioman" side(ukr))  {cost 24.5}} ;  
+{"mp/ukr/2022s/ukr47_recon"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/ukr47_squadlead"			("ukr_radioman" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/ukr47_assault_nlaw"			("ukr_regular_advanced" side(ukr))  {cost 38.5}} ; 
+{"mp/ukr/2022s/ukr47_assault_m72"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/ukr47_assault_at4"			("ukr_regular_advanced" side(ukr))  {cost 31.5}} ; 
+{"mp/ukr/2022s/ukr47_crew_cmd"			("ukr_officer" side(ukr))  {cost 31.5}} ; 
+
+
+
+
+
+{"mp/ukr/2022s/ukr47_squadlead_assault"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ;
+{"mp/ukr/2022s/ukr47_seniorrifleman_assault"		("ukr_radioman" side(ukr))  {cost 24.5}} ;  
+{"mp/ukr/2022s/ukr47_rifleman_assault"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ;
+{"mp/ukr/2022s/ukr47_lmg_assault"			("ukr_regular_advanced" side(ukr))  {cost 45.5}} ; 
+{"mp/ukr/2022s/ukr47_lmg_pkm"			("ukr_regular_advanced" side(ukr))  {cost 45.5}} ; 
+
+{"mp/ukr/2022s/ukr211_squadlead"			("ukr_regular_advanced" side(ukr))  {cost 31.5}} ; 
+{"mp/ukr/2022s/ukr211_demo"			("ukr_regular_advanced" side(ukr))  {cost 38.5}} ; 
+{"mp/ukr/2022s/ukr211_sniper"			("ukr_regular_advanced" side(ukr))  {cost 45.5}} ; 
+{"mp/ukr/2022s/ukr211_recon"			("ukr_regular_advanced" side(ukr))  {cost 38.5}} ; 
+
+
+
+
+
+
+
+
+{"mp/ukr/2022s/ukr21_antitank_og7v"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/ukr21_antitank"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/ukr21_antitank_l"			("ukr_regular_advanced" side(ukr))  {cost 21.0}} ; 
+{"mp/ukr/2022s/ukr21_lmg"			("ukr_regular_advanced" side(ukr))  {cost 38.5}} ; 
+{"mp/ukr/2022s/ukr21_ksp90b"			("ukr_regular_advanced" side(ukr))  {cost 42.0}} ; 
+{"mp/ukr/2022s/ukr21_ksp58"			("ukr_regular_advanced" side(ukr))  {cost 45.5}} ; 
+{"mp/ukr/2022s/ukr21_marksman"				("ukr_radioman" side(ukr))  {cost 45.5}} ; 
+{"mp/ukr/2022s/ukr21_marksman_m107"				("ukr_radioman" side(ukr))  {cost 59.5}} ; 
+{"mp/ukr/2022s/ukr21_medic"				("ukr_regular_advanced" side(ukr)) {cost 14.0}} ; 
+{"mp/ukr/2022s/ukr21_rifleman"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/ukr21_rifleman_nlaw"			("ukr_regular_advanced" side(ukr))  {cost 31.5}} ; 
+{"mp/ukr/2022s/ukr21_seniorrifleman"		("ukr_regular_advanced" side(ukr))  {cost 17.5}} ; 
+{"mp/ukr/2022s/ukr21_recon"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/ukr21_squadlead"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/ukr21_drone"			("ukr_radioman" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/ukr21_drone_fpv"			("ukr_radioman" side(ukr))  {cost 24.5}} ; 
+
+
+
+
+
+
+
+
+
+
+
+{"mp/ukr/2022s/demon_grenadier"			("ukr_regular" side(ukr))  {cost 10.5}} ; 
+{"mp/ukr/2022s/demon_antitank_assist"			("ukr_regular" side(ukr))  {cost 14.0}} ; 
+{"mp/ukr/2022s/demon_antitank"			("ukr_regular" side(ukr))  {cost 17.5}} ; 
+{"mp/ukr/2022s/demon_antitank_rpg22"			("ukr_regular" side(ukr))  {cost 17.5}} ; 
+{"mp/ukr/2022s/demon_antitank_rpg26"			("ukr_regular" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/demon_mg"			("ukr_regular" side(ukr))  {cost 38.5}} ; 
+{"mp/ukr/2022s/demon_mg_rpk"			("ukr_regular" side(ukr))  {cost 31.5}} ; 
+{"mp/ukr/2022s/demon_squadlead"				("ukr_radioman" side(ukr))  {cost 17.5}} ; 
+{"mp/ukr/2022s/demon_seniorrifleman"				("ukr_regular" side(ukr)) {cost 14.0}} ; 
+{"mp/ukr/2022s/demon_marksman"			("ukr_regular" side(ukr))  {cost 42.0}} ; 
+{"mp/ukr/2022s/demon_rifleman"		("ukr_regular" side(ukr))  {cost 10.5}} ; 
+{"mp/ukr/2022s/demon_medic"			("ukr_regular" side(ukr))  {cost 17.5}} ; 
+
+
+
+
+
+
+
+
+
+
+{"mp/ukr/2022s/ukr93_antitank"			("ukr_regular_advanced" side(ukr))  {cost 38.5}} ; 
+{"mp/ukr/2022s/ukr93_atassist"			("ukr_regular_advanced" side(ukr))  {cost 35.0}} ; 
+{"mp/ukr/2022s/ukr93_lmg"			("ukr_regular_advanced" side(ukr))  {cost 45.5}} ; 
+{"mp/ukr/2022s/ukr93_lmgassist"			("ukr_regular_advanced" side(ukr))  {cost 28.0}} ; 
+{"mp/ukr/2022s/ukr93_marksman"				("ukr_radioman" side(ukr))  {cost 52.5}} ; 
+{"mp/ukr/2022s/ukr93_medic"				("ukr_regular_advanced" side(ukr))  {cost 21.0}} ; 
+{"mp/ukr/2022s/ukr93_seniorrifleman"		("ukr_regular_advanced" side(ukr))  {cost 24.5}} ;  
+{"mp/ukr/2022s/ukr93_rifleman"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/ukr93_squadlead"			("ukr_regular_advanced" side(ukr))  {cost 31.5}} ; 
+{"mp/ukr/2022s/ukr93_recon"			("ukr_regular_advanced" side(ukr))  {cost 31.5}} ; 
+{"mp/ukr/2022s/ukr93_recon_mg"			("ukr_regular_advanced" side(ukr))  {cost 45.5}} ; 
+{"mp/ukr/2022s/ukr93_wepcrew"			("ukr_crew" side(ukr))  {cost 3.5}} ; 
+{"mp/ukr/2022s/ukr93_wepcrew_stugna"			("ukr_radioman" side(ukr))  {cost 231.0}} ; 
+{"mp/ukr/2022s/ukr93_wepcrew_stugna_assist"			("ukr_crew" side(ukr))  {cost 31.5}} ; 
+{"mp/ukr/2022s/ukr93_antitank_javelin"			("ukr_radioman" side(ukr))  {cost 94.5}} ; 
+{"mp/ukr/2022s/ukr93_antitank_javelin_assist"			("ukr_crew" side(ukr))  {cost 24.5}} ; 
+
+
+
+{"mp/ukr/2022s/ukr13_antitank_javelin"			("ukr_radioman" side(ukr))  {cost 38.5}} ; 
+{"mp/ukr/2022s/ukr13_antitank"			("ukr_regular_advanced" side(ukr))  {cost 38.5}} ; 
+{"mp/ukr/2022s/ukr13_lmg"			("ukr_regular_advanced" side(ukr))  {cost 45.5}} ; 
+{"mp/ukr/2022s/ukr13_marksman"				("ukr_radioman" side(ukr))  {cost 31.5}} ; 
+{"mp/ukr/2022s/ukr13_medic"				("ukr_regular_advanced" side(ukr))  {cost 21.0}} ; 
+{"mp/ukr/2022s/ukr13_rifleman"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ; 
+{"mp/ukr/2022s/ukr13_assault_og7v"			("ukr_regular_advanced" side(ukr))  {cost 45.5}} ; 
+{"mp/ukr/2022s/ukr13_squadlead"			("ukr_regular_advanced" side(ukr))  {cost 31.5}} ; 
+{"mp/ukr/2022s/ukr13_recon"			("ukr_regular_advanced" side(ukr))  {cost 31.5}} ; 
+{"mp/ukr/2022s/ukr13_assault"			("ukr_regular_advanced" side(ukr))  {cost 45.5}} ; 
+{"mp/ukr/2022s/ukr13_recon_at4"			("ukr_regular_advanced" side(ukr))  {cost 31.5}} ; 
+{"mp/ukr/2022s/ukr13_recon_drop"			("ukr_regular_advanced" side(ukr))  {cost 31.5}} ; 
+
+
+
+{"mp/ukr/2022s/kra_squadlead"	("ukr_specops" side(ukr)) {cost 40.0}} 
+{"mp/ukr/2022s/kra_rifleman"		("ukr_specops" side(ukr)) {cost 36.0}} 
+{"mp/ukr/2022s/kra_mg"			("ukr_specops" side(ukr)) {cost 56.5}} 
+{"mp/ukr/2022s/kra_antitank"		("ukr_radioman" side(ukr)) {cost 105.0}}
+{"mp/ukr/2022s/kra_antitank_carl"		("ukr_rangers" side(ukr)) {cost 48.5}} 
+{"mp/ukr/2022s/kra_grenadier" 	("ukr_radioman" side(ukr)) {cost 52.5}} 
+{"mp/ukr/2022s/kra_marksman"		("ukr_specops" side(ukr)) {cost 64.5}} 
+{"mp/ukr/2022s/kra_demo"			("ukr_specops" side(ukr)) {cost 48.5}} 
+{"mp/ukr/2022s/kra_demo_sadm"	("ukr_specops" side(ukr)) {cost 72.5}} 
+{"mp/ukr/2022s/kra_spotter"		("ukr_specops" side(ukr)) {cost 44.5}} 
+{"mp/ukr/2022s/kra_sniper"		("ukr_specops" side(ukr)) {cost 72.5}} 
+
+
+{"mp/ukr/2022s/ukr82_antitank"			("ukr_rangers" side(ukr))  {cost 105.0}} 
+{"mp/ukr/2022s/ukr82_antitank_l"			("ukr_seals" side(ukr)) {cost 24.0}} 
+{"mp/ukr/2022s/ukr82_lmg"			("ukr_seals" side(ukr))  {cost 52.5}}
+{"mp/ukr/2022s/ukr82_hmg"			("ukr_seals" side(ukr))  {cost 52.5}} 
+{"mp/ukr/2022s/ukr82_marksman"				("ukr_seals" side(ukr))  {cost 28.0}} 
+{"mp/ukr/2022s/ukr82_medic"				("ukr_seals" side(ukr))  {cost 24.0}} 
+{"mp/ukr/2022s/ukr82_rifleman"			("ukr_seals" side(ukr))  {cost 28.0}} 
+{"mp/ukr/2022s/ukr82_recon"			("ukr_seals" side(ukr))  {cost 28.0}} 
+{"mp/ukr/2022s/ukr82_squadlead"			("ukr_seals" side(ukr))  {cost 28.0}} 
+{"mp/ukr/2022s/ukr82_assault"			("ukr_seals" side(ukr))  {cost 36.0}} 
+{"mp/ukr/2022s/ukr82_assault2"			("ukr_seals" side(ukr))  {cost 24.0}} 
+{"mp/ukr/2022s/ukr82_wepcrew"			("ukr_radioman" side(ukr)) {cost 306.0}} 
+{"mp/ukr/2022s/ukr82_wepcrew_metis"			("ukr_radioman" side(ukr)) {cost 153.0}} 
+
+
+{"mp/ukr/2022s/azov3_sup"			("ukr_crew" side(ukr))  {cost 4.0}} 
+{"mp/ukr/2022s/azov3_saperi"			("ukr_specops" side(ukr))  {cost 26.0}} 
+{"mp/ukr/2022s/azov3_assault"			("ukr_specops" side(ukr))  {cost 44.5}} 
+{"mp/ukr/2022s/azov3_antitank"			("ukr_specops" side(ukr))  {cost 44.5}} 
+{"mp/ukr/2022s/azov3_demo"	("ukr_specops" side(ukr))  {cost 28.0}} 
+{"mp/ukr/2022s/azov3_marksman"		("ukr_specops" side(ukr))  {cost 16.0}} 
+{"mp/ukr/2022s/azov3_medic"			("ukr_specops" side(ukr))  {cost 20.0}} 
+{"mp/ukr/2022s/azov3_mg"		("ukr_specops" side(ukr))  {cost 52.5}}
+{"mp/ukr/2022s/azov3_mg3"		("ukr_specops" side(ukr))  {cost 44.5}}
+{"mp/ukr/2022s/azov3_rifleman" 	("ukr_specops" side(ukr))  {cost 24.0}} 
+{"mp/ukr/2022s/azov3_sniper"		("ukr_specops" side(ukr)) {cost 36.0}} 
+{"mp/ukr/2022s/azov3_spotter"			("ukr_specops" side(ukr))  {cost 28.0}} 
+{"mp/ukr/2022s/azov3_squadlead"	("ukr_specops" side(ukr))  {cost 36.0}} 
+
+{"mp/ukr/2022s/azov3_demon_h"		("ukr_specops" side(ukr))  {cost 40.0}} 
+{"mp/ukr/2022s/azov3_antitank_h"			("ukr_specops" side(ukr))  {cost 52.5}} 
+{"mp/ukr/2022s/azov3_assault_h"	("ukr_specops" side(ukr))  {cost 28.0}} 
+{"mp/ukr/2022s/azov3_marksman_h"		("ukr_specops" side(ukr))  {cost 72.5}} 
+{"mp/ukr/2022s/azov3_medic_h"			("ukr_specops" side(ukr))  {cost 36.0}} 
+{"mp/ukr/2022s/azov3_mg_h"		("ukr_specops" side(ukr))  {cost 60.5}} 
+{"mp/ukr/2022s/azov3_rifleman_h" 	("ukr_specops" side(ukr))  {cost 24.0}} 
+{"mp/ukr/2022s/azov3_squadlead_h"	("ukr_specops" side(ukr))  {cost 36.0}} 
+{"mp/ukr/2022s/azov3_drone"	("ukr_specops" side(ukr))  {cost 60.5}} 
+
+{"mp/ukr/2022s/azov3_rifleman_sso" 	("ukr_specops" side(ukr))  {cost 32.0}} 
+{"mp/ukr/2022s/azov3_squadlead_sso"	("ukr_specops" side(ukr))  {cost 44.5}} 
+{"mp/ukr/2022s/azov3_rifleman1_sso" 	("ukr_specops" side(ukr))  {cost 32.0}} 
+{"mp/ukr/2022s/azov3_spotter_sso"			("ukr_specops" side(ukr))  {cost 36.0}}
+{"mp/ukr/2022s/azov3_marksman_sso"			("ukr_specops" side(ukr))  {cost 76.5}} 
+

@@ -1,0 +1,165 @@
+;SDL
+;// CP + Scores + CW
+
+;////////////////// INSTRUCTIONS //////////////////
+; In this file onee configures the humans which are spawned in vehicles or squads
+; The humans have a CP and cost associated with them which collectively add up for the final squad value
+; Check ../settings.set for syntax instructions!!
+;//////////////////////////////////////////////////
+
+(define "prc_radioman"
+	{tags "2022s %side infantry man signaller"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 2}
+	{score_factor 0.2}
+)
+
+(define "prc_guncrew"
+	{tags "2022s %side infantry man pilot"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+(define "prc_support"
+	{tags "2022s %side infantry man pilot"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+{"mp/prc/2022s/pla_vehicleman"			("prc_support" side(prc)) {cost 4.0}} ; PPsh
+{"mp/prc/2022s/pla_crew"			("prc_support" side(prc)) {cost 4.0}} ; PPsh
+(define "prc_basic"
+	{tags "2022s %side infantry man lvl1 lvl2 lvl3 lvl4"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor 0.05}
+)
+
+(define "prc_regular"
+	{tags "2022s %side infantry man lvl1 lvl2"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 1.0}
+	{score_factor 0.05}
+)
+
+(define "prc_regular_advanced"
+	{tags "2022s %side infantry man lvl1 lvl2"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 1.5}
+	{score_factor 0.05}
+)
+
+(define "prc_naval"
+	{tags "2022s %side infantry man"}
+	{cp 3}
+	{basic}
+	{breed}
+	{cw 3.0}
+	{score_factor 0.05}
+)
+
+(define "prc_guards"
+	{tags "2022s %side infantry man lvl1 lvl2"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 4.0}
+	{score_factor 0.05}
+)
+
+
+{"mp/prc/2022s/pla_recon" ("prc_regular" side(prc)) {cost 55.2}} ; Type 63
+{"mp/prc/2022s/pla_rifleman" ("prc_regular" side(prc)) {cost 7.7}} ; Type 63
+{"mp/prc/2022s/pla_rifleman_dza08" ("prc_regular" side(prc)) {cost 15.5}} ; Type 63
+{"mp/prc/2022s/pla_grenadier" ("prc_radioman" side(prc)) {cost 15.4}} ; Type 63 + RPG-2
+{"mp/prc/2022s/pla_senior" ("prc_regular" side(prc)) {cost 11.2}} ; Type 63 + Ammo
+{"mp/prc/2022s/pla_squadlead" ("prc_regular" side(prc)) {cost 18.2}} ; Type 63
+{"mp/prc/2022s/pla_marksman" ("prc_radioman" side(prc)) {cost 38.5}} ; AKM
+{"mp/prc/2022s/pla_marksman_qbu11" ("prc_radioman" side(prc)) {cost 45.5}} ; AKM
+{"mp/prc/2022s/pla_marksman_qbu10" ("prc_radioman" side(prc)) {cost 45.5}} ; AKM
+{"mp/prc/2022s/pla_sniper" ("prc_radioman" side(prc)) {cost 52.5}} ; AKM
+
+{"mp/prc/2022s/pla_eng" ("prc_radioman" side(prc)) {cost 10.5}} ; Type 63
+{"mp/prc/2022s/pla_eng_at" ("prc_radioman" side(prc)) {cost 14.7}} ; Type 63
+
+{"mp/prc/2022s/pla_antitank_hj12" ("prc_radioman" side(prc)) {cost 94.5}} ; Type 63
+{"mp/prc/2022s/pla_antitank_pf98" ("prc_regular" side(prc)) {cost 31.5}} ; Type 63
+{"mp/prc/2022s/pla_antitank_pf98_fg" ("prc_regular" side(prc)) {cost 24.5}} ; Type 63
+{"mp/prc/2022s/pla_recon_gy" ("prc_radioman" side(prc)) {cost 18.2}} ; Type 63
+{"mp/prc/2022s/pla_rifleman_gy" ("prc_regular" side(prc)) {cost 7.7}} ; Type 63
+{"mp/prc/2022s/pla_rifleman_dza08_gy" ("prc_regular" side(prc)) {cost 15.5}} ; Type 63
+{"mp/prc/2022s/pla_grenadier_gy" ("prc_radioman" side(prc)) {cost 15.4}} ; Type 63 + RPG-2
+{"mp/prc/2022s/pla_senior_gy" ("prc_regular" side(prc)) {cost 11.2}} ; Type 63 + Ammo
+{"mp/prc/2022s/pla_squadlead_gy" ("prc_regular" side(prc)) {cost 18.2}} ; Type 63
+{"mp/prc/2022s/pla_marksman_gy" ("prc_radioman" side(prc)) {cost 24.5}} ; AKM
+{"mp/prc/2022s/pla_marksman_qbu11_gy" ("prc_radioman" side(prc)) {cost 31.5}} ; AKM
+{"mp/prc/2022s/pla_marksman_qbu10_gy" ("prc_radioman" side(prc)) {cost 31.5}} ; AKM
+{"mp/prc/2022s/pla_sniper_gy" ("prc_radioman" side(prc)) {cost 38.5}} ; AKM
+{"mp/prc/2022s/pla_mg_gy" ("prc_regular" side(prc)) {cost 18.2}} ; Type 63
+{"mp/prc/2022s/pla_mg_qjy_gy" ("prc_regular" side(prc)) {cost 18.2}} ; Type 63
+{"mp/prc/2022s/pla_mg" ("prc_regular" side(prc)) {cost 18.2}} ; Type 63
+{"mp/prc/2022s/pla_mg_qjy" ("prc_regular" side(prc)) {cost 18.2}} ; Type 63
+{"mp/prc/2022s/pla_eng_gy" ("prc_radioman" side(prc)) {cost 10.5}} ; Type 63
+{"mp/prc/2022s/pla_eng_at_gy" ("prc_radioman" side(prc)) {cost 14.7}} ; Type 63
+{"mp/prc/2022s/pla_medic_gy" ("prc_radioman" side(prc)) {cost 7.7}} ; Type 63
+{"mp/prc/2022s/pla_medic" ("prc_regular" side(prc)) {cost 7.7}} ; Type 63
+{"mp/prc/2022s/pla_antitank_hj12_gy" ("prc_radioman" side(prc)) {cost 94.5}} ; Type 63
+{"mp/prc/2022s/pla_antitank_pf98_gy" ("prc_regular" side(prc)) {cost 31.5}} ; Type 63
+{"mp/prc/2022s/pla_antitank_pf98_fg_gy" ("prc_regular" side(prc)) {cost 31.5}} ; Type 63
+{"mp/prc/2022s/pla_drone"			("prc_radioman" side(prc)) {cost 50.0}} ; AKM
+{"mp/prc/2022s/pla_crew_pbp172"			("prc_radioman" side(prc)) {cost 200.0}} ; Type 63
+{"mp/prc/2022s/pla_crew_hj8"			("prc_radioman" side(prc)) {cost 180.0}} ; Type 63
+{"mp/prc/2022s/pla_crew_qjz89"			("prc_radioman" side(prc)) {cost 100.0}} ; Type 63
+{"mp/prc/2022s/pla_crew_qjz171"			("prc_radioman" side(prc)) {cost 130.0}} ; Type 63
+{"mp/prc/2022s/pla_crew_gy"		("prc_radioman" side(prc)) {cost 5.0}} ; Type 63
+{"mp/prc/2022s/pla_crew"		("prc_radioman" side(prc)) {cost 5.0}} ; Type 63
+(define "prc_specops"
+	{tags "2022s %side infantry man"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 2}
+	{score_factor 0.05}
+)
+
+
+(define "prc_medic"
+	{tags "2022s %side infantry man"}
+	{cp 3}
+	{basic}
+	{breed}
+	{cw 0.5}
+	{score_factor -0.2}
+)
+
+(define "prc_officer"
+	{tags "2022s %side infantry man officer"}
+	{cp 8}
+	{basic}
+	{breed}
+	{cw 5}
+	{score_factor 0.2}
+)
+
+(define "prc_sniper"
+	{tags "2022s %side infantry man sniper"}
+	{cp 1}
+	{basic}
+	{breed}
+	{cw 2}
+	{score_factor 0.05}
+)
