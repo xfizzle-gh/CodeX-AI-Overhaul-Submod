@@ -42,7 +42,7 @@
 		{unitMode "2022s"}
 		{specMode "all_normal"}
 		{apply "only_roster_2022s"}
-		("standard_all"			start(200) finish(3300) cp(0:100,900:150,1500:200))
+		("standard_all"			start(400) finish(3300) cp(0:100,900:150,1500:200))
 		{ranked}
 	}
 
@@ -51,27 +51,30 @@
 		{unitMode "2022s"}
 		{specMode "cp_80"}
 		{apply "only_roster_2022s"}
-		("custom_all"			start(200) finish(2800) cp(0:80,900:130,1500:180))
+		("custom_all"			start(400) finish(2800) cp(0:80,900:130,1500:180))
 	}
+
 	{"c:2022s_custom_100"
 		{gameMode "custom"}
 		{unitMode "2022s"}
 		{specMode "cp_100"}
 		{apply "only_roster_2022s"}
-		("custom_all"			start(200) finish(2800) cp(0:100,900:150,1500:200))
+		("custom_all"			start(400) finish(2800) cp(0:100,900:150,1500:200))
 	}
+
 	{"c:2022s_custom_120"
 		{gameMode "custom"}
 		{unitMode "2022s"}
 		{specMode "cp_120"}
 		{apply "only_roster_2022s"}
-		("custom_all"			start(200) finish(3300) cp(0:120,900:170,1500:220))
+		("custom_all"			start(400) finish(3300) cp(0:120,900:170,1500:220))
 	}
+
 	{"c:2022s_custom_150"
 		{gameMode "custom"}
 		{unitMode "2022s"}
 		{specMode "cp_150"}
 		{apply "only_roster_2022s"}
-		("custom_all"			start(200) finish(3800) cp(0:150,900:200,1500:250))
+		("custom_all"			start(400) finish(3800) cp(0:150,900:200,1500:250))
 	}
 }
