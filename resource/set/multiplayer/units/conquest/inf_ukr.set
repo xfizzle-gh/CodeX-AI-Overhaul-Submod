@@ -359,7 +359,7 @@
 {"mp/ukr/2022s/ukr21_ksp58"			("ukr_regular_advanced" side(ukr))  {cost 45.5}} ; 
 {"mp/ukr/2022s/ukr21_marksman"				("ukr_radioman" side(ukr))  {cost 45.5}} ; 
 {"mp/ukr/2022s/ukr21_marksman_m107"				("ukr_radioman" side(ukr))  {cost 59.5}} ; 
-{"mp/ukr/2022s/ukr21_medic"				("ukr_regular_advanced" side(ukr))) {cost 14.0}} ; 
+{"mp/ukr/2022s/ukr21_medic"				("ukr_regular_advanced" side(ukr)) {cost 14.0}} ; 
 {"mp/ukr/2022s/ukr21_rifleman"			("ukr_regular_advanced" side(ukr))  {cost 24.5}} ; 
 {"mp/ukr/2022s/ukr21_rifleman_nlaw"			("ukr_regular_advanced" side(ukr))  {cost 31.5}} ; 
 {"mp/ukr/2022s/ukr21_seniorrifleman"		("ukr_regular_advanced" side(ukr))  {cost 17.5}} ; 
@@ -386,7 +386,7 @@
 {"mp/ukr/2022s/demon_mg"			("ukr_regular" side(ukr))  {cost 38.5}} ; 
 {"mp/ukr/2022s/demon_mg_rpk"			("ukr_regular" side(ukr))  {cost 31.5}} ; 
 {"mp/ukr/2022s/demon_squadlead"				("ukr_radioman" side(ukr))  {cost 17.5}} ; 
-{"mp/ukr/2022s/demon_seniorrifleman"				("ukr_regular" side(ukr))) {cost 14.0}} ; 
+{"mp/ukr/2022s/demon_seniorrifleman"				("ukr_regular" side(ukr)) {cost 14.0}} ; 
 {"mp/ukr/2022s/demon_marksman"			("ukr_regular" side(ukr))  {cost 42.0}} ; 
 {"mp/ukr/2022s/demon_rifleman"		("ukr_regular" side(ukr))  {cost 10.5}} ; 
 {"mp/ukr/2022s/demon_medic"			("ukr_regular" side(ukr))  {cost 17.5}} ; 
@@ -444,7 +444,7 @@
 {"mp/ukr/2022s/kra_demo"			("ukr_specops" side(ukr)) {cost 48.5}} 
 {"mp/ukr/2022s/kra_demo_sadm"	("ukr_specops" side(ukr)) {cost 72.5}} 
 {"mp/ukr/2022s/kra_spotter"		("ukr_specops" side(ukr)) {cost 44.5}} 
-{"mp/ukr/2022s/kra_sniper"		("ukr_specops" side(ukr))) {cost 72.5}} 
+{"mp/ukr/2022s/kra_sniper"		("ukr_specops" side(ukr)) {cost 72.5}} 
 
 
 {"mp/ukr/2022s/ukr82_antitank"			("ukr_rangers" side(ukr))  {cost 105.0}} 
