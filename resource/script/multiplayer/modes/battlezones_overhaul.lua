@@ -2,7 +2,17 @@
 -- Keep these out of Conquest so campaign wave and preparation behavior is unchanged.
 
 local BattleZonesSpawnRetryTime = 15 * 1000
-local reportedCanSpawnBypass = false
+local BaseGetUnitToSpawn = GetUnitToSpawn
+local reportedAuxFallback = false
+
+local function HasUnitType(unit, wantedType)
+	for _, unitType in ipairs(unit.type or {}) do
+		if unitType == wantedType then
+			return true
+		end
+	end
+	return false
+end
 
 -- The shared utility uses this both to filter unit timers and to decide how long
 -- to hold a failed purchase. Ninety seconds could leave a bot effectively idle.
@@ -10,79 +20,36 @@ function GetCurrentSpawnWaitTime()
 	return BattleZonesSpawnRetryTime
 end
 
--- Battle Zones can report CanSpawn() false for an allied bot even though its
--- purchase module and budget are valid. Direct Spawn() remains the authoritative
--- validation step, so attempt it and use the bounded retry path on failure.
-function TrySpawnUnit()
-	if Context.SpawnWait.CooldownTimer then
-		return
+-- Backfield logic originally allowed only purchases tagged Aux. The curated
+-- roster currently has no Aux entries, so a bot assigned the friendly back flag
+-- could produce a zero-weight purchase pool forever. Let it buy a normal unit,
+-- then preserve captureBackFlag so that unit is ordered to secure the backfield.
+function GetUnitToSpawn(units)
+	if not units then
+		return nil
 	end
 
-	if Context.SpawnWait.WaitTimer then
-		return
-	end
-
-	if not BotApi.Commands:CanSpawn() and not reportedCanSpawnBypass then
-		print("Print: player#" .. BotApi.Instance.playerId .. " CanSpawn returned false; Battle Zones will validate through Spawn instead")
-		reportedCanSpawnBypass = true
-	end
-
-	if spawningUnit then
-		if OnUnitPurchased then
-			OnUnitPurchased()
-		elseif enableWaveCounter then
-			WaveUnitCounter()
+	if captureBackFlag then
+		local hasAuxPurchase = false
+		for _, unit in pairs(units) do
+			if HasUnitType(unit, "Aux") then
+				hasAuxPurchase = true
+				break
+			end
 		end
 
-		KillSpawnWaitTimer()
-		Context.SpawnInfo = nil
-		SetSpawnCooldownTimer()
-		spawningUnit = nil
-		return
-	end
+		if not hasAuxPurchase then
+			if not reportedAuxFallback then
+				print("Print: player#" .. BotApi.Instance.playerId .. " has no Aux purchase; using a normal unit for the backfield objective")
+				reportedAuxFallback = true
+			end
 
-	local retryPendingUnit = Context.SpawnWait.RetryPendingUnit
-	Context.SpawnWait.RetryPendingUnit = false
-
-	if not retryPendingUnit or not Context.SpawnInfo then
-		UpdateUnitToSpawn(Context.Purchase)
-	end
-
-	if not Context.SpawnInfo then
-		return
-	end
-
-	local unit = Context.SpawnInfo.unit
-
-	if not BotApi.Commands:IsUnitAvailable(unit) then
-		print("Print: !!WARNING!! player#" .. BotApi.Instance.playerId .. " tried to purchase unavailable unit: " .. unit)
-		KillSpawnWaitTimer()
-		Context.SpawnInfo = nil
-		return
-	end
-
-	if GameModeSpawnUnit(unit, MaxSquadSize) then
-		spawningUnit = true
-		return
-	end
-
-	local currentUnitSpawnWaitTime = GetCurrentSpawnWaitTime()
-
-	if retryPendingUnit then
-		Context.SpawnInfo = nil
-	end
-
-	if not Context.SpawnWait.WaitTimer then
-		if printDebug then
-			print("Print: player#" .. BotApi.Instance.playerId .. " tried to purchase: " .. unit .. " Not enough MP, DP, CP, spawn access, or the unit timer is not unlocked")
-			print("Print: player#" .. BotApi.Instance.playerId .. " will retry or select another unit in " .. (currentUnitSpawnWaitTime / 1000 + 1) .. "s")
+			captureBackFlag = false
+			local selectedUnit = BaseGetUnitToSpawn(units)
+			captureBackFlag = true
+			return selectedUnit
 		end
-
-		Context.SpawnWait.WaitTimer = BotApi.Events:SetQuantTimer(
-			function()
-				Context.SpawnWait.WaitTimer = nil
-				Context.SpawnWait.RetryPendingUnit = Context.SpawnInfo ~= nil
-			end,
-			currentUnitSpawnWaitTime + 1000)
 	end
+
+	return BaseGetUnitToSpawn(units)
 end
