@@ -3,6 +3,7 @@
 ; Keep the four faction infantry breed catalogs so the selected squads and
 ; doctrine squads resolve, but do not register the full Code:X unit catalogs.
 (include "conquest/settings.set")
+(include "2022s/detachment_settings.set")
 (include "2022s/doctrine_settings.set")
 
 (include "conquest/inf_ukr.set")
