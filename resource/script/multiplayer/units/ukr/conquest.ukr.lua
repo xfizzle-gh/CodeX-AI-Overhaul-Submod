@@ -30,6 +30,8 @@ Purchases["conquest.ukr"] = {
 				{priority = 0.5, type = {"Infantry", "Team",}, unit = "47th_inf_pkm(ukr)"},			
 				{priority = 0.5, type = {"Infantry", "Team",}, unit = "47th_inf_at(ukr)"},							
 				{priority = 0.5, type = {"Infantry", "Team",}, unit = "47th_inf_javelin(ukr)"},		
+				{priority = 0.5, type = {"Infantry", "Team",}, unit = "47th_inf_sniper(ukr)"},		
+				{priority = 0.5, type = {"Infantry", "Team",}, unit = "47th_inf_sniper_m107(ukr)"},		
 				
 				{priority = 0.5, type = {"Infantry", "Team",}, unit = "squad_ukr47_m113_2022(ukr)"},
 				{priority = 0.5, type = {"Infantry", "Team",}, unit = "squad_ukr47_bmp1_2022(ukr)"},
@@ -139,6 +141,7 @@ Purchases["conquest.ukr"] = {
 				--{priority = 0.2, type = {"Tank", "Medium", "Artillery",}, unit = "2s7m_malka_ukr"},
 				{priority = 0.5, type = {"Tank", "Medium", "Artillery",}, unit = "2s3m_akatsiya_ukr"},
 				{priority = 0.5, type = {"Tank", "Medium", "Artillery",}, unit = "pzh2000_ukr"},
+				{priority = 0.5, type = {"Tank", "Medium", "Artillery",}, unit = "2s22_bohdana"},
 				{priority = 0.5, type = {"Tank", "Medium", "Artillery",}, unit = "m109_paladin"},
 				{priority = 0.5, type = {"Tank", "Medium", "Artillery",}, unit = "hawkeye_105_mws"},
 			--Air Assets

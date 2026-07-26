@@ -1,0 +1,192 @@
+;SDL
+;-----------------------------------------------------------------------------------------------------------------------;
+; conditions																											;
+;-----------------------------------------------------------------------------------------------------------------------;
+; "vehicle" "tank" "cannon" "tractor" "human"	:	show this control based on actors properties						;
+; "single"										:	show this control only if a single actor is selected				;
+; "multiple"									:	show this control only if multiple actors (squad) is selected		;
+; "commander"									:	show this control only if the selected actor is a squad commander	;
+; "disabled"									:	show this control even if it is disabled							;
+;-----------------------------------------------------------------------------------------------------------------------;
+{panel_control
+
+; // first row-------------------------
+
+;// first button
+	{gc_cp_state_fire
+		{position 0 0}
+		(mod "gametype:heroes"
+			{condition "disabled"}
+		)
+	}
+	
+;// second button
+	{gc_cp_state_move
+		{position 1 0}
+	}
+	
+;// third button
+	{gc_cp_state_pose
+		{position 2 0}
+		{condition "human"}
+	}
+	{gc_cp_state_cannon
+		{position 2 0}
+		{condition "cannon"}
+	}
+	{engine_toggle
+		{position 2 0}
+		{condition "engine"}
+		{condition "disabled"}
+	}
+	
+;// fourth button
+
+	{gc_cp_state_reverse
+		{position 3 0}
+		{condition "vehicle"}
+		{condition "disabled"}
+	}
+	{examine
+		{position 3 0}
+		{condition "human"}
+		{condition "disabled"}
+	}
+
+
+; // second row-------------------------
+
+;// first button
+	{gc_cp_browse_attack
+		{position 0 1}
+	}
+	
+;// second button
+	{gc_cp_lock_ammo
+		{position 1 1}
+		{condition "vehicle disabled"}
+	}
+	{gc_cp_browse_useitem
+		{position 1 1}
+		{condition "human"}
+	}
+	
+;// third button
+	{gc_cp_browse_special
+		{position 2 1}
+	}
+	
+;// fourth button
+
+	{weather_switch
+		{position 3 1}
+		{condition "human single"}
+	}
+	{gc_cp_squad_control
+		{position 3 1}
+		{condition "human multiple disabled"}
+	}
+
+	{repair
+		{position 3 1}
+		{condition "vehicle disabled"}
+	}
+	
+; // third row-------------------------	
+	
+;// first button
+	{rotate
+		{position 0 2}
+	}
+	
+	{gc_cp_browse_emplacement
+		{position 1 2}
+		{condition "human barricade disabled"}
+	}
+	
+;// second button
+	{emit
+		{position 1 2}
+		{condition "vehicle"}
+	}
+	
+	;{gc_cp_state_reload
+	;	{position 2 2}
+	;	{condition "human"}
+	;}
+	;{gc_cp_state_hatch
+	;	{position 2 2}
+	;	{condition "hatch"}
+	;}
+	
+	{switch_hatch
+		{position 3 2}
+		{condition "vehicle with_open_zpu"}
+	}
+
+	{radar_switch
+		{position 3 2}
+		{condition "sam_radar"}
+	}
+	
+	{medic_switch ; Added by Nikral
+		{position 3 2}
+		{condition "human single medic"}
+	}
+	
+	{sandbag_vehicle
+		{position 2 2}
+		{condition "cannon"}
+	}
+	
+	{gc_cp_command_cancel
+		{position 2 2}
+	}
+	
+	{weapon_undeploy
+		{position 3 2}
+		{condition "cannon gunbagged"}
+	}
+	
+	(define "deploy_weapon" ;see bottom of file for list of deployables - they must ALL be listed here, matching name given in fortify.set
+		{"%deployable_weapon"
+			{position 3 2}
+			{condition "human"}
+		}
+	)
+	
+	("deploy_weapon" deployable_weapon(deploy_spg9))
+
+	("deploy_weapon" deployable_weapon(deploy_9m113))
+
+	("deploy_weapon" deployable_weapon(deploy_ags17_sov))
+	("deploy_weapon" deployable_weapon(deploy_ammobag_sov))
+	("deploy_weapon" deployable_weapon(deploy_nsvt))
+	("deploy_weapon" deployable_weapon(deploy_2b11))
+	("deploy_weapon" deployable_weapon(deploy_2b14))
+	("deploy_weapon" deployable_weapon(deploy_nsvt_ukr))
+	("deploy_weapon" deployable_weapon(deploy_2b11_ukr))
+	("deploy_weapon" deployable_weapon(deploy_2b14_ukr))
+	("deploy_weapon" deployable_weapon(deploy_mk19_ukr))
+	("deploy_weapon" deployable_weapon(deploy_kord))
+	("deploy_weapon" deployable_weapon(deploy_grad))
+	("deploy_weapon" deployable_weapon(deploy_9m133))
+	("deploy_weapon" deployable_weapon(deploy_ags30))
+	
+	;//POL	
+	;//USA
+	("deploy_weapon" deployable_weapon(deploy_bgm71_tow))
+	("deploy_weapon" deployable_weapon(deploy_m2))
+	("deploy_weapon" deployable_weapon(deploy_mk19_usa))
+	("deploy_weapon" deployable_weapon(deploy_m120))
+	("deploy_weapon" deployable_weapon(deploy_m224))
+	("deploy_weapon" deployable_weapon(deploy_m252))	
+	("deploy_weapon" deployable_weapon(deploy_milan))
+	("deploy_weapon" deployable_weapon(deploy_spike))		
+	("deploy_weapon" deployable_weapon(deploy_stgn_ukr))	
+	("deploy_weapon" deployable_weapon(deploy_metis))	
+	("deploy_weapon" deployable_weapon(deploy_metis_rus))	
+	("deploy_weapon" deployable_weapon(deploy_metis_rus_tbg))		
+	("deploy_weapon" deployable_weapon(deploy_qjz89))	
+	("deploy_weapon" deployable_weapon(deploy_hj8))	
+}

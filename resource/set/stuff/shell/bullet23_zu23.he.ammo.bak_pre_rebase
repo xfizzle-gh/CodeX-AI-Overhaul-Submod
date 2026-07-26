@@ -1,0 +1,26 @@
+{from "pattern he"
+	{tag "20to25 no_throw -shell"}
+	{tag "auto size1"}
+	{tag "shell he"}
+	{tag "autocannon_small" "shell_antimissile" "autocannon_aa"}
+	{inventory
+		{weight 4}
+		{size 2 2}
+		{block 25}
+	}
+	{entity "23mm_zu23_he"}
+	{mass 0.303}
+
+	{view "howitzer_shell_dummy"
+		{tail "shell_tracer_20_he" "tail"}
+	}
+
+	{damage fire
+		{radius 1}
+		{heating 0.1}
+		{time 1}
+		;{ground_interaction_radius 0.3} ;// crashes game if used with fire damage
+	}
+	
+	("he_auto_blast" args 1.9) ;0.7
+}

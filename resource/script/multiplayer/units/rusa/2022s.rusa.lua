@@ -1,8 +1,6 @@
-Purchases["2022s.rusa"] = {
-	{Repeat = 0,
-		Units = {
-			{priority = 2.0, type = {"Infantry", "Squad", "Aux", "Class1"}, unit = "codex_bz_rifle_squad(rusa)"},
-			{priority = 1.0, type = {"Infantry", "Squad", "Aux", "Class1"}, unit = "codex_bz_fireteam(rusa)"},
-		}
-	}
-}
+﻿-- Lobby unitMode 2022s; reuse Code:X conquest purchase trees.
+require([[/script/multiplayer/units/rusa/conquest.rusa]])
+if Purchases and Purchases["conquest.rusa"] then
+	Purchases["2022s.rusa"] = Purchases["conquest.rusa"]
+	Purchases["mid.rusa"] = Purchases["conquest.rusa"]
+end

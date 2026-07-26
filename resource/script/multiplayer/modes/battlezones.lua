@@ -178,7 +178,7 @@ function GetUnitToSpawn(units)
 		local min_team = unit.min_team  -- not used
 		local min_income = unit.min_income -- not used
 		local tts = BotApi.Commands:TimeToSpawnUnit(unit.unit)
-		local min_tts = currentUnitSpawnWaitTime + gameModeSpawnTimer
+		local min_tts = GetUnitSelectionTTSLimit()
 		local available = BotApi.Commands:IsUnitAvailable(unit.unit)
 		
 		if not min_income then min_income = -1 end
@@ -201,12 +201,13 @@ function GetUnitToSpawn(units)
 		"soldier", 
 		"crew", 
 		"soldier_pzscheck",
-		"soldier_at",
+		"soldier_pzfaust",
 		"soldier_atr",
 		"soldier_atr_grenade",
 		"soldier_bazooka",
 	}
 	local sceneUnits = BotApi.Scene:QueryScene(searchProps, 5)
+
 	local unitCounts = {
 		BotInfantry = 0,
 		BotATInfantry = 0,
@@ -217,13 +218,14 @@ function GetUnitToSpawn(units)
 	-- Humans
 		["soldier"] = {"BotInfantry"},
 		["soldier_pzscheck"] = {"BotInfantry", "BotATInfantry"},
-		["soldier_at"] = {"BotInfantry", "BotATInfantry"},
+		["soldier_pzfaust"] = {"BotInfantry", "BotATInfantry"},
 		["soldier_atr"] = {"BotInfantry", "BotATInfantry"},
 		["soldier_atr_grenade"] = {"BotInfantry", "BotATInfantry"},
 		["soldier_bazooka"] = {"BotInfantry", "BotATInfantry"},
 	}
 	
 	local botUnits = sceneUnits[BotApi.Instance.playerId][2]
+	
 	for i, prop in ipairs(searchProps) do
 		local count = botUnits[i]
 		local variables = propertyToVariable[prop]
@@ -307,31 +309,6 @@ function GetUnitToSpawn(units)
 				priorityMultiplier = priorityMultiplier * 0.80 * 0.25
 			end
 		end
-		
-		-- Global priorities for west81 tanks
-		if UnitType("Tank") and UnitType("Doctrine") then
-			if UnitType("Class1") then
-				priorityMultiplier = priorityMultiplier * 1.5
-			elseif UnitType("Class2") then
-				priorityMultiplier = priorityMultiplier * 1.5 * 0.67
-			else
-				priorityMultiplier = priorityMultiplier * 1.5 * 0.50
-			end
-		else 
-			priorityMultiplier = priorityMultiplier * 0.80
-		end
-		
-		-- Global priorities for Hotmod Sorties
-		if UnitType("Sortie") then
-			if UnitType("Class1") then
-				priorityMultiplier = priorityMultiplier * 0.30
-			elseif UnitType("Class2") then
-				priorityMultiplier = priorityMultiplier * 0.30 * 0.67
-			else
-				priorityMultiplier = priorityMultiplier * 0.30 * 0.25
-			end
-		end
-		
 	
 		-- Global priorities for different class of all other vehicles and infantry teams
 		if not UnitType("Cannon") or not UnitType("Squad") then
@@ -350,7 +327,9 @@ end
 
 function OnGameStart()
     countBackFlags()
-	OnGameStartUtility(BotApi.Instance.unitMode)
+	-- unitMode is 2022s for lobby; bot buy lists are conquest.<army> (Code:X).
+	OnGameStartUtility("conquest")
+
 end
 
 function OnGameQuant()
@@ -382,7 +361,7 @@ end
 	-- NOTE: "_lua_alert" = squad abruptly runs into enemy force seek&destroy.
 
 function IsSquadInScript(squad)
-	if BotApi.Scene:IsSquadTagged(squad, "_lua_mi") then
+	if BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") then
 		--if printDebug then print("Print: SQUADinSCRIPT thus no action squad", squad, "Player#",BotApi.Instance.playerId, "Team", team) end
 		return true
 	end

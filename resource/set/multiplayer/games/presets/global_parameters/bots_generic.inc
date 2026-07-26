@@ -54,31 +54,3 @@
 	}
 	{unitScore 0.5}
 }
-{extreme
-	{unitset
-		{value %period}
-	}
-	{balancingFactorBonus
-		{cp 1.25}
-		{mpStart 1.30}
-		{mpFinish 2.0}
-		{payback 5.00}
-		{chargeDelay 1.0}	;// adjusts the initial delay only
-		{charge 0.75}		;// adjusts the interval only
-	}
-	{unitScore 0.33}
-}
-{cruel
-	{unitset
-		{value %period}
-	}
-	{balancingFactorBonus
-		{cp 1.5}
-		{mpStart 1.50}
-		{mpFinish 2.5}
-		{payback 7.50}
-		{chargeDelay 0.8}	;// adjusts the initial delay only
-		{charge 0.5}		;// adjusts the interval only
-	}
-	{unitScore 0.25}
-}

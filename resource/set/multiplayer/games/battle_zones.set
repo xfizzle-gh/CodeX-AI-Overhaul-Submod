@@ -25,7 +25,8 @@
 	}
 	{teamSettings
 		{teamsMode normal}
-		{armySelectionMode alliance}
+		; Shattered Galaxy: team mode lets each slot pick a nation; alliances still group sides.
+		{armySelectionMode team}
 		{teams
 			{"a"}
 			{"b"}
