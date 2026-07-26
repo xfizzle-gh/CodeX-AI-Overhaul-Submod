@@ -10,7 +10,7 @@ enemyTeam = BotApi.Instance.enemyTeam
 team = BotApi.Instance.team
 teamSize = BotApi.Instance.teamSize
 
-MaxSquadSize = 0
+MaxSquadSize = 7
 gameModeSpawnTimer = 0
 Purchases = {}
 PIter = {}

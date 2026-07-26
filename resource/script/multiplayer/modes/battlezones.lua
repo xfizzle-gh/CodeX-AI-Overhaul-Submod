@@ -328,7 +328,7 @@ end
 function OnGameStart()
     countBackFlags()
 	-- unitMode is 2022s for lobby; bot buy lists are conquest.<army> (Code:X).
-	OnGameStartUtility("conquest")
+	OnGameStartUtility(BotApi.Instance.unitMode)
 
 end
 
