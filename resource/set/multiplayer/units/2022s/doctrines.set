@@ -1,0 +1,22 @@
+;SDL
+; At least one doctrine unit must exist in each army's multiplayer buy table.
+
+{"doctrine_squad_skirmish_nato(nato)"
+	("squad_with2types_doctrine" side(nato) period(2022s) c1(nato_squadlead:1) c2(nato_rifleman:5))
+	("doctrine_t1" cool(0) d(2022s_nato) cost(10))
+}
+
+{"doctrine_squad_skirmish_ukr(ukr)"
+	("squad_with2types_doctrine" side(ukr) period(2022s) c1(ukr_squadlead:1) c2(ukr_rifleman:5))
+	("doctrine_t1" cool(0) d(2022s_ukr) cost(10))
+}
+
+{"doctrine_squad_skirmish_rusa(rusa)"
+	("squad_with2types_doctrine" side(rusa) period(2022s) c1(rus_squadlead:1) c2(rus_rifleman:5))
+	("doctrine_t1" cool(0) d(2022s_rusa) cost(10))
+}
+
+{"doctrine_squad_skirmish_prc(prc)"
+	("squad_with2types_doctrine" side(prc) period(2022s) c1(pla_squadlead:1) c2(pla_rifleman:5))
+	("doctrine_t1" cool(0) d(2022s_prc) cost(10))
+}
