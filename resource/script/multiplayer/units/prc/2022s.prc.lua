@@ -10,7 +10,8 @@ local skirmish = {
 			{priority = 0.8, type = {"Infantry", "Team", "Class1"}, unit = "squad_pla112_pf98(prc)"},
 			{priority = 0.75, type = {"Infantry", "Team", "Class1"}, unit = "squad_pla112_recon(prc)"},
 			{priority = 0.8, type = {"Infantry", "Team", "Class1"}, unit = "squad_pla112_sniper(prc)"},
-			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_squad_skirmish_prc(prc)"},
+			{priority = 0.005, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_squad_skirmish_prc(prc)"},
+			{priority = 0.005, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_squad_skirmish_prc_139(prc)"},
 		}
 	}
 }
