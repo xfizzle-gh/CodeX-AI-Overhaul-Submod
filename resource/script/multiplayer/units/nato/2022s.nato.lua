@@ -13,7 +13,8 @@ local skirmish = {
 			{priority = 0.40, type = {"Infantry", "Team", "Medic", "Support", "Class1"}, unit = "arf_medic(nato)"},
 			{priority = 0.55, type = {"Infantry", "Team", "AT", "Support", "Class1"}, unit = "squad_usmc_weapon_at_javelin(nato)"},
 			{priority = 0.75, type = {"Infantry", "Squad", "Class1"}, unit = "squad_inf2_rifle(nato)"},
-			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_squad_skirmish_nato(nato)"},
+			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine(nato)"},
+			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_vehicle_m2a3(nato)"},
 		}
 	}
 }
