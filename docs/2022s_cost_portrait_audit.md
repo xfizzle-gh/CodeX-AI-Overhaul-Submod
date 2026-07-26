@@ -37,6 +37,10 @@ That means the displayed MP price is calculated from the inherited conquest cost
 | Ukraine | `47th_inf_at(ukr)` | 122.5 | Exact composition |
 | Russia | `rus90_inf_sniper(rusa)` | 112.0 | Exact composition |
 | PRC | `squad_pla112_sniper(prc)` | 107.7 | Exact composition |
+| NATO | `squad_inf2_rifle(nato)` | 334.5 | Exact composition |
+| Ukraine | `47th_assault_nlaw(ukr)` | 269.5 | Exact composition |
+| Russia | `lud_22_1(rusa)` | 56.0 | Exact composition |
+| PRC | `squad_pla112_rifle_hj12(prc)` | 234.7 | Exact composition |
 
 ### Known inherited anomaly
 
