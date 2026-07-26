@@ -33,6 +33,10 @@ That means the displayed MP price is calculated from the inherited conquest cost
 | PRC | `squad_pla112_mg(prc)` | 99.4 | Exact composition |
 | PRC | `squad_pla112_pf98(prc)` | 103.6 | Exact composition |
 | PRC | `squad_pla112_recon(prc)` | 146.8 | Exact composition |
+| NATO | `squad_usmc_weapon_at_javelin(nato)` | 281.0 | Exact composition |
+| Ukraine | `47th_inf_at(ukr)` | 122.5 | Exact composition |
+| Russia | `rus90_inf_sniper(rusa)` | 112.0 | Exact composition |
+| PRC | `squad_pla112_sniper(prc)` | 107.7 | Exact composition |
 
 ### Known inherited anomaly
 
