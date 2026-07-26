@@ -11,7 +11,8 @@ local skirmish = {
 			{priority = 0.40, type = {"Infantry", "Team", "Medic", "Support", "Class1"}, unit = "ukr_22_5(ukr)"},
 			{priority = 0.65, type = {"Infantry", "Team", "AT", "Support", "Class1"}, unit = "47th_inf_at(ukr)"},
 			{priority = 0.75, type = {"Infantry", "Squad", "AT", "Class1"}, unit = "47th_assault_nlaw(ukr)"},
-			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_squad_skirmish_ukr(ukr)"},
+			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine(ukr)"},
+			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_squad_47th(ukr)"},
 		}
 	}
 }
