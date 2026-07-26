@@ -1,7 +1,7 @@
 ;SDL
-; Code:X 2022s multiplayer roster.
-; Normal units retain the parent mod's compositions and costs. Doctrine files
-; are separate because Dynamic Campaign does not define multiplayer doctrines.
+; Minimal 2022s diagnostic roster.
+; Keep the four faction infantry breed catalogs so the selected squads and
+; doctrine squads resolve, but do not register the full Code:X unit catalogs.
 (include "conquest/settings.set")
 (include "2022s/doctrine_settings.set")
 
@@ -9,13 +9,6 @@
 (include "conquest/inf_rusa.set")
 (include "conquest/inf_nato.set")
 (include "conquest/inf_prc_era1960.set")
-(include "conquest/inf_csa_era1960.set")
 
-(include "conquest/units_ukr.set")
-(include "conquest/units_rusa.set")
-(include "conquest/units_nato.set")
-(include "conquest/units_prc_era1960.set")
-(include "conquest/units_csa_era1960.set")
-(include "conquest/units_sov_era1960.set")
-
+(include "2022s/minimal_units.set")
 (include "2022s/doctrines.set")
