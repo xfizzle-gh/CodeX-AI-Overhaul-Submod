@@ -22,7 +22,7 @@ if Purchases and Purchases["conquest.nato"] then
 	local skirmish = clonePurchaseTable(Purchases["conquest.nato"])
 	table.insert(skirmish[1].Units, {
 		priority = 1.0,
-		type = {"Infantry", "Doctrine", "Squad", "Class1"},
+		type = {"Infantry", "Squad", "Class1"},
 		unit = "doctrine_squad_skirmish_nato(nato)"
 	})
 	Purchases["2022s.nato"] = skirmish
