@@ -1,7 +1,4 @@
 ;SDL
 {units
 	(include "roster_2022s.set")
-	(include "roster_early.set")
-	(include "roster_mid.set")
-	(include "roster_late.set")
 }
