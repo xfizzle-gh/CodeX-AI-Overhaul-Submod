@@ -1,7 +1,9 @@
 ;SDL
-; Code:X skirmish roster — ONLY files that exist under units/conquest/.
-; Missing includes abort the whole apply and yield zero armies (lobby ? / Random only).
+; Code:X 2022s multiplayer roster.
+; Normal units retain the parent mod's compositions and costs. Doctrine files
+; are separate because Dynamic Campaign does not define multiplayer doctrines.
 (include "conquest/settings.set")
+(include "2022s/doctrine_settings.set")
 
 (include "conquest/inf_ukr.set")
 (include "conquest/inf_rusa.set")
@@ -15,3 +17,5 @@
 (include "conquest/units_prc_era1960.set")
 (include "conquest/units_csa_era1960.set")
 (include "conquest/units_sov_era1960.set")
+
+(include "2022s/doctrines.set")

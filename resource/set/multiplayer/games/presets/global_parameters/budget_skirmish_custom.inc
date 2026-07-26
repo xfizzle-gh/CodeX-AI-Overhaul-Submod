@@ -1,4 +1,4 @@
-; Skirmish custom budget without doctrine/hero.
+; Skirmish custom budget with doctrine registration.
 {budgets
 	{vehicle
 		{mode "custom"}
@@ -16,5 +16,12 @@
 			{speedset	"2000 2500 3000 3500 4000 4500 5000 6000 10000"}
 		}
 		{buttons "inf1 inf2 empl vehicles tanks"}
+	}
+	{hero
+		{resource
+			{start 20}
+		}
+		{buttons "doctrine"}
+		{tag "special"}
 	}
 }

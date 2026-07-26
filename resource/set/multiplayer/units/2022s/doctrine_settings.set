@@ -1,0 +1,25 @@
+;SDL
+; Multiplayer doctrine templates. Code:X conquest settings do not define these.
+
+(define "generic_d_inf"
+	{level 1}
+	{research_stage 1}
+	{squad_cost_factor 0}
+	{tags "all doctrine %t"}
+	{button "doctrine"}
+)
+
+(define "squad_with2types_doctrine"
+	("generic_d_inf" t(%side %period))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2"}
+)
+
+(define "doctrine_t1"
+	{charge
+		{delay 300}
+		{interval %cool}
+	}
+	{group "doctrine_t1"}
+	{doctrine %d}
+	{cost %cost}
+)

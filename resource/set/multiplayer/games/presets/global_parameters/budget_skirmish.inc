@@ -1,4 +1,4 @@
-; Skirmish budget without doctrine/hero (Code:X has no conquest doctrines).
+; Skirmish budget with doctrine registration.
 {budgets
 	{vehicle
 		{mode "standard"}
@@ -13,5 +13,12 @@
 			}
 		}
 		{buttons "inf1 inf2 empl vehicles tanks"}
+	}
+	{hero
+		{resource
+			{start 20}
+		}
+		{buttons "doctrine"}
+		{tag "special"}
 	}
 }
