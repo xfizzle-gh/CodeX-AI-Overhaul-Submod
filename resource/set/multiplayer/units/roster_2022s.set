@@ -1,8 +1,9 @@
 ;SDL
-; Minimal 2022s diagnostic roster.
-; Keep the four faction infantry breed catalogs so the selected squads and
-; doctrine squads resolve, but do not register the full Code:X unit catalogs.
+; Curated 2022s skirmish roster.
+; Keep only explicitly tested dismounted units while the original Code:X buy
+; catalogs are rebuilt in isolated batches.
 (include "conquest/settings.set")
+(include "2022s/detachment_settings.set")
 (include "2022s/doctrine_settings.set")
 
 (include "conquest/inf_ukr.set")
