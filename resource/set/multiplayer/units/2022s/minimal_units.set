@@ -3,26 +3,34 @@
 ; This intentionally excludes vehicles, emplacements, tanks, artillery, aircraft,
 ; transported squads, auxiliary factions, and the full Code:X unit catalogs.
 
-; NATO
+; NATO squads
 ("squad_with2types_conquest" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_usmc_weapon_at) c1(usmc_teamlead:2) c2(usmc_antitank_smaw:2))
 ("squad_with2types_conquest" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_usmc_mg) c1(usmc_teamlead:3) c2(usmc_mg:3))
 ("squad_with2types_conquest" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_usmc_eng) c1(usmc_eng:8) c2(usmc_mg:1))
 ("squad_with8types_conquest" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_inf2_rifle_m3) c1(inf2_squadlead:1) c2(inf2_teamlead:2) c3(inf2_autorifle:2) c4(inf2_grenadier:1) c5(inf2_rifleman:2) c6(inf2_antitank:1) c7(inf2_marksman:1) c8(inf2_medic:1))
+; NATO detachments
+("detachment_with1type" side(nato) period(2022s) min_stage(1) max_stage(99) name(arf_medic) c1(nato_medic:4))
 
-; Ukraine
+; Ukraine squads
 ("squad_with5types_conquest" side(ukr) period(2022s) min_stage(1) max_stage(99) name(ter_22_1) c1(ter_squadlead:1) c2(ter_mg:2) c3(ter_rifleman:4) c4(ter_marksman:1) c5(ter_antitank:1))
 ("squad_with6types_conquest" side(ukr) period(2022s) min_stage(1) max_stage(99) name(93th_alcatraz_rifle) c1(demon_squadlead:1) c2(demon_seniorrifleman:1) c3(demon_rifleman:5) c4(demon_mg_rpk:1) c5(demon_antitank:1) c6(demon_medic:1))
 ("squad_with5types_conquest" side(ukr) period(2022s) min_stage(1) max_stage(99) name(93th_alcatraz_mg_pkm) c1(demon_squadlead:1) c2(demon_seniorrifleman:1) c3(demon_rifleman:2) c4(demon_mg:2) c5(demon_antitank:1))
 ("squad_with6types_conquest" side(ukr) period(2022s) min_stage(5) max_stage(99) name(47th_inf_rifle) c1(ukr47_squadlead:1) c2(ukr47_seniorrifleman:1) c3(ukr47_antitank_rpg7:1) c4(ukr47_lmg:1) c5(ukr47_medic:1) c6(ukr47_rifleman:2))
+; Ukraine detachments
+("detachment_with1type" side(ukr) period(2022s) min_stage(1) max_stage(99) name(ukr_22_5) c1(ukr_medic:4))
 
-; Russia
+; Russia squads
 ("squad_with7types_conquest" side(rusa) period(2022s) min_stage(1) max_stage(99) name(rus90_inf_rifle) c1(rus90_squadlead:1) c2(rus90_seniorrifleman:1) c3(rus90_rifleman:1) c4(rus90_mg:1) c5(rus90_antitank:1) c6(rus90_marksman:1) c7(rus90_medic:1))
 ("squad_with3types_conquest" side(rusa) period(2022s) min_stage(1) max_stage(99) name(rus90_inf_mg) c1(rus90_squadlead:1) c2(rus90_seniorrifleman:1) c3(rus90_mg:2))
 ("squad_with3types_conquest" side(rusa) period(2022s) min_stage(1) max_stage(99) name(rus90_inf_at) c1(rus90_squadlead:1) c2(rus90_antitank:2) c3(rus90_rifleman:1))
 ("squad_with6types_conquest" side(rusa) period(2022s) min_stage(1) max_stage(99) name(rus90_inf_assault) c1(rus90_squadlead:1) c2(rus90_seniorrifleman:1) c3(rus90_rifleman_assault:1) c4(rus90_mg:1) c5(rus90_assault:2) c6(rus90_medic:1))
+; Russia detachments
+("detachment_with1type" side(rusa) period(2022s) min_stage(1) max_stage(99) name(rus_22_5) c1(rus_medic:4))
 
-; PRC
+; PRC squads
 ("squad_with8types_conquest" side(prc) period(2022s) min_stage(1) max_stage(99) name(squad_pla112_rifle) c1(pla_squadlead:1) c2(pla_senior:1) c3(pla_rifleman:3) c4(pla_grenadier:1) c5(pla_marksman:1) c6(pla_mg:1) c7(pla_antitank_pf98:1) c8(pla_medic:1))
 ("squad_with4types_conquest" side(prc) period(2022s) min_stage(1) max_stage(99) name(squad_pla112_mg) c1(pla_squadlead:1) c2(pla_senior:1) c3(pla_grenadier:1) c4(pla_mg_qjy:3))
 ("squad_with5types_conquest" side(prc) period(2022s) min_stage(1) max_stage(99) name(squad_pla112_pf98) c1(pla_squadlead:1) c2(pla_senior:1) c3(pla_antitank_pf98:1) c4(pla_antitank_pf98_fg:1) c5(pla_mg:1))
 ("squad_with8types_conquest" side(prc) period(2022s) min_stage(3) max_stage(99) name(squad_pla112_rifle_dzj08) c1(pla_squadlead:1) c2(pla_senior:1) c3(pla_rifleman_dza08:2) c4(pla_grenadier:1) c5(pla_marksman:1) c6(pla_mg:1) c7(pla_antitank_pf98:1) c8(pla_medic:1))
+; PRC detachments
+("detachment_with3types" side(prc) period(2022s) min_stage(1) max_stage(99) name(squad_pla112_recon) c1(pla_squadlead:1) c2(pla_recon:2) c3(pla_mg:1))
