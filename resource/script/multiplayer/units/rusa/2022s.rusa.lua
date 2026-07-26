@@ -7,6 +7,7 @@ local skirmish = {
 			{priority = 1.0, type = {"Infantry", "Squad", "Class1"}, unit = "rus90_inf_rifle(rusa)"},
 			{priority = 1.0, type = {"Infantry", "Squad", "Class1"}, unit = "rus90_inf_mg(rusa)"},
 			{priority = 1.0, type = {"Infantry", "Squad", "Class1"}, unit = "rus90_inf_at(rusa)"},
+			{priority = 1.0, type = {"Infantry", "Squad", "Class1"}, unit = "rus90_inf_assault(rusa)"},
 			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_squad_skirmish_rusa(rusa)"},
 		}
 	}
