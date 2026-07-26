@@ -12,6 +12,7 @@ local skirmish = {
 			{priority = 0.45, type = {"Infantry", "Team", "Sniper", "Recon", "Support", "Class1"}, unit = "squad_pla112_sniper(prc)"},
 			{priority = 0.75, type = {"Infantry", "Squad", "AT", "Class1"}, unit = "squad_pla112_rifle_hj12(prc)"},
 			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_squad_skirmish_prc(prc)"},
+			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_squad_skirmish_prc_139(prc)"},
 		}
 	}
 }
