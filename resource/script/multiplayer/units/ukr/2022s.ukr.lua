@@ -10,7 +10,8 @@ local skirmish = {
 			{priority = 0.8, type = {"Infantry", "Team", "Class1"}, unit = "93th_alcatraz_mg_pkm(ukr)"},
 			{priority = 0.75, type = {"Infantry", "Team", "Class1"}, unit = "ukr_22_5(ukr)"},
 			{priority = 0.8, type = {"Infantry", "Team", "Class1"}, unit = "47th_inf_at(ukr)"},
-			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_squad_skirmish_ukr(ukr)"},
+			{priority = 0.005, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine(ukr)"},
+			{priority = 0.005, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_squad_47th(ukr)"},
 		}
 	}
 }
