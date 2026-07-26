@@ -43,3 +43,31 @@
 		{button "inf2"}
 	}
 )
+
+(define "detachment_with4types"
+	{"%name(%side)"
+		{charge {delay 0}{interval 0}}
+		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4"}
+		{tags "conquest conquestonly %side %period detachment"}
+		{level 1}
+		{cost 0}
+		{research_stage %min_stage}
+		{research_stage_max %max_stage}
+		{squad_cost_factor 1}
+		{button "inf2"}
+	}
+)
+
+(define "detachment_with5types"
+	{"%name(%side)"
+		{charge {delay 0}{interval 0}}
+		{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5"}
+		{tags "conquest conquestonly %side %period detachment"}
+		{level 1}
+		{cost 0}
+		{research_stage %min_stage}
+		{research_stage_max %max_stage}
+		{squad_cost_factor 1}
+		{button "inf2"}
+	}
+)
