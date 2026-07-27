@@ -1,0 +1,99 @@
+;SDL
+; Russia Battle Zones normal-MP and doctrine-point ground roster.
+; Skirmish only. No Conquest files, MLRS, aircraft, helicopters, or air-support actions.
+
+;===============================================================================
+; GROUND FORCES
+; Motor-rifle infantry, engineers, mechanized forces, armor, air defense and fires.
+;===============================================================================
+
+; Doctrine-gated normal-MP ground roster.
+{"rus4_inf_rifle_rpg27(rusa)"
+	("mp_infantry_7" side(rusa) period(2022s) d(modern_rusa_ground) c1(rus4_squadlead:1) c2(rus4_seniorrifleman:1) c3(rus4_rifleman:1) c4(rus4_mg:1) c5(rus4_antitank:1) c6(rus4_antitank_rpg27:1) c7(rus4_medic:1))
+}
+
+{"rus90_saperi_at(rusa)"
+	("mp_infantry_3" side(rusa) period(2022s) d(modern_rusa_ground) c1(rus90_saperi:3) c2(rus90_mg:1) c3(rus90_antitank_rpg26:4))
+}
+
+{"squad_rus90_bmp2m(rusa)"
+	("mp_vehicle" side(rusa) period(2022s) d(modern_rusa_ground) vehicle(bmp_2m) crew(rus_vehicleman:3))
+}
+
+{"squad_rus90_2s3(rusa)"
+	("mp_support" side(rusa) period(2022s) d(modern_rusa_ground) vehicle(2s3m_akatsiya_rus) crew(rus_vehicleman:4))
+}
+
+; Five doctrine-point choices, all with explicit nonzero DP costs.
+{"rus_manpad_operator(rusa)"
+	("dp_infantry_2" side(rusa) period(2022s) c1(rus_manpad_operator:1) c2(rus_manpad_supporter:1))
+	("doctrine_t1" cool(180) d(modern_rusa_ground) cost(3))
+}
+
+{"squad_rus90_razv_bmp2(rusa)"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(bmp2_rus) crew(rus_vehicleman:3))
+	("doctrine_t1" cool(210) d(modern_rusa_ground) cost(4))
+}
+
+{"bmpt_72"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(bmpt_72) crew(rus_vehicleman:5))
+	("doctrine_t1" cool(330) d(modern_rusa_ground) cost(6))
+}
+
+{"t90m_2024_ubh"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(t90m_2024_ubh) crew(rus_vehicleman:3))
+	("doctrine_t1" cool(360) d(modern_rusa_ground) cost(8))
+}
+
+{"2s6"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(2s6) crew(rus_vehicleman:4))
+	("doctrine_t1" cool(300) d(modern_rusa_ground) cost(5))
+}
+
+;===============================================================================
+; AIRBORNE AND NAVAL INFANTRY
+; VDV and 155th Naval Infantry with light mechanized armor and conventional fires.
+;===============================================================================
+
+; Doctrine-gated normal-MP ground roster.
+{"vdv76_inf_rpg28(rusa)"
+	("mp_infantry_7" side(rusa) period(2022s) d(modern_rusa_vdv) c1(vdv76_squadlead:1) c2(vdv76_rifleman:1) c3(vdv76_greenader:1) c4(vdv76_mg:1) c5(vdv76_antitank_rpg28:1) c6(vdv76_antitank:1) c7(vdv76_medic:1))
+}
+
+{"vdv76_inf_metis(rusa)"
+	("mp_infantry_7" side(rusa) period(2022s) d(modern_rusa_vdv) c1(vdv76_squadlead:1) c2(vdv76_rifleman:1) c3(vdv76_greenader:1) c4(vdv76_mg:1) c5(vdv76_metis_crew:1) c6(vdv76_marksman:1) c7(vdv76_medic:1))
+}
+
+{"squad_vdv76_mech_bmd4(rusa)"
+	("mp_vehicle" side(rusa) period(2022s) d(modern_rusa_vdv) vehicle(bmd_4m) crew(vdv_vehicleman:3))
+}
+
+{"squad_vdv76_2s9(rusa)"
+	("mp_support" side(rusa) period(2022s) d(modern_rusa_vdv) vehicle(2c9) crew(rus_vehicleman:4))
+}
+
+; Five doctrine-point choices, all with explicit nonzero DP costs.
+{"rus155_inf_rpg28(rusa)"
+	("dp_infantry_8" side(rusa) period(2022s) c1(rus155_squadlead:1) c2(rus155_seniorrifleman:1) c3(rus155_rifleman:2) c4(rus155_lmg:1) c5(rus155_antitank:1) c6(rus155_antitank_rpg28:1) c7(rus155_marksman:1) c8(rus155_medic:1))
+	("doctrine_t1" cool(180) d(modern_rusa_vdv) cost(3))
+}
+
+{"squad_vdv45_razv_typhoon(rusa)"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(typhoon_ads) crew(vdv_support:3))
+	("doctrine_t1" cool(180) d(modern_rusa_vdv) cost(3))
+}
+
+{"squad_rus155_mech_bmp3(rusa)"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(bmp3_rus) crew(rus_vehicleman:3))
+	("doctrine_t1" cool(240) d(modern_rusa_vdv) cost(5))
+}
+
+{"squad_vdv76_2s25(rusa)"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(2s25m) crew(vdv_vehicleman:3))
+	("doctrine_t1" cool(300) d(modern_rusa_vdv) cost(6))
+}
+
+{"squad_rus155_t80bv_2025(rusa)"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(t80bv_2023) crew(rus_vehicleman:3))
+	("doctrine_t1" cool(330) d(modern_rusa_vdv) cost(8))
+}
