@@ -1,0 +1,63 @@
+;SDL
+; Ukraine Battle Zones doctrine-point ground roster.
+; Skirmish only. No Conquest files, MLRS, aircraft, helicopters, or air-support actions.
+
+;===============================================================================
+; NATIONAL DEFENSE FORCES
+; 93rd Mechanized infantry, domestic reconnaissance, armor and tube artillery.
+;===============================================================================
+
+{"doctrine_squad_93th(ukr)"
+	("dp_infantry_7" side(ukr) period(2022s) c1(demon_squadlead:1) c2(demon_seniorrifleman:1) c3(demon_rifleman:4) c4(demon_mg_rpk:1) c5(demon_antitank:1) c6(demon_grenadier:1) c7(demon_medic:1))
+	("doctrine_t1" cool(180) d(modern_ukr_home) cost(3))
+}
+
+{"doctrine_squad_93th_novator(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(novator) crew(ukr_vehicleman:2))
+	("doctrine_t1" cool(180) d(modern_ukr_home) cost(3))
+}
+
+{"doctrine_vehicle_bmp2_ukr93(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(bmp2_ukr) crew(ukr_vehicleman:3))
+	("doctrine_t1" cool(240) d(modern_ukr_home) cost(5))
+}
+
+{"doctrine_vehicle_t64bv_ukr93(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(t64bv2024) crew(ukr_vehicleman:3))
+	("doctrine_t1" cool(360) d(modern_ukr_home) cost(7))
+}
+
+{"doctrine_vehicle_2s1_ukr93(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(2s1_gvozdika_ukr) crew(ukr_vehicleman:4))
+	("doctrine_t1" cool(360) d(modern_ukr_home) cost(6))
+}
+
+;===============================================================================
+; WESTERN MECHANIZED CORPS
+; 47th assault infantry, reconnaissance, Western mechanized armor and fires.
+;===============================================================================
+
+{"doctrine_squad_47th(ukr)"
+	("dp_infantry_6" side(ukr) period(2022s) c1(ukr47_squadlead_assault:1) c2(ukr47_seniorrifleman_assault:1) c3(ukr47_rifleman_assault:3) c4(ukr47_lmg_assault:1) c5(ukr47_assault_at4:2) c6(ukr47_assault_m72:1))
+	("doctrine_t1" cool(180) d(modern_ukr_western) cost(3))
+}
+
+{"doctrine_squad_211th_recon(ukr)"
+	("dp_infantry_4" side(ukr) period(2022s) c1(ukr211_squadlead:1) c2(ukr211_demo:4) c3(ukr211_recon:1) c4(ukr211_sniper:1))
+	("doctrine_t1" cool(180) d(modern_ukr_western) cost(3))
+}
+
+{"doctrine_vehicle_Bradley_47th(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(m2a2_ods_bradley_arat) crew(ukr_vehicleman:3))
+	("doctrine_t1" cool(240) d(modern_ukr_western) cost(5))
+}
+
+{"doctrine_vehicle_m1a1sa(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(m1a1_sa) crew(ukr_vehicleman:4))
+	("doctrine_t1" cool(360) d(modern_ukr_western) cost(8))
+}
+
+{"doctrine_vehicle_m109a6_47(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(m109_paladin) crew(ukr_vehicleman:4))
+	("doctrine_t1" cool(360) d(modern_ukr_western) cost(6))
+}
