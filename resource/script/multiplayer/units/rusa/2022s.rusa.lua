@@ -40,6 +40,7 @@ local skirmish = {
 			{priority = 0.60, type = {"Infantry", "Squad", "AT", "Class1"}, unit = "vdv76_inf_metis(rusa)"},
 			{priority = 0.50, type = {"Infantry", "Team", "Engineer", "Support", "Class1"}, unit = "rus2_eng(rusa)"},
 			{priority = 0.35, type = {"Infantry", "Team", "Recon", "Support", "Class1"}, unit = "rus2_scout(rusa)"},
+			{priority = 0.32, type = {"Infantry", "Team", "AA", "Support", "Class1"}, unit = "rus155_manpad(rusa)"},
 			{priority = 0.18, type = {"Ifv", "Class2"}, unit = "squad_vdv76_mech_bmd4(rusa)"},
 			{priority = 0.08, type = {"Tank", "Artillery", "Support", "Class2"}, unit = "squad_vdv76_2s9(rusa)"},
 

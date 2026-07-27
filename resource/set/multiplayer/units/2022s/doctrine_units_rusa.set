@@ -73,13 +73,18 @@
 	("mp_infantry_7" side(rusa) period(2022s) d(modern_rusa_vdv) c1(vdv76_squadlead:1) c2(vdv76_rifleman:1) c3(vdv76_greenader:1) c4(vdv76_mg:1) c5(vdv76_metis_crew:1) c6(vdv76_marksman:1) c7(vdv76_medic:1))
 }
 
-; Native secondary-Russian card families backed by verified VDV breeds.
+; Native secondary-Russian engineer and reconnaissance card families.
 {"rus2_eng(rusa)"
 	("mp_team_2" side(rusa) period(2022s) d(modern_rusa_vdv) c1(vdv76_saperi:4) c2(vdv76_saperi_rpo:1))
 }
 
 {"rus2_scout(rusa)"
 	("mp_team_3" side(rusa) period(2022s) d(modern_rusa_vdv) c1(vdv76_squadlead:1) c2(vdv76_recon:3) c3(vdv76_marksman:1))
+}
+
+; Native 155th Naval Infantry MANPADS card family.
+{"rus155_manpad(rusa)"
+	("mp_team_2" side(rusa) period(2022s) d(modern_rusa_vdv) c1(45vdv_manpad:1) c2(45vdv_rifleman:1))
 }
 
 {"squad_vdv76_mech_bmd4(rusa)"
