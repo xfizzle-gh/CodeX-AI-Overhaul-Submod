@@ -1,6 +1,7 @@
 ;SDL
-; Multiplayer doctrine templates. Code:X conquest settings do not define these.
+; Skirmish doctrine card and doctrine-point unit templates.
 
+; Selection cards do not charge MP for their display formation.
 (define "generic_d_inf"
 	{level 1}
 	{research_stage 1}
@@ -22,6 +23,89 @@
 (define "squad_with5types_doctrine"
 	("generic_d_inf" t(%side %period))
 	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5"}
+)
+
+; Actual doctrine-point units retain their normal MP value through the underlying
+; soldiers or vehicle and add a separate doctrine-point cost through doctrine_t1.
+(define "generic_dp_unit"
+	{level 1}
+	{research_stage 1}
+	{tags "all doctrine doctrineonly %t"}
+	{button "doctrine"}
+	{squad_cost_factor 1}
+	{round_multiple 5.0}
+)
+
+(define "dp_infantry_2"
+	("generic_dp_unit" t(%side %period))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2"}
+)
+
+(define "dp_infantry_3"
+	("generic_dp_unit" t(%side %period))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3"}
+)
+
+(define "dp_infantry_4"
+	("generic_dp_unit" t(%side %period))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4"}
+)
+
+(define "dp_infantry_5"
+	("generic_dp_unit" t(%side %period))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5"}
+)
+
+(define "dp_infantry_6"
+	("generic_dp_unit" t(%side %period))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6"}
+)
+
+(define "dp_infantry_7"
+	("generic_dp_unit" t(%side %period))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7"}
+)
+
+(define "dp_infantry_8"
+	("generic_dp_unit" t(%side %period))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 mp/%side/%period/%c8"}
+)
+
+(define "dp_vehicle"
+	("generic_dp_unit" t(%side %period))
+	{content "%vehicle ( mp/%side/%period/%crew )"}
+)
+
+(define "dp_vehicle_2crew"
+	("generic_dp_unit" t(%side %period))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 )"}
+)
+
+(define "dp_vehicle_5types"
+	("generic_dp_unit" t(%side %period))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%crew3 mp/%side/%period/%crew4 mp/%side/%period/%crew5 )"}
+)
+
+(define "dp_vehicle_6types"
+	("generic_dp_unit" t(%side %period))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%crew3 mp/%side/%period/%crew4 mp/%side/%period/%crew5 mp/%side/%period/%crew6 )"}
+)
+
+(define "dp_vehicle_7types"
+	("generic_dp_unit" t(%side %period))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%crew3 mp/%side/%period/%crew4 mp/%side/%period/%crew5 mp/%side/%period/%crew6 mp/%side/%period/%crew7 )"}
+)
+
+(define "dp_vehicle_8types"
+	("generic_dp_unit" t(%side %period))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%crew3 mp/%side/%period/%crew4 mp/%side/%period/%crew5 mp/%side/%period/%crew6 mp/%side/%period/%crew7 mp/%side/%period/%crew8 )"}
+)
+
+(define "dp_action_vehicle"
+	("generic_dp_unit" t(%side %period))
+	{content "%vehicle ( mp/%side/%period/%crew )"}
+	{action "%action"}
+	{squad_cost_factor 0}
 )
 
 (define "doctrine_t1"
