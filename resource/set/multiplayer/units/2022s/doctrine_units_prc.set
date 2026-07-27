@@ -1,0 +1,137 @@
+;SDL
+; PRC combined-arms doctrine-point roster.
+
+;===============================================================================
+; 112TH RAPID COMBINED ARMS
+; Mobile infantry, wheeled/tracked IFVs, modern armor, air defense, fires and air.
+;===============================================================================
+
+{"squad_pla112_qbu11(prc)"
+	("dp_infantry_4" side(prc) period(2022s) c1(pla_squadlead:1) c2(pla_senior:1) c3(pla_marksman_qbu11:1) c4(pla_mg:2))
+	("doctrine_t1" cool(120) d(modern_prc_112) cost(10))
+}
+
+{"squad_pla112_eng_at(prc)"
+	("dp_infantry_2" side(prc) period(2022s) c1(pla_squadlead:1) c2(pla_eng_at:8))
+	("doctrine_t1" cool(150) d(modern_prc_112) cost(12))
+}
+
+{"squad_pla112_04a_hj12(prc)"
+	("dp_vehicle_8types" side(prc) period(2022s) vehicle(zbd04_a) crew1(pla_vehicleman:3) crew2(pla_squadlead:1) crew3(pla_senior:1) crew4(pla_rifleman:1) crew5(pla_mg:1) crew6(pla_grenadier:1) crew7(pla_marksman:1) crew8(pla_antitank_hj12:1))
+	("doctrine_t1" cool(240) d(modern_prc_112) cost(36))
+}
+
+{"squad_pla112_zbl08_hj73(prc)"
+	("dp_vehicle_8types" side(prc) period(2022s) vehicle(zbl08_atgm) crew1(pla_vehicleman:3) crew2(pla_squadlead:1) crew3(pla_senior:1) crew4(pla_rifleman:1) crew5(pla_mg:1) crew6(pla_grenadier:1) crew7(pla_marksman:1) crew8(pla_antitank_pf98:1))
+	("doctrine_t1" cool(210) d(modern_prc_112) cost(30))
+}
+
+{"squad_pla112_ztz96a(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(ztz96_a) crew(pla_vehicleman:3))
+	("doctrine_t1" cool(300) d(modern_prc_112) cost(48))
+}
+
+{"squad_pla112_ztz99a(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(ztz99a) crew(pla_vehicleman:3))
+	("doctrine_t1" cool(360) d(modern_prc_112) cost(60))
+}
+
+{"squad_pla112_aft10(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(aft-10) crew(pla_vehicleman:4))
+	("doctrine_t1" cool(240) d(modern_prc_112) cost(34))
+}
+
+{"squad_pla112_plz05(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(plz05) crew(pla_vehicleman:3))
+	("doctrine_t1" cool(360) d(modern_prc_112) cost(46))
+}
+
+{"pgz_09"
+	("dp_vehicle" side(prc) period(2022s) vehicle(pgz_09) crew(pla_vehicleman:3))
+	("doctrine_t1" cool(300) d(modern_prc_112) cost(42))
+}
+
+{"z-10_rkt"
+	("dp_vehicle" side(prc) period(2022s) vehicle(z-10_rkt) crew(pla_crew:3))
+	("doctrine_t1" cool(420) d(modern_prc_112) cost(58))
+}
+
+{"jh-7a_at"
+	("dp_action_vehicle" side(prc) period(2022s) vehicle(jh-7a_at) crew(pla_vehicleman:2) action(airstrike:airsupport_trigger))
+	("doctrine_t1" cool(480) d(modern_prc_112) cost(70))
+}
+
+{"wingloong_ii_kab"
+	("dp_action_vehicle" side(prc) period(2022s) vehicle(wingloong_ii_kab) crew(pla_crew:0) action(airstrike:airsupport_trigger))
+	("doctrine_t1" cool(360) d(modern_prc_112) cost(48))
+}
+
+;===============================================================================
+; 139TH HEAVY COMBINED ARMS
+; Drone-enabled heavy infantry, tracked IFVs, heavy armor, long-range fires and air.
+;===============================================================================
+
+{"squad_pla139_rifle_hj12(prc)"
+	("dp_infantry_10" side(prc) period(2022s) c1(pla_squadlead_gy:1) c2(pla_senior_gy:1) c3(pla_rifleman_dza08_gy:2) c4(pla_grenadier_gy:1) c5(pla_marksman_gy:1) c6(pla_mg_gy:1) c7(pla_antitank_hj12_gy:1) c8(pla_medic_gy:1) c9(pla_crew_qjz171:1) c10(pla_drone:1))
+	("doctrine_t1" cool(120) d(modern_prc_139) cost(12))
+}
+
+{"squad_pla139_weapon(prc)"
+	("dp_infantry_10" side(prc) period(2022s) c1(pla_squadlead_gy:1) c2(pla_senior_gy:1) c3(pla_rifleman_gy:3) c4(pla_mg_qjy_gy:1) c5(pla_grenadier_gy:1) c6(pla_marksman_gy:1) c7(pla_marksman_qbu10_gy:1) c8(pla_sniper_gy:1) c9(pla_antitank_pf98_gy:1) c10(pla_crew_qjz171:1))
+	("doctrine_t1" cool(150) d(modern_prc_139) cost(14))
+}
+
+{"squad_pla139_eng_at(prc)"
+	("dp_infantry_2" side(prc) period(2022s) c1(pla_squadlead_gy:1) c2(pla_eng_at_gy:8))
+	("doctrine_t1" cool(150) d(modern_prc_139) cost(12))
+}
+
+{"squad_pla139_86a_hj12(prc)"
+	("dp_vehicle_8types" side(prc) period(2022s) vehicle(zbd86a) crew1(pla_vehicleman_gy:3) crew2(pla_squadlead_gy:1) crew3(pla_senior_gy:1) crew4(pla_rifleman_gy:1) crew5(pla_mg_gy:1) crew6(pla_grenadier_gy:1) crew7(pla_marksman_gy:1) crew8(pla_antitank_hj12_gy:1))
+	("doctrine_t1" cool(210) d(modern_prc_139) cost(30))
+}
+
+{"squad_pla139_04a(prc)"
+	("dp_vehicle_8types" side(prc) period(2022s) vehicle(zbd04_a_gy) crew1(pla_vehicleman_gy:3) crew2(pla_squadlead_gy:1) crew3(pla_senior_gy:1) crew4(pla_rifleman_gy:1) crew5(pla_mg_gy:1) crew6(pla_grenadier_gy:1) crew7(pla_antitank_pf98_gy:1) crew8(pla_marksman_gy:1))
+	("doctrine_t1" cool(240) d(modern_prc_139) cost(36))
+}
+
+{"squad_pla139_ztz96ap(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(ztz96ap) crew(pla_vehicleman_gy:3))
+	("doctrine_t1" cool(330) d(modern_prc_139) cost(52))
+}
+
+{"wz1001"
+	("dp_vehicle" side(prc) period(2022s) vehicle(wz1001) crew(pla_vehicleman_gy:3))
+	("doctrine_t1" cool(360) d(modern_prc_139) cost(62))
+}
+
+{"squad_pla139_aft09(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(aft-9) crew(pla_crew_gy:3))
+	("doctrine_t1" cool(240) d(modern_prc_139) cost(34))
+}
+
+{"squad_pla139_plz07(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(plz-07a) crew(pla_vehicleman_gy:5))
+	("doctrine_t1" cool(330) d(modern_prc_139) cost(42))
+}
+
+{"phl-03"
+	("dp_vehicle" side(prc) period(2022s) vehicle(phl-03) crew(pla_vehicleman_gy:4))
+	("doctrine_t1" cool(480) d(modern_prc_139) cost(60))
+}
+
+{"hq_7b"
+	("dp_vehicle" side(prc) period(2022s) vehicle(hq_7b) crew(pla_vehicleman_gy:3))
+	("doctrine_t1" cool(300) d(modern_prc_139) cost(44))
+}
+
+{"squad_pla139_wz10(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(z-10_support) crew(pla_vehicleman_gy:2))
+	("doctrine_t1" cool(480) d(modern_prc_139) cost(70))
+}
+
+{"jh-7a_bomber"
+	("dp_action_vehicle" side(prc) period(2022s) vehicle(jh-7a_bomber) crew(pla_vehicleman_gy:2) action(airstrike:airsupport_trigger))
+	("doctrine_t1" cool(480) d(modern_prc_139) cost(68))
+}
