@@ -44,9 +44,15 @@ local skirmish = {
 			{priority = 0.03, type = {"Doctrine", "Tank", "Artillery", "Class3"}, unit = "squad_tank1_m270(nato)"},
 			{priority = 0.02, type = {"Doctrine", "Air", "Class3"}, unit = "ah1z"},
 
-			-- European Coalition doctrine-gated MP infantry.
+			-- European Coalition doctrine-gated MP infantry and detachments.
 			{priority = 1.00, type = {"Infantry", "Squad", "Class1"}, unit = "squad_pz10_rifle(nato)"},
 			{priority = 0.90, type = {"Infantry", "Squad", "AT", "Class1"}, unit = "squad_gb3_rifle_nlaw(nato)"},
+			{priority = 0.55, type = {"Infantry", "Team", "MG", "Support", "Class1"}, unit = "squad_pz10_fireteam_mg(nato)"},
+			{priority = 0.50, type = {"Infantry", "Team", "AT", "Support", "Class1"}, unit = "squad_pz10_fireteam_carl(nato)"},
+			{priority = 0.65, type = {"Infantry", "Team", "Engineer", "Class1"}, unit = "squad_pz10_eng(nato)"},
+			{priority = 0.35, type = {"Infantry", "Team", "Recon", "AT", "Support", "Class1"}, unit = "squad_pz10_rec(nato)"},
+			{priority = 0.55, type = {"Infantry", "Team", "MG", "Support", "Class1"}, unit = "squad_gb3_rifle_mg(nato)"},
+			{priority = 0.50, type = {"Infantry", "Team", "AT", "Support", "Class1"}, unit = "squad_gb3_rifle_at_javelin(nato)"},
 
 			-- European Coalition doctrine-point combined arms.
 			{priority = 0.08, type = {"Doctrine", "Infantry", "Ifv", "Class2"}, unit = "squad_pz10_puma_mells_rifle(nato)"},
