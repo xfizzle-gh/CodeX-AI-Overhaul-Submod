@@ -1,19 +1,33 @@
 ;SDL
-; Diagnostic roster: curated dismounted infantry only.
+; Curated dismounted infantry roster.
 ; Full squads use inf1. Smaller support detachments use inf2.
 ; Vehicles, emplacements, tanks, artillery, aircraft, transported squads,
-; auxiliary factions, and the full Code:X catalogs remain excluded.
+; auxiliary factions, and the full Code:X catalogs remain excluded here.
 
-; NATO squads
-("squad_with2types_conquest" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_usmc_eng) c1(usmc_eng:8) c2(usmc_mg:1))
-("squad_with8types_conquest" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_inf2_rifle_m3) c1(inf2_squadlead:1) c2(inf2_teamlead:2) c3(inf2_autorifle:2) c4(inf2_grenadier:1) c5(inf2_rifleman:2) c6(inf2_antitank:1) c7(inf2_marksman:1) c8(inf2_medic:1))
-("squad_with8types_conquest" side(nato) period(2022s) min_stage(2) max_stage(99) name(squad_inf2_rifle) c1(inf2_squadlead:1) c2(inf2_teamlead:2) c3(inf2_autorifle:2) c4(inf2_grenadier:1) c5(inf2_rifleman:1) c6(inf2_javelin:1) c7(inf2_marksman:1) c8(inf2_medic:1))
+; NATO United States Joint Force squads
+{"squad_usmc_eng(nato)"
+	("mp_infantry_2" side(nato) period(2022s) d(modern_nato_usa) c1(usmc_eng:8) c2(usmc_mg:1))
+}
+{"squad_inf2_rifle_m3(nato)"
+	("mp_infantry_8" side(nato) period(2022s) d(modern_nato_usa) c1(inf2_squadlead:1) c2(inf2_teamlead:2) c3(inf2_autorifle:2) c4(inf2_grenadier:1) c5(inf2_rifleman:2) c6(inf2_antitank:1) c7(inf2_marksman:1) c8(inf2_medic:1))
+}
+{"squad_inf2_rifle(nato)"
+	("mp_infantry_8" side(nato) period(2022s) d(modern_nato_usa) c1(inf2_squadlead:1) c2(inf2_teamlead:2) c3(inf2_autorifle:2) c4(inf2_grenadier:1) c5(inf2_rifleman:1) c6(inf2_javelin:1) c7(inf2_marksman:1) c8(inf2_medic:1))
+}
 
-; NATO detachments
-("detachment_with2types" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_usmc_weapon_at) c1(usmc_teamlead:2) c2(usmc_antitank_smaw:2))
-("detachment_with2types" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_usmc_mg) c1(usmc_teamlead:3) c2(usmc_mg:3))
-("detachment_with1type" side(nato) period(2022s) min_stage(1) max_stage(99) name(arf_medic) c1(nato_medic:4))
-("detachment_with2types" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_usmc_weapon_at_javelin) c1(usmc_teamlead:2) c2(usmc_antitank_javelin:2))
+; NATO United States Joint Force detachments
+{"squad_usmc_weapon_at(nato)"
+	("mp_team_2" side(nato) period(2022s) d(modern_nato_usa) c1(usmc_teamlead:2) c2(usmc_antitank_smaw:2))
+}
+{"squad_usmc_mg(nato)"
+	("mp_team_2" side(nato) period(2022s) d(modern_nato_usa) c1(usmc_teamlead:3) c2(usmc_mg:3))
+}
+{"arf_medic(nato)"
+	("mp_team_1" side(nato) period(2022s) d(modern_nato_usa) c1(nato_medic:4))
+}
+{"squad_usmc_weapon_at_javelin(nato)"
+	("mp_team_2" side(nato) period(2022s) d(modern_nato_usa) c1(usmc_teamlead:2) c2(usmc_antitank_javelin:2))
+}
 
 ; Ukraine squads
 ("squad_with5types_conquest" side(ukr) period(2022s) min_stage(1) max_stage(99) name(ter_22_1) c1(ter_squadlead:1) c2(ter_mg:2) c3(ter_rifleman:4) c4(ter_marksman:1) c5(ter_antitank:1))
