@@ -14,3 +14,4 @@
 (include "2022s/minimal_units.set")
 (include "2022s/doctrines.set")
 (include "2022s/doctrine_units_nato.set")
+(include "2022s/doctrine_units_ukr.set")
