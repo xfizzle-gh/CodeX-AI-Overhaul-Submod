@@ -33,17 +33,25 @@
 	("mp_infantry_5" side(nato) period(2022s) d(modern_nato_usa) c1(rg_squadlead:1) c2(rg_teamleader:2) c3(rg_rifleman:5) c4(rg_m2hb_crew:1) c5(rg_javelin:2))
 }
 
-; First isolated category-3 test: crew-only light reconnaissance vehicle.
+; Crew-only light reconnaissance vehicle.
 {"squad_usmc_lav25(nato)"
 	("mp_vehicle" side(nato) period(2022s) d(modern_nato_usa) vehicle(lav25) crew(usmc_vehicleman:3))
 }
 
-; First isolated category-4 test: crew-only light tank.
+; Crew-only normal-MP armor.
 {"squad_efp_m10(nato)"
 	("mp_tank" side(nato) period(2022s) d(modern_nato_usa) vehicle(m10_booker) crew(usarmy_vehicleman:4))
 }
 
-; First isolated category-5 test: crew-only conventional tube artillery.
+{"squad_inf2_m1128(nato)"
+	("mp_tank" side(nato) period(2022s) d(modern_nato_usa) vehicle(m1128) crew(usarmy_vehicleman:3))
+}
+
+{"squad_tank1_m1a2_sepv_armor(nato)"
+	("mp_tank" side(nato) period(2022s) d(modern_nato_usa) vehicle(m1a2_sep_armor) crew(usarmy_vehicleman:4))
+}
+
+; Crew-only conventional tube artillery.
 {"squad_usmc_m777(nato)"
 	("mp_support" side(nato) period(2022s) d(modern_nato_usa) vehicle(m777a1) crew(usmc_supcrew:4))
 }
@@ -62,11 +70,6 @@
 {"squad_tank1_ampv_cuas(nato)"
 	("dp_vehicle_7types" side(nato) period(2022s) vehicle(ampv_cuas) crew1(usarmy_vehicleman:3) crew2(1ad_squadlead:1) crew3(1ad_teamlead:2) crew4(1ad_mg:2) crew5(1ad_autorifle:1) crew6(1ad_rifleman:1) crew7(1ad_javelin:1))
 	("doctrine_t1" cool(240) d(modern_nato_usa) cost(4))
-}
-
-{"squad_tank1_m1a2_sepv_armor(nato)"
-	("dp_vehicle" side(nato) period(2022s) vehicle(m1a2_sep_armor) crew(usarmy_vehicleman:4))
-	("doctrine_t1" cool(360) d(modern_nato_usa) cost(8))
 }
 
 {"squad_tank1_m109(nato)"
@@ -118,17 +121,25 @@
 	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(gb_teamleader:1) c2(gb_antitank:2) c3(gb_rifleman:1))
 }
 
-; First isolated category-3 test: crew-only light reconnaissance vehicle.
+; Crew-only light reconnaissance vehicle.
 {"squad_pz10_fennek(nato)"
 	("mp_vehicle" side(nato) period(2022s) d(modern_nato_eu) vehicle(fennek) crew(pzgd_vehicleman:3))
 }
 
-; First isolated category-4 test: crew-only main battle tank.
+; Crew-only normal-MP armor.
 {"squad_pz10_leopard2a6(nato)"
 	("mp_tank" side(nato) period(2022s) d(modern_nato_eu) vehicle(leopard_2a6) crew(pzgd_vehicleman:4))
 }
 
-; First isolated category-5 test: crew-only self-propelled tube artillery.
+{"squad_gb3_tank_challenger(nato)"
+	("mp_tank" side(nato) period(2022s) d(modern_nato_eu) vehicle(challenger2_n) crew(gb_vehicleman:4))
+}
+
+{"leopard_2_pl"
+	("mp_tank" side(nato) period(2022s) d(modern_nato_eu) vehicle(leopard_2_pl) crew(nato_vehicleman:4))
+}
+
+; Crew-only self-propelled tube artillery.
 {"squad_gb3_art_as90(nato)"
 	("mp_support" side(nato) period(2022s) d(modern_nato_eu) vehicle(as90) crew(gb_vehicleman:3))
 }
@@ -152,11 +163,6 @@
 {"squad_gb3_tank_challenger_tes(nato)"
 	("dp_vehicle" side(nato) period(2022s) vehicle(challenger2_tes) crew(gb_vehicleman:4))
 	("doctrine_t1" cool(360) d(modern_nato_eu) cost(8))
-}
-
-{"leopard_2_pl"
-	("dp_vehicle" side(nato) period(2022s) vehicle(leopard_2_pl) crew(nato_vehicleman:4))
-	("doctrine_t1" cool(360) d(modern_nato_eu) cost(7))
 }
 
 {"leclerc_sxxi"
