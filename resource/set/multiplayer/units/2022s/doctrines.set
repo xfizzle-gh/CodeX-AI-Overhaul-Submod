@@ -1,23 +1,51 @@
 ;SDL
-; At least one doctrine unit must exist in each army's multiplayer buy table.
-; Doctrine identifiers must begin with a letter because {doctrine %d} expects an ident.
+; Two curated doctrines per selectable army.
+; Doctrine identifiers begin with a letter because {doctrine %d} expects an ident.
 
-{"doctrine_squad_skirmish_nato(nato)"
+; NATO: Expeditionary Force
+{"doctrine(nato)"
 	("squad_with2types_doctrine" side(nato) period(2022s) c1(nato_squadlead:1) c2(nato_rifleman:5))
 	("doctrine_t1" cool(0) d(modern_nato) cost(10))
 }
 
-{"doctrine_squad_skirmish_ukr(ukr)"
+; NATO: Armored Brigade support infantry
+{"doctrine_vehicle_m2a3(nato)"
+	("squad_with4types_doctrine" side(nato) period(2022s) c1(inf2_squadlead:1) c2(inf2_teamlead:2) c3(inf2_autorifle:2) c4(inf2_antitank:2))
+	("doctrine_t1" cool(0) d(modern_nato_armored) cost(10))
+}
+
+; Ukraine: Territorial Defense
+{"doctrine(ukr)"
 	("squad_with2types_doctrine" side(ukr) period(2022s) c1(ukr_squadlead:1) c2(ukr_rifleman:5))
 	("doctrine_t1" cool(0) d(modern_ukr) cost(10))
 }
 
-{"doctrine_squad_skirmish_rusa(rusa)"
+; Ukraine: 47th Mechanized Counterattack
+{"doctrine_squad_47th(ukr)"
+	("squad_with5types_doctrine" side(ukr) period(2022s) c1(ukr47_squadlead:1) c2(ukr47_seniorrifleman:1) c3(ukr47_lmg:1) c4(ukr47_antitank_h:1) c5(ukr47_rifleman:3))
+	("doctrine_t1" cool(0) d(modern_ukr_mech) cost(10))
+}
+
+; Russia: Motor Rifle Offensive
+{"doctrine(rusa)"
 	("squad_with2types_doctrine" side(rusa) period(2022s) c1(rus_squadlead:1) c2(rus_rifleman:5))
 	("doctrine_t1" cool(0) d(modern_rusa) cost(10))
 }
 
+; Russia: VDV Air Assault
+{"doctrine_squad_dsh(rusa)"
+	("squad_with5types_doctrine" side(rusa) period(2022s) c1(106vdv_squadlead:1) c2(106vdv_rifleman:3) c3(106vdv_mg:2) c4(106vdv_antitank:1) c5(106vdv_medic:1))
+	("doctrine_t1" cool(0) d(modern_rusa_vdv) cost(10))
+}
+
+; PRC: 112th Combined Arms
 {"doctrine_squad_skirmish_prc(prc)"
 	("squad_with2types_doctrine" side(prc) period(2022s) c1(pla_squadlead:1) c2(pla_rifleman:5))
 	("doctrine_t1" cool(0) d(modern_prc) cost(10))
+}
+
+; PRC: 139th Heavy Combined Arms
+{"doctrine_squad_skirmish_prc_139(prc)"
+	("squad_with5types_doctrine" side(prc) period(2022s) c1(pla_squadlead_gy:1) c2(pla_senior_gy:1) c3(pla_rifleman_gy:3) c4(pla_mg_gy:1) c5(pla_antitank_pf98_gy:1))
+	("doctrine_t1" cool(0) d(modern_prc_139) cost(10))
 }

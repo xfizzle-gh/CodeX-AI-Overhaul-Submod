@@ -14,6 +14,16 @@
 	{content "mp/%side/%period/%c1 mp/%side/%period/%c2"}
 )
 
+(define "squad_with4types_doctrine"
+	("generic_d_inf" t(%side %period))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4"}
+)
+
+(define "squad_with5types_doctrine"
+	("generic_d_inf" t(%side %period))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5"}
+)
+
 (define "doctrine_t1"
 	{charge
 		{delay 300}
