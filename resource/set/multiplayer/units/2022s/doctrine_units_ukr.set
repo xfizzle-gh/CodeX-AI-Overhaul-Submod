@@ -1,0 +1,128 @@
+;SDL
+; Ukrainian combined-arms doctrine-point roster.
+; Every asset uses Ukrainian personnel regardless of equipment origin.
+
+;===============================================================================
+; NATIONAL DEFENSE FORCES
+; Territorial defense, 93rd Mechanized, domestic/legacy armor, fires and aviation.
+;===============================================================================
+
+{"93th_alcatraz_rifle_gp25(ukr)"
+	("dp_infantry_7" side(ukr) period(2022s) c1(demon_squadlead:1) c2(demon_seniorrifleman:1) c3(demon_rifleman:4) c4(demon_mg_rpk:1) c5(demon_antitank:1) c6(demon_grenadier:1) c7(demon_medic:1))
+	("doctrine_t1" cool(120) d(modern_ukr_home) cost(10))
+}
+
+{"93th_at_stugna(ukr)"
+	("dp_infantry_5" side(ukr) period(2022s) c1(ukr93_squadlead:1) c2(ukr93_rifleman:2) c3(ukr93_antitank:1) c4(ukr93_wepcrew_stugna:1) c5(ukr93_wepcrew_stugna_assist:1))
+	("doctrine_t1" cool(180) d(modern_ukr_home) cost(14))
+}
+
+{"ukr_manpad_operator(ukr)"
+	("dp_infantry_2" side(ukr) period(2022s) c1(ukr_manpad_operator:1) c2(ukr_manpad_supporter:1))
+	("doctrine_t1" cool(180) d(modern_ukr_home) cost(12))
+}
+
+{"squad_ukr93_razv_novator(ukr)"
+	("dp_vehicle_5types" side(ukr) period(2022s) vehicle(novator) crew1(ukr93_rifleman:2) crew2(ukr93_squadlead:1) crew3(ukr93_recon:4) crew4(ukr93_recon_mg:1) crew5(ukr93_marksman:1))
+	("doctrine_t1" cool(180) d(modern_ukr_home) cost(20))
+}
+
+{"squad_ukr93_mech_bmp2(ukr)"
+	("dp_vehicle_8types" side(ukr) period(2022s) vehicle(bmp2_ukr) crew1(ukr_vehicleman:3) crew2(ukr93_squadlead:1) crew3(ukr93_seniorrifleman:1) crew4(ukr93_lmg:1) crew5(ukr93_rifleman:1) crew6(ukr93_marksman:1) crew7(ukr93_antitank:1) crew8(ukr93_medic:1))
+	("doctrine_t1" cool(240) d(modern_ukr_home) cost(30))
+}
+
+{"squad_ukr93_t64bv(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(t64bv2024) crew(ukr_vehicleman:3))
+	("doctrine_t1" cool(300) d(modern_ukr_home) cost(44))
+}
+
+{"squad_ukr93_t80bv(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(t80bv_2018) crew(ukr_vehicleman:3))
+	("doctrine_t1" cool(330) d(modern_ukr_home) cost(48))
+}
+
+{"squad_ukr93_2s1(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(2s1_gvozdika_ukr) crew(ukr_vehicleman:4))
+	("doctrine_t1" cool(300) d(modern_ukr_home) cost(38))
+}
+
+{"squad_ukr47_bm21(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(bm-21_grad_ukr) crew(ukr_vehicleman:2))
+	("doctrine_t1" cool(420) d(modern_ukr_home) cost(50))
+}
+
+{"mi17_ukr"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(mi17_ukr) crew(ukr_pilot:2))
+	("doctrine_t1" cool(360) d(modern_ukr_home) cost(42))
+}
+
+{"su-25sm_support_ukr"
+	("dp_action_vehicle" side(ukr) period(2022s) vehicle(su-25sm_support_ukr) crew(ukr_pilot:1) action(airstrike:airsupport_trigger))
+	("doctrine_t1" cool(480) d(modern_ukr_home) cost(65))
+}
+
+;===============================================================================
+; WESTERN MECHANIZED CORPS
+; 47th/elite infantry, Western IFVs, Western MBTs, precision fires and strike air.
+;===============================================================================
+
+{"47th_assault_at4(ukr)"
+	("dp_infantry_6" side(ukr) period(2022s) c1(ukr47_squadlead_assault:1) c2(ukr47_seniorrifleman_assault:1) c3(ukr47_rifleman_assault:3) c4(ukr47_lmg_assault:1) c5(ukr47_assault_at4:2) c6(ukr47_assault_m72:1))
+	("doctrine_t1" cool(120) d(modern_ukr_western) cost(12))
+}
+
+{"47th_inf_javelin(ukr)"
+	("dp_infantry_4" side(ukr) period(2022s) c1(ukr47_squadlead:1) c2(ukr47_seniorrifleman:1) c3(ukr47_antitank_h:1) c4(ukr47_rifleman:3))
+	("doctrine_t1" cool(180) d(modern_ukr_western) cost(14))
+}
+
+{"47th_inf_razv_211(ukr)"
+	("dp_infantry_4" side(ukr) period(2022s) c1(ukr211_squadlead:1) c2(ukr211_demo:4) c3(ukr211_recon:1) c4(ukr211_sniper:1))
+	("doctrine_t1" cool(180) d(modern_ukr_western) cost(16))
+}
+
+{"squad_ukr47_m2a2_arat_2022(ukr)"
+	("dp_vehicle_7types" side(ukr) period(2022s) vehicle(m2a2_ods_bradley_arat) crew1(ukr47_crew_cmd:1) crew2(ukr_vehicleman:2) crew3(ukr47_squadlead_assault:1) crew4(ukr47_seniorrifleman_assault:1) crew5(ukr47_rifleman_assault:2) crew6(ukr47_lmg_assault:1) crew7(ukr47_assault_at4:1))
+	("doctrine_t1" cool(240) d(modern_ukr_western) cost(36))
+}
+
+{"squad_ukr93_mech_cv90(ukr)"
+	("dp_vehicle_7types" side(ukr) period(2022s) vehicle(strf9040c) crew1(ukr_vehicleman:3) crew2(ukr93_squadlead:1) crew3(ukr93_seniorrifleman:1) crew4(ukr93_lmg:1) crew5(ukr93_rifleman:1) crew6(ukr93_antitank:1) crew7(ukr93_medic:1))
+	("doctrine_t1" cool(240) d(modern_ukr_western) cost(36))
+}
+
+{"squad_ukr47_m1a1_sa(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(m1a1_sa) crew(ukr_vehicleman:4))
+	("doctrine_t1" cool(360) d(modern_ukr_western) cost(58))
+}
+
+{"leopord_2a6"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(leopord_2a6) crew(ukr_vehicleman:4))
+	("doctrine_t1" cool(360) d(modern_ukr_western) cost(60))
+}
+
+{"challenger2"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(challenger2) crew(ukr_vehicleman:4))
+	("doctrine_t1" cool(360) d(modern_ukr_western) cost(60))
+}
+
+{"squad_ukr47_m109(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(m109_paladin) crew(ukr_vehicleman:4))
+	("doctrine_t1" cool(360) d(modern_ukr_western) cost(46))
+}
+
+{"m270_ukr"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(m270_ukr) crew(ukr_vehicleman:3))
+	("doctrine_t1" cool(480) d(modern_ukr_western) cost(58))
+}
+
+{"squad_kraken_m777(ukr)"
+	("dp_vehicle" side(ukr) period(2022s) vehicle(m777) crew(ukr_crew:4))
+	("doctrine_t1" cool(300) d(modern_ukr_western) cost(40))
+}
+
+{"su-25sm_at_ukr"
+	("dp_action_vehicle" side(ukr) period(2022s) vehicle(su-25sm_at_ukr) crew(ukr_pilot:1) action(airstrike:airsupport_trigger))
+	("doctrine_t1" cool(480) d(modern_ukr_western) cost(70))
+}
