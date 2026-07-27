@@ -5,7 +5,7 @@
 
 ;===============================================================================
 ; UNITED STATES JOINT FORCE
-; Marines, Army, armored cavalry, airborne reconnaissance, Rangers, armor, fires and air.
+; Marines, Army, armored cavalry, Marine Force Recon, Rangers, armor, fires and air.
 ;===============================================================================
 
 ; Normal MP infantry shown only when the United States doctrine is selected.
@@ -17,10 +17,12 @@
 	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_usa) c1(inf2_squadlead_ngsw:1) c2(inf2_teamlead_ngsw:2) c3(inf2_autorifle_ngsw:2) c4(inf2_grenadier_ngsw:1) c5(inf2_rifleman_ngsw:1) c6(inf2_antitank_ngsw:1) c7(inf2_medic_ngsw:1))
 }
 
+; ACAV machine-gun detachment. Code:X retains the legacy tank1 internal ID.
 {"squad_tank1_rifle_mg(nato)"
 	("mp_infantry_3" side(nato) period(2022s) d(modern_nato_usa) c1(1ad_teamlead:2) c2(1ad_mg:2) c3(1ad_grenadier:2))
 }
 
+; Marine Force Recon. Code:X retains the legacy 82nd LRS internal ID.
 {"squad_82nd_lrs(nato)"
 	("mp_infantry_4" side(nato) period(2022s) d(modern_nato_usa) c1(lrs_squadlead:1) c2(lrs_rifleman:2) c3(lrs_mg:2) c4(lrs_javelin:1))
 }
@@ -29,6 +31,11 @@
 ; as the U.S. Army Ranger formation for this doctrine split.
 {"squad_gb3_scouts_ranger(nato)"
 	("mp_infantry_5" side(nato) period(2022s) d(modern_nato_usa) c1(rg_squadlead:1) c2(rg_teamleader:2) c3(rg_rifleman:5) c4(rg_m2hb_crew:1) c5(rg_javelin:2))
+}
+
+; First isolated category-3 test: crew-only light reconnaissance vehicle.
+{"squad_usmc_lav25(nato)"
+	("mp_vehicle" side(nato) period(2022s) d(modern_nato_usa) vehicle(lav25) crew(usmc_vehicleman:3))
 }
 
 ; Doctrine-point combined-arms assets scaled for a 20 DP match budget.
@@ -109,6 +116,11 @@
 
 {"squad_gb3_rifle_at_javelin(nato)"
 	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(gb_teamleader:1) c2(gb_antitank:2) c3(gb_rifleman:1))
+}
+
+; First isolated category-3 test: crew-only light reconnaissance vehicle.
+{"squad_pz10_fennek(nato)"
+	("mp_vehicle" side(nato) period(2022s) d(modern_nato_eu) vehicle(fennek) crew(pzgd_vehicleman:3))
 }
 
 ; Doctrine-point combined-arms assets scaled for a 20 DP match budget.

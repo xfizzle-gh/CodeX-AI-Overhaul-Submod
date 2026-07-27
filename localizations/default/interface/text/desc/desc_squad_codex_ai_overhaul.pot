@@ -10,6 +10,22 @@ msgctxt "mp/nato/2022s/nato_teamlead"
 msgid "Teamleader [NRF]"
 msgstr ""
 
+msgctxt "desc/squad/squad_tank1_rifle_mg(nato)"
+msgid "ACAV GUNNERS"
+msgstr ""
+
+msgctxt "desc/squad/squad_82nd_lrs(nato)"
+msgid "MARINE FORCE RECON"
+msgstr ""
+
+msgctxt "desc/squad/squad_usmc_lav25(nato)"
+msgid "LAV-25 RECON"
+msgstr ""
+
+msgctxt "desc/squad/squad_pz10_fennek(nato)"
+msgid "FENNEK RECON"
+msgstr ""
+
 msgctxt "desc/squad/squad_pz10_fireteam_mg(nato)"
 msgid "PANZERGRENADIER MG TEAM"
 msgstr ""
