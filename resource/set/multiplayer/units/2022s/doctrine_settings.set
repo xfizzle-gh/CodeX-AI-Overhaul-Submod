@@ -81,6 +81,26 @@
 	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 )"}
 )
 
+(define "dp_vehicle_5types"
+	("generic_dp_unit" t(%side %period))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%crew3 mp/%side/%period/%crew4 mp/%side/%period/%crew5 )"}
+)
+
+(define "dp_vehicle_6types"
+	("generic_dp_unit" t(%side %period))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%crew3 mp/%side/%period/%crew4 mp/%side/%period/%crew5 mp/%side/%period/%crew6 )"}
+)
+
+(define "dp_vehicle_7types"
+	("generic_dp_unit" t(%side %period))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%crew3 mp/%side/%period/%crew4 mp/%side/%period/%crew5 mp/%side/%period/%crew6 mp/%side/%period/%crew7 )"}
+)
+
+(define "dp_vehicle_8types"
+	("generic_dp_unit" t(%side %period))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%crew3 mp/%side/%period/%crew4 mp/%side/%period/%crew5 mp/%side/%period/%crew6 mp/%side/%period/%crew7 mp/%side/%period/%crew8 )"}
+)
+
 (define "dp_action_vehicle"
 	("generic_dp_unit" t(%side %period))
 	{content "%vehicle ( mp/%side/%period/%crew )"}
