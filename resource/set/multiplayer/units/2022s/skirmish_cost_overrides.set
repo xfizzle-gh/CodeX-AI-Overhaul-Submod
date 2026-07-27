@@ -6,10 +6,12 @@
 ; Infantry role costs missing from imported parent catalogs.
 {"mp/ukr/2022s/ukr47_antitank_rpg7" ("ukr_regular_advanced" side(ukr)) {cost 24.5}}
 {"mp/nato/2022s/inf2_grenadier_ngsw" ("nato_basic" side(nato)) {cost 26.0}}
+{"mp/rusa/2022s/rus4_medic" ("rusa_regular_advanced" side(rusa)) {cost 14.0}}
 
 ; Crew costs missing from imported parent catalogs.
 {"mp/nato/2022s/usarmy_vehicleman" ("nato_supporter" side(nato)) {cost 10.5}}
 {"mp/nato/2022s/pzgd_vehicleman" ("nato_supporter" side(nato)) {cost 10.5}}
 {"mp/nato/2022s/nato_pilot" ("nato_supporter" side(nato)) {cost 10.5}}
 {"mp/nato/2022s/gb_crew" ("nato_guncrew" side(nato)) {cost 3.5}}
+{"mp/rusa/2022s/vdv_support" ("rusa_crew" side(rusa)) {cost 10.5}}
 {"mp/prc/2022s/pla_vehicleman_gy" ("prc_support" side(prc)) {cost 4.0}}
