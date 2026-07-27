@@ -161,12 +161,20 @@
 	("mp_tank" side(nato) period(2022s) d(modern_nato_eu) vehicle(leopard_2_pl) crew(nato_vehicleman:4))
 }
 
-; Crew-only self-propelled tube artillery.
+; Ground support only. Air-support actions remain excluded after the PR #46 crash.
+{"squad_gb3_art_l118(nato)"
+	("mp_support" side(nato) period(2022s) d(modern_nato_eu) vehicle(105mm_m119) crew(gb_crew:4))
+}
+
 {"squad_gb3_art_as90(nato)"
 	("mp_support" side(nato) period(2022s) d(modern_nato_eu) vehicle(as90) crew(gb_vehicleman:3))
 }
 
-; Remaining doctrine-point combined-arms assets scaled for a 20 DP match budget.
+{"otomatic"
+	("mp_support" side(nato) period(2022s) d(modern_nato_eu) vehicle(otomatic) crew(nato_vehicleman:3))
+}
+
+; Five doctrine-point combined-arms assets scaled for a 20 DP match budget.
 {"squad_pz10_leopard2a7(nato)"
 	("dp_vehicle" side(nato) period(2022s) vehicle(leopard_2a7+) crew(pzgd_vehicleman:4))
 	("doctrine_t1" cool(360) d(modern_nato_eu) cost(8))
@@ -185,11 +193,6 @@
 {"squad_pz10_pzh2000(nato)"
 	("dp_vehicle" side(nato) period(2022s) vehicle(pzh2000_n) crew(pzgd_vehicleman:4))
 	("doctrine_t1" cool(360) d(modern_nato_eu) cost(6))
-}
-
-{"otomatic"
-	("dp_vehicle" side(nato) period(2022s) vehicle(otomatic) crew(nato_vehicleman:3))
-	("doctrine_t1" cool(300) d(modern_nato_eu) cost(5))
 }
 
 {"tiger_heavy"
