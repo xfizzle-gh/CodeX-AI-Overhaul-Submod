@@ -2,7 +2,7 @@ require([[/script/multiplayer/modes/battlezones_roles]])
 
 -- Curated 2022s Battle Zones buy list.
 -- Both NATO doctrines share an inexpensive line-infantry backbone. National
--- infantry, expanded crew-only mechanized forces, heavy armor, conventional support and doctrine-point assets remain doctrine-specific.
+-- infantry, expanded crew-only mechanized forces, heavy armor, conventional artillery and doctrine-point assets remain doctrine-specific.
 local skirmish = {
 	{
 		Repeat = 0,
@@ -44,9 +44,8 @@ local skirmish = {
 			{priority = 0.12, type = {"Tank", "Light", "Class2"}, unit = "squad_inf2_m1128(nato)"},
 			{priority = 0.08, type = {"Tank", "Class3"}, unit = "squad_tank1_m1a2_sepv_armor(nato)"},
 
-			-- United States conventional support and air call-ins.
+			-- United States conventional artillery.
 			{priority = 0.10, type = {"Cannon", "Artillery", "Support", "Class2"}, unit = "squad_usmc_m777(nato)"},
-			{priority = 0.05, type = {"Air", "Sortie", "Support", "Class3"}, unit = "a-10c_support"},
 
 			-- United States Joint Force doctrine-point combined arms.
 			{priority = 0.08, type = {"Doctrine", "Infantry", "Squad", "Recon", "AT", "Class1"}, unit = "squad_gb3_scouts_ranger(nato)"},
@@ -77,17 +76,15 @@ local skirmish = {
 			{priority = 0.10, type = {"Tank", "Class3"}, unit = "squad_gb3_tank_challenger(nato)"},
 			{priority = 0.09, type = {"Tank", "Class3"}, unit = "leopard_2_pl"},
 
-			-- European conventional support, air defense and air call-ins.
-			{priority = 0.12, type = {"Cannon", "Artillery", "Support", "Class1"}, unit = "squad_gb3_art_l118(nato)"},
+			-- European conventional artillery.
 			{priority = 0.10, type = {"Tank", "Artillery", "Support", "Class2"}, unit = "squad_gb3_art_as90(nato)"},
-			{priority = 0.09, type = {"Tank", "AA", "Support", "Class2"}, unit = "otomatic"},
-			{priority = 0.05, type = {"Air", "Sortie", "Support", "Class3"}, unit = "tornado_gr4_support_light"},
 
 			-- European Coalition doctrine-point combined arms.
 			{priority = 0.05, type = {"Doctrine", "Tank", "Class3"}, unit = "squad_pz10_leopard2a7(nato)"},
 			{priority = 0.05, type = {"Doctrine", "Tank", "Class3"}, unit = "squad_gb3_tank_challenger_tes(nato)"},
 			{priority = 0.05, type = {"Doctrine", "Tank", "Class3"}, unit = "leclerc_sxxi"},
 			{priority = 0.04, type = {"Doctrine", "Tank", "Artillery", "Class2"}, unit = "squad_pz10_pzh2000(nato)"},
+			{priority = 0.04, type = {"Doctrine", "Tank", "AA", "Class2"}, unit = "otomatic"},
 			{priority = 0.02, type = {"Doctrine", "Air", "Class3"}, unit = "tiger_heavy"},
 		}
 	}
