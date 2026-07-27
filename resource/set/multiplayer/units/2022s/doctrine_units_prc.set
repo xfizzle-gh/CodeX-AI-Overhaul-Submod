@@ -1,0 +1,103 @@
+;SDL
+; PRC Battle Zones normal-MP and doctrine-point ground roster.
+; Skirmish only. No Conquest files, MLRS, aircraft, helicopters, drones, or air-support actions.
+
+;===============================================================================
+; 112TH RAPID COMBINED ARMS
+; Mobile infantry, wheeled/tracked armor, anti-tank systems, air defense and fires.
+;===============================================================================
+
+; Doctrine-gated normal-MP ground roster.
+{"squad_pla112_qbu11(prc)"
+	("mp_infantry_4" side(prc) period(2022s) d(modern_prc_112) c1(pla_squadlead:1) c2(pla_senior:1) c3(pla_marksman_qbu11:1) c4(pla_mg:2))
+}
+
+{"squad_pla112_eng_at(prc)"
+	("mp_infantry_2" side(prc) period(2022s) d(modern_prc_112) c1(pla_squadlead:1) c2(pla_eng_at:8))
+}
+
+{"squad_pla112_zbl08_hj73(prc)"
+	("mp_vehicle" side(prc) period(2022s) d(modern_prc_112) vehicle(zbl08_atgm) crew(pla_vehicleman:3))
+}
+
+{"squad_pla112_plz05(prc)"
+	("mp_support" side(prc) period(2022s) d(modern_prc_112) vehicle(plz05) crew(pla_vehicleman:3))
+}
+
+; Five doctrine-point choices, all with explicit nonzero DP costs.
+{"squad_pla112_04a_hj12(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(zbd04_a) crew(pla_vehicleman:3))
+	("doctrine_t1" cool(240) d(modern_prc_112) cost(5))
+}
+
+{"squad_pla112_ztz96a(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(ztz96_a) crew(pla_vehicleman:3))
+	("doctrine_t1" cool(300) d(modern_prc_112) cost(6))
+}
+
+{"squad_pla112_ztz99a(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(ztz99a) crew(pla_vehicleman:3))
+	("doctrine_t1" cool(360) d(modern_prc_112) cost(8))
+}
+
+{"squad_pla112_aft10(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(aft-10) crew(pla_vehicleman:4))
+	("doctrine_t1" cool(240) d(modern_prc_112) cost(5))
+}
+
+{"pgz_09"
+	("dp_vehicle" side(prc) period(2022s) vehicle(pgz_09) crew(pla_vehicleman:3))
+	("doctrine_t1" cool(300) d(modern_prc_112) cost(5))
+}
+
+;===============================================================================
+; 139TH HEAVY COMBINED ARMS
+; Heavy infantry, tracked IFVs, advanced armor, anti-tank systems and air defense.
+;===============================================================================
+
+; Doctrine-gated normal-MP ground roster. Drone and auxiliary crew slots are omitted.
+{"squad_pla139_rifle_hj12(prc)"
+	("mp_infantry_8" side(prc) period(2022s) d(modern_prc_139) c1(pla_squadlead_gy:1) c2(pla_senior_gy:1) c3(pla_rifleman_dza08_gy:2) c4(pla_grenadier_gy:1) c5(pla_marksman_gy:1) c6(pla_mg_gy:1) c7(pla_antitank_hj12_gy:1) c8(pla_medic_gy:1))
+}
+
+{"squad_pla139_weapon(prc)"
+	("mp_infantry_8" side(prc) period(2022s) d(modern_prc_139) c1(pla_squadlead_gy:1) c2(pla_senior_gy:1) c3(pla_rifleman_gy:3) c4(pla_mg_qjy_gy:1) c5(pla_grenadier_gy:1) c6(pla_marksman_gy:1) c7(pla_marksman_qbu10_gy:1) c8(pla_antitank_pf98_gy:1))
+}
+
+{"squad_pla139_eng_at(prc)"
+	("mp_infantry_2" side(prc) period(2022s) d(modern_prc_139) c1(pla_squadlead_gy:1) c2(pla_eng_at_gy:8))
+}
+
+{"squad_pla139_86a_hj12(prc)"
+	("mp_vehicle" side(prc) period(2022s) d(modern_prc_139) vehicle(zbd86a) crew(pla_vehicleman_gy:3))
+}
+
+{"squad_pla139_plz07(prc)"
+	("mp_support" side(prc) period(2022s) d(modern_prc_139) vehicle(plz-07a) crew(pla_vehicleman_gy:5))
+}
+
+; Five doctrine-point choices, all with explicit nonzero DP costs.
+{"squad_pla139_04a(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(zbd04_a_gy) crew(pla_vehicleman_gy:3))
+	("doctrine_t1" cool(240) d(modern_prc_139) cost(5))
+}
+
+{"squad_pla139_ztz96ap(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(ztz96ap) crew(pla_vehicleman_gy:3))
+	("doctrine_t1" cool(330) d(modern_prc_139) cost(7))
+}
+
+{"wz1001"
+	("dp_vehicle" side(prc) period(2022s) vehicle(wz1001) crew(pla_vehicleman_gy:3))
+	("doctrine_t1" cool(360) d(modern_prc_139) cost(8))
+}
+
+{"squad_pla139_aft09(prc)"
+	("dp_vehicle" side(prc) period(2022s) vehicle(aft-9) crew(pla_crew_gy:3))
+	("doctrine_t1" cool(240) d(modern_prc_139) cost(5))
+}
+
+{"hq_7b"
+	("dp_vehicle" side(prc) period(2022s) vehicle(hq_7b) crew(pla_vehicleman_gy:3))
+	("doctrine_t1" cool(300) d(modern_prc_139) cost(5))
+}
