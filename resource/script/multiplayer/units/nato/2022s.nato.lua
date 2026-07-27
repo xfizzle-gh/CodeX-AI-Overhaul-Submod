@@ -2,7 +2,7 @@ require([[/script/multiplayer/modes/battlezones_roles]])
 
 -- Curated 2022s Battle Zones buy list.
 -- Both NATO doctrines share an inexpensive line-infantry backbone. National
--- infantry, light recon and doctrine-point combined arms remain doctrine-specific.
+-- infantry, light recon, heavy armor and doctrine-point assets remain doctrine-specific.
 local skirmish = {
 	{
 		Repeat = 0,
@@ -37,6 +37,9 @@ local skirmish = {
 			-- First isolated United States category-3 vehicle.
 			{priority = 0.22, type = {"Armored", "Recon", "Class1"}, unit = "squad_usmc_lav25(nato)"},
 
+			-- First isolated United States category-4 tank.
+			{priority = 0.14, type = {"Tank", "Light", "Class2"}, unit = "squad_efp_m10(nato)"},
+
 			-- United States Joint Force doctrine-point combined arms.
 			{priority = 0.08, type = {"Doctrine", "Infantry", "Armored", "Class1"}, unit = "squad_inf2_m1126_mk19(nato)"},
 			{priority = 0.08, type = {"Doctrine", "Infantry", "Ifv", "Class2"}, unit = "squad_tank1_m2a3_fireteam_brat(nato)"},
@@ -59,6 +62,9 @@ local skirmish = {
 
 			-- First isolated European category-3 vehicle.
 			{priority = 0.22, type = {"Armored", "Recon", "Class1"}, unit = "squad_pz10_fennek(nato)"},
+
+			-- First isolated European category-4 tank.
+			{priority = 0.12, type = {"Tank", "Class3"}, unit = "squad_pz10_leopard2a6(nato)"},
 
 			-- European Coalition doctrine-point combined arms.
 			{priority = 0.08, type = {"Doctrine", "Infantry", "Ifv", "Class2"}, unit = "squad_pz10_puma_mells_rifle(nato)"},
