@@ -5,7 +5,7 @@
 
 ;===============================================================================
 ; UNITED STATES JOINT FORCE
-; Marines, Army, armored cavalry, airborne reconnaissance, armor, fires and air.
+; Marines, Army, armored cavalry, airborne reconnaissance, Rangers, armor, fires and air.
 ;===============================================================================
 
 ; Normal MP infantry shown only when the United States doctrine is selected.
@@ -23,6 +23,12 @@
 
 {"squad_82nd_lrs(nato)"
 	("mp_infantry_4" side(nato) period(2022s) d(modern_nato_usa) c1(lrs_squadlead:1) c2(lrs_rifleman:2) c3(lrs_mg:2) c4(lrs_javelin:1))
+}
+
+; Code:X keeps the legacy gb3 unit ID, but the rg_* personnel family is treated
+; as the U.S. Army Ranger formation for this doctrine split.
+{"squad_gb3_scouts_ranger(nato)"
+	("mp_infantry_5" side(nato) period(2022s) d(modern_nato_usa) c1(rg_squadlead:1) c2(rg_teamleader:2) c3(rg_rifleman:5) c4(rg_m2hb_crew:1) c5(rg_javelin:2))
 }
 
 ; Doctrine-point combined-arms assets scaled for a 20 DP match budget.
@@ -78,10 +84,6 @@
 
 {"squad_gb3_rifle_nlaw(nato)"
 	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_eu) c1(gb_squadlead:1) c2(gb_teamleader:1) c3(gb_rifleman:3) c4(gb_marksman:1) c5(gb_grenadier:1) c6(gb_mg:2) c7(gb_antitank_nlaw:2))
-}
-
-{"squad_gb3_scouts_ranger(nato)"
-	("mp_infantry_5" side(nato) period(2022s) d(modern_nato_eu) c1(rg_squadlead:1) c2(rg_teamleader:2) c3(rg_rifleman:5) c4(rg_m2hb_crew:1) c5(rg_javelin:2))
 }
 
 ; Doctrine-point combined-arms assets scaled for a 20 DP match budget.
