@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SET_DIR = ROOT / "resource/set/multiplayer/units/2022s"
 CONQUEST_DIR = ROOT / "resource/set/multiplayer/units/conquest"
 ROSTER_FILE = ROOT / "resource/set/multiplayer/units/roster_2022s.set"
+COST_OVERRIDE_FILE = SET_DIR / "skirmish_cost_overrides.set"
 
 DOCTRINE_FILES = {
     "nato": SET_DIR / "doctrine_units_nato.set",
@@ -52,6 +53,7 @@ EXPECTED_DP_COUNTS = {
 }
 
 EXPECTED_ROSTER_INCLUDES = {
+    '(include "2022s/skirmish_cost_overrides.set")',
     '(include "2022s/doctrine_units_nato.set")',
     '(include "2022s/doctrine_units_ukr.set")',
     '(include "2022s/doctrine_units_rusa.set")',
@@ -160,6 +162,20 @@ def extract_breed_costs(errors: list[str]) -> dict[tuple[str, str], float]:
             # Code:X intentionally overrides some breed prices later in the same
             # catalog. Match the engine's final-definition-wins behavior.
             costs[(side, breed)] = float(raw_cost)
+
+    override_text = read_text(COST_OVERRIDE_FILE, errors)
+    for line_number, line in enumerate(override_text.splitlines(), start=1):
+        match = BREED_COST_RE.match(line)
+        if not match:
+            continue
+        side, breed, raw_cost = match.groups()
+        if side not in BREED_CATALOGS:
+            fail(
+                errors,
+                f"{COST_OVERRIDE_FILE.relative_to(ROOT)}:{line_number}: unsupported side {side}",
+            )
+            continue
+        costs[(side, breed)] = float(raw_cost)
 
     return costs
 
