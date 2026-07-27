@@ -71,6 +71,11 @@
 	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 mp/%side/%period/%c8"}
 )
 
+(define "dp_infantry_10"
+	("generic_dp_unit" t(%side %period))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 mp/%side/%period/%c8 mp/%side/%period/%c9 mp/%side/%period/%c10"}
+)
+
 (define "dp_vehicle"
 	("generic_dp_unit" t(%side %period))
 	{content "%vehicle ( mp/%side/%period/%crew )"}
