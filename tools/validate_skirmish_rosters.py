@@ -157,16 +157,9 @@ def extract_breed_costs(errors: list[str]) -> dict[tuple[str, str], float]:
                     f"{path.relative_to(ROOT)}:{line_number}: expected side {expected_side}, found {side}",
                 )
 
-            key = (side, breed)
-            cost = float(raw_cost)
-            existing = costs.get(key)
-            if existing is not None and existing != cost:
-                fail(
-                    errors,
-                    f"{path.relative_to(ROOT)}:{line_number}: conflicting costs for {side}/{breed}: "
-                    f"{existing} and {cost}",
-                )
-            costs[key] = cost
+            # Code:X intentionally overrides some breed prices later in the same
+            # catalog. Match the engine's final-definition-wins behavior.
+            costs[(side, breed)] = float(raw_cost)
 
     return costs
 
