@@ -1,5 +1,5 @@
 ;SDL
-; Skirmish doctrine cards, doctrine-gated MP infantry, and doctrine-point units.
+; Skirmish doctrine cards, doctrine-gated MP units, and doctrine-point choices.
 
 ; Selection cards do not charge MP for their display formation.
 (define "generic_d_inf"
@@ -25,8 +25,7 @@
 	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5"}
 )
 
-; Normal MP formations can be restricted to the selected doctrine without being
-; charged as doctrine-point purchases. Full squads use inf1; detachments use inf2.
+; Doctrine-gated MP infantry. Full squads use inf1; detachments use inf2.
 (define "generic_mp_doctrine_unit"
 	{level 1}
 	{research_stage 1}
@@ -49,6 +48,24 @@
 	{squad_cost_factor 1}
 	{button "inf2"}
 	{doctrine %d}
+)
+
+; Shared NATO line infantry is available under either NATO doctrine and uses a
+; reduced squad factor so it remains the cheapest category-1 option.
+(define "generic_mp_shared_unit"
+	{level 1}
+	{research_stage 1}
+	{research_stage_max 99}
+	{tags "conquest conquestonly %t"}
+	{charge {delay 0}{interval 0}}
+	{cost 0}
+	{squad_cost_factor %factor}
+	{button "inf1"}
+)
+
+(define "mp_shared_infantry_7"
+	("generic_mp_shared_unit" t(%side %period) factor(%factor))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7"}
 )
 
 (define "mp_infantry_2"
@@ -96,8 +113,110 @@
 	{content "mp/%side/%period/%c1 mp/%side/%period/%c2"}
 )
 
-; Doctrine-point units use only the explicit doctrine_t1 cost. Their crew and
-; vehicle content defines what spawns but no longer inflates the DP price.
+(define "mp_team_3"
+	("generic_mp_doctrine_team" t(%side %period) d(%d))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3"}
+)
+
+(define "mp_team_4"
+	("generic_mp_doctrine_team" t(%side %period) d(%d))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4"}
+)
+
+(define "mp_team_5"
+	("generic_mp_doctrine_team" t(%side %period) d(%d))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5"}
+)
+
+; Doctrine-gated MP combined arms. Categories mirror the standard skirmish UI:
+; vehicles = armored cars/APCs/IFVs, tanks = heavy direct fire,
+; empl = artillery, air defense, helicopters and strategic call-ins.
+(define "generic_mp_doctrine_vehicle"
+	{level 1}
+	{research_stage 1}
+	{research_stage_max 99}
+	{tags "conquest conquestonly %t"}
+	{charge {delay 0}{interval 0}}
+	{cost 0}
+	{squad_cost_factor 1}
+	{button "vehicles"}
+	{doctrine %d}
+)
+
+(define "generic_mp_doctrine_tank"
+	{level 1}
+	{research_stage 1}
+	{research_stage_max 99}
+	{tags "conquest conquestonly %t"}
+	{charge {delay 0}{interval 0}}
+	{cost 0}
+	{squad_cost_factor 1}
+	{button "tanks"}
+	{doctrine %d}
+)
+
+(define "generic_mp_doctrine_support"
+	{level 1}
+	{research_stage 1}
+	{research_stage_max 99}
+	{tags "conquest conquestonly %t"}
+	{charge {delay 0}{interval 0}}
+	{cost 0}
+	{squad_cost_factor 1}
+	{button "empl"}
+	{doctrine %d}
+)
+
+(define "mp_vehicle"
+	("generic_mp_doctrine_vehicle" t(%side %period) d(%d))
+	{content "%vehicle ( mp/%side/%period/%crew )"}
+)
+
+(define "mp_vehicle_5types"
+	("generic_mp_doctrine_vehicle" t(%side %period) d(%d))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%crew3 mp/%side/%period/%crew4 mp/%side/%period/%crew5 )"}
+)
+
+(define "mp_vehicle_6types"
+	("generic_mp_doctrine_vehicle" t(%side %period) d(%d))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%crew3 mp/%side/%period/%crew4 mp/%side/%period/%crew5 mp/%side/%period/%crew6 )"}
+)
+
+(define "mp_vehicle_7types"
+	("generic_mp_doctrine_vehicle" t(%side %period) d(%d))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%crew3 mp/%side/%period/%crew4 mp/%side/%period/%crew5 mp/%side/%period/%crew6 mp/%side/%period/%crew7 )"}
+)
+
+(define "mp_vehicle_8types"
+	("generic_mp_doctrine_vehicle" t(%side %period) d(%d))
+	{content "%vehicle ( mp/%side/%period/%crew1 mp/%side/%period/%crew2 mp/%side/%period/%crew3 mp/%side/%period/%crew4 mp/%side/%period/%crew5 mp/%side/%period/%crew6 mp/%side/%period/%crew7 mp/%side/%period/%crew8 )"}
+)
+
+(define "mp_tank"
+	("generic_mp_doctrine_tank" t(%side %period) d(%d))
+	{content "%vehicle ( mp/%side/%period/%crew )"}
+)
+
+(define "mp_support"
+	("generic_mp_doctrine_support" t(%side %period) d(%d))
+	{content "%vehicle ( mp/%side/%period/%crew )"}
+)
+
+(define "mp_support_action"
+	{level 1}
+	{research_stage 1}
+	{research_stage_max 99}
+	{tags "conquest conquestonly %t"}
+	{charge {delay 0}{interval %cool}}
+	{cost %cost}
+	{squad_cost_factor 0}
+	{button "empl"}
+	{doctrine %d}
+	{content "%vehicle ( mp/%side/%period/%crew )"}
+	{action "%action"}
+)
+
+; Doctrine-point units use only the explicit doctrine_t1 cost.
 (define "generic_dp_unit"
 	{level 1}
 	{research_stage 1}
