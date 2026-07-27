@@ -5,3 +5,31 @@ msgstr ""
 msgctxt "desc/squad/doctrine_vehicle_m2a3(nato)"
 msgid "European Coalition"
 msgstr ""
+
+msgctxt "mp/nato/2022s/nato_teamlead"
+msgid "Teamleader [NRF]"
+msgstr ""
+
+msgctxt "desc/squad/squad_pz10_fireteam_mg(nato)"
+msgid "PANZERGRENADIER MG TEAM"
+msgstr ""
+
+msgctxt "desc/squad/squad_pz10_fireteam_carl(nato)"
+msgid "PANZERGRENADIER CARL GUSTAF TEAM"
+msgstr ""
+
+msgctxt "desc/squad/squad_pz10_eng(nato)"
+msgid "PANZERGRENADIER ENGINEERS"
+msgstr ""
+
+msgctxt "desc/squad/squad_pz10_rec(nato)"
+msgid "PANZERGRENADIER RECON TEAM"
+msgstr ""
+
+msgctxt "desc/squad/squad_gb3_rifle_mg(nato)"
+msgid "BRITISH MG TEAM"
+msgstr ""
+
+msgctxt "desc/squad/squad_gb3_rifle_at_javelin(nato)"
+msgid "BRITISH JAVELIN TEAM"
+msgstr ""

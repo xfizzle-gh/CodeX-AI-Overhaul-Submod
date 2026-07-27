@@ -86,6 +86,31 @@
 	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_eu) c1(gb_squadlead:1) c2(gb_teamleader:1) c3(gb_rifleman:3) c4(gb_marksman:1) c5(gb_grenadier:1) c6(gb_mg:2) c7(gb_antitank_nlaw:2))
 }
 
+; European Coalition dismounted detachments.
+{"squad_pz10_fireteam_mg(nato)"
+	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(pzgd_teamlead:2) c2(pzgd_mg:2) c3(pzgd_marksman:2))
+}
+
+{"squad_pz10_fireteam_carl(nato)"
+	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(pzgd_teamlead:2) c2(pzgd_mg:2) c3(pzgd_antitank:2))
+}
+
+{"squad_pz10_eng(nato)"
+	("mp_team_1" side(nato) period(2022s) d(modern_nato_eu) c1(pzgd_eng:10))
+}
+
+{"squad_pz10_rec(nato)"
+	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(pzgd_squadlead:1) c2(pzgd_spotter:2) c3(pzgd_antitank:1))
+}
+
+{"squad_gb3_rifle_mg(nato)"
+	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(gb_teamleader:1) c2(gb_mg:2) c3(gb_rifleman:1))
+}
+
+{"squad_gb3_rifle_at_javelin(nato)"
+	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(gb_teamleader:1) c2(gb_antitank:2) c3(gb_rifleman:1))
+}
+
 ; Doctrine-point combined-arms assets scaled for a 20 DP match budget.
 {"squad_pz10_puma_mells_rifle(nato)"
 	("dp_vehicle_6types" side(nato) period(2022s) vehicle(puma_vjtf) crew1(pzgd_vehicleman:3) crew2(pzgd_squadlead:1) crew3(pzgd_teamlead:1) crew4(pzgd_mg:1) crew5(pzgd_grenadier:1) crew6(pzgd_rifleman_puma:2))
