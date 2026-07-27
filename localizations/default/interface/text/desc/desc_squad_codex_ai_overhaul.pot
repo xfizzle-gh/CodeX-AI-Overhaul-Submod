@@ -1,0 +1,7 @@
+msgctxt "desc/squad/doctrine(nato)"
+msgid "United States Joint Force"
+msgstr ""
+
+msgctxt "desc/squad/doctrine_vehicle_m2a3(nato)"
+msgid "European Coalition"
+msgstr ""
