@@ -3,5 +3,13 @@
 ; parent infantry catalogs do not provide a 2022s MP price.
 ; Do not move these entries into the Conquest catalogs.
 
+; Infantry role costs missing from imported parent catalogs.
 {"mp/ukr/2022s/ukr47_antitank_rpg7" ("ukr_regular_advanced" side(ukr)) {cost 24.5}}
 {"mp/nato/2022s/inf2_grenadier_ngsw" ("nato_basic" side(nato)) {cost 26.0}}
+
+; Crew costs missing from imported parent catalogs.
+{"mp/nato/2022s/usarmy_vehicleman" ("nato_supporter" side(nato)) {cost 10.5}}
+{"mp/nato/2022s/pzgd_vehicleman" ("nato_supporter" side(nato)) {cost 10.5}}
+{"mp/nato/2022s/nato_pilot" ("nato_supporter" side(nato)) {cost 10.5}}
+{"mp/nato/2022s/gb_crew" ("nato_guncrew" side(nato)) {cost 3.5}}
+{"mp/prc/2022s/pla_vehicleman_gy" ("prc_support" side(prc)) {cost 4.0}}
