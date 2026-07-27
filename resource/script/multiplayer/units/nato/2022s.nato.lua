@@ -1,18 +1,25 @@
 require([[/script/multiplayer/modes/battlezones_roles]])
 
 -- Curated 2022s Battle Zones buy list.
--- Every NATO MP infantry purchase is gated by the selected United States or
--- European doctrine. Doctrine points remain reserved for combined-arms assets.
+-- Both NATO doctrines share an inexpensive line-infantry backbone. National
+-- infantry and doctrine-point combined arms remain doctrine-specific.
 local skirmish = {
 	{
 		Repeat = 0,
 		Units = {
+			-- Shared NATO MP backbone available under either doctrine.
+			{priority = 1.15, type = {"Infantry", "Squad", "Class1"}, unit = "squad_arf_rifle(nato)"},
+			{priority = 0.70, type = {"Infantry", "Squad", "AT", "Class1"}, unit = "squad_arf_rifle_spike(nato)"},
+			{priority = 0.65, type = {"Infantry", "Team", "MG", "Support", "Class1"}, unit = "squad_arf_mg(nato)"},
+			{priority = 0.65, type = {"Infantry", "Team", "AT", "Support", "Class1"}, unit = "squad_arf_at(nato)"},
+			{priority = 0.40, type = {"Infantry", "Team", "Recon", "Support", "Class1"}, unit = "squad_arf_scout(nato)"},
+			{priority = 0.35, type = {"Infantry", "Team", "Medic", "Support", "Class1"}, unit = "arf_medic(nato)"},
+
 			-- United States Joint Force base MP roster.
 			{priority = 0.70, type = {"Infantry", "Team", "AT", "Support", "Class1"}, unit = "squad_usmc_weapon_at(nato)"},
 			{priority = 0.70, type = {"Infantry", "Team", "MG", "Support", "Class1"}, unit = "squad_usmc_mg(nato)"},
 			{priority = 0.90, type = {"Infantry", "Squad", "Engineer", "Class1"}, unit = "squad_usmc_eng(nato)"},
 			{priority = 1.00, type = {"Infantry", "Squad", "Class1"}, unit = "squad_inf2_rifle_m3(nato)"},
-			{priority = 0.40, type = {"Infantry", "Team", "Medic", "Support", "Class1"}, unit = "arf_medic(nato)"},
 			{priority = 0.55, type = {"Infantry", "Team", "AT", "Support", "Class1"}, unit = "squad_usmc_weapon_at_javelin(nato)"},
 			{priority = 0.75, type = {"Infantry", "Squad", "Class1"}, unit = "squad_inf2_rifle(nato)"},
 
@@ -39,7 +46,6 @@ local skirmish = {
 			-- European Coalition doctrine-gated MP infantry.
 			{priority = 1.00, type = {"Infantry", "Squad", "Class1"}, unit = "squad_pz10_rifle(nato)"},
 			{priority = 0.90, type = {"Infantry", "Squad", "AT", "Class1"}, unit = "squad_gb3_rifle_nlaw(nato)"},
-			{priority = 0.80, type = {"Infantry", "Squad", "AT", "Class1"}, unit = "squad_arf_rifle_spike(nato)"},
 			{priority = 0.45, type = {"Infantry", "Team", "Recon", "AT", "Support", "Class1"}, unit = "squad_gb3_scouts_ranger(nato)"},
 
 			-- European Coalition doctrine-point combined arms.
