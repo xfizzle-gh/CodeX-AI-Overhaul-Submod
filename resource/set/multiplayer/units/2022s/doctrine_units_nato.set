@@ -1,86 +1,66 @@
 ;SDL
-; NATO six-category doctrine rosters.
-; Shared NATO line infantry and detachments live in minimal_units.set.
-; Categories: inf1 squads, inf2 detachments, vehicles, tanks, empl support,
-; doctrine five-choice DP pool.
+; NATO doctrine-specific MP and DP rosters.
+; United States units use American personnel and equipment only.
+; European units use NATO-European personnel and equipment only.
 
 ;===============================================================================
 ; UNITED STATES JOINT FORCE
-; Marines, Army, armored cavalry, Rangers, armor, fires and aviation.
+; Marines, Army, armored cavalry, airborne reconnaissance, armor, fires and air.
 ;===============================================================================
 
-; 1. Infantry squads
+; Normal MP infantry shown only when the United States doctrine is selected.
 {"squad_usmc_rifle(nato)"
 	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_usa) c1(usmc_squadlead:1) c2(usmc_teamlead:3) c3(usmc_mg_m27:3) c4(usmc_grenadier:3) c5(usmc_marksman:1) c6(usmc_rifleman:1) c7(usmc_medic:1))
 }
+
 {"squad_inf2_rifle_ngsw(nato)"
 	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_usa) c1(inf2_squadlead_ngsw:1) c2(inf2_teamlead_ngsw:2) c3(inf2_autorifle_ngsw:2) c4(inf2_grenadier_ngsw:1) c5(inf2_rifleman_ngsw:1) c6(inf2_antitank_ngsw:1) c7(inf2_medic_ngsw:1))
 }
 
-; 2. Detachments
 {"squad_tank1_rifle_mg(nato)"
-	("mp_team_3" side(nato) period(2022s) d(modern_nato_usa) c1(1ad_teamlead:2) c2(1ad_mg:2) c3(1ad_grenadier:2))
+	("mp_infantry_3" side(nato) period(2022s) d(modern_nato_usa) c1(1ad_teamlead:2) c2(1ad_mg:2) c3(1ad_grenadier:2))
 }
+
 {"squad_82nd_lrs(nato)"
-	("mp_team_4" side(nato) period(2022s) d(modern_nato_usa) c1(lrs_squadlead:1) c2(lrs_rifleman:2) c3(lrs_mg:2) c4(lrs_javelin:1))
+	("mp_infantry_4" side(nato) period(2022s) d(modern_nato_usa) c1(lrs_squadlead:1) c2(lrs_rifleman:2) c3(lrs_mg:2) c4(lrs_javelin:1))
 }
 
-; 3. Recon and mechanized
-{"squad_usmc_lav25(nato)"
-	("mp_vehicle_5types" side(nato) period(2022s) d(modern_nato_usa) vehicle(lav25) crew1(usmc_vehicleman:3) crew2(usmc_squadlead:1) crew3(usmc_mg:1) crew4(usmc_antitank:1) crew5(usmc_spotter:1))
-}
+; Doctrine-point combined-arms assets scaled for a 20 DP match budget.
 {"squad_inf2_m1126_mk19(nato)"
-	("mp_vehicle_7types" side(nato) period(2022s) d(modern_nato_usa) vehicle(m1126_mk19_n) crew1(usarmy_vehicleman:2) crew2(inf2_squadlead:1) crew3(inf2_teamlead:2) crew4(inf2_rifleman:2) crew5(inf2_autorifle:2) crew6(inf2_antitank:1) crew7(inf2_medic:1))
-}
-{"squad_inf2_m1296(nato)"
-	("mp_vehicle_7types" side(nato) period(2022s) d(modern_nato_usa) vehicle(m1296) crew1(usarmy_vehicleman:3) crew2(inf2_squadlead:1) crew3(inf2_teamlead:2) crew4(inf2_rifleman:1) crew5(inf2_autorifle:2) crew6(inf2_antitank:1) crew7(inf2_medic:1))
-}
-{"squad_tank1_m2a3_fireteam_brat(nato)"
-	("mp_vehicle_7types" side(nato) period(2022s) d(modern_nato_usa) vehicle(m2a3_brat) crew1(usarmy_vehicleman:3) crew2(1ad_squadlead:1) crew3(1ad_teamlead:1) crew4(1ad_mg:1) crew5(1ad_autorifle:1) crew6(1ad_rifleman:1) crew7(1ad_antitank:1))
-}
-
-; 4. Heavy armor
-{"squad_inf2_m1128(nato)"
-	("mp_tank" side(nato) period(2022s) d(modern_nato_usa) vehicle(m1128) crew(usarmy_vehicleman:3))
-}
-{"squad_efp_m10(nato)"
-	("mp_tank" side(nato) period(2022s) d(modern_nato_usa) vehicle(m10_booker) crew(usarmy_vehicleman:4))
-}
-{"squad_tank1_m1a2_sep(nato)"
-	("mp_tank" side(nato) period(2022s) d(modern_nato_usa) vehicle(m1a2_sepv1) crew(usarmy_vehicleman:4))
-}
-
-; 5. Support and call-ins
-{"squad_usmc_m777(nato)"
-	("mp_support" side(nato) period(2022s) d(modern_nato_usa) vehicle(m777a1) crew(usmc_supcrew:4))
-}
-{"squad_tank1_m109(nato)"
-	("mp_support" side(nato) period(2022s) d(modern_nato_usa) vehicle(m109_paladin_n) crew(usarmy_vehicleman:4))
-}
-{"squad_usmc_m142(nato)"
-	("mp_support" side(nato) period(2022s) d(modern_nato_usa) vehicle(m142_himarser) crew(usmc_supcrew:2))
-}
-{"a-10c_support"
-	("mp_support_action" side(nato) period(2022s) d(modern_nato_usa) vehicle(a-10c_support) crew(nato_pilot:1) action(airstrike:airsupport_trigger) cost(450) cool(300))
-}
-
-; 6. Five doctrine-point choices
-{"squad_gb3_scouts_ranger(nato)"
-	("dp_infantry_5" side(nato) period(2022s) c1(rg_squadlead:1) c2(rg_teamleader:2) c3(rg_rifleman:5) c4(rg_m2hb_crew:1) c5(rg_javelin:2))
+	("dp_vehicle_7types" side(nato) period(2022s) vehicle(m1126_mk19_n) crew1(usarmy_vehicleman:2) crew2(inf2_squadlead:1) crew3(inf2_teamlead:2) crew4(inf2_rifleman:2) crew5(inf2_autorifle:2) crew6(inf2_antitank:1) crew7(inf2_medic:1))
 	("doctrine_t1" cool(180) d(modern_nato_usa) cost(3))
 }
+
+{"squad_tank1_m2a3_fireteam_brat(nato)"
+	("dp_vehicle_7types" side(nato) period(2022s) vehicle(m2a3_brat) crew1(usarmy_vehicleman:3) crew2(1ad_squadlead:1) crew3(1ad_teamlead:1) crew4(1ad_mg:1) crew5(1ad_autorifle:1) crew6(1ad_rifleman:1) crew7(1ad_antitank:1))
+	("doctrine_t1" cool(240) d(modern_nato_usa) cost(5))
+}
+
 {"squad_tank1_ampv_cuas(nato)"
 	("dp_vehicle_7types" side(nato) period(2022s) vehicle(ampv_cuas) crew1(usarmy_vehicleman:3) crew2(1ad_squadlead:1) crew3(1ad_teamlead:2) crew4(1ad_mg:2) crew5(1ad_autorifle:1) crew6(1ad_rifleman:1) crew7(1ad_javelin:1))
 	("doctrine_t1" cool(240) d(modern_nato_usa) cost(4))
 }
+
 {"squad_tank1_m1a2_sepv_armor(nato)"
 	("dp_vehicle" side(nato) period(2022s) vehicle(m1a2_sep_armor) crew(usarmy_vehicleman:4))
 	("doctrine_t1" cool(360) d(modern_nato_usa) cost(8))
 }
+
+{"squad_usmc_m777(nato)"
+	("dp_vehicle" side(nato) period(2022s) vehicle(m777a1) crew(usmc_supcrew:4))
+	("doctrine_t1" cool(300) d(modern_nato_usa) cost(4))
+}
+
+{"squad_tank1_m109(nato)"
+	("dp_vehicle" side(nato) period(2022s) vehicle(m109_paladin_n) crew(usarmy_vehicleman:4))
+	("doctrine_t1" cool(360) d(modern_nato_usa) cost(6))
+}
+
 {"squad_tank1_m270(nato)"
 	("dp_vehicle" side(nato) period(2022s) vehicle(m270_n_clu) crew(usarmy_vehicleman:4))
 	("doctrine_t1" cool(480) d(modern_nato_usa) cost(9))
 }
+
 {"ah1z"
 	("dp_vehicle" side(nato) period(2022s) vehicle(ah1z) crew(usmc_pilot:2))
 	("doctrine_t1" cool(480) d(modern_nato_usa) cost(9))
@@ -91,102 +71,69 @@
 ; German, British, Nordic, Polish, French and Italian combined arms.
 ;===============================================================================
 
-; 1. Infantry squads
+; Normal MP infantry shown only when the European doctrine is selected.
 {"squad_pz10_rifle(nato)"
 	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_eu) c1(pzgd_squadlead:1) c2(pzgd_teamlead:1) c3(pzgd_rifleman:2) c4(pzgd_grenadier:1) c5(pzgd_mg:1) c6(pzgd_antitank_rgw:1) c7(pzgd_medic:1))
 }
-{"squad_gb3_rifle(nato)"
-	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_eu) c1(gb_squadlead:1) c2(gb_teamleader:1) c3(gb_rifleman:3) c4(gb_marksman:1) c5(gb_grenadier:1) c6(gb_mg:2) c7(gb_antitank:1))
-}
+
 {"squad_gb3_rifle_nlaw(nato)"
 	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_eu) c1(gb_squadlead:1) c2(gb_teamleader:1) c3(gb_rifleman:3) c4(gb_marksman:1) c5(gb_grenadier:1) c6(gb_mg:2) c7(gb_antitank_nlaw:2))
 }
 
-; 2. Detachments
-{"squad_pz10_fireteam_mg(nato)"
-	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(pzgd_teamlead:2) c2(pzgd_mg:2) c3(pzgd_marksman:2))
-}
-{"squad_pz10_fireteam_carl(nato)"
-	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(pzgd_teamlead:2) c2(pzgd_mg:2) c3(pzgd_antitank:2))
-}
-{"squad_pz10_eng(nato)"
-	("mp_team_1" side(nato) period(2022s) d(modern_nato_eu) c1(pzgd_eng:10))
-}
-{"squad_pz10_rec(nato)"
-	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(pzgd_squadlead:1) c2(pzgd_spotter:2) c3(pzgd_antitank:1))
-}
-{"squad_gb3_rifle_mg(nato)"
-	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(gb_teamleader:1) c2(gb_mg:2) c3(gb_rifleman:1))
-}
-{"squad_gb3_rifle_at_javelin(nato)"
-	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(gb_teamleader:1) c2(gb_antitank:2) c3(gb_rifleman:1))
+{"squad_arf_rifle_spike(nato)"
+	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_eu) c1(nato_squadlead:1) c2(nato_teamlead:1) c3(nato_rifleman:2) c4(nato_grenadier:1) c5(nato_mg:1) c6(nato_antitank_spike:2) c7(nato_medic:1))
 }
 
-; 3. Recon and mechanized
-{"squad_pz10_fennek(nato)"
-	("mp_vehicle" side(nato) period(2022s) d(modern_nato_eu) vehicle(fennek) crew(pzgd_vehicleman:3))
-}
-{"squad_pz10_ypr765_rifle(nato)"
-	("mp_vehicle_7types" side(nato) period(2022s) d(modern_nato_eu) vehicle(ypr_765) crew1(nato_vehicleman:3) crew2(nato_squadlead:1) crew3(nato_teamlead:1) crew4(nato_mg:2) crew5(nato_grenadier:1) crew6(nato_rifleman:1) crew7(nato_antitank:1))
-}
-{"squad_pz10_cv9030_rifle(nato)"
-	("mp_vehicle_7types" side(nato) period(2022s) d(modern_nato_eu) vehicle(cv_9030) crew1(nato_vehicleman:3) crew2(nato_squadlead:1) crew3(nato_teamlead:1) crew4(nato_mg:2) crew5(nato_grenadier:1) crew6(nato_rifleman:1) crew7(nato_antitank:1))
-}
-{"squad_gb3_mot_rifle_boxer(nato)"
-	("mp_vehicle_8types" side(nato) period(2022s) d(modern_nato_eu) vehicle(boxer_mgun_gb) crew1(gb_vehicleman:3) crew2(gb_squadlead:1) crew3(gb_teamleader:1) crew4(gb_grenadier:1) crew5(gb_rifleman:1) crew6(gb_mg:1) crew7(gb_marksman:1) crew8(gb_medic:1))
-}
-{"squad_gb3_mech_rifle_fv510_milan(nato)"
-	("mp_vehicle_8types" side(nato) period(2022s) d(modern_nato_eu) vehicle(warrior_milan) crew1(gb_vehicleman:3) crew2(gb_squadlead:1) crew3(gb_teamleader:1) crew4(gb_grenadier:1) crew5(gb_rifleman:1) crew6(gb_mg:1) crew7(gb_marksman:1) crew8(gb_medic:1))
+{"squad_gb3_scouts_ranger(nato)"
+	("mp_infantry_5" side(nato) period(2022s) d(modern_nato_eu) c1(rg_squadlead:1) c2(rg_teamleader:2) c3(rg_rifleman:5) c4(rg_m2hb_crew:1) c5(rg_javelin:2))
 }
 
-; 4. Heavy armor
-{"squad_pz10_leopard2a6(nato)"
-	("mp_tank" side(nato) period(2022s) d(modern_nato_eu) vehicle(leopord_2a6_n) crew(pzgd_vehicleman:4))
-}
-{"squad_gb3_tank_challenger(nato)"
-	("mp_tank" side(nato) period(2022s) d(modern_nato_eu) vehicle(challenger2_n) crew(gb_vehicleman:4))
-}
-{"leopard_2_pl"
-	("mp_tank" side(nato) period(2022s) d(modern_nato_eu) vehicle(leopard_2_pl) crew(nato_vehicleman:4))
-}
-{"leclerc_sxxi"
-	("mp_tank" side(nato) period(2022s) d(modern_nato_eu) vehicle(leclerc_sxxi) crew(nato_vehicleman:4))
-}
-
-; 5. Support and call-ins
-{"squad_gb3_art_l118(nato)"
-	("mp_support" side(nato) period(2022s) d(modern_nato_eu) vehicle(105mm_m119) crew(gb_crew:4))
-}
-{"squad_gb3_art_as90(nato)"
-	("mp_support" side(nato) period(2022s) d(modern_nato_eu) vehicle(as90) crew(gb_vehicleman:3))
-}
-{"squad_gb3_art_m270(nato)"
-	("mp_support" side(nato) period(2022s) d(modern_nato_eu) vehicle(m-270_gb) crew(gb_vehicleman:2))
-}
-{"otomatic"
-	("mp_support" side(nato) period(2022s) d(modern_nato_eu) vehicle(otomatic) crew(nato_vehicleman:3))
-}
-{"tornado_gr4_support_light"
-	("mp_support_action" side(nato) period(2022s) d(modern_nato_eu) vehicle(tornado_gr4_support_light) crew(nato_pilot:2) action(airstrike:airsupport_trigger) cost(450) cool(300))
-}
-
-; 6. Five doctrine-point choices
-{"squad_gb3_scouts_nlaw(nato)"
-	("dp_infantry_3" side(nato) period(2022s) c1(gb_squadlead:1) c2(gb_scout:2) c3(gb_antitank_nlaw:2))
-	("doctrine_t1" cool(180) d(modern_nato_eu) cost(3))
-}
+; Doctrine-point combined-arms assets scaled for a 20 DP match budget.
 {"squad_pz10_puma_mells_rifle(nato)"
 	("dp_vehicle_6types" side(nato) period(2022s) vehicle(puma_vjtf) crew1(pzgd_vehicleman:3) crew2(pzgd_squadlead:1) crew3(pzgd_teamlead:1) crew4(pzgd_mg:1) crew5(pzgd_grenadier:1) crew6(pzgd_rifleman_puma:2))
 	("doctrine_t1" cool(240) d(modern_nato_eu) cost(5))
 }
+
+{"squad_gb3_mech_rifle_fv510_milan(nato)"
+	("dp_vehicle_8types" side(nato) period(2022s) vehicle(warrior_milan) crew1(gb_vehicleman:3) crew2(gb_squadlead:1) crew3(gb_teamleader:1) crew4(gb_grenadier:1) crew5(gb_rifleman:1) crew6(gb_mg:1) crew7(gb_marksman:1) crew8(gb_medic:1))
+	("doctrine_t1" cool(240) d(modern_nato_eu) cost(5))
+}
+
 {"squad_pz10_leopard2a7(nato)"
 	("dp_vehicle" side(nato) period(2022s) vehicle(leopard_2a7+) crew(pzgd_vehicleman:4))
 	("doctrine_t1" cool(360) d(modern_nato_eu) cost(8))
 }
+
+{"squad_gb3_tank_challenger_tes(nato)"
+	("dp_vehicle" side(nato) period(2022s) vehicle(challenger2_tes) crew(gb_vehicleman:4))
+	("doctrine_t1" cool(360) d(modern_nato_eu) cost(8))
+}
+
+{"leopard_2_pl"
+	("dp_vehicle" side(nato) period(2022s) vehicle(leopard_2_pl) crew(nato_vehicleman:4))
+	("doctrine_t1" cool(360) d(modern_nato_eu) cost(7))
+}
+
+{"leclerc_sxxi"
+	("dp_vehicle" side(nato) period(2022s) vehicle(leclerc_sxxi) crew(nato_vehicleman:4))
+	("doctrine_t1" cool(360) d(modern_nato_eu) cost(8))
+}
+
 {"squad_pz10_pzh2000(nato)"
 	("dp_vehicle" side(nato) period(2022s) vehicle(pzh2000_n) crew(pzgd_vehicleman:4))
 	("doctrine_t1" cool(360) d(modern_nato_eu) cost(6))
 }
+
+{"squad_gb3_art_m270(nato)"
+	("dp_vehicle" side(nato) period(2022s) vehicle(m-270_gb) crew(gb_vehicleman:2))
+	("doctrine_t1" cool(480) d(modern_nato_eu) cost(9))
+}
+
+{"otomatic"
+	("dp_vehicle" side(nato) period(2022s) vehicle(otomatic) crew(nato_vehicleman:3))
+	("doctrine_t1" cool(300) d(modern_nato_eu) cost(5))
+}
+
 {"tiger_heavy"
 	("dp_vehicle" side(nato) period(2022s) vehicle(tiger_heavy) crew(nato_pilot:2))
 	("doctrine_t1" cool(480) d(modern_nato_eu) cost(9))
