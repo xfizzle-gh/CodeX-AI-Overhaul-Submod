@@ -1,0 +1,127 @@
+;SDL
+; Russian combined-arms doctrine-point roster.
+
+;===============================================================================
+; GROUND FORCES
+; Guards motor-rifle infantry, engineers, armor, air defense, fires and strike air.
+;===============================================================================
+
+{"rus4_inf_rifle_rpg27(rusa)"
+	("dp_infantry_7" side(rusa) period(2022s) c1(rus4_squadlead:1) c2(rus4_seniorrifleman:1) c3(rus4_rifleman:1) c4(rus4_mg:1) c5(rus4_antitank:1) c6(rus4_antitank_rpg27:1) c7(rus4_medic:1))
+	("doctrine_t1" cool(120) d(modern_rusa_ground) cost(10))
+}
+
+{"rus90_saperi_at(rusa)"
+	("dp_infantry_3" side(rusa) period(2022s) c1(rus90_saperi:3) c2(rus90_mg:1) c3(rus90_antitank_rpg26:4))
+	("doctrine_t1" cool(150) d(modern_rusa_ground) cost(12))
+}
+
+{"rus_manpad_operator(rusa)"
+	("dp_infantry_2" side(rusa) period(2022s) c1(rus_manpad_operator:1) c2(rus_manpad_supporter:1))
+	("doctrine_t1" cool(180) d(modern_rusa_ground) cost(12))
+}
+
+{"squad_rus90_razv_bmp2(rusa)"
+	("dp_vehicle_6types" side(rusa) period(2022s) vehicle(bmp2_rus) crew1(rus_vehicleman:3) crew2(rus90_squadlead:1) crew3(rus90_rifleman:2) crew4(rus90_recon:2) crew5(rus90_mg:1) crew6(rus90_antitank_rpg27:1))
+	("doctrine_t1" cool(210) d(modern_rusa_ground) cost(26))
+}
+
+{"squad_rus90_bmp2m(rusa)"
+	("dp_vehicle_7types" side(rusa) period(2022s) vehicle(bmp_2m) crew1(rus_vehicleman:3) crew2(rus90_squadlead:1) crew3(rus90_seniorrifleman:1) crew4(rus90_rifleman:1) crew5(rus90_mg:1) crew6(rus90_antitank:1) crew7(rus90_medic:1))
+	("doctrine_t1" cool(240) d(modern_rusa_ground) cost(34))
+}
+
+{"t90m_2024_ubh"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(t90m_2024_ubh) crew(rus_vehicleman:3))
+	("doctrine_t1" cool(360) d(modern_rusa_ground) cost(62))
+}
+
+{"bmpt_72"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(bmpt_72) crew(rus_vehicleman:5))
+	("doctrine_t1" cool(330) d(modern_rusa_ground) cost(54))
+}
+
+{"squad_rus90_2s3(rusa)"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(2s3m_akatsiya_rus) crew(rus_vehicleman:4))
+	("doctrine_t1" cool(330) d(modern_rusa_ground) cost(42))
+}
+
+{"squad_rus90_tos1(rusa)"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(t72a_solntsepek) crew(rus_vehicleman:3))
+	("doctrine_t1" cool(480) d(modern_rusa_ground) cost(60))
+}
+
+{"2s6"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(2s6) crew(rus_vehicleman:4))
+	("doctrine_t1" cool(300) d(modern_rusa_ground) cost(44))
+}
+
+{"su-25sm_at"
+	("dp_action_vehicle" side(rusa) period(2022s) vehicle(su-25sm_at) crew(rus_pliot:1) action(airstrike:airsupport_trigger))
+	("doctrine_t1" cool(480) d(modern_rusa_ground) cost(70))
+}
+
+;===============================================================================
+; AIRBORNE AND NAVAL INFANTRY
+; VDV, 45th reconnaissance, 155th Naval Infantry, air-mobile armor and aviation.
+;===============================================================================
+
+{"vdv76_inf_rpg28(rusa)"
+	("dp_infantry_7" side(rusa) period(2022s) c1(vdv76_squadlead:1) c2(vdv76_rifleman:1) c3(vdv76_greenader:1) c4(vdv76_mg:1) c5(vdv76_antitank_rpg28:1) c6(vdv76_antitank:1) c7(vdv76_medic:1))
+	("doctrine_t1" cool(120) d(modern_rusa_vdv) cost(12))
+}
+
+{"vdv76_inf_metis(rusa)"
+	("dp_infantry_7" side(rusa) period(2022s) c1(vdv76_squadlead:1) c2(vdv76_rifleman:1) c3(vdv76_greenader:1) c4(vdv76_mg:1) c5(vdv76_metis_crew:1) c6(vdv76_marksman:1) c7(vdv76_medic:1))
+	("doctrine_t1" cool(150) d(modern_rusa_vdv) cost(14))
+}
+
+{"rus155_inf_rpg28(rusa)"
+	("dp_infantry_8" side(rusa) period(2022s) c1(rus155_squadlead:1) c2(rus155_seniorrifleman:1) c3(rus155_rifleman:2) c4(rus155_lmg:1) c5(rus155_antitank:1) c6(rus155_antitank_rpg28:1) c7(rus155_marksman:1) c8(rus155_medic:1))
+	("doctrine_t1" cool(120) d(modern_rusa_vdv) cost(12))
+}
+
+{"squad_vdv45_razv_typhoon(rusa)"
+	("dp_vehicle_6types" side(rusa) period(2022s) vehicle(typhoon_ads) crew1(vdv_support:3) crew2(45vdv_squadlead:1) crew3(45vdv_rifleman:1) crew4(45vdv_recon:2) crew5(45vdv_lmg:1) crew6(45vdv_antitank:1))
+	("doctrine_t1" cool(180) d(modern_rusa_vdv) cost(22))
+}
+
+{"squad_vdv76_mech_bmd4(rusa)"
+	("dp_vehicle_7types" side(rusa) period(2022s) vehicle(bmd_4m) crew1(vdv_vehicleman:3) crew2(vdv76_squadlead:1) crew3(vdv76_rifleman:1) crew4(vdv76_greenader:1) crew5(vdv76_mg:1) crew6(vdv76_antitank:1) crew7(vdv76_medic:1))
+	("doctrine_t1" cool(240) d(modern_rusa_vdv) cost(34))
+}
+
+{"squad_rus155_mech_bmp3(rusa)"
+	("dp_vehicle_7types" side(rusa) period(2022s) vehicle(bmp3_rus) crew1(rus_vehicleman:3) crew2(rus155_squadlead:1) crew3(rus155_seniorrifleman:1) crew4(rus155_rifleman:1) crew5(rus155_lmg:2) crew6(rus155_antitank:1) crew7(rus155_medic:1))
+	("doctrine_t1" cool(240) d(modern_rusa_vdv) cost(34))
+}
+
+{"squad_vdv76_2s25(rusa)"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(2s25m) crew(vdv_vehicleman:3))
+	("doctrine_t1" cool(300) d(modern_rusa_vdv) cost(46))
+}
+
+{"squad_rus155_t80bv_2025(rusa)"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(t80bv_2023) crew(rus_vehicleman:3))
+	("doctrine_t1" cool(330) d(modern_rusa_vdv) cost(50))
+}
+
+{"squad_vdv76_2s9(rusa)"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(2c9) crew(rus_vehicleman:4))
+	("doctrine_t1" cool(300) d(modern_rusa_vdv) cost(38))
+}
+
+{"squad_rus155_bm21(rusa)"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(bm-21_grad_rus) crew(rus_supporter:2))
+	("doctrine_t1" cool(420) d(modern_rusa_vdv) cost(50))
+}
+
+{"mi17_rus"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(mi17_rus) crew(rus_pliot:2))
+	("doctrine_t1" cool(360) d(modern_rusa_vdv) cost(42))
+}
+
+{"squad_rus155_ka52k(rusa)"
+	("dp_vehicle" side(rusa) period(2022s) vehicle(ka52k) crew(rus_pliot:2))
+	("doctrine_t1" cool(480) d(modern_rusa_vdv) cost(70))
+}
