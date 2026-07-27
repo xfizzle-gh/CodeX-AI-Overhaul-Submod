@@ -43,6 +43,11 @@
 	("mp_tank" side(nato) period(2022s) d(modern_nato_usa) vehicle(m10_booker) crew(usarmy_vehicleman:4))
 }
 
+; First isolated category-5 test: crew-only conventional tube artillery.
+{"squad_usmc_m777(nato)"
+	("mp_support" side(nato) period(2022s) d(modern_nato_usa) vehicle(m777a1) crew(usmc_supcrew:4))
+}
+
 ; Doctrine-point combined-arms assets scaled for a 20 DP match budget.
 {"squad_inf2_m1126_mk19(nato)"
 	("dp_vehicle_7types" side(nato) period(2022s) vehicle(m1126_mk19_n) crew1(usarmy_vehicleman:2) crew2(inf2_squadlead:1) crew3(inf2_teamlead:2) crew4(inf2_rifleman:2) crew5(inf2_autorifle:2) crew6(inf2_antitank:1) crew7(inf2_medic:1))
@@ -64,19 +69,9 @@
 	("doctrine_t1" cool(360) d(modern_nato_usa) cost(8))
 }
 
-{"squad_usmc_m777(nato)"
-	("dp_vehicle" side(nato) period(2022s) vehicle(m777a1) crew(usmc_supcrew:4))
-	("doctrine_t1" cool(300) d(modern_nato_usa) cost(4))
-}
-
 {"squad_tank1_m109(nato)"
 	("dp_vehicle" side(nato) period(2022s) vehicle(m109_paladin_n) crew(usarmy_vehicleman:4))
 	("doctrine_t1" cool(360) d(modern_nato_usa) cost(6))
-}
-
-{"squad_tank1_m270(nato)"
-	("dp_vehicle" side(nato) period(2022s) vehicle(m270_n_clu) crew(usarmy_vehicleman:4))
-	("doctrine_t1" cool(480) d(modern_nato_usa) cost(9))
 }
 
 {"ah1z"
@@ -133,6 +128,11 @@
 	("mp_tank" side(nato) period(2022s) d(modern_nato_eu) vehicle(leopard_2a6) crew(pzgd_vehicleman:4))
 }
 
+; First isolated category-5 test: crew-only self-propelled tube artillery.
+{"squad_gb3_art_as90(nato)"
+	("mp_support" side(nato) period(2022s) d(modern_nato_eu) vehicle(as90) crew(gb_vehicleman:3))
+}
+
 ; Doctrine-point combined-arms assets scaled for a 20 DP match budget.
 {"squad_pz10_puma_mells_rifle(nato)"
 	("dp_vehicle_6types" side(nato) period(2022s) vehicle(puma_vjtf) crew1(pzgd_vehicleman:3) crew2(pzgd_squadlead:1) crew3(pzgd_teamlead:1) crew4(pzgd_mg:1) crew5(pzgd_grenadier:1) crew6(pzgd_rifleman_puma:2))
@@ -167,11 +167,6 @@
 {"squad_pz10_pzh2000(nato)"
 	("dp_vehicle" side(nato) period(2022s) vehicle(pzh2000_n) crew(pzgd_vehicleman:4))
 	("doctrine_t1" cool(360) d(modern_nato_eu) cost(6))
-}
-
-{"squad_gb3_art_m270(nato)"
-	("dp_vehicle" side(nato) period(2022s) vehicle(m-270_gb) crew(gb_vehicleman:2))
-	("doctrine_t1" cool(480) d(modern_nato_eu) cost(9))
 }
 
 {"otomatic"

@@ -2,7 +2,7 @@ require([[/script/multiplayer/modes/battlezones_roles]])
 
 -- Curated 2022s Battle Zones buy list.
 -- Both NATO doctrines share an inexpensive line-infantry backbone. National
--- infantry, light recon, heavy armor and doctrine-point assets remain doctrine-specific.
+-- infantry, light recon, heavy armor, conventional artillery and doctrine-point assets remain doctrine-specific.
 local skirmish = {
 	{
 		Repeat = 0,
@@ -40,14 +40,15 @@ local skirmish = {
 			-- First isolated United States category-4 tank.
 			{priority = 0.14, type = {"Tank", "Light", "Class2"}, unit = "squad_efp_m10(nato)"},
 
+			-- First isolated United States category-5 conventional artillery.
+			{priority = 0.10, type = {"Cannon", "Artillery", "Support", "Class2"}, unit = "squad_usmc_m777(nato)"},
+
 			-- United States Joint Force doctrine-point combined arms.
 			{priority = 0.08, type = {"Doctrine", "Infantry", "Armored", "Class1"}, unit = "squad_inf2_m1126_mk19(nato)"},
 			{priority = 0.08, type = {"Doctrine", "Infantry", "Ifv", "Class2"}, unit = "squad_tank1_m2a3_fireteam_brat(nato)"},
 			{priority = 0.06, type = {"Doctrine", "Infantry", "AA", "Support", "Class2"}, unit = "squad_tank1_ampv_cuas(nato)"},
 			{priority = 0.05, type = {"Doctrine", "Tank", "Class3"}, unit = "squad_tank1_m1a2_sepv_armor(nato)"},
-			{priority = 0.05, type = {"Doctrine", "Cannon", "Artillery", "Class2"}, unit = "squad_usmc_m777(nato)"},
 			{priority = 0.04, type = {"Doctrine", "Tank", "Artillery", "Class2"}, unit = "squad_tank1_m109(nato)"},
-			{priority = 0.03, type = {"Doctrine", "Tank", "Artillery", "Class3"}, unit = "squad_tank1_m270(nato)"},
 			{priority = 0.02, type = {"Doctrine", "Air", "Class3"}, unit = "ah1z"},
 
 			-- European Coalition doctrine-gated MP infantry and detachments.
@@ -66,6 +67,9 @@ local skirmish = {
 			-- First isolated European category-4 tank.
 			{priority = 0.12, type = {"Tank", "Class3"}, unit = "squad_pz10_leopard2a6(nato)"},
 
+			-- First isolated European category-5 conventional artillery.
+			{priority = 0.10, type = {"Tank", "Artillery", "Support", "Class2"}, unit = "squad_gb3_art_as90(nato)"},
+
 			-- European Coalition doctrine-point combined arms.
 			{priority = 0.08, type = {"Doctrine", "Infantry", "Ifv", "Class2"}, unit = "squad_pz10_puma_mells_rifle(nato)"},
 			{priority = 0.08, type = {"Doctrine", "Infantry", "Ifv", "Class2"}, unit = "squad_gb3_mech_rifle_fv510_milan(nato)"},
@@ -74,7 +78,6 @@ local skirmish = {
 			{priority = 0.05, type = {"Doctrine", "Tank", "Class3"}, unit = "leopard_2_pl"},
 			{priority = 0.05, type = {"Doctrine", "Tank", "Class3"}, unit = "leclerc_sxxi"},
 			{priority = 0.04, type = {"Doctrine", "Tank", "Artillery", "Class2"}, unit = "squad_pz10_pzh2000(nato)"},
-			{priority = 0.03, type = {"Doctrine", "Tank", "Artillery", "Class3"}, unit = "squad_gb3_art_m270(nato)"},
 			{priority = 0.04, type = {"Doctrine", "Tank", "AA", "Class2"}, unit = "otomatic"},
 			{priority = 0.02, type = {"Doctrine", "Air", "Class3"}, unit = "tiger_heavy"},
 		}
