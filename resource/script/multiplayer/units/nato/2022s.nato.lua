@@ -27,11 +27,12 @@ local skirmish = {
 			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine(nato)"},
 			{priority = 0.01, type = {"Doctrine", "Squad", "Class1"}, unit = "doctrine_vehicle_m2a3(nato)"},
 
-			-- United States Joint Force doctrine-gated MP infantry.
+			-- United States Joint Force doctrine-gated MP infantry and detachments.
 			{priority = 0.90, type = {"Infantry", "Squad", "Class1"}, unit = "squad_usmc_rifle(nato)"},
 			{priority = 0.80, type = {"Infantry", "Squad", "Class1"}, unit = "squad_inf2_rifle_ngsw(nato)"},
 			{priority = 0.55, type = {"Infantry", "Team", "MG", "Support", "Class1"}, unit = "squad_tank1_rifle_mg(nato)"},
 			{priority = 0.45, type = {"Infantry", "Team", "Recon", "AT", "Support", "Class1"}, unit = "squad_82nd_lrs(nato)"},
+			{priority = 0.35, type = {"Infantry", "Squad", "Recon", "AT", "Class2"}, unit = "squad_gb3_scouts_ranger(nato)"},
 
 			-- United States Joint Force doctrine-point combined arms.
 			{priority = 0.08, type = {"Doctrine", "Infantry", "Armored", "Class1"}, unit = "squad_inf2_m1126_mk19(nato)"},
@@ -46,7 +47,6 @@ local skirmish = {
 			-- European Coalition doctrine-gated MP infantry.
 			{priority = 1.00, type = {"Infantry", "Squad", "Class1"}, unit = "squad_pz10_rifle(nato)"},
 			{priority = 0.90, type = {"Infantry", "Squad", "AT", "Class1"}, unit = "squad_gb3_rifle_nlaw(nato)"},
-			{priority = 0.45, type = {"Infantry", "Team", "Recon", "AT", "Support", "Class1"}, unit = "squad_gb3_scouts_ranger(nato)"},
 
 			-- European Coalition doctrine-point combined arms.
 			{priority = 0.08, type = {"Doctrine", "Infantry", "Ifv", "Class2"}, unit = "squad_pz10_puma_mells_rifle(nato)"},
