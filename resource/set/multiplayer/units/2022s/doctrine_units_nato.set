@@ -80,10 +80,6 @@
 	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_eu) c1(gb_squadlead:1) c2(gb_teamleader:1) c3(gb_rifleman:3) c4(gb_marksman:1) c5(gb_grenadier:1) c6(gb_mg:2) c7(gb_antitank_nlaw:2))
 }
 
-{"squad_arf_rifle_spike(nato)"
-	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_eu) c1(nato_squadlead:1) c2(nato_teamlead:1) c3(nato_rifleman:2) c4(nato_grenadier:1) c5(nato_mg:1) c6(nato_antitank_spike:2) c7(nato_medic:1))
-}
-
 {"squad_gb3_scouts_ranger(nato)"
 	("mp_infantry_5" side(nato) period(2022s) d(modern_nato_eu) c1(rg_squadlead:1) c2(rg_teamleader:2) c3(rg_rifleman:5) c4(rg_m2hb_crew:1) c5(rg_javelin:2))
 }
