@@ -1,0 +1,48 @@
+name: Skirmish roster guard
+
+on:
+  pull_request:
+    paths:
+      - "resource/set/multiplayer/units/**"
+      - "resource/script/multiplayer/units/**"
+      - "tools/validate_skirmish_rosters.py"
+      - ".github/workflows/skirmish-roster-guard.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "resource/set/multiplayer/units/**"
+      - "resource/script/multiplayer/units/**"
+      - "tools/validate_skirmish_rosters.py"
+      - ".github/workflows/skirmish-roster-guard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Reject Conquest-file changes
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          changed_files="$(git diff --name-only '${{ github.event.pull_request.base.sha }}...HEAD')"
+          printf '%s\n' "$changed_files"
+          if printf '%s\n' "$changed_files" | grep -E '(^|/)[^/]*conquest[^/]*(/|$)'; then
+            echo "Battle Zones PRs must not modify Conquest files."
+            exit 1
+          fi
+
+      - name: Validate skirmish rosters
+        run: python tools/validate_skirmish_rosters.py
