@@ -35,7 +35,6 @@
 	{charge {delay 0}{interval 0}}
 	{cost 0}
 	{squad_cost_factor 1}
-	{round_multiple 5.0}
 	{button "inf1"}
 	{doctrine %d}
 )
@@ -48,7 +47,6 @@
 	{charge {delay 0}{interval 0}}
 	{cost 0}
 	{squad_cost_factor 1}
-	{round_multiple 5.0}
 	{button "inf2"}
 	{doctrine %d}
 )
