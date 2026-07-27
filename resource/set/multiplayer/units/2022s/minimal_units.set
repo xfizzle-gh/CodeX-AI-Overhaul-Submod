@@ -4,6 +4,21 @@
 ; Vehicles, emplacements, tanks, artillery, aircraft, transported squads,
 ; auxiliary factions, and the full Code:X catalogs remain excluded here.
 
+; NATO shared infantry squads. These are available to both doctrines and are
+; intentionally the cheapest category-1 choices.
+{"squad_arf_rifle(nato)"
+	("mp_shared_infantry_7" side(nato) period(2022s) factor(0.70) c1(nato_squadlead:1) c2(nato_teamlead:1) c3(nato_rifleman:2) c4(nato_grenadier:1) c5(nato_mg_mg3:2) c6(nato_antitank:1) c7(nato_medic:1))
+}
+{"squad_arf_rifle_spike(nato)"
+	("mp_shared_infantry_7" side(nato) period(2022s) factor(0.80) c1(nato_squadlead:1) c2(nato_teamlead:1) c3(nato_rifleman:2) c4(nato_grenadier:1) c5(nato_mg_mg3:1) c6(nato_antitank_spike:1) c7(nato_medic:1))
+}
+
+; NATO shared detachments.
+("detachment_with3types" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_arf_mg) c1(nato_teamlead:2) c2(nato_mg_mg3:2) c3(nato_grenadier:2))
+("detachment_with3types" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_arf_at) c1(nato_teamlead:2) c2(nato_antitank:2) c3(nato_grenadier:2))
+("detachment_with3types" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_arf_scout) c1(nato_squadlead:2) c2(nato_spotter:2) c3(nato_antitank:1))
+("detachment_with1type" side(nato) period(2022s) min_stage(1) max_stage(99) name(arf_medic) c1(nato_medic:4))
+
 ; NATO United States Joint Force squads
 {"squad_usmc_eng(nato)"
 	("mp_infantry_2" side(nato) period(2022s) d(modern_nato_usa) c1(usmc_eng:8) c2(usmc_mg:1))
@@ -21,9 +36,6 @@
 }
 {"squad_usmc_mg(nato)"
 	("mp_team_2" side(nato) period(2022s) d(modern_nato_usa) c1(usmc_teamlead:3) c2(usmc_mg:3))
-}
-{"arf_medic(nato)"
-	("mp_team_1" side(nato) period(2022s) d(modern_nato_usa) c1(nato_medic:4))
 }
 {"squad_usmc_weapon_at_javelin(nato)"
 	("mp_team_2" side(nato) period(2022s) d(modern_nato_usa) c1(usmc_teamlead:2) c2(usmc_antitank_javelin:2))
