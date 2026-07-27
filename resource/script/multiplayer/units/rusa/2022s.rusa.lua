@@ -23,6 +23,8 @@ local skirmish = {
 			-- Ground Forces normal-MP ground roster.
 			{priority = 0.85, type = {"Infantry", "Squad", "AT", "Class1"}, unit = "rus4_inf_rifle_rpg27(rusa)"},
 			{priority = 0.55, type = {"Infantry", "Engineer", "AT", "Class1"}, unit = "rus90_saperi_at(rusa)"},
+			{priority = 0.50, type = {"Infantry", "Team", "Engineer", "Support", "Class1"}, unit = "rus_eng(rusa)"},
+			{priority = 0.35, type = {"Infantry", "Team", "Recon", "Support", "Class1"}, unit = "rus_scout(rusa)"},
 			{priority = 0.18, type = {"Ifv", "Class2"}, unit = "squad_rus90_bmp2m(rusa)"},
 			{priority = 0.08, type = {"Tank", "Artillery", "Support", "Class2"}, unit = "squad_rus90_2s3(rusa)"},
 
@@ -36,6 +38,8 @@ local skirmish = {
 			-- Airborne and Naval Infantry normal-MP ground roster.
 			{priority = 0.85, type = {"Infantry", "Squad", "AT", "Class1"}, unit = "vdv76_inf_rpg28(rusa)"},
 			{priority = 0.60, type = {"Infantry", "Squad", "AT", "Class1"}, unit = "vdv76_inf_metis(rusa)"},
+			{priority = 0.50, type = {"Infantry", "Team", "Engineer", "Support", "Class1"}, unit = "rus2_eng(rusa)"},
+			{priority = 0.35, type = {"Infantry", "Team", "Recon", "Support", "Class1"}, unit = "rus2_scout(rusa)"},
 			{priority = 0.18, type = {"Ifv", "Class2"}, unit = "squad_vdv76_mech_bmd4(rusa)"},
 			{priority = 0.08, type = {"Tank", "Artillery", "Support", "Class2"}, unit = "squad_vdv76_2s9(rusa)"},
 

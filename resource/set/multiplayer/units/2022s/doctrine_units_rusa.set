@@ -16,6 +16,15 @@
 	("mp_infantry_3" side(rusa) period(2022s) d(modern_rusa_ground) c1(rus90_saperi:3) c2(rus90_mg:1) c3(rus90_antitank_rpg26:4))
 }
 
+; Native standard-Russian engineer and reconnaissance card families.
+{"rus_eng(rusa)"
+	("mp_team_2" side(rusa) period(2022s) d(modern_rusa_ground) c1(rus_eng:4) c2(rus_lmg:1))
+}
+
+{"rus_scout(rusa)"
+	("mp_team_3" side(rusa) period(2022s) d(modern_rusa_ground) c1(rus_squadlead:1) c2(rus_recon:3) c3(rus_marksman:1))
+}
+
 {"squad_rus90_bmp2m(rusa)"
 	("mp_vehicle" side(rusa) period(2022s) d(modern_rusa_ground) vehicle(bmp_2m) crew(rus_vehicleman:3))
 }
@@ -62,6 +71,15 @@
 
 {"vdv76_inf_metis(rusa)"
 	("mp_infantry_7" side(rusa) period(2022s) d(modern_rusa_vdv) c1(vdv76_squadlead:1) c2(vdv76_rifleman:1) c3(vdv76_greenader:1) c4(vdv76_mg:1) c5(vdv76_metis_crew:1) c6(vdv76_marksman:1) c7(vdv76_medic:1))
+}
+
+; Native secondary-Russian card families backed by verified VDV breeds.
+{"rus2_eng(rusa)"
+	("mp_team_2" side(rusa) period(2022s) d(modern_rusa_vdv) c1(vdv76_saperi:4) c2(vdv76_saperi_rpo:1))
+}
+
+{"rus2_scout(rusa)"
+	("mp_team_3" side(rusa) period(2022s) d(modern_rusa_vdv) c1(vdv76_squadlead:1) c2(vdv76_recon:3) c3(vdv76_marksman:1))
 }
 
 {"squad_vdv76_mech_bmd4(rusa)"
