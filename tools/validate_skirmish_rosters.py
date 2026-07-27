@@ -10,7 +10,9 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 SET_DIR = ROOT / "resource/set/multiplayer/units/2022s"
+CONQUEST_DIR = ROOT / "resource/set/multiplayer/units/conquest"
 ROSTER_FILE = ROOT / "resource/set/multiplayer/units/roster_2022s.set"
+COST_OVERRIDE_FILE = SET_DIR / "skirmish_cost_overrides.set"
 
 DOCTRINE_FILES = {
     "nato": SET_DIR / "doctrine_units_nato.set",
@@ -18,6 +20,19 @@ DOCTRINE_FILES = {
     "rusa": SET_DIR / "doctrine_units_rusa.set",
     "prc": SET_DIR / "doctrine_units_prc.set",
 }
+
+BREED_CATALOGS = {
+    "nato": CONQUEST_DIR / "inf_nato.set",
+    "ukr": CONQUEST_DIR / "inf_ukr.set",
+    "rusa": CONQUEST_DIR / "inf_rusa.set",
+    "prc": CONQUEST_DIR / "inf_prc_era1960.set",
+}
+
+ACTIVE_SET_FILES = [
+    SET_DIR / "minimal_units.set",
+    SET_DIR / "doctrines.set",
+    *DOCTRINE_FILES.values(),
+]
 
 LUA_FILES = {
     "nato": ROOT / "resource/script/multiplayer/units/nato/2022s.nato.lua",
@@ -38,6 +53,7 @@ EXPECTED_DP_COUNTS = {
 }
 
 EXPECTED_ROSTER_INCLUDES = {
+    '(include "2022s/skirmish_cost_overrides.set")',
     '(include "2022s/doctrine_units_nato.set")',
     '(include "2022s/doctrine_units_ukr.set")',
     '(include "2022s/doctrine_units_rusa.set")',
@@ -64,6 +80,11 @@ DOCTRINE_COST_RE = re.compile(
     r'\("doctrine_t1"[^\n]*\bd\(([^)]+)\)[^\n]*\bcost\(([-+]?\d+(?:\.\d+)?)\)'
 )
 ZERO_COUNT_RE = re.compile(r":\s*0(?=[)\s])")
+SIDE_RE = re.compile(r"\bside\(([^)]+)\)")
+MEMBER_RE = re.compile(r"\b(?:c\d+|crew\d*)\(([^:()]+):([0-9]+)\)")
+BREED_COST_RE = re.compile(
+    r'^\s*\{"mp/([^/]+)/2022s/([^"]+)".*?\{cost\s+([-+]?\d+(?:\.\d+)?)\}'
+)
 
 
 def fail(errors: list[str], message: str) -> None:
@@ -83,7 +104,7 @@ def parse_unit_blocks(path: Path, errors: list[str]) -> list[tuple[str, str]]:
     current_id: str | None = None
     current_lines: list[str] = []
 
-    for line_number, line in enumerate(text.splitlines(), start=1):
+    for line in text.splitlines():
         if current_id is None:
             match = BLOCK_START_RE.match(line)
             if match:
@@ -115,10 +136,48 @@ def extract_defined_ids(errors: list[str]) -> set[str]:
             if line.lstrip().startswith(";"):
                 continue
             name_match = re.search(r"\bname\(([^)]+)\)", line)
-            side_match = re.search(r"\bside\(([^)]+)\)", line)
+            side_match = SIDE_RE.search(line)
             if name_match and side_match:
                 defined.add(f"{name_match.group(1)}({side_match.group(1)})")
     return defined
+
+
+def extract_breed_costs(errors: list[str]) -> dict[tuple[str, str], float]:
+    costs: dict[tuple[str, str], float] = {}
+
+    for expected_side, path in BREED_CATALOGS.items():
+        text = read_text(path, errors)
+        for line_number, line in enumerate(text.splitlines(), start=1):
+            match = BREED_COST_RE.match(line)
+            if not match:
+                continue
+
+            side, breed, raw_cost = match.groups()
+            if side != expected_side:
+                fail(
+                    errors,
+                    f"{path.relative_to(ROOT)}:{line_number}: expected side {expected_side}, found {side}",
+                )
+
+            # Code:X intentionally overrides some breed prices later in the same
+            # catalog. Match the engine's final-definition-wins behavior.
+            costs[(side, breed)] = float(raw_cost)
+
+    override_text = read_text(COST_OVERRIDE_FILE, errors)
+    for line_number, line in enumerate(override_text.splitlines(), start=1):
+        match = BREED_COST_RE.match(line)
+        if not match:
+            continue
+        side, breed, raw_cost = match.groups()
+        if side not in BREED_CATALOGS:
+            fail(
+                errors,
+                f"{COST_OVERRIDE_FILE.relative_to(ROOT)}:{line_number}: unsupported side {side}",
+            )
+            continue
+        costs[(side, breed)] = float(raw_cost)
+
+    return costs
 
 
 def validate_unit_blocks(errors: list[str]) -> None:
@@ -205,6 +264,57 @@ def validate_purchase_tables(errors: list[str]) -> None:
             fail(errors, f"{path.relative_to(ROOT)}: duplicate purchase ID: {unit_id}")
 
 
+def validate_inherited_member_costs(errors: list[str]) -> None:
+    costs = extract_breed_costs(errors)
+
+    for path in ACTIVE_SET_FILES:
+        text = read_text(path, errors)
+        for line_number, line in enumerate(text.splitlines(), start=1):
+            if line.lstrip().startswith(";"):
+                continue
+
+            members = MEMBER_RE.findall(line)
+            if not members:
+                continue
+
+            side_match = SIDE_RE.search(line)
+            if not side_match:
+                fail(
+                    errors,
+                    f"{path.relative_to(ROOT)}:{line_number}: member content has no side",
+                )
+                continue
+
+            side = side_match.group(1)
+            if side not in BREED_CATALOGS:
+                fail(
+                    errors,
+                    f"{path.relative_to(ROOT)}:{line_number}: unsupported side {side}",
+                )
+                continue
+
+            for breed, raw_count in members:
+                count = int(raw_count)
+                if count <= 0:
+                    fail(
+                        errors,
+                        f"{path.relative_to(ROOT)}:{line_number}: {side}/{breed} has nonpositive count {count}",
+                    )
+                    continue
+
+                cost = costs.get((side, breed))
+                if cost is None:
+                    fail(
+                        errors,
+                        f"{path.relative_to(ROOT)}:{line_number}: undefined inherited cost for {side}/{breed}",
+                    )
+                elif cost <= 0:
+                    fail(
+                        errors,
+                        f"{path.relative_to(ROOT)}:{line_number}: {side}/{breed} has nonpositive inherited cost {cost}",
+                    )
+
+
 def validate_roster_includes(errors: list[str]) -> None:
     text = read_text(ROSTER_FILE, errors)
     for include in sorted(EXPECTED_ROSTER_INCLUDES):
@@ -213,8 +323,7 @@ def validate_roster_includes(errors: list[str]) -> None:
 
 
 def validate_no_zero_counts_in_active_sets(errors: list[str]) -> None:
-    active_paths = [SET_DIR / "minimal_units.set", SET_DIR / "doctrines.set", *DOCTRINE_FILES.values()]
-    for path in active_paths:
+    for path in ACTIVE_SET_FILES:
         text = read_text(path, errors)
         for line_number, line in enumerate(text.splitlines(), start=1):
             if line.lstrip().startswith(";"):
@@ -227,6 +336,7 @@ def main() -> int:
     errors: list[str] = []
     validate_unit_blocks(errors)
     validate_purchase_tables(errors)
+    validate_inherited_member_costs(errors)
     validate_roster_includes(errors)
     validate_no_zero_counts_in_active_sets(errors)
 
@@ -237,7 +347,10 @@ def main() -> int:
         return 1
 
     print("Skirmish roster validation passed.")
-    print("Validated four factions, eight doctrines, positive DP costs, and purchase resolution.")
+    print(
+        "Validated four factions, eight doctrines, positive DP costs, "
+        "purchase resolution, and positive inherited member costs."
+    )
     return 0
 
 

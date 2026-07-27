@@ -44,5 +44,25 @@ jobs:
             exit 1
           fi
 
-      - name: Validate skirmish rosters
-        run: python tools/validate_skirmish_rosters.py
+      - name: Run skirmish roster validator
+        id: roster
+        shell: bash
+        run: |
+          set +e
+          output="$(python tools/validate_skirmish_rosters.py 2>&1)"
+          status=$?
+          printf '%s\n' "$output"
+          summary="$(printf '%s\n' "$output" | sed -n '2,7p' | tr '\n' ' ' | sed 's/[[:space:]][[:space:]]*/ /g' | cut -c1-240)"
+          if [ -z "$summary" ]; then
+            summary="validator returned status $status"
+          fi
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "summary=$summary" >> "$GITHUB_OUTPUT"
+
+      - name: "Roster validation failed: ${{ steps.roster.outputs.summary }}"
+        if: steps.roster.outputs.status != '0'
+        run: exit 1
+
+      - name: Roster validation passed
+        if: steps.roster.outputs.status == '0'
+        run: echo "Skirmish roster validation passed."

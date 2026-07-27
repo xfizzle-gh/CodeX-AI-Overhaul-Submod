@@ -10,6 +10,7 @@
 (include "conquest/inf_rusa.set")
 (include "conquest/inf_nato.set")
 (include "conquest/inf_prc_era1960.set")
+(include "2022s/skirmish_cost_overrides.set")
 
 (include "2022s/minimal_units.set")
 (include "2022s/doctrines.set")
