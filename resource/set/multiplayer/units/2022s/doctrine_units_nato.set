@@ -1,5 +1,5 @@
 ;SDL
-; NATO combined-arms doctrine-point roster.
+; NATO doctrine-specific MP and DP rosters.
 ; United States units use American personnel and equipment only.
 ; European units use NATO-European personnel and equipment only.
 
@@ -8,26 +8,24 @@
 ; Marines, Army, armored cavalry, airborne reconnaissance, armor, fires and air.
 ;===============================================================================
 
+; Normal MP infantry shown only when the United States doctrine is selected.
 {"squad_usmc_rifle(nato)"
-	("dp_infantry_7" side(nato) period(2022s) c1(usmc_squadlead:1) c2(usmc_teamlead:3) c3(usmc_mg_m27:3) c4(usmc_grenadier:3) c5(usmc_marksman:1) c6(usmc_rifleman:1) c7(usmc_medic:1))
-	("doctrine_t1" cool(120) d(modern_nato_usa) cost(10))
+	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_usa) c1(usmc_squadlead:1) c2(usmc_teamlead:3) c3(usmc_mg_m27:3) c4(usmc_grenadier:3) c5(usmc_marksman:1) c6(usmc_rifleman:1) c7(usmc_medic:1))
 }
 
 {"squad_inf2_rifle_ngsw(nato)"
-	("dp_infantry_7" side(nato) period(2022s) c1(inf2_squadlead_ngsw:1) c2(inf2_teamlead_ngsw:2) c3(inf2_autorifle_ngsw:2) c4(inf2_grenadier_ngsw:1) c5(inf2_rifleman_ngsw:1) c6(inf2_antitank_ngsw:1) c7(inf2_medic_ngsw:1))
-	("doctrine_t1" cool(120) d(modern_nato_usa) cost(12))
+	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_usa) c1(inf2_squadlead_ngsw:1) c2(inf2_teamlead_ngsw:2) c3(inf2_autorifle_ngsw:2) c4(inf2_grenadier_ngsw:1) c5(inf2_rifleman_ngsw:1) c6(inf2_antitank_ngsw:1) c7(inf2_medic_ngsw:1))
 }
 
 {"squad_tank1_rifle_mg(nato)"
-	("dp_infantry_3" side(nato) period(2022s) c1(1ad_teamlead:2) c2(1ad_mg:2) c3(1ad_grenadier:2))
-	("doctrine_t1" cool(120) d(modern_nato_usa) cost(10))
+	("mp_infantry_3" side(nato) period(2022s) d(modern_nato_usa) c1(1ad_teamlead:2) c2(1ad_mg:2) c3(1ad_grenadier:2))
 }
 
 {"squad_82nd_lrs(nato)"
-	("dp_infantry_4" side(nato) period(2022s) c1(lrs_squadlead:1) c2(lrs_rifleman:2) c3(lrs_mg:2) c4(lrs_javelin:1))
-	("doctrine_t1" cool(180) d(modern_nato_usa) cost(14))
+	("mp_infantry_4" side(nato) period(2022s) d(modern_nato_usa) c1(lrs_squadlead:1) c2(lrs_rifleman:2) c3(lrs_mg:2) c4(lrs_javelin:1))
 }
 
+; Doctrine-point combined-arms assets.
 {"squad_inf2_m1126_mk19(nato)"
 	("dp_vehicle_7types" side(nato) period(2022s) vehicle(m1126_mk19_n) crew1(usarmy_vehicleman:2) crew2(inf2_squadlead:1) crew3(inf2_teamlead:2) crew4(inf2_rifleman:2) crew5(inf2_autorifle:2) crew6(inf2_antitank:1) crew7(inf2_medic:1))
 	("doctrine_t1" cool(180) d(modern_nato_usa) cost(24))
@@ -73,26 +71,24 @@
 ; German, British, Nordic, Polish, French and Italian combined arms.
 ;===============================================================================
 
+; Normal MP infantry shown only when the European doctrine is selected.
 {"squad_pz10_rifle(nato)"
-	("dp_infantry_7" side(nato) period(2022s) c1(pzgd_squadlead:1) c2(pzgd_teamlead:1) c3(pzgd_rifleman:2) c4(pzgd_grenadier:1) c5(pzgd_mg:1) c6(pzgd_antitank_rgw:1) c7(pzgd_medic:1))
-	("doctrine_t1" cool(120) d(modern_nato_eu) cost(10))
+	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_eu) c1(pzgd_squadlead:1) c2(pzgd_teamlead:1) c3(pzgd_rifleman:2) c4(pzgd_grenadier:1) c5(pzgd_mg:1) c6(pzgd_antitank_rgw:1) c7(pzgd_medic:1))
 }
 
 {"squad_gb3_rifle_nlaw(nato)"
-	("dp_infantry_7" side(nato) period(2022s) c1(gb_squadlead:1) c2(gb_teamleader:1) c3(gb_rifleman:3) c4(gb_marksman:1) c5(gb_grenadier:1) c6(gb_mg:2) c7(gb_antitank_nlaw:2))
-	("doctrine_t1" cool(120) d(modern_nato_eu) cost(12))
+	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_eu) c1(gb_squadlead:1) c2(gb_teamleader:1) c3(gb_rifleman:3) c4(gb_marksman:1) c5(gb_grenadier:1) c6(gb_mg:2) c7(gb_antitank_nlaw:2))
 }
 
 {"squad_arf_rifle_spike(nato)"
-	("dp_infantry_7" side(nato) period(2022s) c1(nato_squadlead:1) c2(nato_teamlead:1) c3(nato_rifleman:2) c4(nato_grenadier:1) c5(nato_mg:1) c6(nato_antitank_spike:2) c7(nato_medic:1))
-	("doctrine_t1" cool(150) d(modern_nato_eu) cost(14))
+	("mp_infantry_7" side(nato) period(2022s) d(modern_nato_eu) c1(nato_squadlead:1) c2(nato_teamlead:1) c3(nato_rifleman:2) c4(nato_grenadier:1) c5(nato_mg:1) c6(nato_antitank_spike:2) c7(nato_medic:1))
 }
 
 {"squad_gb3_scouts_ranger(nato)"
-	("dp_infantry_5" side(nato) period(2022s) c1(rg_squadlead:1) c2(rg_teamleader:2) c3(rg_rifleman:5) c4(rg_m2hb_crew:1) c5(rg_javelin:2))
-	("doctrine_t1" cool(180) d(modern_nato_eu) cost(16))
+	("mp_infantry_5" side(nato) period(2022s) d(modern_nato_eu) c1(rg_squadlead:1) c2(rg_teamleader:2) c3(rg_rifleman:5) c4(rg_m2hb_crew:1) c5(rg_javelin:2))
 }
 
+; Doctrine-point combined-arms assets.
 {"squad_pz10_puma_mells_rifle(nato)"
 	("dp_vehicle_6types" side(nato) period(2022s) vehicle(puma_vjtf) crew1(pzgd_vehicleman:3) crew2(pzgd_squadlead:1) crew3(pzgd_teamlead:1) crew4(pzgd_mg:1) crew5(pzgd_grenadier:1) crew6(pzgd_rifleman_puma:2))
 	("doctrine_t1" cool(240) d(modern_nato_eu) cost(36))

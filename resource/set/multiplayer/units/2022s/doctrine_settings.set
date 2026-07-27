@@ -1,5 +1,5 @@
 ;SDL
-; Skirmish doctrine card and doctrine-point unit templates.
+; Skirmish doctrine cards, doctrine-gated MP infantry, and doctrine-point units.
 
 ; Selection cards do not charge MP for their display formation.
 (define "generic_d_inf"
@@ -23,6 +23,77 @@
 (define "squad_with5types_doctrine"
 	("generic_d_inf" t(%side %period))
 	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5"}
+)
+
+; Normal MP formations can be restricted to the selected doctrine without being
+; charged as doctrine-point purchases. Full squads use inf1; detachments use inf2.
+(define "generic_mp_doctrine_unit"
+	{level 1}
+	{research_stage 1}
+	{research_stage_max 99}
+	{tags "conquest conquestonly %t"}
+	{charge {delay 0}{interval 0}}
+	{cost 0}
+	{squad_cost_factor 1}
+	{button "inf1"}
+	{doctrine %d}
+)
+
+(define "generic_mp_doctrine_team"
+	{level 1}
+	{research_stage 1}
+	{research_stage_max 99}
+	{tags "conquest conquestonly %t detachment"}
+	{charge {delay 0}{interval 0}}
+	{cost 0}
+	{squad_cost_factor 1}
+	{button "inf2"}
+	{doctrine %d}
+)
+
+(define "mp_infantry_2"
+	("generic_mp_doctrine_unit" t(%side %period) d(%d))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2"}
+)
+
+(define "mp_infantry_3"
+	("generic_mp_doctrine_unit" t(%side %period) d(%d))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3"}
+)
+
+(define "mp_infantry_4"
+	("generic_mp_doctrine_unit" t(%side %period) d(%d))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4"}
+)
+
+(define "mp_infantry_5"
+	("generic_mp_doctrine_unit" t(%side %period) d(%d))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5"}
+)
+
+(define "mp_infantry_6"
+	("generic_mp_doctrine_unit" t(%side %period) d(%d))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6"}
+)
+
+(define "mp_infantry_7"
+	("generic_mp_doctrine_unit" t(%side %period) d(%d))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7"}
+)
+
+(define "mp_infantry_8"
+	("generic_mp_doctrine_unit" t(%side %period) d(%d))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2 mp/%side/%period/%c3 mp/%side/%period/%c4 mp/%side/%period/%c5 mp/%side/%period/%c6 mp/%side/%period/%c7 mp/%side/%period/%c8"}
+)
+
+(define "mp_team_1"
+	("generic_mp_doctrine_team" t(%side %period) d(%d))
+	{content "mp/%side/%period/%c1"}
+)
+
+(define "mp_team_2"
+	("generic_mp_doctrine_team" t(%side %period) d(%d))
+	{content "mp/%side/%period/%c1 mp/%side/%period/%c2"}
 )
 
 ; Actual doctrine-point units retain their normal MP value through the underlying
