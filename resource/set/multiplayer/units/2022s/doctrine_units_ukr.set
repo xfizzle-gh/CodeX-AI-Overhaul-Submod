@@ -24,6 +24,15 @@
 	("mp_infantry_4" side(ukr) period(2022s) d(modern_ukr_home) c1(ukr93_squadlead:1) c2(ukr93_recon:3) c3(ukr93_recon_mg:1) c4(ukr93_marksman:1))
 }
 
+; Native standard-Ukrainian engineer and reconnaissance card families.
+{"ukr_eng(ukr)"
+	("mp_team_2" side(ukr) period(2022s) d(modern_ukr_home) c1(ukr_eng:4) c2(ukr_lmg:1))
+}
+
+{"ukr_scout(ukr)"
+	("mp_team_3" side(ukr) period(2022s) d(modern_ukr_home) c1(ukr_squadlead:1) c2(ukr_recon:3) c3(ukr_marksman:1))
+}
+
 ; Doctrine-gated normal-MP crew-only vehicles, armor and conventional artillery.
 {"doctrine_squad_93th_bmp2(ukr)"
 	("mp_vehicle" side(ukr) period(2022s) d(modern_ukr_home) vehicle(bmp2_ukr) crew(ukr_vehicleman:3))
@@ -79,6 +88,15 @@
 
 {"doctrine_squad_47th_weapon(ukr)"
 	("mp_team_3" side(ukr) period(2022s) d(modern_ukr_western) c1(ukr47_squadlead_assault:1) c2(ukr47_assault_at4:2) c3(ukr47_assault_m72:2))
+}
+
+; Native NATO-equipped Ukrainian engineer and reconnaissance card families.
+{"nato_eng(ukr)"
+	("mp_team_2" side(ukr) period(2022s) d(modern_ukr_western) c1(nato_eng:4) c2(nato_mg:1))
+}
+
+{"nato_scout(ukr)"
+	("mp_team_3" side(ukr) period(2022s) d(modern_ukr_western) c1(nato_squadlead:1) c2(nato_spotter:3) c3(nato_sniper:1))
 }
 
 ; Doctrine-gated normal-MP crew-only mechanized vehicles, armor and conventional artillery.
