@@ -1,5 +1,5 @@
 ;SDL
-; Ukraine Battle Zones doctrine-point ground roster.
+; Ukraine Battle Zones normal-MP and doctrine-point ground roster.
 ; Skirmish only. No Conquest files, MLRS, aircraft, helicopters, or air-support actions.
 
 ;===============================================================================
@@ -7,6 +7,37 @@
 ; 93rd Mechanized infantry, domestic reconnaissance, armor and tube artillery.
 ;===============================================================================
 
+; Doctrine-gated normal-MP infantry and detachments.
+{"doctrine_squad_93th_demon(ukr)"
+	("mp_infantry_7" side(ukr) period(2022s) d(modern_ukr_home) c1(demon_squadlead:1) c2(demon_seniorrifleman:1) c3(demon_rifleman:4) c4(demon_mg_rpk:1) c5(demon_antitank:1) c6(demon_grenadier:1) c7(demon_medic:1))
+}
+
+{"doctrine_squad_93th_mg(ukr)"
+	("mp_team_3" side(ukr) period(2022s) d(modern_ukr_home) c1(ukr93_squadlead:1) c2(ukr93_lmg:2) c3(ukr93_rifleman:2))
+}
+
+{"doctrine_squad_93th_weapon(ukr)"
+	("mp_team_3" side(ukr) period(2022s) d(modern_ukr_home) c1(ukr93_squadlead:1) c2(ukr93_wepcrew_stugna:1) c3(ukr93_wepcrew_stugna_assist:1))
+}
+
+{"doctrine_squad_93th_recon(ukr)"
+	("mp_infantry_4" side(ukr) period(2022s) d(modern_ukr_home) c1(ukr93_squadlead:1) c2(ukr93_recon:3) c3(ukr93_recon_mg:1) c4(ukr93_marksman:1))
+}
+
+; Doctrine-gated normal-MP crew-only vehicles, armor and conventional artillery.
+{"doctrine_squad_93th_bmp2(ukr)"
+	("mp_vehicle" side(ukr) period(2022s) d(modern_ukr_home) vehicle(bmp2_ukr) crew(ukr_vehicleman:3))
+}
+
+{"doctrine_vehicle_t80bv_ukr93(ukr)"
+	("mp_tank" side(ukr) period(2022s) d(modern_ukr_home) vehicle(t80bv_2018) crew(ukr_vehicleman:3))
+}
+
+{"doctrine_vehicle_m109a6_ukr93(ukr)"
+	("mp_support" side(ukr) period(2022s) d(modern_ukr_home) vehicle(m109_paladin) crew(ukr_vehicleman:4))
+}
+
+; Five doctrine-point choices.
 {"doctrine_squad_93th(ukr)"
 	("dp_infantry_7" side(ukr) period(2022s) c1(demon_squadlead:1) c2(demon_seniorrifleman:1) c3(demon_rifleman:4) c4(demon_mg_rpk:1) c5(demon_antitank:1) c6(demon_grenadier:1) c7(demon_medic:1))
 	("doctrine_t1" cool(180) d(modern_ukr_home) cost(3))
@@ -37,6 +68,37 @@
 ; 47th assault infantry, reconnaissance, Western mechanized armor and fires.
 ;===============================================================================
 
+; Doctrine-gated normal-MP infantry and detachments.
+{"doctrine_squad_47th_mg(ukr)"
+	("mp_team_3" side(ukr) period(2022s) d(modern_ukr_western) c1(ukr47_squadlead:1) c2(ukr47_lmg:2) c3(ukr47_rifleman:2))
+}
+
+{"doctrine_squad_47th_javelin(ukr)"
+	("mp_infantry_4" side(ukr) period(2022s) d(modern_ukr_western) c1(ukr47_squadlead:1) c2(ukr47_seniorrifleman:1) c3(ukr47_antitank_h:1) c4(ukr47_rifleman:3))
+}
+
+{"doctrine_squad_47th_weapon(ukr)"
+	("mp_team_3" side(ukr) period(2022s) d(modern_ukr_western) c1(ukr47_squadlead_assault:1) c2(ukr47_assault_at4:2) c3(ukr47_assault_m72:2))
+}
+
+; Doctrine-gated normal-MP crew-only mechanized vehicles, armor and conventional artillery.
+{"doctrine_squad_47th_m2a2(ukr)"
+	("mp_vehicle" side(ukr) period(2022s) d(modern_ukr_western) vehicle(m2a2_ods_bradley_arat) crew(ukr_vehicleman:3))
+}
+
+{"doctrine_squad_21th_9040(ukr)"
+	("mp_vehicle" side(ukr) period(2022s) d(modern_ukr_western) vehicle(strf9040c) crew(ukr_vehicleman:3))
+}
+
+{"doctrine_vehicle_leopard2a6(ukr)"
+	("mp_tank" side(ukr) period(2022s) d(modern_ukr_western) vehicle(leopord_2a6) crew(ukr_vehicleman:4))
+}
+
+{"doctrine_vehicle_m109a6(ukr)"
+	("mp_support" side(ukr) period(2022s) d(modern_ukr_western) vehicle(m109_paladin) crew(ukr_vehicleman:4))
+}
+
+; Five doctrine-point choices.
 {"doctrine_squad_47th(ukr)"
 	("dp_infantry_6" side(ukr) period(2022s) c1(ukr47_squadlead_assault:1) c2(ukr47_seniorrifleman_assault:1) c3(ukr47_rifleman_assault:3) c4(ukr47_lmg_assault:1) c5(ukr47_assault_at4:2) c6(ukr47_assault_m72:1))
 	("doctrine_t1" cool(180) d(modern_ukr_western) cost(3))
