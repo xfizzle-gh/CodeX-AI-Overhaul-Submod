@@ -96,15 +96,16 @@
 	{content "mp/%side/%period/%c1 mp/%side/%period/%c2"}
 )
 
-; Actual doctrine-point units retain their normal MP value through the underlying
-; soldiers or vehicle and add a separate doctrine-point cost through doctrine_t1.
+; Doctrine-point units use only the explicit doctrine_t1 cost. Their crew and
+; vehicle content defines what spawns but no longer inflates the DP price.
 (define "generic_dp_unit"
 	{level 1}
 	{research_stage 1}
 	{tags "all doctrine doctrineonly %t"}
 	{button "doctrine"}
-	{squad_cost_factor 1}
-	{round_multiple 5.0}
+	{cost 0}
+	{squad_cost_factor 0}
+	{round_multiple 1.0}
 )
 
 (define "dp_infantry_2"
