@@ -27,15 +27,21 @@
 	("mp_infantry_4" side(nato) period(2022s) d(modern_nato_usa) c1(lrs_squadlead:1) c2(lrs_rifleman:2) c3(lrs_mg:2) c4(lrs_javelin:1))
 }
 
-; Code:X keeps the legacy gb3 unit ID, but the rg_* personnel family is treated
-; as the U.S. Army Ranger formation for this doctrine split.
-{"squad_gb3_scouts_ranger(nato)"
-	("mp_infantry_5" side(nato) period(2022s) d(modern_nato_usa) c1(rg_squadlead:1) c2(rg_teamleader:2) c3(rg_rifleman:5) c4(rg_m2hb_crew:1) c5(rg_javelin:2))
-}
-
-; Crew-only light reconnaissance vehicle.
+; Crew-only reconnaissance and mechanized vehicles.
 {"squad_usmc_lav25(nato)"
 	("mp_vehicle" side(nato) period(2022s) d(modern_nato_usa) vehicle(lav25) crew(usmc_vehicleman:3))
+}
+
+{"squad_inf2_m1126_mk19(nato)"
+	("mp_vehicle" side(nato) period(2022s) d(modern_nato_usa) vehicle(m1126_mk19_n) crew(usarmy_vehicleman:2))
+}
+
+{"squad_inf2_m1296(nato)"
+	("mp_vehicle" side(nato) period(2022s) d(modern_nato_usa) vehicle(m1296) crew(usarmy_vehicleman:3))
+}
+
+{"squad_tank1_m2a3_fireteam_brat(nato)"
+	("mp_vehicle" side(nato) period(2022s) d(modern_nato_usa) vehicle(m2a3_brat) crew(usarmy_vehicleman:3))
 }
 
 ; Crew-only normal-MP armor.
@@ -56,20 +62,20 @@
 	("mp_support" side(nato) period(2022s) d(modern_nato_usa) vehicle(m777a1) crew(usmc_supcrew:4))
 }
 
-; Doctrine-point combined-arms assets scaled for a 20 DP match budget.
-{"squad_inf2_m1126_mk19(nato)"
-	("dp_vehicle_7types" side(nato) period(2022s) vehicle(m1126_mk19_n) crew1(usarmy_vehicleman:2) crew2(inf2_squadlead:1) crew3(inf2_teamlead:2) crew4(inf2_rifleman:2) crew5(inf2_autorifle:2) crew6(inf2_antitank:1) crew7(inf2_medic:1))
+; Five doctrine-point choices scaled for a 20 DP match budget.
+{"squad_gb3_scouts_ranger(nato)"
+	("dp_infantry_5" side(nato) period(2022s) c1(rg_squadlead:1) c2(rg_teamleader:2) c3(rg_rifleman:5) c4(rg_m2hb_crew:1) c5(rg_javelin:2))
 	("doctrine_t1" cool(180) d(modern_nato_usa) cost(3))
-}
-
-{"squad_tank1_m2a3_fireteam_brat(nato)"
-	("dp_vehicle_7types" side(nato) period(2022s) vehicle(m2a3_brat) crew1(usarmy_vehicleman:3) crew2(1ad_squadlead:1) crew3(1ad_teamlead:1) crew4(1ad_mg:1) crew5(1ad_autorifle:1) crew6(1ad_rifleman:1) crew7(1ad_antitank:1))
-	("doctrine_t1" cool(240) d(modern_nato_usa) cost(5))
 }
 
 {"squad_tank1_ampv_cuas(nato)"
 	("dp_vehicle_7types" side(nato) period(2022s) vehicle(ampv_cuas) crew1(usarmy_vehicleman:3) crew2(1ad_squadlead:1) crew3(1ad_teamlead:2) crew4(1ad_mg:2) crew5(1ad_autorifle:1) crew6(1ad_rifleman:1) crew7(1ad_javelin:1))
 	("doctrine_t1" cool(240) d(modern_nato_usa) cost(4))
+}
+
+{"squad_tank1_m1a2_sep(nato)"
+	("dp_vehicle" side(nato) period(2022s) vehicle(m1a2_sepv1) crew(usarmy_vehicleman:4))
+	("doctrine_t1" cool(360) d(modern_nato_usa) cost(8))
 }
 
 {"squad_tank1_m109(nato)"
@@ -121,9 +127,25 @@
 	("mp_team_3" side(nato) period(2022s) d(modern_nato_eu) c1(gb_teamleader:1) c2(gb_antitank:2) c3(gb_rifleman:1))
 }
 
-; Crew-only light reconnaissance vehicle.
+; Crew-only reconnaissance and mechanized vehicles.
 {"squad_pz10_fennek(nato)"
 	("mp_vehicle" side(nato) period(2022s) d(modern_nato_eu) vehicle(fennek) crew(pzgd_vehicleman:3))
+}
+
+{"squad_pz10_ypr765_rifle(nato)"
+	("mp_vehicle" side(nato) period(2022s) d(modern_nato_eu) vehicle(ypr_765) crew(nato_vehicleman:3))
+}
+
+{"squad_pz10_cv9030_rifle(nato)"
+	("mp_vehicle" side(nato) period(2022s) d(modern_nato_eu) vehicle(cv_9030) crew(nato_vehicleman:3))
+}
+
+{"squad_pz10_puma_mells_rifle(nato)"
+	("mp_vehicle" side(nato) period(2022s) d(modern_nato_eu) vehicle(puma_vjtf) crew(pzgd_vehicleman:3))
+}
+
+{"squad_gb3_mech_rifle_fv510_milan(nato)"
+	("mp_vehicle" side(nato) period(2022s) d(modern_nato_eu) vehicle(warrior_milan) crew(gb_vehicleman:3))
 }
 
 ; Crew-only normal-MP armor.
@@ -144,17 +166,7 @@
 	("mp_support" side(nato) period(2022s) d(modern_nato_eu) vehicle(as90) crew(gb_vehicleman:3))
 }
 
-; Doctrine-point combined-arms assets scaled for a 20 DP match budget.
-{"squad_pz10_puma_mells_rifle(nato)"
-	("dp_vehicle_6types" side(nato) period(2022s) vehicle(puma_vjtf) crew1(pzgd_vehicleman:3) crew2(pzgd_squadlead:1) crew3(pzgd_teamlead:1) crew4(pzgd_mg:1) crew5(pzgd_grenadier:1) crew6(pzgd_rifleman_puma:2))
-	("doctrine_t1" cool(240) d(modern_nato_eu) cost(5))
-}
-
-{"squad_gb3_mech_rifle_fv510_milan(nato)"
-	("dp_vehicle_8types" side(nato) period(2022s) vehicle(warrior_milan) crew1(gb_vehicleman:3) crew2(gb_squadlead:1) crew3(gb_teamleader:1) crew4(gb_grenadier:1) crew5(gb_rifleman:1) crew6(gb_mg:1) crew7(gb_marksman:1) crew8(gb_medic:1))
-	("doctrine_t1" cool(240) d(modern_nato_eu) cost(5))
-}
-
+; Remaining doctrine-point combined-arms assets scaled for a 20 DP match budget.
 {"squad_pz10_leopard2a7(nato)"
 	("dp_vehicle" side(nato) period(2022s) vehicle(leopard_2a7+) crew(pzgd_vehicleman:4))
 	("doctrine_t1" cool(360) d(modern_nato_eu) cost(8))
