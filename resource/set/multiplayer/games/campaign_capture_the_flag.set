@@ -10,7 +10,7 @@
 
 {game
 	{order -1}
-	{parameters	"points_table_player=0/0.000,0.33/0.277,0.50/0.333,0.66/0.416,1.00/0.555;points_table_ai=0/0.000,0.33/0.277,0.50/0.333,0.66/0.416,1.00/0.555;flag_capture_time=75;flag_release_time=25;flag_capture_factor=0.9;kill_score_multiplier=0"}
+	{parameters	"points_table_player=0/0.000,0.33/0.277,0.50/0.333,0.66/0.416,1.00/0.555;points_table_ai=0/0.000,0.33/0.277,0.50/0.333,0.66/0.416,1.00/0.555;flag_capture_time=75;flag_release_time=25;flag_capture_factor=0.9;kill_score_multiplier=0.25"}
 	;for score of 1000:
 	;60 min 	= 0.277
 	;50 min 	= 0.333
@@ -19,7 +19,7 @@
 	{settings
 		{difficulty				multiplayer}
 		{scoreFinal				900}
-		{preparationTime		1200}	; seconds (20 min). Official prep phase when player defends (v1.064+)
+		{preparationTime		480}	; seconds (8 min). Official prep phase when player defends (v1.064+)
 		{pauseDuringPreparation	false}	; simulation runs during prep
 		{impregnableTimeout		5}	; seconds
 		{floraRespawn			0}

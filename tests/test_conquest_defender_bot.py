@@ -6,12 +6,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CONQUEST_LUA = ROOT / "resource/script/multiplayer/modes/conquest.lua"
+CAMPAIGN_CTF_SET = (
+    ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set"
+)
 
 
 class ConquestDefenderBotSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.source = CONQUEST_LUA.read_text(encoding="utf-8")
+        cls.game_config = CAMPAIGN_CTF_SET.read_text(encoding="utf-8")
 
     def test_engine_owned_defender_bot_identity(self) -> None:
         self.assertIn(
@@ -112,6 +116,13 @@ class ConquestDefenderBotSourceTests(unittest.TestCase):
         self.assertLess(allied_return, normal_formula)
         self.assertIn("Min_AlliedSupport = 1", self.source)
         self.assertIn("Max_AlliedSupport = 3", self.source)
+
+    def test_campaign_defense_pacing_uses_eight_minute_prep_and_kill_score(self) -> None:
+        self.assertIn("{preparationTime\t\t480}", self.game_config)
+        self.assertNotIn("{preparationTime\t\t1200}", self.game_config)
+        self.assertIn("kill_score_multiplier=0.25", self.game_config)
+        self.assertNotIn("kill_score_multiplier=0\"", self.game_config)
+        self.assertIn("{scoreFinal\t\t\t\t900}", self.game_config)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "resource/script/multiplayer/modes/conquest.lua"
+      - "resource/set/multiplayer/games/campaign_capture_the_flag.set"
       - "tests/test_conquest_defender_bot.py"
       - ".github/workflows/conquest-defender-bot-guard.yml"
   push:
@@ -11,6 +12,7 @@ on:
       - main
     paths:
       - "resource/script/multiplayer/modes/conquest.lua"
+      - "resource/set/multiplayer/games/campaign_capture_the_flag.set"
       - "tests/test_conquest_defender_bot.py"
       - ".github/workflows/conquest-defender-bot-guard.yml"
 
