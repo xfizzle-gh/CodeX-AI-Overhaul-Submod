@@ -114,7 +114,7 @@ class CwaSupportOwnershipProbeTests(unittest.TestCase):
                 for observed, wanted in zip(actual, expected):
                     self.assertAlmostEqual(observed, wanted, places=1)
 
-    def test_probe_remains_hard_gated_and_one_shot(self) -> None:
+    def test_support_test_is_hard_gated_and_repeats_every_minute(self) -> None:
         self.assertIn('{var "user_is_defender$"}', self.probe)
         self.assertIn('{var "id_defenderbot$"}', self.probe)
         self.assertIn('{var "prep_inform$"}', self.probe)
@@ -122,11 +122,15 @@ class CwaSupportOwnershipProbeTests(unittest.TestCase):
         self.assertIn('{time 60}', self.probe)
         self.assertEqual(self.probe.count('{"placement"'), 1)
         self.assertNotIn('{"loop"', self.probe)
-        self.assertIn("probe_cwa_ownership", self.probe)
+        self.assertEqual(self.probe.count('{"trigger"'), 1)
+        self.assertIn('{name "allied_support/test_cwa_one_minute_waves"}', self.probe)
+        self.assertNotIn("probe_cwa_ownership", self.probe)
         self.assertNotIn("probe_woodland_ownership", self.probe)
 
     def test_probe_preserves_ai_ownership_contract(self) -> None:
         self.assertIn('{amount 5}', self.probe)
+        self.assertIn('{target_waypoint "allied_support_entry"}', self.probe)
+        self.assertIn('{tag fpc1}', self.probe)
         self.assertIn('{operation set}', self.probe)
         self.assertIn('{control AI}', self.probe)
         self.assertNotIn('{control user}', self.probe)
