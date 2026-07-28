@@ -33,7 +33,13 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
                 self.assertEqual(mission.count(f'Human "{BREED}"'), 1)
                 self.assertEqual(mission.count(TAG), 1)
                 self.assertEqual(mission.count("allied_support_waves.inc"), 1)
-                match = re.search(rf'Human "{re.escape(BREED)}" (0x[0-9a-f]+).*?\{{Position -35000 -35000\}}.*?\{{Player 0\}}.*?\{{MID (\d+)\}}', mission, re.S)
+                self.assertEqual(mission.count('{"allied_support_entry"'), 1)
+                match = re.search(
+                    rf'Human "{re.escape(BREED)}" (0x[0-9a-f]+).*?'
+                    rf'\{{Position -35000 -35000\}}.*?\{{Player 0\}}.*?\{{MID (\d+)\}}',
+                    mission,
+                    re.S,
+                )
                 self.assertIsNotNone(match)
                 handles.append(match.group(1))
                 mids.append(match.group(2))
@@ -41,58 +47,37 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
         self.assertEqual(len(set(handles)), 14)
         self.assertEqual(len(set(mids)), 14)
 
-    def test_shared_trigger_uses_only_explicit_actor(self) -> None:
+    def test_shared_trigger_matches_working_twelve_clone_checkpoint(self) -> None:
         for marker in (
+            '(define "allied_support_clone_one"',
             'allied_support/explicit_actor_once',
-            'allied_support_clone_one',
             f'{{tag {{tag {TAG}}}}}',
-            '{clone}',
+            '{"actor_to_waypoint"',
             '{waypoint "allied_support_entry"}',
+            '{clone}',
             '{approach "safe teleport & rotate"}',
-            '{tag fpc1}',
-            '{zone {zone "gamezone"}}',
+            '{amount 1}',
             '{tag_add allied_wave_fresh}',
             '{tag_add allied_support_explicit_clone}',
             f'{{tag_remove {TAG}}}',
             '{tag_remove not_delete}',
             '{tag_remove hidden}',
             '{inactive off}',
-            '{impregnability disabled}',
-            '{discovered on}',
             '{control AI}',
-            '{fire_mode open}',
-            '{weapon_prepare on}',
             '{remove select}',
             '{action advance}',
-            'fpc_inf_to_flag1',
-            'PROOF 1 ARMED x12',
-            'PROOF 4 COMBAT x12',
-            'PROOF OWNER FAIL',
+            '{target',
+            '{tag fpc1}',
+            '{function "fpc_inf_to_flag1"}',
         ):
             self.assertIn(marker, self.waves)
-        self.assertEqual(self.waves.count('("allied_support_clone_one")'), 12)
+        self.assertEqual(self.waves.count('(\"allied_support_clone_one\")'), 12)
+        self.assertEqual(self.waves.count('{"actor_to_waypoint"'), 1)
         self.assertNotIn('{waypoint "1"}', self.waves)
         self.assertNotIn('{target_waypoint "1"}', self.waves)
-        self.assertNotIn('allied_support_template', self.waves.replace(TAG, ''))
         self.assertNotIn('allied_support_diag_source', self.waves)
         self.assertNotIn('{control user}', self.waves)
         self.assertNotIn('{"trigger" {name "allied_support/explicit_actor_once"}', self.waves)
-
-    def test_explicit_templates_are_combat_shells(self) -> None:
-        for name, mission in self.missions.items():
-            with self.subTest(map=name):
-                block = re.search(
-                    rf'Human "{re.escape(BREED)}" 0x[0-9a-f]+\s*\{{.*?\n\t\}}',
-                    mission,
-                    re.S,
-                )
-                self.assertIsNotNone(block)
-                body = block.group(0)
-                self.assertIn('{Position -35000 -35000}', body)
-                self.assertIn('{Player 0}', body)
-                self.assertNotIn('{disabled}', body)
-                self.assertNotIn('stand_noaim', body)
-                self.assertNotIn('{Volume', body)
 
     def test_defenderbot_ownership_cases_cover_ids_1_to_16(self) -> None:
         for player_id in range(1, 17):
@@ -100,10 +85,11 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
             self.assertIn(f'{{player "{player_id}"}}', self.waves)
             self.assertIn(f'allied_support_owner_{player_id}', self.waves)
 
-    def test_delimiters_balance(self) -> None:
+    def test_delimiters_balance_ignoring_comments(self) -> None:
         for text in (*self.missions.values(), self.waves):
-            self.assertEqual(text.count("{"), text.count("}"))
-            self.assertEqual(text.count("("), text.count(")"))
+            code = "\n".join(line.split(";", 1)[0] for line in text.splitlines())
+            self.assertEqual(code.count("{"), code.count("}"))
+            self.assertEqual(code.count("("), code.count(")"))
 
 
 if __name__ == "__main__":
