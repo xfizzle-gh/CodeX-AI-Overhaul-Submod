@@ -1,0 +1,36 @@
+name: Clean wave-size branch artifacts
+
+on:
+  push:
+    branches:
+      - balance/reduce-dcg-wave-sizes-15pct
+    paths:
+      - ".github/workflows/cleanup-wave-size-branch.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v6
+        with:
+          ref: balance/reduce-dcg-wave-sizes-15pct
+          fetch-depth: 0
+
+      - name: Remove transient files
+        shell: bash
+        run: |
+          rm -rf tests/__pycache__
+          rm -f .github/workflows/cleanup-wave-size-branch.yml
+
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Remove transient Python bytecode"
+          git push origin HEAD:balance/reduce-dcg-wave-sizes-15pct
