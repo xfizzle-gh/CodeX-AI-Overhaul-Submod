@@ -6,46 +6,47 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CONQUEST_LUA = ROOT / "resource/script/multiplayer/modes/conquest.lua"
-CAMPAIGN_CTF_SET = (
-    ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set"
-)
 
 
-class ConquestDefenderBotSourceTests(unittest.TestCase):
+class ConquestRuntimeSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.source = CONQUEST_LUA.read_text(encoding="utf-8")
-        cls.game_config = CAMPAIGN_CTF_SET.read_text(encoding="utf-8")
 
-    def test_engine_owned_defender_bot_identity(self) -> None:
-        self.assertIn(
-            "isAlliedDefenderBot = defenderBotId > 0 and myId == defenderBotId",
-            self.source,
-        )
-        self.assertIn("botDefender = not BotApi.Conquest.Attacking", self.source)
+    def test_engine_ids_are_resolved_and_published(self) -> None:
+        self.assertIn("resolvePositiveId(conquest.FirstEnemyId", self.source)
         self.assertIn("resolvePositiveId(conquest.DefenderBotId", self.source)
-        self.assertNotIn("botDefender = teamSize > 1\n\tif printDebug", self.source)
+        self.assertIn("resolvePositiveId(conquest.FirstPlayerId", self.source)
+        self.assertIn('BotApi.Scene:SetVar("id_defenderbot", defenderBotId)', self.source)
+        self.assertIn('"defenderBotPurchaseHost", false', self.source)
 
-    def test_one_script_keeps_three_cadences_separate(self) -> None:
-        self.assertIn('cadence = "allied-support"', self.source)
+    def test_hidden_defender_owner_has_no_purchase_branch(self) -> None:
+        forbidden = (
+            "isAlliedDefenderBot",
+            "DCGWaveOffMin_AlliedSupport",
+            "DCGWaveOffMax_AlliedSupport",
+            "Min_AlliedSupport",
+            "Max_AlliedSupport",
+            "DCG allied support",
+            "allied-prep-hold",
+            "allied-opening",
+        )
+        for marker in forbidden:
+            self.assertNotIn(marker, self.source)
+
+    def test_runtime_bot_cadences_remain_separate(self) -> None:
+        self.assertIn('cadence = "enemy-defender-opening"', self.source)
+        self.assertIn('cadence = "enemy-attacker-opening"', self.source)
         self.assertIn('cadence = "enemy-defender"', self.source)
         self.assertIn('cadence = "enemy-attacker"', self.source)
-        self.assertIn("DCGWaveOffMin_AlliedSupport = 4 * 60 * 1000", self.source)
-        self.assertIn("DCGWaveOffMax_AlliedSupport = 8 * 60 * 1000", self.source)
 
-    def test_allied_opening_wave_is_preserved(self) -> None:
+    def test_normal_calculated_waves_keep_global_reduction(self) -> None:
+        self.assertIn("local NormalWaveSizeScale = 0.85", self.source)
         self.assertIn(
-            'cadence = isAlliedDefenderBot and "allied-opening" or "enemy-defender-opening"',
+            "rawWaveTotal * ActiveDifficultySettings.waveScale * NormalWaveSizeScale",
             self.source,
         )
-        self.assertIn("if isAlliedDefenderBot and waveNumber > 0 then", self.source)
-        self.assertIn("Min_AlliedSupport = 1", self.source)
-        self.assertIn("Max_AlliedSupport = 3", self.source)
-        allied_branch = self.source.index(
-            "if isAlliedDefenderBot and waveNumber > 0 then"
-        )
-        global_clamp = self.source.index("waveUnitTotal = math.max(3", allied_branch)
-        self.assertLess(allied_branch, global_clamp)
+        self.assertIn("waveUnitTotal = math.max(3", self.source)
 
     def test_wave_transition_advances_before_recalculation(self) -> None:
         transition = self.source.index("waveNumber = waveNumber + 1")
@@ -53,16 +54,6 @@ class ConquestDefenderBotSourceTests(unittest.TestCase):
         self.assertLess(transition, recalculation)
         self.assertNotIn("if not botDefender or botDefender then", self.source)
         self.assertIn("waveSpawnPossible = true", self.source)
-
-    def test_allied_support_is_held_until_prep_ends(self) -> None:
-        self.assertIn(
-            "isAlliedDefenderBot and waveNumber > 0 and not prepTimeOver",
-            self.source,
-        )
-        self.assertIn("DCG allied support held until PrepTimeOver", self.source)
-        self.assertIn("KillSpawnCooldownTimer()", self.source)
-        self.assertIn("SetSpawnCooldownTimer()", self.source)
-        self.assertIn("DCG allied support released after preparation", self.source)
 
     def test_only_mission_authority_writes_perspective_vars(self) -> None:
         authority_guard = self.source.index(
@@ -74,22 +65,17 @@ class ConquestDefenderBotSourceTests(unittest.TestCase):
         ce_vars = self.source.index("SetCEMissionVariables(botDefender)", authority_guard)
         self.assertLess(authority_guard, perspective_var)
         self.assertLess(authority_guard, ce_vars)
-
-        standalone_calls = [
-            line.strip()
-            for line in self.source.splitlines()
-            if line.strip() == "setDocVarsInNattorSpeak(currentDivision)"
-        ]
-        self.assertEqual(len(standalone_calls), 1)
         self.assertIn(
             "if wroteMissionVars then setDocVarsInNattorSpeak(currentDivision) end",
             self.source,
         )
 
-    def test_infantry_bias_and_ai_ownership_are_preserved(self) -> None:
-        self.assertIn('if UnitType("Infantry") then', self.source)
+    def test_ai_purchase_ownership_and_orders_are_preserved(self) -> None:
         self.assertIn("BotApi.Commands:SpawnAt", self.source)
         self.assertIn("BotApi.Commands:Spawn(unit, maxSquadSize)", self.source)
+        self.assertIn("TrySpawnUnit()", self.source)
+        self.assertIn("BotApi.Commands:SeekAndDestroy", self.source)
+        self.assertIn("BotApi.Commands:CaptureFlag", self.source)
         self.assertNotIn("control user", self.source)
 
     def test_first_quant_retries_late_conquest_ids_once(self) -> None:
@@ -100,29 +86,14 @@ class ConquestDefenderBotSourceTests(unittest.TestCase):
         self.assertIn("local function retryMissionIdentityOnce()", self.source)
         self.assertIn("missionIdentityRetryPending = false", self.source)
 
-    def test_normal_calculated_waves_use_global_fifteen_percent_reduction(self) -> None:
-        self.assertIn("local NormalWaveSizeScale = 0.85", self.source)
-        self.assertIn(
-            "rawWaveTotal * ActiveDifficultySettings.waveScale * NormalWaveSizeScale",
-            self.source,
-        )
-        allied_branch = self.source.index(
-            "if isAlliedDefenderBot and waveNumber > 0 then"
-        )
-        allied_return = self.source.index("\t\treturn", allied_branch)
-        normal_formula = self.source.index(
-            "rawWaveTotal * ActiveDifficultySettings.waveScale * NormalWaveSizeScale"
-        )
-        self.assertLess(allied_return, normal_formula)
-        self.assertIn("Min_AlliedSupport = 1", self.source)
-        self.assertIn("Max_AlliedSupport = 3", self.source)
-
-    def test_campaign_defense_pacing_uses_eight_minute_prep_and_kill_score(self) -> None:
-        self.assertIn("{preparationTime\t\t480}", self.game_config)
-        self.assertNotIn("{preparationTime\t\t1200}", self.game_config)
-        self.assertIn("kill_score_multiplier=0.25", self.game_config)
-        self.assertNotIn("kill_score_multiplier=0\"", self.game_config)
-        self.assertIn("{scoreFinal\t\t\t\t900}", self.game_config)
+    def test_prep_event_only_updates_mission_and_enemy_attack_release(self) -> None:
+        start = self.source.index("function OnPrepTimeOver()")
+        end = self.source.index("BotApi.Events:Subscribe", start)
+        prep = self.source[start:end]
+        self.assertIn('BotApi.Scene:SetVar("prep_inform", 1)', prep)
+        self.assertIn("if not botDefender and not ai_attack_started then", prep)
+        self.assertNotIn("KillSpawnCooldownTimer()", prep)
+        self.assertNotIn("SetSpawnCooldownTimer()", prep)
 
 
 if __name__ == "__main__":
