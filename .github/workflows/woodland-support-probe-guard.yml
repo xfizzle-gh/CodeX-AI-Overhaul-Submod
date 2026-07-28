@@ -1,9 +1,11 @@
-name: CWA support ownership probe guard
+name: CWA live allied support guard
 
-# Structural checks only. Live GoH ownership proof is still required before merge.
+# Structural checks only. A real GoH defense test is required before merge.
 on:
   pull_request:
     paths:
+      - "resource/map/multi/allied_support_waves.inc"
+      - "resource/map/multi/allied_support_templates.inc"
       - "resource/map/multi/allied_support_ownership_probe.inc"
       - "resource/map/multi/dcg_[[]cwa71]_*/campaign_capture_the_flag.mi"
       - "tests/test_woodland_support_probe.py"
@@ -12,6 +14,8 @@ on:
     branches:
       - main
     paths:
+      - "resource/map/multi/allied_support_waves.inc"
+      - "resource/map/multi/allied_support_templates.inc"
       - "resource/map/multi/allied_support_ownership_probe.inc"
       - "resource/map/multi/dcg_[[]cwa71]_*/campaign_capture_the_flag.mi"
       - "tests/test_woodland_support_probe.py"
