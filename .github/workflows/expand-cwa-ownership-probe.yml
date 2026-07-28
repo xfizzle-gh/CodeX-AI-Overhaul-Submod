@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "tools/expand_cwa_ownership_probe.py"
+      - "tools/fix_cwa_expander_syntax.py"
       - ".github/workflows/expand-cwa-ownership-probe.yml"
 
 permissions:
@@ -23,7 +24,9 @@ jobs:
         id: expand
         run: |
           set +e
+          rm -f cwa-expansion-error.txt
           {
+            python tools/fix_cwa_expander_syntax.py
             python -m py_compile tools/expand_cwa_ownership_probe.py
             python tools/expand_cwa_ownership_probe.py
           } > cwa-expansion-error.txt 2>&1
