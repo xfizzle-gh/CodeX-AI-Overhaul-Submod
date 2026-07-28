@@ -26,9 +26,10 @@ MISSIONS = [
 ]
 WAVES = ROOT / "resource/map/multi/allied_support_waves.inc"
 TEMPLATES = ROOT / "resource/map/multi/allied_support_templates.inc"
+CE_FUNCTIONS = ROOT / "resource/map/multi/ce/ce_functions.inc"
 
 
-class CwaLiveSupportProofTests(unittest.TestCase):
+class CwaHiddenTemplateSupportProofTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.missions = {
@@ -36,8 +37,9 @@ class CwaLiveSupportProofTests(unittest.TestCase):
         }
         cls.waves = WAVES.read_text(encoding="utf-8")
         cls.templates = TEMPLATES.read_text(encoding="utf-8")
+        cls.ce_functions = CE_FUNCTIONS.read_text(encoding="utf-8")
 
-    def test_all_cwa_missions_load_one_live_support_include_and_entry(self) -> None:
+    def test_all_cwa_missions_load_support_and_have_entry_waypoint(self) -> None:
         self.assertEqual(set(self.missions), set(MAP_NAMES))
         self.assertEqual(len(self.missions), 14)
         for map_name, mission in self.missions.items():
@@ -47,8 +49,8 @@ class CwaLiveSupportProofTests(unittest.TestCase):
                 self.assertIn("{radius 150}", mission)
                 self.assertNotIn("allied_support_templates.inc", mission)
 
-    def test_test_loop_is_hard_gated_and_repeats_every_minute(self) -> None:
-        self.assertIn('{name "allied_support/live_clone_test"}', self.waves)
+    def test_loop_is_hard_gated_and_repeats_every_minute(self) -> None:
+        self.assertIn('{name "allied_support/hidden_cmp_def_clone_test"}', self.waves)
         self.assertIn('{var "user_is_defender$"}', self.waves)
         self.assertIn('{var "id_defenderbot$"}', self.waves)
         self.assertIn('{var "prep_inform$"}', self.waves)
@@ -57,31 +59,41 @@ class CwaLiveSupportProofTests(unittest.TestCase):
         self.assertEqual(self.waves.count('{"placement"'), 1)
         self.assertEqual(self.waves.count('{"trigger"'), 1)
 
-    def test_sources_are_real_equipped_live_defenders(self) -> None:
-        self.assertIn('{tag {tag cmp_def}}', self.waves)
-        self.assertIn('{prop {prop human}}', self.waves)
-        self.assertIn('{state {state operatable}}', self.waves)
-        self.assertIn('{zone {zone "gamezone"}}', self.waves)
+    def test_source_selector_matches_ce_human_defense_clone_contract(self) -> None:
+        for marker in (
+            '{tag {tag cmp_def}}',
+            '{prop {prop human}}',
+            '{tag {tag hidden}}',
+            '{zone {zone "gamezone"}}',
+            '{state {state linked}}',
+            '{state {state user_control}}',
+            '{amount 2}',
+            '{target_waypoint "allied_support_entry"}',
+            '{clone}',
+        ):
+            self.assertIn(marker, self.waves)
+        self.assertGreaterEqual(self.waves.count('{amount 2}'), 2)
+        self.assertIn('{amount 2', self.ce_functions)
+        self.assertIn('{target_waypoint "%waypoint"}', self.ce_functions)
+        self.assertIn('{tag_add allied_support_clone_source}', self.waves)
+        self.assertNotIn('{amount 5}', self.waves)
         for fpc in range(1, 6):
-            self.assertEqual(self.waves.count(f'{{zone {{zone "fpc{fpc}"}}}}'), 2)
-        self.assertEqual(self.waves.count('{amount 1}'), 5)
-        self.assertEqual(self.waves.count('{tag_add allied_support_source}'), 5)
-        self.assertEqual(self.waves.count('{tag_remove allied_support_source}'), 6)
-        self.assertIn('{amount 5}', self.waves)
-        self.assertIn('{target_waypoint "allied_support_entry"}', self.waves)
-        self.assertIn('{clone}', self.waves)
-        self.assertNotIn("allied_support_template", self.waves)
-        self.assertNotIn('Human ""', self.waves)
-        self.assertNotIn('Human ""', self.templates)
+            self.assertNotIn(f'{{zone {{zone "fpc{fpc}"}}}}', self.waves)
 
-    def test_only_fresh_clones_receive_hidden_ai_ownership(self) -> None:
+    def test_only_in_game_clones_receive_defenderbot_control(self) -> None:
+        self.assertIn(
+            '{selector {tag allied_support_clone_source} {zone "gamezone"} {type human}}',
+            self.waves,
+        )
         self.assertIn('{tag_add allied_wave_fresh}', self.waves)
         self.assertIn('{tag_add allied_support_wave_issued}', self.waves)
         self.assertIn('{tag_add _def}', self.waves)
         self.assertIn('{tag_add _ai_defender}', self.waves)
         self.assertIn('{tag_remove hidden}', self.waves)
+        self.assertIn('{inactive off}', self.waves)
         self.assertIn('{control AI}', self.waves)
         self.assertNotIn('{control user}', self.waves)
+        self.assertIn('{remove select}', self.waves)
         self.assertIn('{action advance}', self.waves)
         self.assertIn('{target {tag fpc1}}', self.waves)
         for player_id in range(1, 17):
@@ -89,16 +101,21 @@ class CwaLiveSupportProofTests(unittest.TestCase):
             self.assertIn(f'{{player "{player_id}"}}', self.waves)
             self.assertIn(f'allied_support_owner_{player_id}', self.waves)
 
-    def test_old_ambiguous_fsm_is_removed(self) -> None:
-        for marker in (
-            "allied_support_initialized$",
-            "allied_support_waves_left$",
-            "allied_support_busy$",
-            "near-cap defer",
-            "live-clone fallback",
-            "pool bootstrap",
-        ):
-            self.assertNotIn(marker, self.waves)
+    def test_temporary_tags_are_cleared_from_clones_and_sources(self) -> None:
+        self.assertIn(
+            '{selector {tag allied_wave_fresh} {zone "gamezone"} {type human}}',
+            self.waves,
+        )
+        self.assertIn(
+            '{selector {tag allied_support_clone_source} {tag hidden} {type human}}',
+            self.waves,
+        )
+        self.assertEqual(self.waves.count('{tag_remove allied_support_clone_source}'), 2)
+        self.assertEqual(self.waves.count('{tag_remove allied_wave_fresh}'), 1)
+
+    def test_dead_template_experiment_stays_disabled(self) -> None:
+        self.assertNotIn('Human ""', self.templates)
+        self.assertNotIn("allied_support_template", self.waves)
 
     def test_delimiters_balance(self) -> None:
         for text in (*self.missions.values(), self.waves, self.templates):
