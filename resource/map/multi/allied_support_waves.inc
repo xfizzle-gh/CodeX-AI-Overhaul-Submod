@@ -1,5 +1,5 @@
 ; One-shot Indomitus-style proof using one explicit named actor embedded in every CWA map.
-; Test only. Human defense, DefenderBot ownership, waypoint 1 / fpc1.
+; Test only. Human defense, DefenderBot ownership, map-local allied_support_entry.
 ; No CE template-pool fallback and no repeating loop.
 
 			{"allied_support/explicit_actor_once"
@@ -25,12 +25,12 @@
 								}
 								{exclude
 									{state {state dead}}
-									{zone {zone "gamezone"}}
+									{zone {zone "allied_support_entry"}}
 								}
 							}
 							{amount 1}
 						}
-						{waypoint "1"}
+						{waypoint "allied_support_entry"}
 						{clone}
 						{approach "safe teleport & rotate"}
 					}
@@ -42,7 +42,7 @@
 								{select {tag {tag allied_support_explicit_template}}}
 								{include
 									{prop {prop human}}
-									{zone {zone "gamezone"}}
+									{zone {zone "allied_support_entry"}}
 								}
 								{exclude {state {state dead}}}
 							}
