@@ -780,7 +780,8 @@ function OnGameStart()
 	local wroteMissionVars = setVarsInMissionScript()
 	if wroteMissionVars then
 		setDocVarsInNattorSpeak(currentDivision)
-	elseif firstEnemyId <= 0 then
+	elseif firstEnemyId <= 0 or defenderBotId <= 0 or firstPlayerId <= 0 then
+		-- Retry once on the first quant: new Conquest IDs may settle after GameStart.
 		missionIdentityRetryPending = true
 	end
 	OnGameStartUtility("conquest")
