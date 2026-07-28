@@ -1,0 +1,34 @@
+name: Audit CWA support syntax
+
+on:
+  push:
+    branches:
+      - prototype/woodland-defenderbot-ownership
+    paths:
+      - "tools/audit_cwa_support_details.py"
+      - ".github/workflows/audit-cwa-support-details.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    if: github.event.head_commit.message != 'Record detailed CWA support audit'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out prototype branch
+        uses: actions/checkout@v6
+        with:
+          ref: prototype/woodland-defenderbot-ownership
+          fetch-depth: 0
+
+      - name: Extract exact mission-script contracts
+        run: python tools/audit_cwa_support_details.py
+
+      - name: Commit audit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Record detailed CWA support audit"
+          git push origin HEAD:prototype/woodland-defenderbot-ownership
