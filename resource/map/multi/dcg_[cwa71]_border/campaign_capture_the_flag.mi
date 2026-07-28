@@ -4217,6 +4217,7 @@
 			(include "../dcg_functions.inc")
 		}
 		{triggers
+			(include "../allied_support_ownership_probe.inc")
 			(include "/map/nikral's trigger.mi")
 	(include "/map/blow_panels_trigger.inc")
 			{"parachute"
@@ -29983,6 +29984,10 @@
 			}
 		}
 		{waypoints
+			{"allied_support_entry"
+				{position -8519.59 -1634.30 36.35}
+				{radius 150}
+			}
 			{"0"
 				{position -8578.86 -4229.39 0}
 				{radius 100}
