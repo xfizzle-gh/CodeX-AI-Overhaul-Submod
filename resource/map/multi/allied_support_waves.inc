@@ -13,12 +13,16 @@
 				}
 				{actions
 					{"delay" {time 10}}
-					{"placement"
+					{"actor_to_waypoint"
 						{selector
 							{source advanced}
+							{ignore_captured_by_user 0}
 							{group
 								{select {tag {tag allied_support_explicit_template}}}
-								{include {prop {prop human}}}
+								{include
+									{prop {prop human}}
+									{tag {tag hidden}}
+								}
 								{exclude
 									{state {state dead}}
 									{zone {zone "gamezone"}}
@@ -26,8 +30,9 @@
 							}
 							{amount 1}
 						}
-						{target_waypoint "1"}
+						{waypoint "1"}
 						{clone}
+						{approach "safe teleport & rotate"}
 					}
 					{"delay" {time 0.5}}
 					{"entity_state"
