@@ -1,0 +1,37 @@
+name: Apply DefenderBot purchase cleanup
+
+on:
+  push:
+    branches:
+      - cleanup/remove-dead-defenderbot-purchase-path
+    paths:
+      - "tools/apply_defenderbot_cleanup.py"
+      - ".github/workflows/apply-defenderbot-cleanup.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply-cleanup:
+    if: github.event.head_commit.message != 'Remove unreachable DefenderBot purchase path'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out cleanup branch
+        uses: actions/checkout@v6
+        with:
+          ref: cleanup/remove-dead-defenderbot-purchase-path
+          fetch-depth: 0
+
+      - name: Apply guarded source cleanup
+        run: python tools/apply_defenderbot_cleanup.py
+
+      - name: Run updated Conquest source guard
+        run: python -m unittest tests/test_conquest_defender_bot.py
+
+      - name: Commit cleanup result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Remove unreachable DefenderBot purchase path"
+          git push origin HEAD:cleanup/remove-dead-defenderbot-purchase-path
