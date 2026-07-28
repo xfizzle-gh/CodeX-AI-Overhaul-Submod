@@ -1,0 +1,28 @@
+name: Woodland support ownership probe guard
+
+# Structural checks only. Live GoH ownership proof is still required before merge.
+on:
+  pull_request:
+    paths:
+      - "resource/map/multi/allied_support_ownership_probe.inc"
+      - "resource/map/multi/dcg_[[]cwa71]_woodland/campaign_capture_the_flag.mi"
+      - "tests/test_woodland_support_probe.py"
+      - ".github/workflows/woodland-support-probe-guard.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "resource/map/multi/allied_support_ownership_probe.inc"
+      - "resource/map/multi/dcg_[[]cwa71]_woodland/campaign_capture_the_flag.mi"
+      - "tests/test_woodland_support_probe.py"
+      - ".github/workflows/woodland-support-probe-guard.yml"
+
+jobs:
+  source-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python -m unittest tests/test_woodland_support_probe.py
