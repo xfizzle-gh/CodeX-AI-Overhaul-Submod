@@ -14,6 +14,21 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
     return text.replace(old, new, 1)
 
 
+def matching_block_end(text: str, block_start: int) -> int:
+    depth = 0
+    entered = False
+    for index in range(block_start, len(text)):
+        char = text[index]
+        if char == "{":
+            depth += 1
+            entered = True
+        elif char == "}":
+            depth -= 1
+            if entered and depth == 0:
+                return index + 1
+    raise RuntimeError("unterminated MI action block")
+
+
 support = SUPPORT.read_text(encoding="utf-8")
 
 support = replace_once(
@@ -34,27 +49,27 @@ support = replace_once(
     "trigger name",
 )
 
-end_marker = (
-    "\t\t\t\t\t{tag_remove allied_wave_fresh}\n"
-    "\t\t\t\t}\n"
-    "\t\t\t}\n"
-    "\t\t}\n"
-)
-if support.count(end_marker) != 1:
-    raise RuntimeError(
-        f"support recurrence anchor: expected one match, found {support.count(end_marker)}"
-    )
+cleanup_tag = "{tag_remove allied_wave_fresh}"
+tag_index = support.rfind(cleanup_tag)
+if tag_index < 0:
+    raise RuntimeError("final allied_wave_fresh cleanup tag not found")
+block_start = support.rfind('{"entity_state"', 0, tag_index)
+if block_start < 0:
+    raise RuntimeError("final cleanup entity_state block not found")
+block_end = matching_block_end(support, block_start)
+line_end = support.find("\n", block_end)
+if line_end < 0:
+    line_end = block_end
+else:
+    line_end += 1
+
 recurrence = (
-    "\t\t\t\t\t{tag_remove allied_wave_fresh}\n"
-    "\t\t\t\t}\n"
-    "\t\t\t\t; Test-only recurrence. The trigger's opening 60-second delay controls cadence.\n"
-    "\t\t\t\t{\"trigger\"\n"
-    "\t\t\t\t\t{name \"allied_support/test_cwa_one_minute_waves\"}\n"
-    "\t\t\t\t}\n"
-    "\t\t\t}\n"
-    "\t\t}\n"
+    '\t\t\t\t; Test-only recurrence. The trigger opening delay controls the 60-second cadence.\n'
+    '\t\t\t\t{"trigger"\n'
+    '\t\t\t\t\t{name "allied_support/test_cwa_one_minute_waves"}\n'
+    '\t\t\t\t}\n'
 )
-support = support.replace(end_marker, recurrence, 1)
+support = support[:line_end] + recurrence + support[line_end:]
 
 required_support_markers = (
     '{time 60}',
@@ -109,15 +124,13 @@ test = replace_once(
     "recurrence assertions",
 )
 
-needle = '        self.assertIn(\'{amount 5}\', self.probe)\n'
-replacement = (
+test = replace_once(
+    test,
+    '        self.assertIn(\'{amount 5}\', self.probe)\n',
     '        self.assertIn(\'{amount 5}\', self.probe)\n'
     '        self.assertIn(\'{target_waypoint "allied_support_entry"}\', self.probe)\n'
-    '        self.assertIn(\'{tag fpc1}\', self.probe)\n'
+    '        self.assertIn(\'{tag fpc1}\', self.probe)\n',
+    "waypoint assertions",
 )
-test = replace_once(test, needle, replacement, "waypoint assertions")
-
-if test.count("{") != test.count("}"):
-    raise RuntimeError("test source brace characters are unbalanced")
 
 TEST.write_text(test, encoding="utf-8")
