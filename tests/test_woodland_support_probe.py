@@ -47,7 +47,7 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
         self.assertEqual(len(set(handles)), 14)
         self.assertEqual(len(set(mids)), 14)
 
-    def test_shared_trigger_matches_working_twelve_clone_checkpoint(self) -> None:
+    def test_shared_trigger_matches_indomitus_sequence(self) -> None:
         for marker in (
             '(define "allied_support_clone_one"',
             'allied_support/explicit_actor_once',
@@ -57,7 +57,6 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
             '{clone}',
             '{approach "safe teleport & rotate"}',
             '{amount 1}',
-            '{tag_add allied_wave_fresh}',
             '{tag_add allied_support_explicit_clone}',
             f'{{tag_remove {TAG}}}',
             '{tag_remove not_delete}',
@@ -66,10 +65,11 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
             '{control AI}',
             '{ai_move {mode enable}}',
             '{remove select}',
-            '{action advance}',
+            '{action attack}',
             '{target',
             '{tag fpc1}',
-            'PROOF 4 OWNER INDEXED x12',
+            'PROOF 3 PROMOTED TAG KEPT',
+            'PROOF 4 INDOMITUS OWNED ORDERED x12',
         ):
             self.assertIn(marker, self.waves)
         self.assertEqual(self.waves.count('(\"allied_support_clone_one\")'), 12)
@@ -79,12 +79,16 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
         self.assertNotIn('fpc_inf_to_flag1', self.waves)
         self.assertNotIn('allied_support_diag_source', self.waves)
         self.assertNotIn('{control user}', self.waves)
-        self.assertNotIn('{"trigger" {name "allied_support/explicit_actor_once"}', self.waves)
+        self.assertNotIn('{action advance}', self.waves)
 
-    def test_defenderbot_ids_map_to_zero_based_player_indices(self) -> None:
+        player_action = self.waves.index('{"switch"')
+        clone_retag = self.waves.index(f'{{tag_remove {TAG}}}', player_action)
+        self.assertLess(player_action, clone_retag)
+
+    def test_defenderbot_ids_use_indomitus_one_based_player_slots(self) -> None:
         for defenderbot_id in range(1, 17):
             self.assertIn(f'{{value {defenderbot_id}}}', self.waves)
-            self.assertIn(f'{{player "{defenderbot_id - 1}"}}', self.waves)
+            self.assertIn(f'{{player "{defenderbot_id}"}}', self.waves)
             self.assertIn(f'allied_support_owner_{defenderbot_id}', self.waves)
 
     def test_delimiters_balance_ignoring_comments(self) -> None:
