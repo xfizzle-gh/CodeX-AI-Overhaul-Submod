@@ -1286,6 +1286,17 @@
 	{Link 0x8048 {0x21fb "church_c1" "21"}}
 	{Link 0x8049 {0x21fb "church_base" "25"}}
 	(include "../allied_support_templates.inc")
+	{Human "mp/nato/2022s/inf2_rifleman" 0xaf50
+		{Position -35000 -35000}
+		{Volume "ram"
+			{able {visible 0}{bullet 0}{throwing 0}{obstacle 0}{contact 0}{contact_ground 0}{blast 0}{select 0}{touch 0}{blockcamera 0}}
+			{disabled}
+		}
+		{Player 0}
+		{MID 9905}
+		{FsmState "stand_noaim"}
+	}
+	{Tags "allied_support_explicit_template" "not_delete" "hidden" 0xaf50}
 	{Tags "spawn_b" "b2" 0x8009}
 	{Tags "spawn_b" "b1" 0x800a}
 	{Tags "spawn_b" "b3" 0x800b}
