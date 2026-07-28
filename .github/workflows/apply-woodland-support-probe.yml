@@ -5,19 +5,12 @@ on:
     paths:
       - "tools/apply_woodland_support_probe.py"
       - ".github/workflows/apply-woodland-support-probe.yml"
-  push:
-    branches:
-      - prototype/woodland-defenderbot-ownership
-    paths:
-      - "tools/apply_woodland_support_probe.py"
-      - ".github/workflows/apply-woodland-support-probe.yml"
 
 permissions:
   contents: write
 
 jobs:
   apply-probe:
-    if: github.event_name == 'pull_request' || github.event.head_commit.message != 'Add woodland DefenderBot ownership probe'
     runs-on: ubuntu-latest
     steps:
       - name: Check out prototype branch
@@ -40,4 +33,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Add woodland DefenderBot ownership probe"
+          git pull --rebase origin prototype/woodland-defenderbot-ownership
           git push origin HEAD:prototype/woodland-defenderbot-ownership
