@@ -1,4 +1,4 @@
-name: Apply one-minute allied support test
+name: Clean one-minute allied support scaffolding
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  apply:
+  cleanup:
     runs-on: ubuntu-latest
     steps:
       - name: Check out test branch
@@ -19,18 +19,14 @@ jobs:
           ref: test/one-minute-allied-support-waves
           fetch-depth: 0
 
-      - name: Apply narrow support-wave patch
-        run: |
-          python -m py_compile tools/apply_one_minute_allied_support_test.py
-          python tools/apply_one_minute_allied_support_test.py
-
-      - name: Run CWA support structural guard
+      - name: Verify final gameplay source
         run: python -m unittest tests/test_woodland_support_probe.py
 
-      - name: Commit gameplay and guard changes
+      - name: Remove temporary patcher and workflow
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add resource/map/multi/allied_support_ownership_probe.inc tests/test_woodland_support_probe.py
-          git commit -m "Test allied support waves every minute"
+          git rm tools/apply_one_minute_allied_support_test.py
+          git rm .github/workflows/apply-one-minute-allied-support-test.yml
+          git commit -m "Remove temporary support-wave test scaffolding"
           git push origin HEAD:test/one-minute-allied-support-waves
