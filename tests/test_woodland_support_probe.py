@@ -63,9 +63,11 @@ class CwaLiveSupportProofTests(unittest.TestCase):
         self.assertIn('{state {state operatable}}', self.waves)
         self.assertIn('{zone {zone "gamezone"}}', self.waves)
         for fpc in range(1, 6):
-            self.assertIn(f'{{zone {{zone "fpc{fpc}"}}}}', self.waves)
+            self.assertEqual(self.waves.count(f'{{zone {{zone "fpc{fpc}"}}}}'), 2)
+        self.assertEqual(self.waves.count('{amount 1}'), 5)
+        self.assertEqual(self.waves.count('{tag_add allied_support_source}'), 5)
+        self.assertEqual(self.waves.count('{tag_remove allied_support_source}'), 6)
         self.assertIn('{amount 5}', self.waves)
-        self.assertIn('{tag_add allied_support_source}', self.waves)
         self.assertIn('{target_waypoint "allied_support_entry"}', self.waves)
         self.assertIn('{clone}', self.waves)
         self.assertNotIn("allied_support_template", self.waves)
