@@ -1,5 +1,6 @@
 name: Woodland support ownership probe guard
 
+# Structural checks only. Live GoH ownership proof is still required before merge.
 on:
   pull_request:
     paths:
