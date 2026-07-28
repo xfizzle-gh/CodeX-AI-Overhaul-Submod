@@ -1,0 +1,38 @@
+name: Apply explicit CWA support proof
+
+on:
+  push:
+    branches:
+      - recovery/prove-live-allied-support
+    paths:
+      - ".github/scripts/apply_explicit_support_probe.py"
+      - ".github/workflows/apply-explicit-support-probe.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: recovery/prove-live-allied-support
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Patch all CWA maps and shared proof
+        run: python .github/scripts/apply_explicit_support_probe.py
+      - name: Run structural guard
+        run: python -m unittest tests/test_woodland_support_probe.py
+      - name: Commit target files and remove temporary runner
+        shell: bash
+        run: |
+          rm -f .github/scripts/apply_explicit_support_probe.py
+          rm -f .github/workflows/apply-explicit-support-probe.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Embed explicit support proof on every CWA map"
+          git push origin HEAD:recovery/prove-live-allied-support
