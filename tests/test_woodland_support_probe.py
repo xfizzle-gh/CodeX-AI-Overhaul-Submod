@@ -69,6 +69,7 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
             '{action advance}',
             '{target',
             '{tag fpc1}',
+            'PROOF 4 OWNER INDEXED x12',
         ):
             self.assertIn(marker, self.waves)
         self.assertEqual(self.waves.count('(\"allied_support_clone_one\")'), 12)
@@ -80,11 +81,11 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
         self.assertNotIn('{control user}', self.waves)
         self.assertNotIn('{"trigger" {name "allied_support/explicit_actor_once"}', self.waves)
 
-    def test_defenderbot_ownership_cases_cover_ids_1_to_16(self) -> None:
-        for player_id in range(1, 17):
-            self.assertIn(f'{{value {player_id}}}', self.waves)
-            self.assertIn(f'{{player "{player_id}"}}', self.waves)
-            self.assertIn(f'allied_support_owner_{player_id}', self.waves)
+    def test_defenderbot_ids_map_to_zero_based_player_indices(self) -> None:
+        for defenderbot_id in range(1, 17):
+            self.assertIn(f'{{value {defenderbot_id}}}', self.waves)
+            self.assertIn(f'{{player "{defenderbot_id - 1}"}}', self.waves)
+            self.assertIn(f'allied_support_owner_{defenderbot_id}', self.waves)
 
     def test_delimiters_balance_ignoring_comments(self) -> None:
         for text in (*self.missions.values(), self.waves):
