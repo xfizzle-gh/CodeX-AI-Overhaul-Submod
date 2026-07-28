@@ -18,7 +18,7 @@ def replace_once(source: str, old: str, new: str, label: str) -> str:
 source = TARGET.read_text(encoding="utf-8")
 helper_start = source.index("def selector(")
 helper_end = source.index("\n\nfresh_selector =", helper_start)
-new_helper = r'''def selector(
+new_helper = r"""def selector(
     tag: str,
     *,
     inside_gamezone: bool = True,
@@ -58,7 +58,7 @@ new_helper = r'''def selector(
 \t\t\t\t\t\t\t\t}}
 \t\t\t\t\t\t\t}}
 \t\t\t\t\t\t}}'''
-'''
+"""
 source = source[:helper_start] + new_helper + source[helper_end:]
 source = replace_once(
     source,
