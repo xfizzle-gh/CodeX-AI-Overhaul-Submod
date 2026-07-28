@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import re
 import unittest
 from pathlib import Path
 
-# Covers every CWA Dynamic Conquest mission currently owned by this repository.
 ROOT = Path(__file__).resolve().parents[1]
 MAP_NAMES = [
     "dcg_[cwa71]_airbase",
@@ -26,123 +24,82 @@ MISSIONS = [
     ROOT / "resource" / "map" / "multi" / name / "campaign_capture_the_flag.mi"
     for name in MAP_NAMES
 ]
-PROBE = ROOT / "resource/map/multi/allied_support_ownership_probe.inc"
-POSITION_RE = re.compile(
-    r"\{Position\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)(?:\s+(-?\d+(?:\.\d+)?))?\}"
-)
-ENTRY_RE = re.compile(
-    r'\{"allied_support_entry".*?\{position (-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)\}',
-    re.S,
-)
+WAVES = ROOT / "resource/map/multi/allied_support_waves.inc"
+TEMPLATES = ROOT / "resource/map/multi/allied_support_templates.inc"
 
 
-def conquest_blocks(text: str) -> list[str]:
-    lines = text.splitlines(keepends=True)
-    result: list[str] = []
-    index = 0
-    while index < len(lines):
-        if not lines[index].startswith('\t{Entity "map_point_conquest"'):
-            index += 1
-            continue
-        start = index
-        depth = 0
-        while index < len(lines):
-            depth += lines[index].count("{") - lines[index].count("}")
-            index += 1
-            if depth == 0:
-                break
-        result.append("".join(lines[start:index]))
-    return result
-
-
-def team_a_positions(text: str) -> list[tuple[float, float, float]]:
-    result: list[tuple[float, float, float]] = []
-    for block in conquest_blocks(text):
-        if "{team a}" not in block:
-            continue
-        match = POSITION_RE.search(block)
-        if match:
-            result.append(
-                (
-                    float(match.group(1)),
-                    float(match.group(2)),
-                    float(match.group(3) or 0.0),
-                )
-            )
-    return result
-
-
-class CwaSupportOwnershipProbeTests(unittest.TestCase):
+class CwaLiveSupportProofTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.missions = {
             path.parent.name: path.read_text(encoding="utf-8") for path in MISSIONS
         }
-        cls.probe = PROBE.read_text(encoding="utf-8")
+        cls.waves = WAVES.read_text(encoding="utf-8")
+        cls.templates = TEMPLATES.read_text(encoding="utf-8")
 
-    def test_all_repository_owned_cwa_missions_are_covered(self) -> None:
+    def test_all_cwa_missions_load_one_live_support_include_and_entry(self) -> None:
         self.assertEqual(set(self.missions), set(MAP_NAMES))
         self.assertEqual(len(self.missions), 14)
         for map_name, mission in self.missions.items():
             with self.subTest(map_name=map_name):
-                self.assertEqual(mission.count("allied_support_ownership_probe.inc"), 1)
+                self.assertEqual(mission.count("allied_support_waves.inc"), 1)
                 self.assertEqual(mission.count('{"allied_support_entry"'), 1)
                 self.assertIn("{radius 150}", mission)
+                self.assertNotIn("allied_support_templates.inc", mission)
 
-    def test_shared_include_precedes_dcg_logic(self) -> None:
-        for map_name, mission in self.missions.items():
-            with self.subTest(map_name=map_name):
-                probe_index = mission.index("allied_support_ownership_probe.inc")
-                if "dcg_script.inc" in mission:
-                    self.assertLess(probe_index, mission.index("dcg_script.inc"))
-                else:
-                    self.assertEqual(map_name, "dcg_[cwa71]_border")
-                    self.assertGreater(probe_index, mission.index("{triggers"))
+    def test_test_loop_is_hard_gated_and_repeats_every_minute(self) -> None:
+        self.assertIn('{name "allied_support/live_clone_test"}', self.waves)
+        self.assertIn('{var "user_is_defender$"}', self.waves)
+        self.assertIn('{var "id_defenderbot$"}', self.waves)
+        self.assertIn('{var "prep_inform$"}', self.waves)
+        self.assertIn('{expression "1 & 2 & 3"}', self.waves)
+        self.assertIn('{time 60}', self.waves)
+        self.assertEqual(self.waves.count('{"placement"'), 1)
+        self.assertEqual(self.waves.count('{"trigger"'), 1)
 
-    def test_each_entry_matches_its_team_a_spawn_centroid(self) -> None:
-        for map_name, mission in self.missions.items():
-            with self.subTest(map_name=map_name):
-                points = team_a_positions(mission)
-                self.assertGreater(len(points), 0)
-                expected = tuple(
-                    sum(point[axis] for point in points) / len(points)
-                    for axis in range(3)
-                )
-                match = ENTRY_RE.search(mission)
-                self.assertIsNotNone(match)
-                actual = tuple(float(match.group(index)) for index in range(1, 4))
-                for observed, wanted in zip(actual, expected):
-                    self.assertAlmostEqual(observed, wanted, places=1)
+    def test_sources_are_real_equipped_live_defenders(self) -> None:
+        self.assertIn('{tag {tag cmp_def}}', self.waves)
+        self.assertIn('{prop {prop human}}', self.waves)
+        self.assertIn('{state {state operatable}}', self.waves)
+        self.assertIn('{zone {zone "gamezone"}}', self.waves)
+        for fpc in range(1, 6):
+            self.assertIn(f'{{zone {{zone "fpc{fpc}"}}}}', self.waves)
+        self.assertIn('{amount 5}', self.waves)
+        self.assertIn('{tag_add allied_support_source}', self.waves)
+        self.assertIn('{target_waypoint "allied_support_entry"}', self.waves)
+        self.assertIn('{clone}', self.waves)
+        self.assertNotIn("allied_support_template", self.waves)
+        self.assertNotIn('Human ""', self.waves)
+        self.assertNotIn('Human ""', self.templates)
 
-    def test_support_test_is_hard_gated_and_repeats_every_minute(self) -> None:
-        self.assertIn('{var "user_is_defender$"}', self.probe)
-        self.assertIn('{var "id_defenderbot$"}', self.probe)
-        self.assertIn('{var "prep_inform$"}', self.probe)
-        self.assertIn('{expression "1 & 2 & 3"}', self.probe)
-        self.assertIn('{time 60}', self.probe)
-        self.assertEqual(self.probe.count('{"placement"'), 1)
-        self.assertNotIn('{"loop"', self.probe)
-        self.assertEqual(self.probe.count('{"trigger"'), 1)
-        self.assertIn('{name "allied_support/test_cwa_one_minute_waves"}', self.probe)
-        self.assertNotIn("probe_cwa_ownership", self.probe)
-        self.assertNotIn("probe_woodland_ownership", self.probe)
-
-    def test_probe_preserves_ai_ownership_contract(self) -> None:
-        self.assertIn('{amount 5}', self.probe)
-        self.assertIn('{target_waypoint "allied_support_entry"}', self.probe)
-        self.assertIn('{tag fpc1}', self.probe)
-        self.assertIn('{operation set}', self.probe)
-        self.assertIn('{control AI}', self.probe)
-        self.assertNotIn('{control user}', self.probe)
-        self.assertIn('{tag_add _def}', self.probe)
-        self.assertIn('{tag_add _ai_defender}', self.probe)
-        self.assertNotIn('{tag_add _bot}', self.probe)
+    def test_only_fresh_clones_receive_hidden_ai_ownership(self) -> None:
+        self.assertIn('{tag_add allied_wave_fresh}', self.waves)
+        self.assertIn('{tag_add allied_support_wave_issued}', self.waves)
+        self.assertIn('{tag_add _def}', self.waves)
+        self.assertIn('{tag_add _ai_defender}', self.waves)
+        self.assertIn('{tag_remove hidden}', self.waves)
+        self.assertIn('{control AI}', self.waves)
+        self.assertNotIn('{control user}', self.waves)
+        self.assertIn('{action advance}', self.waves)
+        self.assertIn('{target {tag fpc1}}', self.waves)
         for player_id in range(1, 17):
-            self.assertIn("{value " + str(player_id) + "}", self.probe)
-            self.assertIn('{player "' + str(player_id) + '"}', self.probe)
+            self.assertIn(f'{{value {player_id}}}', self.waves)
+            self.assertIn(f'{{player "{player_id}"}}', self.waves)
+            self.assertIn(f'allied_support_owner_{player_id}', self.waves)
 
-    def test_all_mission_delimiters_balance(self) -> None:
-        for text in (*self.missions.values(), self.probe):
+    def test_old_ambiguous_fsm_is_removed(self) -> None:
+        for marker in (
+            "allied_support_initialized$",
+            "allied_support_waves_left$",
+            "allied_support_busy$",
+            "near-cap defer",
+            "live-clone fallback",
+            "pool bootstrap",
+        ):
+            self.assertNotIn(marker, self.waves)
+
+    def test_delimiters_balance(self) -> None:
+        for text in (*self.missions.values(), self.waves, self.templates):
             self.assertEqual(text.count("{"), text.count("}"))
             self.assertEqual(text.count("("), text.count(")"))
 
