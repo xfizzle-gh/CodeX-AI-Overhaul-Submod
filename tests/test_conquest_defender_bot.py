@@ -70,8 +70,16 @@ class ConquestDefenderBotSourceTests(unittest.TestCase):
         ce_vars = self.source.index("SetCEMissionVariables(botDefender)", authority_guard)
         self.assertLess(authority_guard, perspective_var)
         self.assertLess(authority_guard, ce_vars)
-        self.assertEqual(
-            self.source.count("setDocVarsInNattorSpeak(currentDivision)"), 2
+
+        standalone_calls = [
+            line.strip()
+            for line in self.source.splitlines()
+            if line.strip() == "setDocVarsInNattorSpeak(currentDivision)"
+        ]
+        self.assertEqual(len(standalone_calls), 1)
+        self.assertIn(
+            "if wroteMissionVars then setDocVarsInNattorSpeak(currentDivision) end",
+            self.source,
         )
 
     def test_infantry_bias_and_ai_ownership_are_preserved(self) -> None:
