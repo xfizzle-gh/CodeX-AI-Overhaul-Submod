@@ -1,8 +1,6 @@
 ; Indomitus-style proof: clone from one embedded tagged template actor.
-; Pattern: actor_to_waypoint + clone + approach (worked in live test).
-; CWA waypoints: only "0" and "allied_support_entry".
-; Clone the same off-map template 12 times onto allied_support_entry.
-; Human defense, DefenderBot ownership. One-shot.
+; Proven path: actor_to_waypoint + clone + allied_support_entry.
+; Twelve clones, DefenderBot ownership, direct AI advance to fpc1. One-shot.
 
 			(define "allied_support_clone_one"
 				{"actor_to_waypoint"
@@ -247,6 +245,7 @@
 							{state "not dead"}
 						}
 						{control AI}
+						{ai_move {mode enable}}
 						{weapon_prepare on}
 						{fire_mode open}
 						{move_mode free}
@@ -276,17 +275,6 @@
 							{tag fpc1}
 						}
 					}
-					{"delay" {time 0.1}}
-					{"call"
-						{function "fpc_inf_to_flag1"}
-						{context
-							{specified}
-							{selector
-								{source standart}
-								{tag allied_wave_fresh}
-							}
-						}
-					}
 					{"ables"
 						{selector
 							{ignore_captured_by_user 0}
@@ -299,6 +287,6 @@
 						{selector {tag allied_wave_fresh}}
 						{tag_remove allied_wave_fresh}
 					}
-					{"timer" {time 15} {title "PROOF 4 COMBAT x12"}}
+					{"timer" {time 15} {title "PROOF 4 ORDERED x12"}}
 				}
 			}
