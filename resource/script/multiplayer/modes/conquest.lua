@@ -21,29 +21,29 @@ StartSpawnTime = {
 -- Time from last purchase AI will wait before attempting to buy a new unit.
 SpawnCooldownTime = {
     -- Time between each wave
-    DCGWaveOffMin = 2.5 * 60 * 1000, 
-    DCGWaveOffMax = 6 * 60 * 1000,
+    DCGWaveOffMin = 3.0 * 60 * 1000, 
+    DCGWaveOffMax = 5.0 * 60 * 1000,
     -- Time between each wave (Defender)	
-    DCGWaveOffMin_Defender = 2.5 * 60 * 1000, 
-    DCGWaveOffMax_Defender = 3.5 * 60 * 1000,
+    DCGWaveOffMin_Defender = 3.5 * 60 * 1000, 
+    DCGWaveOffMax_Defender = 5.0 * 60 * 1000,
    -- Time between each wave (Attacker)
-    DCGWaveOffMin_Attacker = 2.5 * 60 * 1000, 
-    DCGWaveOffMax_Attacker = 3.5 * 60 * 1000,
+    DCGWaveOffMin_Attacker = 3.0 * 60 * 1000, 
+    DCGWaveOffMax_Attacker = 5.0 * 60 * 1000,
    -- Time between each spawn
-    DCGMin = 4 * 1000, 
-    DCGMax = 6 * 1000,
+    DCGMin = 5 * 1000, 
+    DCGMax = 8 * 1000,
 }
 
 -- Number of possible units than can be in a wave attack
 WaveUnit = {
-    Min = 3,
-    Max = 10,
+    Min = 4,
+    Max = 7,
     -- Defender-specific range
     Min_Defender = 3,
     Max_Defender = 5,
     -- Attacker-specific range
-    Min_Attacker = 3,
-    Max_Attacker = 5,
+    Min_Attacker = 4,
+    Max_Attacker = 7,
 }
 
 -- Sets time limit AI will wait for a unit it has chosen to buy if the unit is not yet available
@@ -57,7 +57,7 @@ botDifficultyModifier = 0
 enableWaveCounter = true
 
 -- Global reduction for all runtime AI purchase waves.
-local NormalWaveSizeScale = 0.85
+local NormalWaveSizeScale = 0.765
 
 -- One conquest.lua runs per bot. Resolve engine-owned identities once per instance.
 local myId = BotApi.Instance.playerId or 0
@@ -155,15 +155,30 @@ local function setVarsInMissionScript()
 
 	local botNation = BotApi.Instance.army
 	local botDifficulty = BotApi.Instance.difficulty
-	local nationMap = { rusa = 1, ukr = 2, nato = 3, csa = 4, sov = 5, prc = 6, frg = 7}
+	-- Keep in sync with dcg/player_nation side map (1 rusa .. 8 pol)
+	local nationMap = { rusa = 1, ukr = 2, nato = 3, csa = 4, sov = 5, prc = 6, frg = 7, pol = 8,
+		-- legacy / alias ids
+		rus = 1, ger = 2, fin = 3, usa = 3, eng = 3, jap = 6 }
 	local difficultyMap = { easy = 1, normal = 2, hard = 3, heroic = 4 }
 	local spawnMap = { a = 1, b = 2}
 	local playerSpawnNameMap = {
 		a1 = 1, a2 = 2, a3 = 3, a4 = 4,
 		b1 = 5, b2 = 6, b3 = 7, b4 = 8,
 	}
+	-- Opposite-alliance guess for MI when {type side} fails (West vs East).
+	local eastNations = { rusa = true, sov = true, prc = true, pol = true, rus = true, jap = true }
+	local westNations = { nato = true, ukr = true, csa = true, frg = true, usa = true, eng = true, ger = true, fin = true }
 
 	BotApi.Scene:SetVar("bot_army", nationMap[botNation] or 0)
+	-- Hint only: MI dcg/player_nation remains authority when side matches.
+	-- If side detection fails, MI default uses bot_army to pick the opposite bloc.
+	if eastNations[botNation] then
+		BotApi.Scene:SetVar("user_nation_hint", 3) -- prefer NATO/West
+	elseif westNations[botNation] then
+		BotApi.Scene:SetVar("user_nation_hint", 1) -- prefer RUSA/East
+	else
+		BotApi.Scene:SetVar("user_nation_hint", 3)
+	end
 	BotApi.Scene:SetVar("bot_difficulty", difficultyMap[botDifficulty] or 0)
 	BotApi.Scene:SetVar("bots_spawnside", spawnMap[spawnSide] or 0)
 

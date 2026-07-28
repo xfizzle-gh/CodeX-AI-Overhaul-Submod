@@ -1787,6 +1787,7 @@
 		{Player 0}
 		{MID 101}
 	}
+	(include "../allied_support_templates.inc")
 	{Tags "bare" 0x6e2}
 	{Tags "bare" 0x93d}
 	{Tags "bare" 0x2872}
@@ -3352,7 +3353,7 @@
 					}
 				}
 			}
-			(include "../allied_support_ownership_probe.inc")
+			(include "../allied_support_waves.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

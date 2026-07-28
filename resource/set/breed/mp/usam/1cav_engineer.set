@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "usa_ocp1"}
+	{portrait "acav"}
+	{icon "tech"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ach_tac_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("cavalry")		
+		("engineer")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m4a1_v2d" filled}
+		{item "m16a2 ammo" 180}
+		
+		{item "m136" filled}
+		
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "us_backpack_3"}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "c4pn" 1}			
+		{item "msv_2"}
+		{in_hands 0}
+	}
+}

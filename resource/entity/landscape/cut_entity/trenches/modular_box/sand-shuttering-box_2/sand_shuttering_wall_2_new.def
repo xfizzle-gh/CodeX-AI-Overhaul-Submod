@@ -1,5 +1,5 @@
 {game_entity
-	(include "/properties/construction.inc")
+	(include "/properties/construction_vaultable.inc")
 	{Extension "sand_shuttering_wall_2_new.mdl"}
 	{props "construction" "wood" "burning" "sandbag" "ignore_obstacles"}
 	{DynCmpPersistent}

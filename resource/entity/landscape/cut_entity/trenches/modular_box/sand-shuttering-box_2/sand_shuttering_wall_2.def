@@ -4,7 +4,7 @@
 	{props "construction" "wood" "burning" "sandbag" "ignore_obstacles"} 
 	{DynCmpPersistent}
 	("armor_heavy" args 0.8)
-	{obstacleID "small_building"}
+	{obstacleID "small_building_vaultable"}
 	{Volume "box020"
 		{Tags "body" "fire"}
 		{thickness 50}

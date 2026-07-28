@@ -1,5 +1,5 @@
 {game_entity
-	(include "/properties/construction.inc")
+	(include "/properties/construction_vaultable.inc")
 	{props "sand" "foxhole_spawned" "onestage" "-construction"  "jettison_sandbags4" "dummy_emplacement"}
 	{extension "sandbag_framed_straight_low_dummy.mdl"}
 	;{extender "land_patch"

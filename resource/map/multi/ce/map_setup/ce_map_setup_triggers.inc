@@ -1387,6 +1387,7 @@
 							}
 						}
 						{tag_add not_delete}
+						{tag_add allied_support_template}
 					}
 					{"delay"
 						{time 0.5}
@@ -1698,6 +1699,12 @@
 								{exclude
 									{zone
 										{zone "gamezone"}
+									}
+									{tag
+										{tag not_delete}
+									}
+									{tag
+										{tag allied_support_template}
 									}
 								}
 							}

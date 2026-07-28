@@ -2,6 +2,9 @@
 ; Ã¦Â­Â¤incÃ¥Ë†Â Ã©â„¢Â¤Ã¤Âºâ€ Ã¦â€°â‚¬Ã¦Å“â€°Ã¥Â®ËœÃ¦â€“Â¹Ã¦Å“â€°Ã¥â€¦Â³Ã§Â©ÂºÃ¨Â¢Â­Ã§Å¡â€žÃ¨Â§Â¦Ã¥Ââ€˜Ã¥â„¢Â¨Ã¯Â¼Å’Ã¥Â¢Å¾Ã¥Å Â Ã¤Âºâ€ Ã¤Â¸â‚¬Ã¤Â¸ÂªÃ¨â€¡ÂªÃ¥Â·Â±Ã¥â€ â„¢Ã§Å¡â€ž"[nikral] airstrike script for dcg"
 ; airstrike script for dcgÃ¨Â§Â¦Ã¥Ââ€˜Ã¥â„¢Â¨Ã¥ÂÅ¡Ã§Å¡â€žÃ¥Â·Â¥Ã¤Â½Å“Ã¦ËœÂ¯Ã¯Â¼Å¡Ã¥Â¦â€šÃ¦Å¾Å“Ã¦Å“â€°AIÃ©Â£Å¾Ã¦Å“ÂºÃ¯Â¼Å’Ã¥Â°Â±Ã©Å¡ÂÃ¦Å“ÂºÃ©â‚¬â€°Ã¤Â¸â‚¬Ã¤Â¸ÂªÃ§Å½Â©Ã¥Â®Â¶Ã¨Â½Â½Ã¥â€¦Â·Ã¨Â¿â€ºÃ¨Â¡Å’Ã§Â©ÂºÃ¨Â¢Â­Ã£â‚¬â€š
 ; Ã©Å“â‚¬Ã¨Â¦ÂÃ¥ÂÅ¡Ã§Å¡â€žÃ¥â€°ÂÃ¦ÂÂÃ¥Â·Â¥Ã¤Â½Å“Ã¯Â¼Å¡1.AIÃ¨Æ’Â½Ã¥â€¡ÂºÃ©Â£Å¾Ã¦Å“ÂºÃ£â‚¬â€š2.Ã©Â£Å¾Ã¦Å“ÂºÃ©Å“â‚¬Ã¨Â¦ÂÃ¦Å“â€°Ã©Â»ËœÃ¨Â®Â¤Ã©Â«ËœÃ¥ÂºÂ¦Ã¥Â±Å¾Ã¦â‚¬Â§Ã¯Â¼Å’Ã¤Â½â€ Ã¤Â¸ÂÃ¤Â¸â‚¬Ã¥Â®Å¡Ã©Â»ËœÃ¨Â®Â¤Ã¤Â¸ÂºairborneÃ§Å Â¶Ã¦â‚¬ÂÃ¯Â¼Å’wheelÃ§Å Â¶Ã¦â‚¬ÂÃ¤Â¹Å¸Ã¥ÂÂ¯Ã¤Â»Â¥Ã¯Â¼Ë†Ã©Â«ËœÃ¥ÂºÂ¦50Ã¥Ë†Â°30Ã¥Â·Â¦Ã¥ÂÂ³Ã¦Â¯â€Ã¨Â¾Æ’Ã¥ÂË†Ã©â‚¬â€šÃ¯Â¼â€°Ã£â‚¬â€š3.Ã©Â£Å¾Ã¦Å“ÂºÃ§Å¡â€žÃ©Â»ËœÃ¨Â®Â¤Ã¦Â­Â¦Ã¥â„¢Â¨Ã¤Â¸ÂºÃ§â€šÂ¸Ã¥Â¼Â¹Ã¦ËœÂ¯Ã¦Å“â‚¬Ã¥Â¥Â½Ã£â‚¬â€š
+; === Conquest Enhanced v2.5 (Big Cookie Noob) + Horten's Frontline v3.13.3 ===
+; CE scripts under /map/multi/ce/ (mirrors CE map_scripts layout for this submod).
+; HF scripts under /map/multi/HF-dcg_*.inc
 (include "/map/multi/ce/ce_vars.inc")
 (include "/map/multi/ce/ce_events.inc")
 (include "/map/multi/ce/ce_functions.inc")
@@ -12,22 +15,22 @@
 (include "/map/blow_panels_trigger.inc")
 (include "/map/nikral's trigger.mi")
 (include "/map/north_trigger.mi")
-(include "/map/multi/HF-dcg_script.inc")
-(include "/map/multi/dcg_functions.mi")
-; Legacy CE smoke flow is active; keep the custom DCG smoke trigger disabled to avoid
-; two competing grenade systems tagging the same bots.
-; (include "/map/multi/dcg_ai_smoke.inc")
 
-; Disabled for custom-map compatibility testing. These CE AI trigger layers are
-; the main structural difference from Code:X/Vanilla and are the strongest
-; common factor in the recent helper-thread/runtime crashes.
-; (include "/map/multi/ce/ai_logic/ce_ai_spawn_triggers.inc")
-; (include "/map/multi/ce/ai_logic/ce_lua_triggers.inc")
-; (include "/map/multi/ce/ai_logic/ce_ai_logic_triggers.inc")
-; Re-enable only CE defender patrol overflow logic without restoring the full
-; CE AI logic stack.
-(include "/map/multi/ce/ai_logic/ce_ai_patrol_only.inc")
-(include "/map/multi/ce/ai_logic/ce_ai_repair_only.inc")
+; Horten Frontline AI (loot/mines/arty/flanking/airstrike) — AI-only loot already in upstream
+(include "/map/multi/HF-dcg_script.inc")
+(include "/map/multi/HF-dcg_dynamic_weather.inc")
+(include "/map/multi/dcg_functions.mi")
+(include "/map/multi/dcg_ai_smoke.inc")
+(include "/map/multi/indomitus_ai_combat.inc") ; Indomitus combat AI (recrew/bail/pursue/TNT/flag smoke/arty CF)
+
+; Full CE AI stack + map setup (defender balance, patrol, repair, lua bridge, spawns)
+(include "/map/multi/ce/ai_logic/ce_ai_spawn_triggers.inc")
+(include "/map/multi/ce/ai_logic/ce_lua_triggers.inc")
+(include "/map/multi/ce/ai_logic/ce_ai_logic_triggers.inc")
+; Do NOT include base_map_setup_triggers.inc here — that content is already inlined
+; below (parachute/music/dcg/init/...). Double-registering it re-enabled music/music_detect
+; (ACCESS_VIOLATION) and crashes scene:destroy / mp.service.c.delete on mission end.
+(include "/map/multi/ce/map_setup/ce_map_setup_triggers.inc")
 
 (include "/map/random_weather_switch.mi")
 
@@ -2722,7 +2725,9 @@
 					}
 				}
 			}
-			{"music/music_detect"
+			; Disabled: ACCESS_VIOLATION in scene:quant.trig.music/music_detect on mission start
+			; (broken_components / near dead humans selector). Re-enable after combat music rewrite.
+			{##"music/music_detect"
 				{condition
 					{expression "(1 & 2) | (1 & 3) | (1 & 4)"}
 					{terms
@@ -12101,32 +12106,114 @@
 								{op "="}
 								{value 1}
 							}
-						}						
+						}
+						; Legacy vanilla sides
+						{"case"
+							{condition
+								{type side}
+								{side rus}
+							}
+							{"set_i" {var "user_nation$"} {op "="} {value 1}}
+						}
+						{"case"
+							{condition
+								{type side}
+								{side ger}
+							}
+							{"set_i" {var "user_nation$"} {op "="} {value 2}}
+						}
+						{"case"
+							{condition
+								{type side}
+								{side usa}
+							}
+							{"set_i" {var "user_nation$"} {op "="} {value 3}}
+						}
+						{"case"
+							{condition
+								{type side}
+								{side eng}
+							}
+							{"set_i" {var "user_nation$"} {op "="} {value 3}}
+						}
 						{"default"
-							{"delay"
-								{time 0.1}
-							}
-							{"set_i"
-								{var "user_nation$"}
-								{op "="}
-								{value 1}
-							}
-							{"delay"
-								{time 0.1}
-							}
-							{"objective_progress"
-								{set 0}
-								{add 0}
-								{title "mission/multi/dcg_error02"}
-							}
-							{"delay"
-								{time 30}
-							}
-							{"objective_progress"
-								{hide}
-								{set 0}
-								{add 0}
-								{title "mission/multi/dcg_error02"}
+							; No error toast. Infer opposite of bot_army when side id is unknown.
+							{"switch"
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 3}
+									}
+									{"set_i" {var "user_nation$"} {op "="} {value 1}}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 2}
+									}
+									{"set_i" {var "user_nation$"} {op "="} {value 6}}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 4}
+									}
+									{"set_i" {var "user_nation$"} {op "="} {value 1}}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 7}
+									}
+									{"set_i" {var "user_nation$"} {op "="} {value 1}}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 1}
+									}
+									{"set_i" {var "user_nation$"} {op "="} {value 3}}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 5}
+									}
+									{"set_i" {var "user_nation$"} {op "="} {value 3}}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 6}
+									}
+									{"set_i" {var "user_nation$"} {op "="} {value 3}}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 8}
+									}
+									{"set_i" {var "user_nation$"} {op "="} {value 3}}
+								}
+								{"default"
+									{"set_i" {var "user_nation$"} {op "="} {value 3}}
+								}
 							}
 						}
 					}

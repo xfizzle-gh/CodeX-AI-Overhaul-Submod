@@ -2507,6 +2507,7 @@
 	{Link 0xc027 {0x31e6 "p02" "3"}}
 	{Link 0xb80b {0x6025 "3"}}
 	{Link 0xb814 {0x6024 "3"}}
+	(include "../allied_support_templates.inc")
 	{Tags "cmp_def" "1_b_2-3_mg" 0x8800}
 	{Tags "spawn_b" "b2" 0x800c}
 	{Tags "spawn_b" "b1" 0x800d}
@@ -4386,7 +4387,7 @@
 					}
 				}
 			}
-			(include "../allied_support_ownership_probe.inc")
+			(include "../allied_support_waves.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

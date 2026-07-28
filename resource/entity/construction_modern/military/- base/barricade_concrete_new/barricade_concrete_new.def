@@ -1,6 +1,6 @@
 {game_entity
-        (include "/properties/construction.inc")
-        {obstacleid  "construction" "no_destroyed_stamp"}
+        (include "/properties/construction_vaultable.inc")
+        {obstacleid  "construction_vaultable" "no_destroyed_stamp"}
 	{props "concrete"}
 	{Extension "barricade_concrete_new.mdl"}
 	{collider "particle.big"}

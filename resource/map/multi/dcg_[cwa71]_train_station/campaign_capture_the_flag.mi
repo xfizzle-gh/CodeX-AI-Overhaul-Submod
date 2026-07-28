@@ -2078,6 +2078,7 @@
 	{Link 0x8056 {0x60e1 "2"}}
 	{Link 0x8058 {0x788a "117_f2c2" "1"}}
 	{Link 0x8065 {0x605f "14" "6"}}
+	(include "../allied_support_templates.inc")
 	{Tags "switch_left" 0x3017}
 	{Tags "switch_left" 0x28c}
 	{Tags "switch_right" 0x38}
@@ -3788,7 +3789,7 @@
 					}
 				}
 			}
-			(include "../allied_support_ownership_probe.inc")
+			(include "../allied_support_waves.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

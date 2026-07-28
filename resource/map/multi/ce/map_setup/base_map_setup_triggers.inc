@@ -2735,7 +2735,9 @@
 					}
 				}
 			}
-			{"music/music_detect"
+			; Disabled: ACCESS_VIOLATION in scene:quant.trig.music/music_detect
+			; (broken_components / near dead humans selector). Keep disabled if this file is included.
+			{##"music/music_detect"
 				{condition
 					{expression "(1 & 2) | (1 & 3) | (1 & 4)"}
 					{terms
@@ -6295,6 +6297,30 @@
 					{"delay"
 						{time 1}
 					}
+					{"ables"
+						{selector
+							{source advanced}
+							{ignore_captured_by_user 0}
+							{group
+								{select
+									{tag
+										{tag _ai_defender}
+									}
+								}
+								{include
+									{prop
+										{prop vehicle}
+									}
+								}
+								{exclude
+									{state
+										{state user_control}
+									}
+								}
+							}
+						}
+						{remove select}
+					}
 					{"set_i"
 						{var "dcg_on$"}
 						{op "+"}
@@ -7358,14 +7384,102 @@
 					{"delay"
 						{time 0.9}
 					}
+					; Code:X / CWA armies (must match conquest.lua nationMap + dcg_script.inc)
+					; 1 rusa, 2 ukr, 3 nato, 4 csa, 5 sov, 6 prc, 7 frg, 8 pol
 					{"switch"
 						{"case"
 							{condition
 								{type side}
-								{side rus}
+								{side rusa}
 							}
-							{"delay"
-								{time 0.1}
+							{"set_i"
+								{var "user_nation$"}
+								{op "="}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type side}
+								{side ukr}
+							}
+							{"set_i"
+								{var "user_nation$"}
+								{op "="}
+								{value 2}
+							}
+						}
+						{"case"
+							{condition
+								{type side}
+								{side nato}
+							}
+							{"set_i"
+								{var "user_nation$"}
+								{op "="}
+								{value 3}
+							}
+						}
+						{"case"
+							{condition
+								{type side}
+								{side csa}
+							}
+							{"set_i"
+								{var "user_nation$"}
+								{op "="}
+								{value 4}
+							}
+						}
+						{"case"
+							{condition
+								{type side}
+								{side sov}
+							}
+							{"set_i"
+								{var "user_nation$"}
+								{op "="}
+								{value 5}
+							}
+						}
+						{"case"
+							{condition
+								{type side}
+								{side prc}
+							}
+							{"set_i"
+								{var "user_nation$"}
+								{op "="}
+								{value 6}
+							}
+						}
+						{"case"
+							{condition
+								{type side}
+								{side frg}
+							}
+							{"set_i"
+								{var "user_nation$"}
+								{op "="}
+								{value 7}
+							}
+						}
+						{"case"
+							{condition
+								{type side}
+								{side pol}
+							}
+							{"set_i"
+								{var "user_nation$"}
+								{op "="}
+								{value 8}
+							}
+						}
+						; Legacy vanilla sides (if a WWII pack is mixed in)
+						{"case"
+							{condition
+								{type side}
+								{side rus}
 							}
 							{"set_i"
 								{var "user_nation$"}
@@ -7378,9 +7492,6 @@
 								{type side}
 								{side ger}
 							}
-							{"delay"
-								{time 0.1}
-							}
 							{"set_i"
 								{var "user_nation$"}
 								{op "="}
@@ -7391,9 +7502,6 @@
 							{condition
 								{type side}
 								{side fin}
-							}
-							{"delay"
-								{time 0.1}
 							}
 							{"set_i"
 								{var "user_nation$"}
@@ -7406,13 +7514,10 @@
 								{type side}
 								{side usa}
 							}
-							{"delay"
-								{time 0.1}
-							}
 							{"set_i"
 								{var "user_nation$"}
 								{op "="}
-								{value 4}
+								{value 3}
 							}
 						}
 						{"case"
@@ -7420,22 +7525,16 @@
 								{type side}
 								{side eng}
 							}
-							{"delay"
-								{time 0.1}
-							}
 							{"set_i"
 								{var "user_nation$"}
 								{op "="}
-								{value 5}
+								{value 3}
 							}
 						}
 						{"case"
 							{condition
 								{type side}
 								{side jap}
-							}
-							{"delay"
-								{time 0.1}
 							}
 							{"set_i"
 								{var "user_nation$"}
@@ -7444,30 +7543,120 @@
 							}
 						}
 						{"default"
-							{"delay"
-								{time 0.1}
-							}
-							{"set_i"
-								{var "user_nation$"}
-								{op "="}
-								{value 1}
-							}
-							{"delay"
-								{time 0.1}
-							}
-							{"objective_progress"
-								{set 0}
-								{add 0}
-								{title "mission/multi/dcg_error02"}
-							}
-							{"delay"
-								{time 30}
-							}
-							{"objective_progress"
-								{hide}
-								{set 0}
-								{add 0}
-								{title "mission/multi/dcg_error02"}
+							; Infer from bot_army when {type side} misses (common with alliance packs).
+							; East bot => user likely West/NATO (3). West bot => user likely East/RUSA (1).
+							{"switch"
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 3}
+									}
+									{"set_i"
+										{var "user_nation$"}
+										{op "="}
+										{value 1}
+									}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 2}
+									}
+									{"set_i"
+										{var "user_nation$"}
+										{op "="}
+										{value 6}
+									}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 4}
+									}
+									{"set_i"
+										{var "user_nation$"}
+										{op "="}
+										{value 1}
+									}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 7}
+									}
+									{"set_i"
+										{var "user_nation$"}
+										{op "="}
+										{value 1}
+									}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 1}
+									}
+									{"set_i"
+										{var "user_nation$"}
+										{op "="}
+										{value 3}
+									}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 5}
+									}
+									{"set_i"
+										{var "user_nation$"}
+										{op "="}
+										{value 3}
+									}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 6}
+									}
+									{"set_i"
+										{var "user_nation$"}
+										{op "="}
+										{value 3}
+									}
+								}
+								{"case"
+									{condition
+										{type cmp_i}
+										{var "bot_army$"}
+										{op "=="}
+										{value 8}
+									}
+									{"set_i"
+										{var "user_nation$"}
+										{op "="}
+										{value 3}
+									}
+								}
+								{"default"
+									{"set_i"
+										{var "user_nation$"}
+										{op "="}
+										{value 3}
+									}
+								}
 							}
 						}
 					}

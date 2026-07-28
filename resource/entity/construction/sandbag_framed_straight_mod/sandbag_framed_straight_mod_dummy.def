@@ -1,5 +1,5 @@
 {game_entity
-	(include "/properties/construction.inc")
+	(include "/properties/construction_vaultable.inc")
 	{props "-sand" "-sandbag" "onestage" "construction"  "-jettison_sandbags4"}
 	{extension "sandbag_framed_straight_dummy.mdl"}
 	{volume "body"

@@ -1,0 +1,34 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "usa_ocp4"}
+	{portrait "acav_ammo"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ihps_new_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("binocular_vision")
+		("cavalry_rsta")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m7_spear_holo" filled}
+		{item "xm7_ammo ammo" 180}
+		{item "us_backpack_4"}		
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+				{item "binocular"}
+		{item "jpc_2"}
+		{in_hands 0}
+	}
+}

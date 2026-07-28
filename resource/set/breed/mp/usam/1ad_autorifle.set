@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "usa_ocp3"}
+	{portrait "acav"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ihps_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		
+		{item "m249_saw_h" filled}
+		{item "m249_ammo ammo" 400}
+		
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "us_backpack_2"}		
+		{item "msv_2"}
+		
+		{in_hands 0}
+	}
+}

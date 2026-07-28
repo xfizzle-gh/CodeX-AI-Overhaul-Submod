@@ -4,7 +4,7 @@
 	{props "construction" "wood" "burning" "dummy_emplacement"} 
 	{DynCmpPersistent}
 	("armor_heavy" args 0.8)
-	{obstacleID "small_building"}
+	{obstacleID "small_building_vaultable"}
 	{collider "nothing"}
 	{extender "land_patch"
 	}

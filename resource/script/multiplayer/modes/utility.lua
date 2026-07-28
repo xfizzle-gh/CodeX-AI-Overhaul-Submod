@@ -443,10 +443,19 @@ function OnGameStop()
 	KillSpawnCooldownTimer()
 	KillSpawnWaitTimer()
 
+	if KillGeneralSquadTagCheckTimer then KillGeneralSquadTagCheckTimer() end
+	if KillAiSpawnMoveTimer then KillAiSpawnMoveTimer() end
+	if KillInitialSceneCheckTimer then KillInitialSceneCheckTimer() end
+
 	for squad, timer in pairs(Context.SquadTimers) do
 		if timer then
 			BotApi.Events:KillQuantTimer(timer)
 		end
+		Context.SquadTimers[squad] = nil
+	end
+
+	if NoresusOnGameEnd then
+		pcall(NoresusOnGameEnd)
 	end
 end
 

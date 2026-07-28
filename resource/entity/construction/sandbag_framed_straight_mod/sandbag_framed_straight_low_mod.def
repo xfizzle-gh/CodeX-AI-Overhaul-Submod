@@ -1,10 +1,10 @@
 {game_entity
-	(include "/properties/construction.inc")
+	(include "/properties/construction_vaultable.inc")
 	{props "sand" "foxhole_spawned" "onestage" "jettison_sandbags4" "ignore_obstacles" "sandbag" "-construction"}
 	{DynCmpPersistent}
 	{extension "sandbag_framed_straight_low.mdl"}
 	{volume "body"
-		{Tags "body" "delete_point"}
+		{Tags "body" "delete_point" "climb"}
 		{thickness 120}
 		{able {visible 1} {touch 1}}
 		{Tags "cut"}

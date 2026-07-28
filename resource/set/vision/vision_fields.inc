@@ -288,52 +288,11 @@
 
 }
 
-{"tank_hull-mg"							; // Tank Hull Machine gunner
-	 ("uncover" u(25))
-    ("h_fov" h(5))
-    ("v_fov" v(90))
-    ("vision_tgunner")
-
-}
-
 {"tank_back"							; // Tank with rear turret machine gun
 	 ("uncover" u(25))
     ("h_fov" h(50))
     ("v_fov" v(120))
     ("vision_driver")
-
-}
-
-{"tank_remote-mg"						; // Remote controlled roof Machine gun (Hetzer, Stug3g, etc)
-		 ("uncover" u(25))
-    ("h_fov" h(5))
-    ("v_fov" v(90))
-    ("vision_tgunner")
-}
-
-{"tank_shielded-mg"						; // Shielded Machine gun (BA-64)
-		 ("uncover" u(25))
-    ("h_fov" h(5))
-    ("v_fov" v(90))
-    ("vision_tgunner")
-}
-
-{"tank_around"							; // Tank peripheral / Commander vision
-	;{uncover 25}
-	;{h_fov 360}
-	;{v_fov 170}
-	;("spotting" r(0.5))
-}
-
-{"tank_around-l"
-
-}
-
-{"tank_around_small"							; // Tank peripheral / Commander vision
-	;{uncover 25}
-	;{h_fov 360}
-	;{v_fov 170}
-	;("spotting" r(0.15))
 }
 
 {"tank_commander"							; // Commander forward Periscope
@@ -342,7 +301,6 @@
     ("v_fov" v(90))
     ("vision_tgunner")
 }
-
 
 {"tank_hull-mg"							; // Tank Hull Machine gunner
 	{uncover 20}
@@ -377,6 +335,20 @@
 	{h_fov 360}
 	{v_fov 170}
 	("spotting" r(0.5))
+}
+
+{"tank_around-l"
+	{uncover 15}
+	{h_fov 360}
+	{v_fov 170}
+	("spotting" r(0.5))
+}
+
+{"tank_around_small"							; // Tank peripheral / Commander vision
+	{uncover 15}
+	{h_fov 360}
+	{v_fov 170}
+	("spotting" r(0.15))
 }
 
 

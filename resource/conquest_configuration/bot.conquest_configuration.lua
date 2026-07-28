@@ -59,23 +59,21 @@
 	-- Time from last purchase AI will wait before attempting to buy a new unit.
 	DCGWaveOffOverwrite = {
 		-- Time between each wave when bot is attacking
-		AttackMinWaveOff = 1.5 * 60000,
-		AttackMaxWaveOff = 2.0 * 60000,
+		AttackMinWaveOff = 3.0 * 60000,
+		AttackMaxWaveOff = 5.0 * 60000,
      	-- Time between each wave when bot is defending
-     	DefenseMinWaveOff = 2 * 60000, 
-     	DefenseMaxWaveOff = 3 * 60000,
+     	DefenseMinWaveOff = 3.5 * 60000, 
+     	DefenseMaxWaveOff = 5.0 * 60000,
      }
 
     -- Number of possible units than can be in a wave attack in conquest
 	WaveUnitOverride = {
 	    -- Bot is attacker
-	    AttackMin = 10,
-	    AttackMax = 16,
-	    -- AttackMin = 1,
-	    -- AttackMax = 1,
+	    AttackMin = 4,
+	    AttackMax = 7,
 	    -- Bot is defender
-	    DefendMin = 4,
-	    DefendMax = 12,
+	    DefendMin = 3,
+	    DefendMax = 5,
 	}
 
 -- ================================= Advanced Settings =========================================
@@ -95,19 +93,19 @@
 			},
 			infantry = {
 				x2_cloneClount = 1,
-				perFlag = 12,
-				max_ai_defender_at_flag = 6
+				perFlag = 4,
+				max_ai_defender_at_flag = 3
 
 			},
 			challengeMaps = {
 				emplacement = {
-				max = 10,
-				perFlag = 2
+				max = 6,
+				perFlag = 1
 				},
 				infantry = {
 					x2_cloneClount = 1,
-					perFlag = 8,
-					max_ai_defender_at_flag = 5
+					perFlag = 4,
+					max_ai_defender_at_flag = 3
 				},
 			},
 			difficultyModifier = {
@@ -120,21 +118,21 @@
 		-- Bot is defender
 		Defending = {
 			emplacement = {
-				defenseLevelOne = 8,
-				defenseLevelTwo = 12,
-				defenseLevelThree = 16
+				defenseLevelOne = 4,
+				defenseLevelTwo = 6,
+				defenseLevelThree = 8
 			},
 
 			infantry = {
-				x5_cloneClount = 2,
-				perFlag = 30,
-				max_ai_defender_at_flag = 8
+				x5_cloneClount = 1,
+				perFlag = 8,
+				max_ai_defender_at_flag = 4
 			},
 			challengeMaps = {
 				emplacement = {
-				defenseLevelOne = 13,
-				defenseLevelTwo = 25,
-				defenseLevelThree = 35
+				defenseLevelOne = 6,
+				defenseLevelTwo = 10,
+				defenseLevelThree = 14
 				},
 				infantry = {
 					x5_cloneClount = 4,
@@ -153,6 +151,11 @@
 
 	-- Set to true when noresus mod is enabled with CE
 	enabledNoresus = 0
+
+	-- Percentage chances (0..1). Missing values used to nil-crash SetCEMissionVariables on map load.
+	enableCommunicationsCutMechanics = 0
+	enableSabotageMechanics = 0
+	enableAiAbandonMechanics = 0
 -- =============================== Logging DO NOT MODIFY =======================================
 	require([[/conquest_configuration/bot.mod_configuration]])
 

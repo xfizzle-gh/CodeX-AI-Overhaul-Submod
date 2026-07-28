@@ -2472,6 +2472,7 @@
 	{Link 0x8005 {0xa800 "sandbags"}}
 	{Link 0x8029 {0x206a "2"}}
 	{Link 0x802d {0xdb5 "seat01"}}
+	(include "../allied_support_templates.inc")
 	{Tags "switch_right" 0x3004}
 	{Tags "switch_right" 0x3400}
 	{Tags "switch_right" 0x3401}
@@ -4434,7 +4435,7 @@
 					}
 				}
 			}
-			(include "../allied_support_ownership_probe.inc")
+			(include "../allied_support_waves.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

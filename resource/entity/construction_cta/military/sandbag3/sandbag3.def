@@ -1,0 +1,11 @@
+{game_entity
+	(include "/properties/construction_vaultable.inc")
+	{Extension "sandbag3.mdl"}
+	{volume defaultmaterial "sand"}
+	
+	{Volume "body1"
+		{Tags  "body" "climb"}
+		{Thickness 50}
+		{able {visible 0}}
+	}
+}

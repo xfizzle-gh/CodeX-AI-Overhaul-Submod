@@ -71,6 +71,7 @@ end
 
 local function checkVarPercentage(varName, varPecetage)
   math.randomseed(os.time())
+  if varPecetage == nil then varPecetage = 0 end
   if varPecetage >= math.random() then
     varPecetage = 1
   else 
@@ -82,11 +83,14 @@ local function checkVarPercentage(varName, varPecetage)
 end
 
 local function checkRearAttackPercentage()
-  -- Keep rear-attack off when the bot is defending (was forcing 1 and pulling units off flags).
-  if botDefender then
+  local chance = enableRearAttackMechanics
+  if chance == nil then chance = 0 end
+  if chance >= math.random() then
+    enableRearAttackMechanics = 1
+  else 
     enableRearAttackMechanics = 0
   end
-  BotApi.Scene:SetVar("enable_rear_attack_mechanic", enableRearAttackMechanics or 0)
+  BotApi.Scene:SetVar("enable_rear_attack_mechanic", enableRearAttackMechanics)
 
   print("enable_rear_attack_mechanic" .. " = ", enableRearAttackMechanics)
 end
@@ -106,25 +110,31 @@ function SetCEMissionVariables(botDefender)
     end
     totalFlags = totalFlags + 1
   end
+  print("CE flag loop done count=", totalFlags)
 
   if followWaypointGraphs then
       BotApi.Scene:SetVar("enable_ai_waypoint_graphs", 1)
   else
       BotApi.Scene:SetVar("enable_ai_waypoint_graphs", 0)
   end
+  print("CE post-flag vars begin")
 
   -- checkVarPercentage("weather_selection", weather_selection_override)
 
-  -- The broader mod stack is more stable when these CE-only mechanics are disabled on
-  -- imported/custom maps. They were showing up right before late quant crashes.
-  BotApi.Scene:SetVar("enable_ce_radio_mechanic", 0)
-  print("enable_ce_radio_mechanic = ", 0)
-  BotApi.Scene:SetVar("enable_ce_cut_communications_mechanic", 0)
-  print("enable_ce_cut_communications_mechanic = ", 0)
-  BotApi.Scene:SetVar("ai_sabotage", 0)
-  print("ai_sabotage = ", 0)
-  BotApi.Scene:SetVar("enable_ai_abandon_mechanics", 0)
-  print("enable_ai_abandon_mechanics = ", 0)
+  -- Defaults: these were referenced but never defined in bot.conquest_configuration,
+  -- which nil-crashes Lua on human-defense map init right after flag waypoint checks.
+  local radioCut = enableCommunicationsCutMechanics
+  if radioCut == nil then radioCut = 0 end
+  local sabotage = enableSabotageMechanics
+  if sabotage == nil then sabotage = 0 end
+  local abandon = enableAiAbandonMechanics
+  if abandon == nil then abandon = 0 end
+
+  --checkVarPercentage("enable_ce_radio_mechanic", enableRadioMechanics)
+  checkVarPercentage("enable_ce_radio_mechanic", radioCut) -- use this to control both variables for now
+  checkVarPercentage("enable_ce_cut_communications_mechanic", radioCut)
+  checkVarPercentage("ai_sabotage", sabotage)
+  checkVarPercentage("enable_ai_abandon_mechanics", abandon)
 
 
   -- only run rear attack script if bot is attacking
@@ -196,7 +206,7 @@ function SelectAiSpawnStrategy()
   Context.AiSpawnMoveTimer = BotApi.Events:SetQuantTimer(
     function()
       math.randomseed(os.time())
-      local changeSpawnStrategyChance = 1.0
+      local changeSpawnStrategyChance = 0.45
 
       if math.random() < changeSpawnStrategyChance then
         local aiSpawnStrategy = 0

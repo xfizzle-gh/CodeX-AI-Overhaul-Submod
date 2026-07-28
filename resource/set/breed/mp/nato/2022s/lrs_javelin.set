@@ -1,0 +1,39 @@
+{breed
+	{tags "soldier_at"}
+	{behaviour soldier}
+	{skin "usa_ocp4"}
+	{portrait "lrs"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head wendy_ex_4}
+		{body "jpc_3"}			
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("paratrooper_lrs")
+		("skilled_manpad_operator")
+		("at_rank_5")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "fn_licc_holo" filled}
+		{item "ammo licc_ammo" 180}
+		{item "javelin weapon" filling "jav_rock ammo" 1}
+		{item "us_backpack_3"}
+		{item "jav_rock ammo" 2}
+
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+	
+
+
+		
+		{in_hands 0}
+	}
+}

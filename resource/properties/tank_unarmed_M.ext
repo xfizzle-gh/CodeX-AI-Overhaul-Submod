@@ -1,0 +1,1060 @@
+;SDL
+actor
+(include "abm.inc")
+(include "mobility.inc")
+(include "vehicle.ext")
+(include "armor.ext")
+(include "tank_crew.ext")
+;(include "vehicle_hotmod.ext")
+{collider "tank.medium"}
+{props "tank" "hatch" "engine" "antifire" "standart_netting"}
+{PatherID "tank"}
+
+("brain_vehicle")
+; OH: define locally so later vehicle.ext stack overrides cannot drop the macro Code:X calls.
+(define "recoil_side_volumes"
+	{volume "recoil_gun_front"{component "recoil_gun"}{thickness 30}{tags "gun_recoil"}{able clear {NoWoundDecal}}}
+	{volume "recoil_gun_left" {component "recoil_gun"}{thickness 30}{tags "gun_recoil"}{able clear {NoWoundDecal}}}
+	{volume "recoil_gun_right" {component "recoil_gun"}{thickness 30}{tags "gun_recoil"}{able clear {NoWoundDecal}}}
+	{volume "recoil_gun_back" {component "recoil_gun"}{thickness 30}{tags "gun_recoil"}{able clear {NoWoundDecal}}}
+	{volume "recoil_gun_baleft" {component "recoil_gun"}{thickness 30}{tags "gun_recoil"}{able clear {NoWoundDecal}}}
+	{volume "recoil_gun_baright" {component "recoil_gun"}{thickness 30}{tags "gun_recoil"}{able clear {NoWoundDecal}}}
+	{volume "recoil_gun_frright" {component "recoil_gun"}{thickness 30}{tags "gun_recoil"}{able clear {NoWoundDecal}}}
+	{volume "recoil_gun_frleft" {component "recoil_gun"}{thickness 30}{tags "gun_recoil"}{able clear {NoWoundDecal}}}
+	{component "recoil_gun"}
+)
+("recoil_side_volumes") ;//add by ordos
+{hearingBias 4.5} 	;// reduces units ability to hear sound signals. value = meters
+
+{sensor
+	{visor "main"
+		{vision "tank_main-l"}
+		{bone "visor1"}
+	}
+	{Visor "driver"
+		{vision "tank_driver"}
+		{bone "visor2"}
+	}
+	;{visor "around"
+	;	;{vision "tank_around"}
+	;	{vision "tank_around_small"}
+	;	{bone "visor1"}
+	;}
+	;{visor "commander"
+	;	{vision "tank_commander"}
+	;	{bone "visor1"}
+	;}
+	;{visor "human"
+	;	{vision "human"}
+	;	{bone "visor3"}
+	;}
+	{visor "none"
+		{vision "none"}
+	}
+	{visor "hearing"
+		{vision "noise_detection"}
+		{bone "hearing_bone"}
+	}
+	{RememberTime 45}
+}
+
+{Skeleton
+	{bone "hearing_bone"
+		{Position 0 0 70}
+	}
+}
+
+
+{extender "inventory"
+	{box
+		{Size 9 16}
+		{Weight 15000}
+		{item "can" 1}
+		{item "repair_kit" 10}
+		{item "fire_extinguisher" 3}
+		{item "nbk39 grenade" 4}
+		{item "netting_kit" 5}		
+	}
+}
+
+{extender "talk"
+	{talker "tank"}
+}
+{able "talk"}
+
+{Chassis "track"
+	; left track must be first
+	{FuelBag
+		{volume 250 }	;// liters
+		{rate   10 }	;// liters per kilometer
+		{remain 250 }
+		{fuel "fuel"}
+	}
+}
+
+("basic_armor" args 20)
+
+("body" repair(130))
+("engine" repair(45))
+("tracks" repair(30) thickness(20))
+
+("general_durability" body(250) engine(150) turret(150) mantlet(150) gun(150) track(150) ammo(120))
+
+{perks {blastwave_modifier 6.0}}
+
+;----------------add by ordos--------------
+	                                          	
+
+(define "ERA_element"		
+	{Volume "d_a%0" {tags "d_a" "d_a_1gen"  } 
+			{able clear {contact 1} {contact_ground 1} {bullet 1}{BLAST 1}} 
+			{component "d_a%0"}
+	}		
+	{Volume "comp_d_a%0" {tags "1gen_ERA"  } 
+			{able clear {NoWoundDecal}} 
+			;{component "d_a%0"}
+	}		
+			{component "d_a%0" {tags "d_a"}}	
+)		
+
+(define "ERA_element_2gen"
+	{Volume "d_a%0" {tags "d_a" "d_a_2gen" }
+			{able clear {contact 1} {contact_ground 1} {bullet 1}{BLAST 1}}
+			{component "d_a%0"}
+	}
+	{Volume "comp_d_a%0" {tags "2gen_ERA"  }
+			{able clear {NoWoundDecal}}
+			{component "d_a%0"}
+	}		
+			{component "d_a%0" {tags "d_a"}}
+)
+
+(define "1gen_ERA"	
+	("ERA_element" args 1)("ERA_element" args 2)("ERA_element" args 3)("ERA_element" args 4)("ERA_element" args 5)
+	("ERA_element" args 6)("ERA_element" args 7)("ERA_element" args 8)("ERA_element" args 9)("ERA_element" args 10)
+	("ERA_element" args 11)("ERA_element" args 12)("ERA_element" args 13)("ERA_element" args 14)("ERA_element" args 15)
+	("ERA_element" args 16)("ERA_element" args 17)("ERA_element" args 18)("ERA_element" args 19)("ERA_element" args 20)
+	("ERA_element" args 21)("ERA_element" args 22)("ERA_element" args 23)("ERA_element" args 24)("ERA_element" args 25)
+	("ERA_element" args 26)("ERA_element" args 27)("ERA_element" args 28)("ERA_element" args 29)("ERA_element" args 30)
+	("ERA_element" args 31)("ERA_element" args 32)("ERA_element" args 33)("ERA_element" args 34)("ERA_element" args 35)
+	("ERA_element" args 36)("ERA_element" args 37)("ERA_element" args 38)("ERA_element" args 39)("ERA_element" args 40)
+	("ERA_element" args 41)("ERA_element" args 42)("ERA_element" args 43)("ERA_element" args 44)("ERA_element" args 45)
+	("ERA_element" args 46)("ERA_element" args 47)("ERA_element" args 48)("ERA_element" args 49)("ERA_element" args 50)
+	("ERA_element" args 51)("ERA_element" args 52)("ERA_element" args 53)("ERA_element" args 54)("ERA_element" args 55)
+	("ERA_element" args 56)("ERA_element" args 57)("ERA_element" args 58)("ERA_element" args 59)("ERA_element" args 60)
+	("ERA_element" args 61)("ERA_element" args 62)("ERA_element" args 63)("ERA_element" args 64)("ERA_element" args 65)
+	("ERA_element" args 66)("ERA_element" args 67)("ERA_element" args 68)("ERA_element" args 69)("ERA_element" args 70)
+	("ERA_element" args 71)("ERA_element" args 72)("ERA_element" args 73)("ERA_element" args 74)("ERA_element" args 75)
+	("ERA_element" args 76)("ERA_element" args 77)("ERA_element" args 78)("ERA_element" args 79)("ERA_element" args 80)
+	("ERA_element" args 81)("ERA_element" args 82)("ERA_element" args 83)("ERA_element" args 84)("ERA_element" args 85)
+	("ERA_element" args 86)("ERA_element" args 87)("ERA_element" args 88)("ERA_element" args 89)("ERA_element" args 90)
+	("ERA_element" args 91)("ERA_element" args 92)("ERA_element" args 93)("ERA_element" args 94)("ERA_element" args 95)
+	("ERA_element" args 96)("ERA_element" args 97)("ERA_element" args 98)("ERA_element" args 99)("ERA_element" args 100)
+	("ERA_element" args 101)("ERA_element" args 102)("ERA_element" args 103)("ERA_element" args 104)("ERA_element" args 105)
+	("ERA_element" args 106)("ERA_element" args 107)("ERA_element" args 108)("ERA_element" args 109)("ERA_element" args 110)
+	("ERA_element" args 111)("ERA_element" args 112)("ERA_element" args 113)("ERA_element" args 114)("ERA_element" args 115)
+	("ERA_element" args 116)("ERA_element" args 117)("ERA_element" args 118)("ERA_element" args 119)("ERA_element" args 120)
+	("ERA_element" args 121)("ERA_element" args 122)("ERA_element" args 123)("ERA_element" args 124)("ERA_element" args 125)
+	("ERA_element" args 126)("ERA_element" args 127)("ERA_element" args 128)("ERA_element" args 129)("ERA_element" args 130)
+	
+	("ERA_element" args 131)("ERA_element" args 132)("ERA_element" args 133)("ERA_element" args 134)("ERA_element" args 135)
+	("ERA_element" args 136)("ERA_element" args 137)("ERA_element" args 138)("ERA_element" args 139)("ERA_element" args 140)
+	("ERA_element" args 141)("ERA_element" args 142)("ERA_element" args 143)("ERA_element" args 144)("ERA_element" args 145)
+	("ERA_element" args 146)("ERA_element" args 147)("ERA_element" args 148)("ERA_element" args 149)("ERA_element" args 150)
+)
+(define "2gen_ERA"
+("ERA_element_2gen" args 1)("ERA_element_2gen" args 2)("ERA_element_2gen" args 3)("ERA_element_2gen" args 4)("ERA_element_2gen" args 5)
+("ERA_element_2gen" args 6)("ERA_element_2gen" args 7)("ERA_element_2gen" args 8)("ERA_element_2gen" args 9)("ERA_element_2gen" args 10)
+("ERA_element_2gen" args 11)("ERA_element_2gen" args 12)("ERA_element_2gen" args 13)("ERA_element_2gen" args 14)("ERA_element_2gen" args 15)
+("ERA_element_2gen" args 16)("ERA_element_2gen" args 17)("ERA_element_2gen" args 18)("ERA_element_2gen" args 19)("ERA_element_2gen" args 20)
+("ERA_element_2gen" args 21)("ERA_element_2gen" args 22)("ERA_element_2gen" args 23)("ERA_element_2gen" args 24)("ERA_element_2gen" args 25)
+("ERA_element_2gen" args 26)("ERA_element_2gen" args 27)("ERA_element_2gen" args 28)("ERA_element_2gen" args 29)("ERA_element_2gen" args 30)
+("ERA_element_2gen" args 31)("ERA_element_2gen" args 32)("ERA_element_2gen" args 33)("ERA_element_2gen" args 34)("ERA_element_2gen" args 35)
+("ERA_element_2gen" args 36)("ERA_element_2gen" args 37)("ERA_element_2gen" args 38)("ERA_element_2gen" args 39)("ERA_element_2gen" args 40)
+("ERA_element_2gen" args 41)("ERA_element_2gen" args 42)("ERA_element_2gen" args 43)("ERA_element_2gen" args 44)("ERA_element_2gen" args 45)
+("ERA_element_2gen" args 46)("ERA_element_2gen" args 47)("ERA_element_2gen" args 48)("ERA_element_2gen" args 49)("ERA_element_2gen" args 50)
+("ERA_element_2gen" args 51)("ERA_element_2gen" args 52)("ERA_element_2gen" args 53)("ERA_element_2gen" args 54)("ERA_element_2gen" args 55)
+("ERA_element_2gen" args 56)("ERA_element_2gen" args 57)("ERA_element_2gen" args 58)("ERA_element_2gen" args 59)("ERA_element_2gen" args 60)
+("ERA_element_2gen" args 61)("ERA_element_2gen" args 62)("ERA_element_2gen" args 63)("ERA_element_2gen" args 64)("ERA_element_2gen" args 65)
+("ERA_element_2gen" args 66)("ERA_element_2gen" args 67)("ERA_element_2gen" args 68)("ERA_element_2gen" args 69)("ERA_element_2gen" args 70)
+("ERA_element_2gen" args 71)("ERA_element_2gen" args 72)("ERA_element_2gen" args 73)("ERA_element_2gen" args 74)("ERA_element_2gen" args 75)
+("ERA_element_2gen" args 76)("ERA_element_2gen" args 77)("ERA_element_2gen" args 78)("ERA_element_2gen" args 79)("ERA_element_2gen" args 80)
+("ERA_element_2gen" args 81)("ERA_element_2gen" args 82)("ERA_element_2gen" args 83)("ERA_element_2gen" args 84)("ERA_element_2gen" args 85)
+("ERA_element_2gen" args 86)("ERA_element_2gen" args 87)("ERA_element_2gen" args 88)("ERA_element_2gen" args 89)("ERA_element_2gen" args 90)
+("ERA_element_2gen" args 91)("ERA_element_2gen" args 92)("ERA_element_2gen" args 93)("ERA_element_2gen" args 94)("ERA_element_2gen" args 95)
+("ERA_element_2gen" args 96)("ERA_element_2gen" args 97)("ERA_element_2gen" args 98)("ERA_element_2gen" args 99)("ERA_element_2gen" args 99)
+("ERA_element_2gen" args 100)
+("ERA_element_2gen" args 101)
+("ERA_element_2gen" args 102)
+("ERA_element_2gen" args 103)
+("ERA_element_2gen" args 104)
+("ERA_element_2gen" args 105)
+("ERA_element_2gen" args 106)
+("ERA_element_2gen" args 107)
+("ERA_element_2gen" args 108)
+("ERA_element_2gen" args 109)
+("ERA_element_2gen" args 110)
+("ERA_element_2gen" args 111)
+("ERA_element_2gen" args 112)
+("ERA_element_2gen" args 113)
+("ERA_element_2gen" args 114)
+("ERA_element_2gen" args 115)
+("ERA_element_2gen" args 116)
+("ERA_element_2gen" args 117)
+("ERA_element_2gen" args 118)
+("ERA_element_2gen" args 119)
+("ERA_element_2gen" args 120)
+("ERA_element_2gen" args 121)
+("ERA_element_2gen" args 122)
+("ERA_element_2gen" args 123)
+("ERA_element_2gen" args 124)
+("ERA_element_2gen" args 125)
+("ERA_element_2gen" args 126)
+("ERA_element_2gen" args 127)
+("ERA_element_2gen" args 128)
+("ERA_element_2gen" args 129)
+("ERA_element_2gen" args 130)
+("ERA_element_2gen" args 131)
+("ERA_element_2gen" args 132)
+("ERA_element_2gen" args 133)
+("ERA_element_2gen" args 134)
+("ERA_element_2gen" args 135)
+("ERA_element_2gen" args 136)
+("ERA_element_2gen" args 137)
+("ERA_element_2gen" args 138)
+("ERA_element_2gen" args 139)
+("ERA_element_2gen" args 140)
+("ERA_element_2gen" args 141)
+("ERA_element_2gen" args 142)
+("ERA_element_2gen" args 143)
+("ERA_element_2gen" args 144)
+("ERA_element_2gen" args 145)
+("ERA_element_2gen" args 146)
+("ERA_element_2gen" args 147)
+("ERA_element_2gen" args 148)
+("ERA_element_2gen" args 149)
+("ERA_element_2gen" args 150)
+)
+
+
+(define "nera"
+		{component "nera1" {tags "nera"}}
+		{component "nera2" {tags "nera"}}
+		{component "nera3" {tags "nera"}}
+		{component "nera4" {tags "nera"}}
+		{component "nera5" {tags "nera"}}
+		{component "nera6" {tags "nera"}}
+		{component "nera7" {tags "nera"}}
+		{component "nera8" {tags "nera"}}
+		{component "nera9" {tags "nera"}}
+		{component "nera10" {tags "nera"}}
+		{component "nera11" {tags "nera"}}
+		{component "nera12" {tags "nera"}}
+		{component "nera13" {tags "nera"}}
+		{component "nera14" {tags "nera"}}
+		{component "nera15" {tags "nera"}}
+		{component "nera16" {tags "nera"}}
+		{component "nera17" {tags "nera"}}
+		{component "nera18" {tags "nera"}}
+		{component "nera19" {tags "nera"}}
+		{component "nera20" {tags "nera"}}
+		{component "nera21" {tags "nera"}}
+		{component "nera22" {tags "nera"}}
+		{component "nera23" {tags "nera"}}
+		{component "nera24" {tags "nera"}}
+		{component "nera25" {tags "nera"}}
+		{component "nera26" {tags "nera"}}
+		{component "nera27" {tags "nera"}}
+		{component "nera28" {tags "nera"}}
+		{component "nera29" {tags "nera"}}
+		{component "nera30" {tags "nera"}}
+		{component "nera31" {tags "nera"}}
+		{component "nera32" {tags "nera"}}
+		{component "nera33" {tags "nera"}}
+		{component "nera34" {tags "nera"}}
+		{component "nera35" {tags "nera"}}
+		{component "nera36" {tags "nera"}}
+		{component "nera37" {tags "nera"}}
+		{component "nera38" {tags "nera"}}
+		{component "nera39" {tags "nera"}}
+		{component "nera40" {tags "nera"}}
+		{component "nera41" {tags "nera"}}
+		{component "nera42" {tags "nera"}}
+		{component "nera43" {tags "nera"}}
+		{component "nera44" {tags "nera"}}
+		{component "nera45" {tags "nera"}}
+		{component "nera46" {tags "nera"}}
+		{component "nera47" {tags "nera"}}
+		{component "nera48" {tags "nera"}}
+		{component "nera49" {tags "nera"}}
+		{component "nera50" {tags "nera"}}
+		{component "nera51" {tags "nera"}}
+		{component "nera52" {tags "nera"}}
+		{component "nera53" {tags "nera"}}
+		{component "nera54" {tags "nera"}}
+		{component "nera55" {tags "nera"}}
+		{component "nera56" {tags "nera"}}
+		{component "nera57" {tags "nera"}}
+		{component "nera58" {tags "nera"}}
+		{component "nera59" {tags "nera"}}
+		{component "nera60" {tags "nera"}}
+		{component "nera61" {tags "nera"}}
+		{component "nera62" {tags "nera"}}
+		{component "nera63" {tags "nera"}}
+		{component "nera64" {tags "nera"}}
+		{component "nera65" {tags "nera"}}
+		{component "nera66" {tags "nera"}}
+		{component "nera67" {tags "nera"}}
+		{component "nera68" {tags "nera"}}
+		{component "nera69" {tags "nera"}}
+		{component "nera70" {tags "nera"}}
+		{component "nera71" {tags "nera"}}
+		{component "nera72" {tags "nera"}}
+		{component "nera73" {tags "nera"}}
+		{component "nera74" {tags "nera"}}
+		{component "nera75" {tags "nera"}}
+		{component "nera76" {tags "nera"}}
+		{component "nera77" {tags "nera"}}
+		{component "nera78" {tags "nera"}}
+		{component "nera79" {tags "nera"}}
+		{component "nera80" {tags "nera"}}
+		{component "nera81" {tags "nera"}}
+		{component "nera82" {tags "nera"}}
+		{component "nera83" {tags "nera"}}
+		{component "nera84" {tags "nera"}}
+		{component "nera85" {tags "nera"}}
+		{component "nera86" {tags "nera"}}
+		{component "nera87" {tags "nera"}}
+		{component "nera88" {tags "nera"}}
+		{component "nera89" {tags "nera"}}
+		{component "nera90" {tags "nera"}}
+	{armor			
+		{setting "nera"	
+			{thickness %thickness}
+			{durability {blast {value 50}} {pierce {value 50}}}
+			{threshold {blast {koef 1}} {pierce {koef 0.166} 	{calibre 6}}}
+			{volumes "nera*"}			
+		}		
+	}	
+)
+
+(define "d_a_Kontakt1"		
+	("1gen_ERA")	      		
+	{armor			
+		{setting "d_a"				
+			{thickness 10}				
+			{durability {blast {koef 12}} {pierce {value 16}}}				
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}				
+			{volumes "d_a*"}			
+		}			
+		{setting "comp_d_a"	
+			{thickness 50}				
+			{durability {blast {koef 30}} 
+				{pierce {value 100}}
+			}				
+			{threshold {blast {koef 10}} {pierce {koef 20} 	{calibre 6}}}				
+			{volumes "comp_d_a*"}			
+		}		
+	}	
+)
+
+(define "d_a_Duplet"
+("ERA_element" args 1)("ERA_element" args 2)("ERA_element" args 3)("ERA_element" args 4)("ERA_element" args 5)
+("ERA_element" args 6)("ERA_element" args 7)("ERA_element" args 8)("ERA_element_2gen" args 9)("ERA_element_2gen" args 10)
+("ERA_element" args 11)("ERA_element" args 12)("ERA_element" args 13)("ERA_element" args 14)("ERA_element" args 15)
+("ERA_element" args 16)("ERA_element" args 17)("ERA_element_2gen" args 18)("ERA_element_2gen" args 19)("ERA_element_2gen" args 20)
+("ERA_element" args 21)("ERA_element" args 22)("ERA_element" args 23)("ERA_element" args 24)("ERA_element" args 25)
+("ERA_element" args 26)("ERA_element" args 27)("ERA_element" args 28)("ERA_element" args 29)("ERA_element" args 30)
+("ERA_element" args 31)("ERA_element" args 32)("ERA_element_2gen" args 33)("ERA_element_2gen" args 34)("ERA_element_2gen" args 35)
+("ERA_element_2gen" args 36)("ERA_element" args 37)("ERA_element" args 38)("ERA_element_2gen" args 39)("ERA_element_2gen" args 40)
+("ERA_element_2gen" args 41)("ERA_element_2gen" args 42)("ERA_element_2gen" args 43)("ERA_element_2gen" args 44)("ERA_element_2gen" args 45)
+("ERA_element_2gen" args 46)("ERA_element_2gen" args 47)("ERA_element_2gen" args 48)("ERA_element_2gen" args 49)("ERA_element_2gen" args 50)
+("ERA_element_2gen" args 51)("ERA_element_2gen" args 52)("ERA_element_2gen" args 53)("ERA_element_2gen" args 54)("ERA_element" args 55)
+("ERA_element" args 56)("ERA_element" args 57)("ERA_element" args 58)("ERA_element_2gen" args 59)("ERA_element_2gen" args 60)
+("ERA_element_2gen" args 61)("ERA_element_2gen" args 62)("ERA_element" args 63)("ERA_element" args 64)("ERA_element" args 65)
+("ERA_element" args 66)("ERA_element" args 67)("ERA_element" args 68)("ERA_element" args 69)("ERA_element" args 70)
+("ERA_element_2gen" args 71)("ERA_element_2gen" args 72)("ERA_element_2gen" args 73)("ERA_element_2gen" args 74)("ERA_element_2gen" args 75)
+("ERA_element_2gen" args 76)("ERA_element_2gen" args 77)("ERA_element" args 78)("ERA_element" args 79)("ERA_element" args 80)
+("ERA_element" args 81)("ERA_element" args 82)("ERA_element" args 83)("ERA_element" args 84)("ERA_element" args 85)
+("ERA_element" args 86)("ERA_element" args 87)("ERA_element" args 88)("ERA_element" args 89)("ERA_element" args 90)
+("ERA_element" args 91)("ERA_element" args 92)("ERA_element" args 93)("ERA_element" args 94)("ERA_element" args 95)
+("ERA_element" args 96)("ERA_element" args 97)("ERA_element" args 98)("ERA_element" args 99)("ERA_element" args 100)
+("ERA_element" args 101)("ERA_element" args 102)("ERA_element" args 103)("ERA_element" args 104)("ERA_element" args 105)
+("ERA_element" args 106)("ERA_element" args 107)("ERA_element" args 108)("ERA_element" args 109)("ERA_element" args 110)
+("ERA_element" args 111)("ERA_element" args 112)("ERA_element" args 113)("ERA_element" args 114)("ERA_element" args 115)
+("ERA_element" args 116)("ERA_element" args 117)("ERA_element" args 118)("ERA_element" args 119)("ERA_element" args 120)
+("ERA_element" args 121)("ERA_element" args 122)("ERA_element" args 123)("ERA_element" args 124)("ERA_element" args 125)
+("ERA_element" args 126)("ERA_element" args 127)("ERA_element" args 128)("ERA_element" args 129)("ERA_element" args 130)
+	{armor			
+		{setting "d_a"
+		{thickness 180}
+		{durability {blast {koef 12}} {pierce {value 75}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "d_a*"}
+	        }
+		{setting "comp_d_a"
+		{thickness 56}
+		{durability {blast {koef 12}} {pierce {value 120}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "comp_d_a*"}
+		}
+
+
+		{setting "d_a_side"	
+			{thickness 40}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes  "d_a33" "d_a34" "d_a35" "d_a36" "d_a37"
+                                  "d_a43" "d_a44" "d_a45" "d_a46" "d_a47"}
+		}
+		{setting "comp_d_a_side"
+			{thickness 290}
+			{durability {blast {koef 12}} {pierce {value 120}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "comp_d_a43" "comp_d_a44" "comp_d_a45" "comp_d_a46" "comp_d_a47"
+                                 "comp_d_a33" "comp_d_a34" "comp_d_a35" "comp_d_a36" "comp_d_a37"}
+		}
+	}
+
+)
+
+(define "d_a_Nizh"
+("2gen_ERA")
+	{armor			
+		{setting "d_a"
+		{thickness 172}
+		{durability {blast {koef 12}} {pierce {value 75}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "d_a*"}
+	        }
+		{setting "comp_d_a"
+		{thickness 56}
+		{durability {blast {koef 12}} {pierce {value 120}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "comp_d_a*"}
+		}
+
+	}
+
+)
+
+
+
+(define "d_a_Relict"
+	("2gen_ERA")	
+					
+	{armor
+		{setting "d_a"
+			{thickness 104}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}
+		}
+		{setting "comp_d_a"
+			{thickness 140}
+			{durability {blast {koef 30}} 
+				{pierce {value 100}}
+			}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}	
+			{volumes "comp_d_a*"}
+		}		
+	}	
+)
+
+(define "d_a_Relict3"
+	("2gen_ERA")	
+					
+	{armor
+		{setting "d_a"
+			{thickness 104}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}
+		}
+		{setting "comp_d_a"
+			{thickness 140}
+			{durability {blast {koef 30}} 
+				{pierce {value 100}}
+			}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}	
+			{volumes "comp_d_a*"}
+		}		
+	}	
+	
+)
+
+(define "d_a_Relict_side1"
+	("2gen_ERA")	
+	
+	{armor
+		{setting "d_a"
+			{thickness 104}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}
+		}
+		{setting "comp_d_a"
+			{thickness 140}
+			{durability {blast {koef 30}} 
+				{pierce {value 100}}
+			}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}	
+			{volumes "comp_d_a*"}
+		}		
+	}	
+	
+)
+
+(define "d_a_Relict_side2"
+	("2gen_ERA")	
+					
+	{armor
+		{setting "d_a"
+			{thickness 104}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}
+		}
+		{setting "comp_d_a"
+			{thickness 140}
+			{durability {blast {koef 30}} 
+				{pierce {value 100}}
+			}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}	
+			{volumes "comp_d_a*"}
+		}		
+	}		
+)
+
+
+(define "d_a_Relict_side3"
+	("2gen_ERA")	
+					
+	{armor
+		{setting "d_a"
+			{thickness 104}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}
+		}
+		{setting "comp_d_a"
+			{thickness 140}
+			{durability {blast {koef 30}} 
+				{pierce {value 100}}
+			}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}	
+			{volumes "comp_d_a*"}
+		}		
+	}	
+)
+
+(define "d_a_Relict_side4"
+	("2gen_ERA")	
+					
+	{armor
+		{setting "d_a"
+			{thickness 104}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}
+		}
+		{setting "comp_d_a"
+			{thickness 140}
+			{durability {blast {koef 30}} 
+				{pierce {value 100}}
+			}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}	
+			{volumes "comp_d_a*"}
+		}		
+	}	
+)
+
+(define "d_a_Kontakt5_side"
+	("2gen_ERA")	
+					
+	{armor
+		{setting "d_a"
+			{thickness 74}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}
+		}
+		{setting "comp_d_a"
+			{thickness 50}
+			{durability {blast {koef 30}} 
+				{pierce {value 100}}
+			}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}	
+			{volumes "comp_d_a*"}
+		}
+		{setting "d_a_half"	
+			{thickness 20}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+{volumes   "d_a32" "d_a33" "d_a34" "d_a35" "d_a36" "d_a37" "d_a38" "d_a39" "d_a40" "d_a41" "d_a42" "d_a43" "d_a44" "d_a45" "d_a46" "d_a47" "d_a48" "d_a49" "d_a50" "d_a51" "d_a52" "d_a53" "d_a54" "d_a55" "d_a56" "d_a57" "d_a58" "d_a59" "d_a60" "d_a61" "d_a62" "d_a63" "d_a95" "d_a96" "d_a97" "d_a98"}
+		}
+		{setting "comp_d_a_half"
+			{thickness 50}
+			{durability {blast {koef 12}} {pierce {value 120}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes  "Comp_d_a32" "Comp_d_a33" "Comp_d_a34" "Comp_d_a35" "Comp_d_a36" "Comp_d_a37" "Comp_d_a38" "Comp_d_a39" "Comp_d_a40" "Comp_d_a41" "Comp_d_a42" "Comp_d_a43" "Comp_d_a44" "Comp_d_a45" "Comp_d_a46" "Comp_d_a47" "Comp_d_a48" "Comp_d_a49" "Comp_d_a50" "Comp_d_a51" "Comp_d_a52" "Comp_d_a53" "Comp_d_a54" "Comp_d_a55" "Comp_d_a56" "Comp_d_a57" "Comp_d_a58" "Comp_d_a59" "Comp_d_a60" "Comp_d_a61" "Comp_d_a62" "Comp_d_a63" "Comp_d_a95" "Comp_d_a96" "Comp_d_a97" "Comp_d_a98"}
+		}
+		{setting "d_a_side"	
+			{thickness 92}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes  "d_a9" "d_a10" "d_a11" "d_a12" "d_a13" "d_a14" "d_a15" "d_a16" "d_a17" "d_a18" "d_a19" "d_a20" "d_a21" "d_a22" "d_a23" "d_a24"}
+		}
+		{setting "comp_d_a_side"
+			{thickness 200}
+			{durability {blast {koef 12}} {pierce {value 120}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "Comp_d_a9" "Comp_d_a10" "Comp_d_a11" "Comp_d_a12" "Comp_d_a13" "Comp_d_a14" "Comp_d_a15" "Comp_d_a16" "Comp_d_a17" "Comp_d_a18" "Comp_d_a19" "Comp_d_a20" "Comp_d_a21" "Comp_d_a22" "Comp_d_a23" "Comp_d_a24"}
+		}		
+	}	
+)
+
+(define "d_a_Relict_side"
+	("2gen_ERA")	
+					
+	{armor
+		{setting "d_a"
+			{thickness 104}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}
+		}
+		{setting "comp_d_a"
+			{thickness 140}
+			{durability {blast {koef 30}} 
+				{pierce {value 100}}
+			}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}	
+			{volumes "comp_d_a*"}
+		}		
+	}	
+		
+)
+
+
+(define "d_a_Relict_t80"
+	("1gen_ERA")	
+					
+	{armor
+		{setting "d_a"
+			{thickness 104}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}
+		}
+		{setting "comp_d_a"
+			{thickness 140}
+			{durability {blast {koef 30}} 
+				{pierce {value 100}}
+			}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}	
+			{volumes "comp_d_a*"}
+		}		
+	}	
+)
+
+
+
+(define "d_a_Kontakt5"
+	("1gen_ERA")
+	{armor			
+		{setting "d_a"
+		{thickness 74}
+		{durability {blast {koef 12}} {pierce {value 75}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "d_a*"}
+	}
+		{setting "comp_d_a"
+		{thickness 20}
+		{durability {blast {koef 12}} {pierce {value 75}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "comp_d_a*"}
+		}
+	}
+)
+
+(define "d_a_Kontakt5_arena"
+	("1gen_ERA")
+	{armor			
+		{setting "d_a"
+		{thickness 74}
+		{durability {blast {koef 12}} {pierce {value 75}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "d_a*"}
+	}
+		{setting "comp_d_a"
+		{thickness 20}
+		{durability {blast {koef 12}} {pierce {value 75}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "comp_d_a*"}
+		}
+		{setting "d_a_side"	
+			{thickness 94}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes  "d_a36" "d_a37" "d_a38" "d_a39" "d_a40"
+                                  "d_a41" "d_a42" "d_a43" "d_a44" "d_a45" "d_a46" "d_a47"}
+		}
+		{setting "comp_d_a_side"
+			{thickness 200}
+			{durability {blast {koef 12}} {pierce {value 120}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes  "comp_d_a36" "comp_d_a37" "comp_d_a38" "comp_d_a39" "comp_d_a40"
+                                  "comp_d_a41" "comp_d_a42" "comp_d_a43" "comp_d_a44" "comp_d_a45" "comp_d_a46"  "comp_d_a47"}
+		}		
+	}
+)
+
+(define "d_a_Kontakt5_ua"
+	("1gen_ERA")
+	{armor			
+		{setting "d_a"
+		{thickness 74}
+		{durability {blast {koef 12}} {pierce {value 75}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "d_a*"}
+	}
+		{setting "comp_d_a"
+		{thickness 20}
+		{durability {blast {koef 12}} {pierce {value 75}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "comp_d_a*"}
+		}
+		{setting "d_a_side"	
+			{thickness 94}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes  "d_a60" "d_a61" "d_a62" "d_a63" "d_a64"
+                                  "d_a65" "d_a66" "d_a67" "d_a68" "d_a69" "d_a70" "d_a71" "d_a72"}
+		}
+		{setting "comp_d_a_side"
+			{thickness 200}
+			{durability {blast {koef 12}} {pierce {value 120}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes  "comp_d_a60" "comp_d_a61" "comp_d_a62" "comp_d_a63" "comp_d_a64"
+                                  "comp_d_a65" "comp_d_a66" "comp_d_a67" "comp_d_a68" "comp_d_a69" "comp_d_a70" "comp_d_a71" "comp_d_a72"}
+		}
+		{setting "d_a_half"	
+			{thickness 10}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+{volumes  "d_a9" "d_a10" "d_a11" "d_a12" "d_a13"
+                                  "d_a14" "d_a15" "d_a16" "d_a17" "d_a18" "d_a19" "d_a20" "d_a21" "d_a22" "d_a23" "d_a24" "d_a25" "d_a26" "d_a27" "d_a28" "d_a29" "d_a30" "d_a31" "d_a32" "d_a33" "d_a34" "d_a35" "d_a36" "d_a37" "d_a38" "d_a39" "d_a40" "d_a41"}
+		}
+		{setting "comp_d_a_half"
+			{thickness 50}
+			{durability {blast {koef 12}} {pierce {value 120}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "Comp_d_a9" "Comp_d_a10" "Comp_d_a11" "Comp_d_a12" "Comp_d_a13"
+"Comp_d_a14" "Comp_d_a15" "Comp_d_a16" "Comp_d_a17" "Comp_d_a18" "Comp_d_a19" "Comp_d_a20" "Comp_d_a21" "Comp_d_a22" "Comp_d_a23" "Comp_d_a24" "Comp_d_a25" "Comp_d_a26" "Comp_d_a27" "Comp_d_a28" "Comp_d_a29" "Comp_d_a30" "Comp_d_a31" "Comp_d_a32" "Comp_d_a33" "Comp_d_a34" "Comp_d_a35" "Comp_d_a36" "Comp_d_a37" "Comp_d_a38" "Comp_d_a39" "Comp_d_a40" "Comp_d_a41"}
+		}		
+	}
+)
+
+
+(define "d_a_ARAT"
+	("1gen_ERA")
+	{armor			
+		{setting "d_a"
+		{thickness 40}
+		{durability {blast {koef 12}} {pierce {value 75}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "d_a*"}
+	}
+		{setting "comp_d_a"
+		{thickness 180}
+		{durability {blast {koef 12}} {pierce {value 75}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "comp_d_a*"}
+		}
+	}
+)
+
+
+(define "d_a_ERAWA"
+	("1gen_ERA")	;360mm
+	{armor
+		{setting "d_a"
+			{thickness 11}
+			{durability {blast {koef 12}} {pierce {value 16}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}
+
+		}
+		{setting "comp_d_a"
+			{thickness 56}
+			{durability {blast {koef 12}} {pierce {value 16}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "comp_d_a*"}
+
+		}
+	}
+)
+
+
+(define "d_a_Relict_bmpt"
+	("2gen_ERA")	
+					
+	{armor
+		{setting "d_a"
+			{thickness 92}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}
+		}
+		{setting "comp_d_a"
+			{thickness 200}
+			{durability {blast {koef 12}} {pierce {value 120}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "comp_d_a*"}
+		}
+	}
+)
+
+
+
+(define "FY-2"
+	("1gen_ERA")
+	{armor			
+		{setting "d_a"
+		{thickness 54}
+		{durability {blast {koef 12}} {pierce {value 75}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "d_a*"}
+	}
+		{setting "comp_d_a"
+		{thickness 20}
+		{durability {blast {koef 12}} {pierce {value 75}}}
+		{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+		{volumes "comp_d_a*"}
+		}
+	}
+)
+
+(define "d_a_FY4"
+		("2gen_ERA")
+	{armor
+		{setting "d_a"
+			{thickness 34}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}	
+		}
+		{setting "comp_d_a"	
+			{thickness 120}
+			{durability {blast {koef 12}} {pierce {value 75}}}	
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "comp_d_a*"}
+		}
+	}
+)
+
+(define "d_a_FY5"
+	("2gen_ERA")	;250 - 600, antitandem
+					
+	{armor
+		{setting "d_a"
+			{thickness 47}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a*"}
+		}
+		{setting "comp_d_a"
+			{thickness 126}
+			{durability {blast {koef 12}} {pierce {value 75}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "comp_d_a*"}
+		}
+	}
+)
+
+(define "d_a_BRAT"
+	("1gen_ERA")
+	{armor
+		{setting "d_a"
+			{thickness 40}
+			{durability {blast {koef 12}} {pierce {value 16}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a"}
+		}	
+		{setting "comp_d_a_front"
+			{thickness 75}	
+			{durability {blast {koef 12}} {pierce {value 120}}}	
+			{threshold {blast {koef 1}} {pierce {koef 0.15} {calibre 6}}}
+			{volumes
+				"comp_d_a31" "comp_d_a32" "comp_d_a33" "comp_d_a34" "comp_d_a35" "comp_d_a36" "comp_d_a37" "comp_d_a38" "comp_d_a39" "comp_d_a40"
+				"comp_d_a41" "comp_d_a42" "comp_d_a43" "comp_d_a44" "comp_d_a45" "comp_d_a46" "comp_d_a47" "comp_d_a48" "comp_d_a49" "comp_d_a50"	
+				"comp_d_a51" "comp_d_a52" "comp_d_a53" }
+			}	
+			{setting "comp_d_a_side"
+				{thickness 180}	
+					{durability {blast {koef 12}} {pierce {value 120}}}
+					{threshold {blast {koef 1}} {pierce {koef 0.15} {calibre 6}}}
+					{volumes
+						"comp_d_a1" "comp_d_a2" "comp_d_a3" "comp_d_a4" "comp_d_a5" "comp_d_a6" "comp_d_a7" "comp_d_a8" "comp_d_a9" "comp_d_a10"
+						"comp_d_a11" "comp_d_a12" "comp_d_a13" "comp_d_a14" "comp_d_a15" "comp_d_a16" "comp_d_a17" "comp_d_a18" "comp_d_a19" "comp_d_a20"	
+						"comp_d_a21" "comp_d_a22" "comp_d_a23" "comp_d_a24" "comp_d_a25" "comp_d_a26" "comp_d_a27" "comp_d_a28" "comp_d_a29" "comp_d_a30"
+						"comp_d_a54" "comp_d_a55" "comp_d_a56" "comp_d_a57" "comp_d_a58" "comp_d_a59" "comp_d_a50"
+						"comp_d_a61" "comp_d_a62" "comp_d_a63" "comp_d_a64" "comp_d_a65" "comp_d_a66" "comp_d_a67" "comp_d_a68" "comp_d_a69" "comp_d_a60"
+						"comp_d_a71" "comp_d_a72" "comp_d_a73" "comp_d_a74" "comp_d_a75" "comp_d_a76" "comp_d_a77" "comp_d_a78" "comp_d_a79" "comp_d_a70"
+						"comp_d_a81" "comp_d_a82" "comp_d_a83" "comp_d_a84" "comp_d_a85" "comp_d_a86" "comp_d_a87"}
+			}	
+	}	
+)
+
+(define "d_a_BRAT_ampv"
+	("1gen_ERA")
+	{armor
+		{setting "d_a"
+			{thickness 40}
+			{durability {blast {koef 12}} {pierce {value 16}}}
+			{threshold {blast {koef 1}} {pierce {koef 2} 	{calibre 6}}}
+			{volumes "d_a"}
+		}	
+		{setting "comp_d_a"
+			{thickness 75}	
+			{durability {blast {koef 12}} {pierce {value 120}}}	
+			{threshold {blast {koef 1}} {pierce {koef 0.15} {calibre 6}}}
+            {volumes "comp_d_a"}
+			}		
+	}	
+)
+
+
+{Volume "tank_crit_component"
+		{box 8 8 8}
+		{Bone "basis"}
+		{Position 24 0 18}
+							
+}
+
+{Volume "panel_engine_connector"
+		{box 6 6 6}
+		{Bone "basis"}
+		{Position -28 10 18}
+							
+}
+
+
+{volume "tank_crit_component" {thickness 10} {component "tank_crit_component"}}
+{component "tank_crit_component" {RepairTime 5}  {RepairOrder 2}}	
+
+
+{volume "panel_engine_connector" {thickness 10} {component "panel_engine_connector"}}
+{component "panel_engine_connector" {RepairTime 5}  {RepairOrder 2}}	
+	
+(define "shield_ajax"
+	{armor
+		{setting "shieldl"
+			{thickness 5}
+			{durability {blast {value 100}} {pierce  {koef 999}}}
+			{threshold {blast {value 10}}}
+			{volumes "shieldl1" "shieldl2" "shieldr2"}
+		}
+		{setting "shieldh"
+			{thickness 16}		
+			{durability {blast {value 1000}} {pierce {value 1000}}}
+			{threshold {blast {value 90}}{pierce {value 1000}}}
+			{volumes  "shieldl3" "shieldr3" "shieldl4" "shieldr4" "shieldl5" "shieldr5" "shieldl6" "shieldr6"
+			 "shieldl7" "shieldr7" "shieldl8" "shieldr8" "shieldl9" "shieldr9" "shieldl10" "shieldr10"}
+		}
+	}
+)
+	
+	
+(define "armor_turret_ring"
+	{volume "%volume" {thickness %thickness} {component "turret_ring"}}
+	{armor
+		{setting "%volume"
+			{thickness %thickness %thickness %thickness 1}		
+			{durability {blast {value 50}} {pierce {koef 999}}}
+			{threshold {blast {koef 2} {value 50}}}
+			{volumes "%volume*"}
+		}
+	}
+
+)
+
+(define "armor_btr"		;for IFV-level armor about 25mm - Bradly, BMP-1,2,3, M113.
+    ;("armor_tank" t(20) track_b(10) bod(%body) tur(%turret) en(12) gun(15) stab(25) dur(1) thr(1) pierce_dur(999) dur_value(12) thr_value(10))
+	("armor_tank" t(20) track_b(10) bod(%body) tur(%turret) en(12) gun(15) stab(12) dur(1) thr(1) pierce_dur(999) dur_value(20) thr_value(7))
+    ("components_tank" repair(1.5))
+	{sensor
+		{visor "main"
+			{vision "tank_main-l"}
+		}
+	}
+
+)
+
+
+(define "armor_heavy_k2"	    
+    ("components_tank" repair(3))	 
+    {armor	                                    		
+        ("aas_armor_components" stab(60))	        
+        {setting "track"	            
+            {thickness 35}	            
+            {durability {blast {koef (* 0.9 0.9)} } {pierce {value 1000} } }	            
+            {threshold {blast {value 35} }  }	            
+            {volumes "track*"}	            
+            {whole_wound}	        
+        }	        
+        {setting "turretside"	            
+            {thickness %turretside}	            
+            {durability  {pierce {koef 999} } {blast {value 130}  }  }	             
+            {threshold	                {blast  {koef  2} {value 45} }  }	            
+            {volumes "turret1" "turret2"}	        
+        }     
+        {setting "turretmain"	            
+            {thickness %turretmain}	            
+            {durability  {pierce {koef 999} } {blast {value 130}  }  }	             
+            {threshold	                {blast  {koef  2} {value 30} }  }	            
+            {volumes "turret"}	        
+        }	    
+        {setting "turret3"	            
+            {thickness %turret3}	            
+            {durability  {pierce {koef 999} } {blast {value 130}  }  }	             
+            {threshold	                {blast  {koef  2} {value 30} }  }	            
+            {volumes "turret3"}	        
+        }	    
+        {setting "gun"	            
+            {thickness 50}	            
+            {durability {blast  {value 40}} {pierce {value 20}}}	            
+            {threshold {blast {value 8} } {pierce {value 8} }}	            
+            {volumes "gun*"}	        
+        }	        
+        {setting "body1"	            
+            {thickness %body1}	            
+            {durability {blast {koef 2} {value 180} } {pierce {koef 999} } }	            
+            {threshold	                {blast  {koef 2} {value 45} }  }	            
+            {volumes "body1"}	        
+        }	        
+        {setting "body2"	            
+            {thickness %body2}	            
+            {durability {blast {koef 2} {value 180} } {pierce {koef 999} } }	            
+            {threshold	                {blast  {koef 2} {value 45} }  }	            
+            {volumes "body2"}	        
+        }	
+        {setting "engine"	            
+            {thickness 40}	            
+            {durability {blast {koef 1}  } }	            
+            {threshold  {blast  {koef 0.8} }  }	            
+            {volumes "engine*"}	        
+        }	   
+    }	    
+    {sensor {visor "main" {vision "tank_main-h"} } }	
+)
+{placer
+	{place "black_target_hold"
+		{entity "black_target_holder"}
+		{linkbone "missile_aim_point_bone"}
+		{turnOff {targetable}{sensor}{shadow}}
+		{openForCrush}
+		{obstacle disable}
+	}
+}

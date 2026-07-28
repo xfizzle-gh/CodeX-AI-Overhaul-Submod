@@ -1767,6 +1767,7 @@
 	{Link 0x800f {0x2186 "seat01"}}
 	{Link 0x8c12 {0x4349 "4"}}
 	{Link 0x880a {0x2188 "seat01"}}
+	(include "../allied_support_templates.inc")
 	{Tags "bare" 0xc4}
 	{Tags "fpc4" 0x8014}
 	{Tags "fpc1" 0xc001}
@@ -3346,7 +3347,7 @@
 					}
 				}
 			}
-			(include "../allied_support_ownership_probe.inc")
+			(include "../allied_support_waves.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

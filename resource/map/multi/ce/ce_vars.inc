@@ -1,6 +1,7 @@
 ; Vanilla var includes
 (include "/map/multi/dcg_vars.inc")
 
+
 ;============ CE MECHANICS VARIABLES ========================================
 			{"ai_sabotage"}			
 			{"enable_ce_radio_mechanic"}
@@ -15,6 +16,13 @@
 
 ;============ CE VARIABLES ========================================
 			{"defense_level"}
+			{"allied_support_initialized"}
+			{"allied_support_waves_left"}
+			{"allied_support_wave_size"}
+			{"allied_support_target"}
+			{"allied_support_busy"}
+			{"allied_support_wave_num"}
+
 			{"max_ai_defender_inf_per_flag_count"}
 			{"max_ai_defender_emplacement_total_count"}
 			{"max_ai_inf_def_x5_count"}

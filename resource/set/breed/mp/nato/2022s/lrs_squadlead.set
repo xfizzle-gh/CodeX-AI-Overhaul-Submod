@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "usa_ocp6"}
+	{portrait "lrs"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head wendy_ex_4}
+		{body "jpc_2"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("paratrooper_lrs")
+		("at_rank_5")	
+		("medic")		
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "fn_licc" filled}
+		{item "ammo licc_ammo" 180}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "m72a7law weapon" 2 filled}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "us_backpack_3"}				
+
+		{item "laser_designator" filling "flare_usa artillery_155" 2}		
+				{item "benelli_m4" filling "ammo shotgun" 7}
+		{item "ammo shotgun" 21}		
+		{in_hands 0}
+	}
+}

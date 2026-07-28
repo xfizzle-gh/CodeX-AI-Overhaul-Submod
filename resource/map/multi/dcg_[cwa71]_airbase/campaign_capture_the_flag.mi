@@ -3258,6 +3258,7 @@
 	}
 	{Link 0x8016 {0x382f "8"}}
 	{Link 0x8018 {0x382f "4"}}
+	(include "../allied_support_templates.inc")
 	{Tags "spawn_b" "b2" 0x8009}
 	{Tags "spawn_b" "b1" 0x800a}
 	{Tags "spawn_b" "b3" 0x800b}
@@ -5664,7 +5665,7 @@
 					}
 				}
 			}
-			(include "../allied_support_ownership_probe.inc")
+			(include "../allied_support_waves.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
