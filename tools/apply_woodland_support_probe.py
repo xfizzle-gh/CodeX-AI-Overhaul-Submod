@@ -39,8 +39,14 @@ mission = replace_once(
 WOODLAND.write_text(mission, encoding="utf-8")
 
 
-def selector(tag: str, *, inside_gamezone: bool = True) -> str:
+def selector(
+    tag: str,
+    *,
+    inside_gamezone: bool = True,
+    exclude_hidden: bool = True,
+) -> str:
     zone_part = '''\n\t\t\t\t\t\t\t\t\t{zone\n\t\t\t\t\t\t\t\t\t\t{zone "gamezone"}\n\t\t\t\t\t\t\t\t\t}''' if inside_gamezone else ""
+    hidden_part = '''\n\t\t\t\t\t\t\t\t\t{tag\n\t\t\t\t\t\t\t\t\t\t{tag hidden}\n\t\t\t\t\t\t\t\t\t}''' if exclude_hidden else ""
     return f'''\t\t\t\t\t\t{{selector
 \t\t\t\t\t\t\t{{source advanced}}
 \t\t\t\t\t\t\t{{group
@@ -69,15 +75,13 @@ def selector(tag: str, *, inside_gamezone: bool = True) -> str:
 \t\t\t\t\t\t\t\t\t}}
 \t\t\t\t\t\t\t\t\t{{state
 \t\t\t\t\t\t\t\t\t\t{{state user_control}}
-\t\t\t\t\t\t\t\t\t}}
-\t\t\t\t\t\t\t\t\t{{tag
-\t\t\t\t\t\t\t\t\t\t{{tag hidden}}
-\t\t\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t\t\t\t}}{hidden_part}
 \t\t\t\t\t\t\t\t}}
 \t\t\t\t\t\t\t}}
 \t\t\t\t\t\t}}'''
 
 
+clone_selector = selector("allied_support_probe_source", exclude_hidden=False)
 fresh_selector = selector("allied_wave_fresh")
 case_blocks: list[str] = []
 for player_id in range(1, 17):
@@ -212,11 +216,12 @@ probe = f'''; Woodland-only ownership proof for engine-created DefenderBot.
 \t\t\t\t\t}}
 \t\t\t\t\t; The in-game clones retain the inherited marker. Promote only those clones.
 \t\t\t\t\t{{"entity_state"
-{selector('allied_support_probe_source')}
+{clone_selector}
 \t\t\t\t\t\t{{tag_add allied_wave_fresh}}
 \t\t\t\t\t\t{{tag_add allied_support_probe}}
 \t\t\t\t\t\t{{tag_add _def}}
 \t\t\t\t\t\t{{tag_add _ai_defender}}
+\t\t\t\t\t\t{{tag_remove hidden}}
 \t\t\t\t\t\t{{tag_remove allied_support_probe_source}}
 \t\t\t\t\t}}
 \t\t\t\t\t{{"switch"
@@ -276,7 +281,9 @@ class WoodlandSupportOwnershipProbeTests(unittest.TestCase):
         )
         cwa_root = ROOT / "resource/map/multi"
         other_hits = []
-        for path in cwa_root.glob("dcg_[cwa71]_*/campaign_capture_the_flag.mi"):
+        for path in cwa_root.rglob("campaign_capture_the_flag.mi"):
+            if "dcg_[cwa71]_" not in path.parent.name:
+                continue
             if path != WOODLAND and "allied_support_ownership_probe.inc" in path.read_text(encoding="utf-8"):
                 other_hits.append(path)
         self.assertEqual(other_hits, [])
@@ -320,6 +327,19 @@ class WoodlandSupportOwnershipProbeTests(unittest.TestCase):
         self.assertNotIn('{tag_add _bot}', self.probe)
         self.assertNotIn('{tag _bot}', self.probe)
 
+    def test_mission_and_probe_delimiters_are_balanced(self) -> None:
+        for text in (self.mission, self.probe):
+            self.assertEqual(text.count("{"), text.count("}"))
+            self.assertEqual(text.count("("), text.count(")"))
+
+    def test_clones_are_unhidden_before_runtime_selection(self) -> None:
+        self.assertIn("{tag_remove hidden}", self.probe)
+        promote = self.probe.index("{tag_add allied_wave_fresh}")
+        unhide = self.probe.index("{tag_remove hidden}", promote)
+        ownership = self.probe.index("{operation set}", unhide)
+        self.assertLess(promote, unhide)
+        self.assertLess(unhide, ownership)
+
     def test_probe_is_one_shot_not_the_final_wave_loop(self) -> None:
         self.assertEqual(self.probe.count('{"placement"'), 1)
         self.assertNotIn('4 * 60', self.probe)
@@ -338,7 +358,7 @@ on:
   pull_request:
     paths:
       - "resource/map/multi/allied_support_ownership_probe.inc"
-      - "resource/map/multi/dcg_[cwa71]_woodland/campaign_capture_the_flag.mi"
+      - "resource/map/multi/dcg_[[]cwa71]_woodland/campaign_capture_the_flag.mi"
       - "tests/test_woodland_support_probe.py"
       - ".github/workflows/woodland-support-probe-guard.yml"
   push:
@@ -346,7 +366,7 @@ on:
       - main
     paths:
       - "resource/map/multi/allied_support_ownership_probe.inc"
-      - "resource/map/multi/dcg_[cwa71]_woodland/campaign_capture_the_flag.mi"
+      - "resource/map/multi/dcg_[[]cwa71]_woodland/campaign_capture_the_flag.mi"
       - "tests/test_woodland_support_probe.py"
       - ".github/workflows/woodland-support-probe-guard.yml"
 
