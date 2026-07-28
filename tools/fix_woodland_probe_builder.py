@@ -6,6 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TARGET = ROOT / "tools/apply_woodland_support_probe.py"
 SELF = ROOT / "tools/fix_woodland_probe_builder.py"
 WORKFLOW = ROOT / ".github/workflows/fix-woodland-probe-builder.yml"
+ERROR_LOG = ROOT / "docs/woodland_probe_builder_error.txt"
 
 
 def replace_once(source: str, old: str, new: str, label: str) -> str:
@@ -72,11 +73,13 @@ source = replace_once(
     "{clone_selector}",
     "clone promotion selector",
 )
-source = replace_once(
-    source,
-    r'\t\t\t\t\t\t{{tag_add _ai_defender}}\n\t\t\t\t\t\t{{tag_remove allied_support_probe_source}}',
-    r'\t\t\t\t\t\t{{tag_add _ai_defender}}\n\t\t\t\t\t\t{{tag_remove hidden}}\n\t\t\t\t\t\t{{tag_remove allied_support_probe_source}}',
-    "explicit hidden removal",
+hidden_marker = r'\t\t\t\t\t\t{{tag_add _ai_defender}}'
+hidden_index = source.index(hidden_marker) + len(hidden_marker)
+source = (
+    source[:hidden_index]
+    + "\n"
+    + r'\t\t\t\t\t\t{{tag_remove hidden}}'
+    + source[hidden_index:]
 )
 source = replace_once(
     source,
@@ -115,5 +118,6 @@ guard_tail = guard_tail.replace(
 )
 source = head + guard_tail
 TARGET.write_text(source, encoding="utf-8")
+ERROR_LOG.unlink(missing_ok=True)
 SELF.unlink()
 WORKFLOW.unlink()
