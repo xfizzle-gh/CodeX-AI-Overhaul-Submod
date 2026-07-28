@@ -118,7 +118,7 @@
 	{score_factor 0.05}
 )
 {"mp/nato/2022s/nato_vehicleman"		("nato_supporter" side(nato)) {cost 10.0}} ; MP2 
-{"mp/nato/2022s/acav_vehicleman"		("nato_supporter" side(nato)) {cost 10.5}} ; MP2 
+{"mp/nato/2022s/usarmy_vehicleman"		("nato_supporter" side(nato)) {cost 10.5}} ; MP2 
 {"mp/nato/2022s/usmc_vehicleman"		("nato_supporter" side(nato)) {cost 10.5}} ; MP2 
 {"mp/nato/2022s/usmc_pilot"				("nato_supporter" side(nato)) {cost 10.5}} ; MP2
 {"mp/nato/2022s/ger_vehicleman"		("nato_supporter" side(nato)) {cost 10.5}} ; MP2 

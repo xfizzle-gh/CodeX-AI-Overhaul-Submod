@@ -95,7 +95,7 @@ Purchases["conquest.nato"] = {
 
 				
 			--Tanks
-			                    {priority = 1.0, type = {"Tank", "Class2",}, unit = "t_55m_fin"},
+			                    {priority = 3.0, type = {"Tank", "Class2",}, unit = "t_55m_fin"},
                                 {priority = 1.0, type = {"Tank", "Class2",}, unit = "m1128"},
                                 {priority = 1.5, type = {"Tank", "Class2",}, unit = "leopard_1a5_n"},
                                 {priority = 1.0, type = {"Tank", "Class2",}, unit = "leopard_c2_mexas"},

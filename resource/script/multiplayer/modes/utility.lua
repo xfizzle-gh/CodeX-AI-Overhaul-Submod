@@ -1,5 +1,6 @@
 -- Utility variables for various game modes
 
+require([[/script/multiplayer/logic/main]])
 printDebug = true
 printTempDebug = false
 

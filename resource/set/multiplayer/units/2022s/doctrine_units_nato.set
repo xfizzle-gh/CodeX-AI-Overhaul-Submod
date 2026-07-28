@@ -145,12 +145,12 @@
 }
 
 {"squad_gb3_mech_rifle_fv510_milan(nato)"
-	("mp_vehicle" side(nato) period(2022s) d(modern_nato_eu) vehicle(warrior_milan) crew(gb_vehicleman:3))
+	("mp_vehicle" side(nato) period(2022s) d(modern_nato_eu) vehicle(warrior) crew(gb_vehicleman:3))
 }
 
 ; Crew-only normal-MP armor.
 {"squad_pz10_leopard2a6(nato)"
-	("mp_tank" side(nato) period(2022s) d(modern_nato_eu) vehicle(leopard_2a6) crew(pzgd_vehicleman:4))
+	("mp_tank" side(nato) period(2022s) d(modern_nato_eu) vehicle(leopord_2a6_n) crew(pzgd_vehicleman:4))
 }
 
 {"squad_gb3_tank_challenger(nato)"

@@ -292,9 +292,9 @@ c1(usmc_teamlead:2) c2(usmc_mg:1) c3(usmc_rifleman:3) c4(usmc_m2hb_crew:1) c5(us
 
 
 
-("squad_with4types_conquest" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_tank1_fireteam) 	c1(1ad_squadlead:1) c2(1ad_teamlead:2) c3(1ad_autorifle:2) c4(1ad_rifleman:1))
+("squad_with6types_conquest" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_tank1_fireteam) 	c1(1ad_squadlead:1) c2(1ad_teamlead:1) c3(1ad_autorifle:2) c4(1ad_rifleman:1) c5(1ad_grenadier:1) c6(1ad_medic:1))
 
-("squad_with4types_conquest" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_tank1_fireteam_javelin) 	c1(1ad_squadlead:1) c2(1ad_teamlead:2) c3(1ad_autorifle:2) c4(1ad_javelin:1))
+("squad_with6types_conquest" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_tank1_fireteam_javelin) 	c1(1ad_squadlead:1) c2(1ad_teamlead:1) c3(1ad_autorifle:2) c4(1ad_javelin:1) c5(1ad_grenadier:1) c6(1ad_medic:1))
 
 
 ("squad_with3types_conquest" side(nato) period(2022s) min_stage(1) max_stage(99) name(squad_tank1_rifle_mg) 	c1(1ad_teamlead:2) c2(1ad_mg:2) c3(1ad_grenadier:2))
@@ -571,7 +571,7 @@ c1(usmc_teamlead:2) c2(usmc_mg:1) c3(usmc_rifleman:3) c4(usmc_m2hb_crew:1) c5(us
 	("squad_vehicle8" period(2022s) min_stage(15) max_stage(99) side(nato) vehicle(boxer_mgun_gb) cw(0) cp(4) crew1(gb_vehicleman:3) crew2(gb_squadlead:1) crew3(gb_teamleader:1) crew4(gb_grenadier:1) crew5(gb_rifleman:1) crew6(gb_mg:1) crew7(gb_marksman:1) crew8(gb_medic:1))
 }
 {"squad_gb3_mech_rifle_fv510_milan(nato)"
-	("squad_vehicle8" period(2022s) min_stage(15) max_stage(99) side(nato) vehicle(warrior_milan) cw(0) cp(4) crew1(gb_vehicleman:3) crew2(gb_squadlead:1) crew3(gb_teamleader:1) crew4(gb_grenadier:1) crew5(gb_rifleman:1) crew6(gb_mg:1) crew7(gb_marksman:1) crew8(gb_medic:1))
+	("squad_vehicle8" period(2022s) min_stage(15) max_stage(99) side(nato) vehicle(warrior) cw(0) cp(4) crew1(gb_vehicleman:3) crew2(gb_squadlead:1) crew3(gb_teamleader:1) crew4(gb_grenadier:1) crew5(gb_rifleman:1) crew6(gb_mg:1) crew7(gb_marksman:1) crew8(gb_medic:1))
 }
 
 
@@ -683,7 +683,7 @@ c1(usmc_teamlead:2) c2(usmc_mg:1) c3(usmc_rifleman:3) c4(usmc_m2hb_crew:1) c5(us
 	{action "airstrike:paratank_trigger"}
 }
 
-{"mq9_nato_rec"
+{"mq9_nato_recon"
 	("squad_vehicle" period(2022s) min_stage(12) max_stage(99) side(nato) vehicle(mq9_nato_recon) crew(nato_pilot:0) cw(0) cp(10))
 	{cost 3}
 	{squad_cost_factor 0}
@@ -828,7 +828,7 @@ c1(usmc_teamlead:2) c2(usmc_mg:1) c3(usmc_rifleman:3) c4(usmc_m2hb_crew:1) c5(us
 }
 
 {"m1097_avenger(nato)"
-	("squad_vehicle" period(2022s) min_stage(15) max_stage(99) side(nato) vehicle(rm_70) cw(0) cp(4) crew(usmc_vehicleman:4))
+	("squad_vehicle" period(2022s) min_stage(15) max_stage(99) side(nato) vehicle(m1097_avenger) cw(0) cp(4) crew(usmc_vehicleman:3))
 }
 
 
@@ -1049,6 +1049,11 @@ c1(usmc_teamlead:2) c2(usmc_mg:1) c3(usmc_rifleman:3) c4(usmc_m2hb_crew:1) c5(us
 	{cost 550} {not_for_player_sale 1}
 }
 
+{"m3a3"
+	("vehicle" period(2022s) min_stage(10) max_stage(99) side(nato) crew(usarmy_vehicleman:3) cw(0) cp(17))
+	{cost 600} {not_for_player_sale 1}
+}
+
 {"ajax"
 	("vehicle" period(2022s) min_stage(10) max_stage(99) side(nato) crew(gb_crew:3) cw(0) cp(17))
 	{cost 500} {not_for_player_sale 1}
@@ -1078,6 +1083,11 @@ c1(usmc_teamlead:2) c2(usmc_mg:1) c3(usmc_rifleman:3) c4(usmc_m2hb_crew:1) c5(us
 {"m10_booker"
 	("vehicle" period(2022s) min_stage(15) max_stage(99) side(nato) crew(usarmy_vehicleman:4) cw(0) cp(16))
 	{cost 550} {not_for_player_sale 1}
+}
+
+{"t72a_n"
+	("vehicle" period(2022s) min_stage(15) max_stage(99) side(nato) crew(usarmy_vehicleman:3) cw(0) cp(17))
+	{cost 800} {not_for_player_sale 1}
 }
 
 {"cv_9030"
