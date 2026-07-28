@@ -1,0 +1,43 @@
+name: Apply woodland DefenderBot ownership probe
+
+on:
+  pull_request:
+    paths:
+      - "tools/apply_woodland_support_probe.py"
+      - ".github/workflows/apply-woodland-support-probe.yml"
+  push:
+    branches:
+      - prototype/woodland-defenderbot-ownership
+    paths:
+      - "tools/apply_woodland_support_probe.py"
+      - ".github/workflows/apply-woodland-support-probe.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply-probe:
+    if: github.event_name == 'pull_request' || github.event.head_commit.message != 'Add woodland DefenderBot ownership probe'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out prototype branch
+        uses: actions/checkout@v6
+        with:
+          ref: prototype/woodland-defenderbot-ownership
+          fetch-depth: 0
+
+      - name: Apply guarded one-shot prototype
+        run: |
+          rm -f docs/woodland_probe_builder_error.txt
+          python tools/apply_woodland_support_probe.py
+
+      - name: Run woodland source guard
+        run: python -m unittest tests/test_woodland_support_probe.py
+
+      - name: Commit final prototype
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add woodland DefenderBot ownership probe"
+          git push origin HEAD:prototype/woodland-defenderbot-ownership
