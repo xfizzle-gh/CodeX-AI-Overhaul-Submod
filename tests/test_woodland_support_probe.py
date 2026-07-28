@@ -4,6 +4,7 @@ import re
 import unittest
 from pathlib import Path
 
+# Covers every CWA Dynamic Conquest mission currently owned by this repository.
 ROOT = Path(__file__).resolve().parents[1]
 MAP_NAMES = [
     "dcg_[cwa71]_airbase",
