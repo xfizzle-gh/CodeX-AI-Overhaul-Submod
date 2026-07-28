@@ -1,8 +1,17 @@
 ; One-shot diagnostic proof for allied DefenderBot reinforcements.
-; This is intentionally not a production wave system.
-; It clones one CE-prepared hidden cmp_def human to the universal map waypoint "0".
-; No gamezone filter is used for promotion, ownership, or AI orders.
-; On-screen timers identify the last stage reached.
+; Not a production wave system.
+;
+; Sources CE-reserved templates (allied_support_template / not_delete),
+; clones one human to flag waypoint "1" (fpc1), promotes only in-zone clones,
+; assigns DefenderBot ownership, AI control, advance to fpc1.
+;
+; On-screen timers:
+;   SUPPORT 1 ARMED
+;   SUPPORT 2 SOURCE CHECK RAN / 2A SOURCE FOUND
+;   SUPPORT 3 CLONE ACTION RAN / 3A CLONE IN ZONE
+;   SUPPORT 4 PROMOTE ACTION RAN / 4A PROMOTED FOUND
+;   SUPPORT 5 OWNER ACTION RAN / 5A OWNER FOUND
+;   SUPPORT 6 AI ORDER SENT
 
 			{"allied_support/diagnostic_once"
 				{condition
@@ -17,6 +26,30 @@
 					{"timer" {time 8} {title "SUPPORT 1 ARMED"}}
 					{"delay" {time 10}}
 
+					; Prefer CE-reserved template pool (survives balance delete).
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag {tag allied_support_template}}
+									{tag {tag not_delete}}
+								}
+								{include
+									{prop {prop human}}
+								}
+								{exclude
+									{zone {zone "gamezone"}}
+									{state {state linked}}
+									{state {state user_control}}
+									{state {state dead}}
+								}
+							}
+							{amount 1}
+						}
+						{tag_add allied_support_diag_source}
+					}
+					; Fallback: any remaining off-zone cmp_def human.
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -24,12 +57,13 @@
 								{select {tag {tag cmp_def}}}
 								{include
 									{prop {prop human}}
-									{tag {tag hidden}}
 								}
 								{exclude
 									{zone {zone "gamezone"}}
 									{state {state linked}}
 									{state {state user_control}}
+									{state {state dead}}
+									{tag {tag allied_support_diag_source}}
 								}
 							}
 							{amount 1}
@@ -40,6 +74,7 @@
 					{"timer" {time 8} {title "SUPPORT 2 SOURCE CHECK RAN"}}
 					{"delay" {time 1}}
 
+					; Clone to CE flag waypoint 1 (fpc1) — known in-fight point.
 					{"placement"
 						{selector
 							{source advanced}
@@ -49,23 +84,38 @@
 							}
 							{amount 1}
 						}
-						{target_waypoint "0"}
+						{target_waypoint "1"}
 						{clone}
 					}
 					{"timer" {time 8} {title "SUPPORT 3 CLONE ACTION RAN"}}
 					{"delay" {time 1}}
-					{"trigger" {name "allied_support/diag_clone_found"}}
 
+					; Mark only in-zone copies (clone), never the off-zone template.
 					{"entity_state"
-						{selector {tag allied_support_diag_source} {type human}}
+						{selector
+							{source advanced}
+							{group
+								{select {tag {tag allied_support_diag_source}}}
+								{include
+									{prop {prop human}}
+									{zone {zone "gamezone"}}
+								}
+								{exclude
+									{state {state dead}}
+								}
+							}
+						}
 						{tag_add allied_wave_fresh}
 						{tag_add allied_support}
 						{tag_add cmp_def}
 						{tag_add _def}
 						{tag_add _ai_defender}
 						{tag_remove hidden}
+						{tag_remove allied_support_template}
+						{tag_remove not_delete}
 						{inactive off}
 					}
+					{"trigger" {name "allied_support/diag_clone_found"}}
 					{"timer" {time 8} {title "SUPPORT 4 PROMOTE ACTION RAN"}}
 					{"delay" {time 1}}
 					{"trigger" {name "allied_support/diag_promoted_found"}}
@@ -184,9 +234,19 @@
 
 			{"allied_support/diag_source_found"
 				{condition
-					{type entities}
-					{selector {tag allied_support_diag_source} {type human}}
-					{count {op ">="} {value 1}}
+					{terms
+						{"1.entities"
+							{selector
+								{ignore_captured_by_user 0}
+								{tag allied_support_diag_source}
+								{type human}
+							}
+							{count
+								{op ">"}
+								{value 0}
+							}
+						}
+					}
 				}
 				{actions
 					{"timer" {time 12} {title "SUPPORT 2A SOURCE FOUND"}}
@@ -195,20 +255,53 @@
 
 			{"allied_support/diag_clone_found"
 				{condition
-					{type entities}
-					{selector {tag allied_support_diag_source} {type human}}
-					{count {op ">="} {value 2}}
+					{terms
+						{"1.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag allied_wave_fresh}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+										{zone
+											{zone "gamezone"}
+										}
+									}
+								}
+							}
+							{count
+								{op ">"}
+								{value 0}
+							}
+						}
+					}
 				}
 				{actions
-					{"timer" {time 12} {title "SUPPORT 3A CLONE FOUND"}}
+					{"timer" {time 12} {title "SUPPORT 3A CLONE IN ZONE"}}
 				}
 			}
 
 			{"allied_support/diag_promoted_found"
 				{condition
-					{type entities}
-					{selector {tag allied_wave_fresh} {type human}}
-					{count {op ">="} {value 2}}
+					{terms
+						{"1.entities"
+							{selector
+								{ignore_captured_by_user 0}
+								{tag allied_wave_fresh}
+								{type human}
+							}
+							{count
+								{op ">"}
+								{value 0}
+							}
+						}
+					}
 				}
 				{actions
 					{"timer" {time 12} {title "SUPPORT 4A PROMOTED FOUND"}}
@@ -217,9 +310,19 @@
 
 			{"allied_support/diag_owner_found"
 				{condition
-					{type entities}
-					{selector {tag allied_support_diag_owned} {type human}}
-					{count {op ">="} {value 2}}
+					{terms
+						{"1.entities"
+							{selector
+								{ignore_captured_by_user 0}
+								{tag allied_support_diag_owned}
+								{type human}
+							}
+							{count
+								{op ">"}
+								{value 0}
+							}
+						}
+					}
 				}
 				{actions
 					{"timer" {time 12} {title "SUPPORT 5A OWNER FOUND"}}
