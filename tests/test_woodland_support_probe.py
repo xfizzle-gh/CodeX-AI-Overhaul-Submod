@@ -44,9 +44,12 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
     def test_shared_trigger_uses_only_explicit_actor(self) -> None:
         for marker in (
             'allied_support/explicit_actor_once',
+            'allied_support_clone_one',
             f'{{tag {{tag {TAG}}}}}',
-            '{target_waypoint "1"}',
             '{clone}',
+            '{waypoint "allied_support_entry"}',
+            '{approach "safe teleport & rotate"}',
+            '{tag fpc1}',
             '{zone {zone "gamezone"}}',
             '{tag_add allied_wave_fresh}',
             '{tag_add allied_support_explicit_clone}',
@@ -54,17 +57,42 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
             '{tag_remove not_delete}',
             '{tag_remove hidden}',
             '{inactive off}',
+            '{impregnability disabled}',
+            '{discovered on}',
             '{control AI}',
+            '{fire_mode open}',
+            '{weapon_prepare on}',
             '{remove select}',
             '{action advance}',
-            '{target {tag fpc1}}',
+            'fpc_inf_to_flag1',
+            'PROOF 1 ARMED x12',
+            'PROOF 4 COMBAT x12',
+            'PROOF OWNER FAIL',
         ):
             self.assertIn(marker, self.waves)
+        self.assertEqual(self.waves.count('("allied_support_clone_one")'), 12)
+        self.assertNotIn('{waypoint "1"}', self.waves)
+        self.assertNotIn('{target_waypoint "1"}', self.waves)
         self.assertNotIn('allied_support_template', self.waves.replace(TAG, ''))
         self.assertNotIn('allied_support_diag_source', self.waves)
-        self.assertNotIn('{"timer"', self.waves)
         self.assertNotIn('{control user}', self.waves)
         self.assertNotIn('{"trigger" {name "allied_support/explicit_actor_once"}', self.waves)
+
+    def test_explicit_templates_are_combat_shells(self) -> None:
+        for name, mission in self.missions.items():
+            with self.subTest(map=name):
+                block = re.search(
+                    rf'Human "{re.escape(BREED)}" 0x[0-9a-f]+\s*\{{.*?\n\t\}}',
+                    mission,
+                    re.S,
+                )
+                self.assertIsNotNone(block)
+                body = block.group(0)
+                self.assertIn('{Position -35000 -35000}', body)
+                self.assertIn('{Player 0}', body)
+                self.assertNotIn('{disabled}', body)
+                self.assertNotIn('stand_noaim', body)
+                self.assertNotIn('{Volume', body)
 
     def test_defenderbot_ownership_cases_cover_ids_1_to_16(self) -> None:
         for player_id in range(1, 17):
