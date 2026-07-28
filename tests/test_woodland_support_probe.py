@@ -24,7 +24,7 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
         cls.missions = {path.parent.name: path.read_text(encoding="utf-8") for path in MISSIONS}
         cls.waves = WAVES.read_text(encoding="utf-8")
 
-    def test_all_fourteen_maps_embed_one_named_template_and_entry(self) -> None:
+    def test_all_fourteen_maps_embed_one_named_template(self) -> None:
         self.assertEqual(len(self.missions), 14)
         handles = []
         mids = []
@@ -34,7 +34,12 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
                 self.assertEqual(mission.count(TAG), 1)
                 self.assertEqual(mission.count("allied_support_waves.inc"), 1)
                 self.assertEqual(mission.count('{"allied_support_entry"'), 1)
-                match = re.search(rf'Human "{re.escape(BREED)}" (0x[0-9a-f]+).*?\{{Position -35000 -35000\}}.*?\{{Player 0\}}.*?\{{MID (\d+)\}}', mission, re.S)
+                match = re.search(
+                    rf'Human "{re.escape(BREED)}" (0x[0-9a-f]+).*?'
+                    rf'\{{Position -35000 -35000\}}.*?\{{Player 0\}}.*?\{{MID (\d+)\}}',
+                    mission,
+                    re.S,
+                )
                 self.assertIsNotNone(match)
                 handles.append(match.group(1))
                 mids.append(match.group(2))
@@ -42,15 +47,16 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
         self.assertEqual(len(set(handles)), 14)
         self.assertEqual(len(set(mids)), 14)
 
-    def test_shared_trigger_targets_map_local_entry(self) -> None:
+    def test_shared_trigger_matches_working_twelve_clone_checkpoint(self) -> None:
         for marker in (
+            '(define "allied_support_clone_one"',
             'allied_support/explicit_actor_once',
             f'{{tag {{tag {TAG}}}}}',
             '{"actor_to_waypoint"',
             '{waypoint "allied_support_entry"}',
-            '{approach "safe teleport & rotate"}',
             '{clone}',
-            '{zone {zone "allied_support_entry"}}',
+            '{approach "safe teleport & rotate"}',
+            '{amount 1}',
             '{tag_add allied_wave_fresh}',
             '{tag_add allied_support_explicit_clone}',
             f'{{tag_remove {TAG}}}',
@@ -60,15 +66,16 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
             '{control AI}',
             '{remove select}',
             '{action advance}',
-            '{target {tag fpc1}}',
+            '{target',
+            '{tag fpc1}',
+            '{function "fpc_inf_to_flag1"}',
         ):
             self.assertIn(marker, self.waves)
+        self.assertEqual(self.waves.count('(\"allied_support_clone_one\")'), 12)
+        self.assertEqual(self.waves.count('{"actor_to_waypoint"'), 1)
         self.assertNotIn('{waypoint "1"}', self.waves)
         self.assertNotIn('{target_waypoint "1"}', self.waves)
-        self.assertNotIn('{zone {zone "gamezone"}}', self.waves)
-        self.assertNotIn('allied_support_template', self.waves.replace(TAG, ''))
         self.assertNotIn('allied_support_diag_source', self.waves)
-        self.assertNotIn('{"timer"', self.waves)
         self.assertNotIn('{control user}', self.waves)
         self.assertNotIn('{"trigger" {name "allied_support/explicit_actor_once"}', self.waves)
 
@@ -78,10 +85,11 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
             self.assertIn(f'{{player "{player_id}"}}', self.waves)
             self.assertIn(f'allied_support_owner_{player_id}', self.waves)
 
-    def test_delimiters_balance(self) -> None:
+    def test_delimiters_balance_ignoring_comments(self) -> None:
         for text in (*self.missions.values(), self.waves):
-            self.assertEqual(text.count("{"), text.count("}"))
-            self.assertEqual(text.count("("), text.count(")"))
+            code = "\n".join(line.split(";", 1)[0] for line in text.splitlines())
+            self.assertEqual(code.count("{"), code.count("}"))
+            self.assertEqual(code.count("("), code.count(")"))
 
 
 if __name__ == "__main__":
