@@ -29,6 +29,9 @@ SpawnCooldownTime = {
    -- Time between each wave (Attacker)
     DCGWaveOffMin_Attacker = 2.5 * 60 * 1000, 
     DCGWaveOffMax_Attacker = 3.5 * 60 * 1000,
+    -- Time between allied DefenderBot support waves after preparation
+    DCGWaveOffMin_AlliedSupport = 4 * 60 * 1000,
+    DCGWaveOffMax_AlliedSupport = 8 * 60 * 1000,
    -- Time between each spawn
     DCGMin = 4 * 1000, 
     DCGMax = 6 * 1000,
@@ -44,6 +47,9 @@ WaveUnit = {
     -- Attacker-specific range
     Min_Attacker = 3,
     Max_Attacker = 5,
+    -- Allied DefenderBot follow-up support only; opening wave uses defender values
+    Min_AlliedSupport = 1,
+    Max_AlliedSupport = 3,
 }
 
 -- Sets time limit AI will wait for a unit it has chosen to buy if the unit is not yet available
@@ -55,6 +61,41 @@ local OrderRotationPeriod = 1.75 * 60000 -- 1:45 min (ms)
 botDefender = false
 botDifficultyModifier = 0
 enableWaveCounter = true
+
+-- One conquest.lua runs per bot. Resolve engine-owned identities once per instance.
+local myId = BotApi.Instance.playerId or 0
+local firstEnemyId = 0
+local defenderBotId = 0
+local firstPlayerId = 0
+local isAlliedDefenderBot = false
+local prepTimeOver = not (BotApi.Events and BotApi.Events.PrepTimeOver)
+local missionIdentityRetryPending = false
+local alliedPrepHoldLogged = false
+
+local function resolvePositiveId(primary, fallback)
+	if primary and primary > 0 then return primary end
+	if fallback and fallback > 0 then return fallback end
+	return 0
+end
+
+local function refreshConquestIdentity()
+	local conquest = BotApi.Conquest or {}
+	myId = BotApi.Instance.playerId or 0
+	firstEnemyId = resolvePositiveId(conquest.FirstEnemyId, BotApi.Instance.CampaignFirstEnemyId)
+	defenderBotId = resolvePositiveId(conquest.DefenderBotId, BotApi.Instance.CampaignDefenderBotId)
+	firstPlayerId = resolvePositiveId(conquest.FirstPlayerId, BotApi.Instance.CampaignFirstPlayerId)
+	isAlliedDefenderBot = defenderBotId > 0 and myId == defenderBotId
+end
+
+local function isMissionAuthority()
+	return firstEnemyId > 0 and myId == firstEnemyId
+end
+
+local function publishConquestIds()
+	if firstEnemyId > 0 then BotApi.Scene:SetVar("id_1st_enemy", firstEnemyId) end
+	if defenderBotId > 0 then BotApi.Scene:SetVar("id_defenderbot", defenderBotId) end
+	if firstPlayerId > 0 then BotApi.Scene:SetVar("id_1st_player", firstPlayerId) end
+end
 
 local DifficultySettings = {
     easy = {
@@ -105,11 +146,18 @@ local function isAttackerOrDefender()
 	else
 		botDefender = teamSize > 1
 	end
-	if printDebug then print("Print: botDefender", botDefender) end
+	refreshConquestIdentity()
+	if printDebug then
+		print("DCG role", "playerId", myId, "botDefender", botDefender, "firstEnemyId", firstEnemyId, "defenderBotId", defenderBotId, "firstPlayerId", firstPlayerId, "isAlliedDefenderBot", isAlliedDefenderBot)
+	end
 end
 
 local function setVarsInMissionScript()
-	-- Mission script var is from the USER's perspective (vanilla 1.064)
+	-- Stable Conquest IDs are perspective-neutral and may be published by every bot.
+	publishConquestIds()
+	if not isMissionAuthority() then return false end
+
+	-- Everything below is enemy-bot perspective and must have one writer.
 	BotApi.Scene:SetVar("user_is_defender", botDefender and 0 or 1)
 
 	local botNation = BotApi.Instance.army
@@ -126,17 +174,10 @@ local function setVarsInMissionScript()
 	BotApi.Scene:SetVar("bot_difficulty", difficultyMap[botDifficulty] or 0)
 	BotApi.Scene:SetVar("bots_spawnside", spawnMap[spawnSide] or 0)
 
-	local playerSpawn = (BotApi.Conquest and BotApi.Conquest.PlayerSpawnPoint) or BotApi.Instance.spawnPointName
+	local playerSpawn = BotApi.Conquest and BotApi.Conquest.PlayerSpawnPoint
+	if not playerSpawn or playerSpawn == "" then playerSpawn = BotApi.Instance.spawnPointName end
 	BotApi.Scene:SetVar("player_spawn_name", playerSpawnNameMap[playerSpawn] or 0)
-
-	BotApi.Scene:SetVar("enemyid", BotApi.Instance.playerId)
-	-- v1.064 API rename: BotApi.Instance.Campaign* -> BotApi.Conquest.*
-	local firstEnemy = (BotApi.Conquest and BotApi.Conquest.FirstEnemyId) or BotApi.Instance.CampaignFirstEnemyId
-	local defenderBot = (BotApi.Conquest and BotApi.Conquest.DefenderBotId) or BotApi.Instance.CampaignDefenderBotId
-	local firstPlayer = (BotApi.Conquest and BotApi.Conquest.FirstPlayerId) or BotApi.Instance.CampaignFirstPlayerId
-	BotApi.Scene:SetVar("id_1st_enemy", firstEnemy)
-	BotApi.Scene:SetVar("id_defenderbot", defenderBot)
-	BotApi.Scene:SetVar("id_1st_player", firstPlayer)
+	BotApi.Scene:SetVar("enemyid", myId)
 
 	if botDefender then
 		if difficultyMap[botDifficulty] == 4 then
@@ -161,13 +202,13 @@ local function setVarsInMissionScript()
 	end
 
 	if printDebug then print("botDifficultyModifier = ", botDifficultyModifier) end
-
 	SetCEMissionVariables(botDefender)
+	return true
 end
 
 -- Each order tick: 50% SeekAndDestroy / 50% CaptureFlag.
 local FlankOrderChance = 0.50
-local waveSpawnPossible
+local waveSpawnPossible = true
 local waveSpawnActive = true
 local waveUnitCount = 0
 local waveNumber = 0
@@ -310,8 +351,6 @@ local function setDocVarsInNattorSpeak(currentDivision)
 	print("hoboe_by_ordos_debug,divisionNumber=",divisionNumberDebug) 
 end
 
-setDocVarsInNattorSpeak(currentDivision)
-
 local waveNumberExtraUnits = {
     [3] = 3,  -- waveNumber 为 3 时，额外增加 5
     [5] = 5, -- waveNumber 为 5 时，额外增加 7
@@ -328,11 +367,16 @@ end
 
 -- 计算 waveUnitTotal 的函数
 function calculateWaveUnitTotal()-- (currentDivision, waveNumber, botDefender)
-	-- 根据是否为防御者或进攻者调整 waveUnitTotal
+	-- Allied DefenderBot keeps the normal opening force, then switches to small support waves.
+	if isAlliedDefenderBot and waveNumber > 0 then
+		waveUnitTotal = math.random(WaveUnit.Min_AlliedSupport, WaveUnit.Max_AlliedSupport)
+		if printDebug then print("DCG allied support wave size", "playerId", myId, "waveNumber", waveNumber, "waveUnitTotal", waveUnitTotal) end
+		return
+	end
 
-    local ExtraUnitsValue = math.round((waveNumberExtraUnits[waveNumber] or 0) * ActiveDifficultySettings.waveGrowthScale)
-    local divisionParams = divisions[currentDivision]
-    local rawWaveTotal
+	local ExtraUnitsValue = math.round((waveNumberExtraUnits[waveNumber] or 0) * ActiveDifficultySettings.waveGrowthScale)
+	local divisionParams = divisions[currentDivision]
+	local rawWaveTotal
 
 	if botDefender then
 		rawWaveTotal = math.random(WaveUnit.Min_Defender, WaveUnit.Max_Defender) + divisionParams.defenderMultiplier + ExtraUnitsValue
@@ -340,35 +384,22 @@ function calculateWaveUnitTotal()-- (currentDivision, waveNumber, botDefender)
 		rawWaveTotal = math.random(WaveUnit.Min_Attacker, WaveUnit.Max_Attacker) + divisionParams.attackerMultiplier + math.round(ExtraUnitsValue/2)
 	end
 
-    waveUnitTotal = math.max(3, math.round(rawWaveTotal * ActiveDifficultySettings.waveScale))
-
-	if printDebug then print("Print: waveUnitTotal", waveUnitTotal) end
+	waveUnitTotal = math.max(3, math.round(rawWaveTotal * ActiveDifficultySettings.waveScale))
+	if printDebug then print("Print: waveUnitTotal", waveUnitTotal, "waveNumber", waveNumber, "isAlliedDefenderBot", isAlliedDefenderBot) end
 end
 
 function WaveAttack()
-	-- 确保waveUnitTotal被计算
-	if not waveUnitTotal then
+	if not waveUnitTotal then calculateWaveUnitTotal() end
+	waveSpawnPossible = true
+
+	if waveUnitCount >= waveUnitTotal then
+		waveSpawnActive = false
+		waveUnitCount = 0
+		waveNumber = waveNumber + 1
 		calculateWaveUnitTotal()
-	end
-
-	if not botDefender or botDefender then
-		waveSpawnPossible = true
-	end
-
-	if waveSpawnPossible then
-		-- 如果达到当前波次的单位总数
-		if waveUnitCount >= waveUnitTotal then
-			-- 重新计算 waveUnitTotal
-			calculateWaveUnitTotal()
-
-			waveSpawnActive = false
-			waveUnitCount = 0
-			waveNumber = waveNumber + 1
-			if printDebug then print("Print: waveNumber", waveNumber) end
-			if printDebug then print("Print: SelectedDivision", currentDivision) end
-		else
-			waveSpawnActive = true
-		end
+		if printDebug then print("Print: waveNumber", waveNumber, "SelectedDivision", currentDivision, "isAlliedDefenderBot", isAlliedDefenderBot) end
+	else
+		waveSpawnActive = true
 	end
 end
 
@@ -383,21 +414,37 @@ local firstPurchase = true
 function GameModeSpawnCooldown()
 	WaveAttack()
 	local spawnTime
+	local cadence = "within-wave"
+
 	if botDefender and firstPurchase then
 		spawnTime = {Min = StartSpawnTime.DefenseMin, Max = StartSpawnTime.DefenseMax}
+		cadence = isAlliedDefenderBot and "allied-opening" or "enemy-defender-opening"
 	elseif firstPurchase then
 		spawnTime = {Min = StartSpawnTime.AttackMin, Max = StartSpawnTime.AttackMax}
+		cadence = "enemy-attacker-opening"
 	elseif not waveSpawnActive then
-        -- 使用不同的冷却时间值（根据进攻者或防御者）
-        if botDefender then
-            spawnTime = {Min = SpawnCooldownTime.DCGWaveOffMin_Defender, Max = SpawnCooldownTime.DCGWaveOffMax_Defender}
-        else
-            spawnTime = {Min = SpawnCooldownTime.DCGWaveOffMin_Attacker, Max = SpawnCooldownTime.DCGWaveOffMax_Attacker}
-        end
+		if isAlliedDefenderBot then
+			if prepTimeOver then
+				spawnTime = {Min = SpawnCooldownTime.DCGWaveOffMin_AlliedSupport, Max = SpawnCooldownTime.DCGWaveOffMax_AlliedSupport}
+				cadence = "allied-support"
+			else
+				-- OnGameQuant blocks the purchase; PrepTimeOver starts the real 4-8 minute timer.
+				spawnTime = {Min = 1 * 1000, Max = 1 * 1000}
+				cadence = "allied-prep-hold"
+			end
+		elseif botDefender then
+			spawnTime = {Min = SpawnCooldownTime.DCGWaveOffMin_Defender, Max = SpawnCooldownTime.DCGWaveOffMax_Defender}
+			cadence = "enemy-defender"
+		else
+			spawnTime = {Min = SpawnCooldownTime.DCGWaveOffMin_Attacker, Max = SpawnCooldownTime.DCGWaveOffMax_Attacker}
+			cadence = "enemy-attacker"
+		end
 	else
 		spawnTime = {Min = SpawnCooldownTime.DCGMin, Max = SpawnCooldownTime.DCGMax}
 	end
+
 	local cooldown = math.random(spawnTime.Min, spawnTime.Max)
+	if printDebug then print("DCG cadence", cadence, "playerId", myId, "waveNumber", waveNumber, "cooldownSeconds", cooldown / 1000) end
 	firstPurchase = false
 	return cooldown
 end
@@ -711,21 +758,55 @@ function GetUnitToSpawn(units)
 			priorityMultiplier = priorityMultiplier * 150
 		end
 
+		-- Post-opening allied support should be infantry-led without changing enemy doctrine logic.
+		if isAlliedDefenderBot and waveNumber > 0 then
+			if UnitType("Infantry") then
+				priorityMultiplier = priorityMultiplier * 2.0
+			elseif UnitType("Tank") or UnitType("Cannon") or UnitType("Artillery") or UnitType("Sortie") or UnitType("Air") or UnitType("Aircraft") then
+				priorityMultiplier = priorityMultiplier * 0.35
+			else
+				priorityMultiplier = priorityMultiplier * 0.65
+			end
+		end
+
 		return basePriority * priorityMultiplier
 	end)
 end
 
 function OnGameStart()
-    isAttackerOrDefender()
-    ApplyDifficultyScaling()
-    CheckIfChallengeMap()
-    setVarsInMissionScript()
-    setDocVarsInNattorSpeak(currentDivision)
-    OnGameStartUtility("conquest")
+	isAttackerOrDefender()
+	ApplyDifficultyScaling()
+	CheckIfChallengeMap()
+	local wroteMissionVars = setVarsInMissionScript()
+	if wroteMissionVars then
+		setDocVarsInNattorSpeak(currentDivision)
+	elseif firstEnemyId <= 0 or defenderBotId <= 0 or firstPlayerId <= 0 then
+		-- Retry once on the first quant: new Conquest IDs may settle after GameStart.
+		missionIdentityRetryPending = true
+	end
+	OnGameStartUtility("conquest")
+end
+
+local function retryMissionIdentityOnce()
+	if not missionIdentityRetryPending then return end
+	missionIdentityRetryPending = false
+	refreshConquestIdentity()
+	local wroteMissionVars = setVarsInMissionScript()
+	if wroteMissionVars then setDocVarsInNattorSpeak(currentDivision) end
+	if printDebug then print("DCG identity retry", "playerId", myId, "firstEnemyId", firstEnemyId, "defenderBotId", defenderBotId, "isAlliedDefenderBot", isAlliedDefenderBot) end
 end
 
 function OnGameQuant()
-	TrySpawnUnit()
+	retryMissionIdentityOnce()
+	local alliedSupportBlocked = isAlliedDefenderBot and waveNumber > 0 and not prepTimeOver
+	if alliedSupportBlocked then
+		if printDebug and not alliedPrepHoldLogged then
+			alliedPrepHoldLogged = true
+			print("DCG allied support held until PrepTimeOver", "playerId", myId, "waveNumber", waveNumber)
+		end
+	else
+		TrySpawnUnit()
+	end
 
 	local waypoints = BotApi.Scene.Waypoints
 	if #waypoints == 0 then
@@ -823,6 +904,7 @@ function OnGameSpawn(args)
     if not args or not args.squadId then return end
     local squad = args.squadId
     if not IsSquadActive(squad) then return end
+	if printDebug then print("DCG spawned squad", squad, "botPlayerId", myId, "defenderBotId", defenderBotId, "isAlliedDefenderBot", isAlliedDefenderBot, "waveNumber", waveNumber) end
 
 	-- Only mark attack-started / rearrange spawns when the bot is the attacker.
 	if not botDefender and not ai_attack_started then
@@ -843,8 +925,18 @@ end
 
 -- v1.064+: prep phase ended (timer or Skip Preparation). Mission scripts key off prep_inform.
 function OnPrepTimeOver()
+	prepTimeOver = true
+	alliedPrepHoldLogged = false
 	BotApi.Scene:SetVar("prep_inform", 1)
 	if printDebug then print("Print: prep_inform set to 1, Player defense prep is over.") end
+
+	-- Start the allied support clock now, not during the unpaused preparation phase.
+	if isAlliedDefenderBot and waveNumber > 0 and not waveSpawnActive then
+		KillSpawnCooldownTimer()
+		SetSpawnCooldownTimer()
+		if printDebug then print("DCG allied support released after preparation", "playerId", myId, "waveNumber", waveNumber) end
+	end
+
 	-- When player was defending, bot is attacker — release attack start for CE scripts.
 	if not botDefender and not ai_attack_started then
 		ai_attack_started = true
