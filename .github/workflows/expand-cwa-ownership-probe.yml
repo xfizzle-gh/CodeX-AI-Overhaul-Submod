@@ -3,15 +3,14 @@ name: Expand CWA ownership probe
 on:
   pull_request:
     paths:
-      - "tools/expand_cwa_ownership_probe.py"
-      - "tools/fix_cwa_expander_syntax.py"
+      - "tools/inventory_cwa_mission_structure.py"
       - ".github/workflows/expand-cwa-ownership-probe.yml"
 
 permissions:
   contents: write
 
 jobs:
-  expand:
+  inventory:
     runs-on: ubuntu-latest
     steps:
       - name: Check out expansion branch
@@ -20,45 +19,16 @@ jobs:
           ref: prototype/all-cwa-defenderbot-ownership
           fetch-depth: 0
 
-      - name: Expand probe across CWA missions
-        id: expand
+      - name: Inventory CWA mission structures
         run: |
-          set +e
-          rm -f cwa-expansion-error.txt
-          {
-            python tools/fix_cwa_expander_syntax.py
-            python -m py_compile tools/expand_cwa_ownership_probe.py
-            python tools/expand_cwa_ownership_probe.py
-          } > cwa-expansion-error.txt 2>&1
-          status=$?
-          cat cwa-expansion-error.txt
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Persist generator failure
-        if: steps.expand.outputs.status != '0'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           mkdir -p docs
-          mv cwa-expansion-error.txt docs/cwa-expansion-error.txt
-          git add docs/cwa-expansion-error.txt
-          git commit -m "Record CWA expansion generator failure"
-          git push origin HEAD:prototype/all-cwa-defenderbot-ownership
+          python tools/inventory_cwa_mission_structure.py > docs/cwa-mission-structure.txt
+          cat docs/cwa-mission-structure.txt
 
-      - name: Stop after captured failure
-        if: steps.expand.outputs.status != '0'
-        run: exit 1
-
-      - name: Run expanded structural tests
-        if: steps.expand.outputs.status == '0'
-        run: python -m unittest tests/test_woodland_support_probe.py
-
-      - name: Publish map expansion
-        if: steps.expand.outputs.status == '0'
+      - name: Publish inventory
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add resource/map/multi tests/test_woodland_support_probe.py
-          git commit -m "Expand DefenderBot ownership proof to all CWA maps"
+          git add docs/cwa-mission-structure.txt
+          git commit -m "Record CWA mission structure inventory"
           git push origin HEAD:prototype/all-cwa-defenderbot-ownership
