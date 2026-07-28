@@ -1,7 +1,7 @@
 ; Test-only allied support proof using real, equipped live DefenderBot infantry as clone sources.
-; No empty Human "" template shells. Every wave clones exactly five live cmp_def humans.
+; No empty Human "" template shells. Every wave clones up to five live cmp_def humans.
 ; Human-defense only. First wave 60 seconds after preparation; repeats every 60 seconds.
-; Sources are limited to fpc1..fpc5, so source markers can be removed without touching entry clones.
+; Source selection and cleanup are explicit per FPC so existing defenders cannot be promoted as clones.
 
 			{"allied_support/live_clone_test"
 				{condition
@@ -15,7 +15,7 @@
 				{actions
 					{"delay" {time 60}}
 
-					; Select five real defenders at capture points. Never reuse prior support waves.
+					; Select at most one real, equipped DefenderBot soldier from each objective.
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -24,7 +24,7 @@
 								{include
 									{prop {prop human}}
 									{state {state operatable}}
-									{zone {zone "gamezone"}}
+									{zone {zone "fpc1"}}
 								}
 								{exclude
 									{state {state dead}}
@@ -37,54 +37,196 @@
 									{tag {tag allied_support_wave_issued}}
 								}
 							}
-							{group
-								{select
-									{zone {zone "fpc1"}}
-									{zone {zone "fpc2"}}
-									{zone {zone "fpc3"}}
-									{zone {zone "fpc4"}}
-									{zone {zone "fpc5"}}
-								}
-								{include {tag {tag cmp_def}}}
-							}
-							{amount 5}
+							{amount 1}
 						}
 						{tag_add allied_support_source}
 					}
-					{"delay" {time 0.1}}
-
-					; Clones inherit the temporary source tag.
-					{"placement"
-						{selector {tag allied_support_source} {amount 5}}
-						{target_waypoint "allied_support_entry"}
-						{clone}
-					}
-					{"delay" {time 0.5}}
-
-					; Remove the marker from originals, all selected inside FPC zones.
 					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {tag {tag cmp_def}}}
+								{include
+									{prop {prop human}}
+									{state {state operatable}}
+									{zone {zone "fpc2"}}
+								}
+								{exclude
+									{state {state dead}}
+									{state {state inactive}}
+									{state {state linked}}
+									{state {state user_control}}
+									{tag {tag hidden}}
+									{tag {tag _user}}
+									{tag {tag player}}
+									{tag {tag allied_support_wave_issued}}
+								}
+							}
+							{amount 1}
+						}
+						{tag_add allied_support_source}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {tag {tag cmp_def}}}
+								{include
+									{prop {prop human}}
+									{state {state operatable}}
+									{zone {zone "fpc3"}}
+								}
+								{exclude
+									{state {state dead}}
+									{state {state inactive}}
+									{state {state linked}}
+									{state {state user_control}}
+									{tag {tag hidden}}
+									{tag {tag _user}}
+									{tag {tag player}}
+									{tag {tag allied_support_wave_issued}}
+								}
+							}
+							{amount 1}
+						}
+						{tag_add allied_support_source}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {tag {tag cmp_def}}}
+								{include
+									{prop {prop human}}
+									{state {state operatable}}
+									{zone {zone "fpc4"}}
+								}
+								{exclude
+									{state {state dead}}
+									{state {state inactive}}
+									{state {state linked}}
+									{state {state user_control}}
+									{tag {tag hidden}}
+									{tag {tag _user}}
+									{tag {tag player}}
+									{tag {tag allied_support_wave_issued}}
+								}
+							}
+							{amount 1}
+						}
+						{tag_add allied_support_source}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {tag {tag cmp_def}}}
+								{include
+									{prop {prop human}}
+									{state {state operatable}}
+									{zone {zone "fpc5"}}
+								}
+								{exclude
+									{state {state dead}}
+									{state {state inactive}}
+									{state {state linked}}
+									{state {state user_control}}
+									{tag {tag hidden}}
+									{tag {tag _user}}
+									{tag {tag player}}
+									{tag {tag allied_support_wave_issued}}
+								}
+							}
+							{amount 1}
+						}
+						{tag_add allied_support_source}
+					}
+
+					{"delay" {time 0.1}}
+					; All tagged sources are real soldiers. Their clones inherit the marker.
+					{"placement"
 						{selector
 							{source advanced}
 							{group
 								{select {tag {tag allied_support_source}}}
 								{include {prop {prop human}}}
 							}
+							{amount 5}
+						}
+						{target_waypoint "allied_support_entry"}
+						{clone}
+					}
+					{"delay" {time 0.5}}
+
+					; Remove the marker from originals at each FPC. Rear-entry clones retain it.
+					{"entity_state"
+						{selector
+							{source advanced}
 							{group
-								{select
+								{select {tag {tag allied_support_source}}}
+								{include
+									{prop {prop human}}
 									{zone {zone "fpc1"}}
-									{zone {zone "fpc2"}}
-									{zone {zone "fpc3"}}
-									{zone {zone "fpc4"}}
-									{zone {zone "fpc5"}}
 								}
-								{include {tag {tag allied_support_source}}}
 							}
 						}
 						{tag_remove allied_support_source}
 					}
-					{"delay" {time 0.1}}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {tag {tag allied_support_source}}}
+								{include
+									{prop {prop human}}
+									{zone {zone "fpc2"}}
+								}
+							}
+						}
+						{tag_remove allied_support_source}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {tag {tag allied_support_source}}}
+								{include
+									{prop {prop human}}
+									{zone {zone "fpc3"}}
+								}
+							}
+						}
+						{tag_remove allied_support_source}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {tag {tag allied_support_source}}}
+								{include
+									{prop {prop human}}
+									{zone {zone "fpc4"}}
+								}
+							}
+						}
+						{tag_remove allied_support_source}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {tag {tag allied_support_source}}}
+								{include
+									{prop {prop human}}
+									{zone {zone "fpc5"}}
+								}
+							}
+						}
+						{tag_remove allied_support_source}
+					}
 
-					; Remaining source-tagged humans are the five entry clones.
+					{"delay" {time 0.1}}
+					; The only remaining source-tagged humans are newly cloned rear-entry soldiers.
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -97,6 +239,7 @@
 								}
 								{exclude
 									{state {state dead}}
+									{state {state inactive}}
 									{state {state linked}}
 									{state {state user_control}}
 								}
@@ -114,7 +257,7 @@
 					}
 					{"delay" {time 0.1}}
 
-					; Player fields are literal in MI, so cover IDs 1 through 16.
+					; Player fields are literal in MI, so cover DefenderBot IDs 1 through 16.
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 1}}
