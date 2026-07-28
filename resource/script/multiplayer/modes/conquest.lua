@@ -62,6 +62,9 @@ botDefender = false
 botDifficultyModifier = 0
 enableWaveCounter = true
 
+-- Global reduction for normal calculated waves. Allied 1-3 support waves return early and are unchanged.
+local NormalWaveSizeScale = 0.85
+
 -- One conquest.lua runs per bot. Resolve engine-owned identities once per instance.
 local myId = BotApi.Instance.playerId or 0
 local firstEnemyId = 0
@@ -384,8 +387,8 @@ function calculateWaveUnitTotal()-- (currentDivision, waveNumber, botDefender)
 		rawWaveTotal = math.random(WaveUnit.Min_Attacker, WaveUnit.Max_Attacker) + divisionParams.attackerMultiplier + math.round(ExtraUnitsValue/2)
 	end
 
-	waveUnitTotal = math.max(3, math.round(rawWaveTotal * ActiveDifficultySettings.waveScale))
-	if printDebug then print("Print: waveUnitTotal", waveUnitTotal, "waveNumber", waveNumber, "isAlliedDefenderBot", isAlliedDefenderBot) end
+	waveUnitTotal = math.max(3, math.round(rawWaveTotal * ActiveDifficultySettings.waveScale * NormalWaveSizeScale))
+	if printDebug then print("Print: waveUnitTotal", waveUnitTotal, "waveNumber", waveNumber, "normalWaveSizeScale", NormalWaveSizeScale, "isAlliedDefenderBot", isAlliedDefenderBot) end
 end
 
 function WaveAttack()
