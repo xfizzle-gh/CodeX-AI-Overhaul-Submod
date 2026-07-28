@@ -64,17 +64,18 @@ class ExplicitCwaSupportProofTests(unittest.TestCase):
             '{tag_remove hidden}',
             '{inactive off}',
             '{control AI}',
+            '{ai_move {mode enable}}',
             '{remove select}',
             '{action advance}',
             '{target',
             '{tag fpc1}',
-            '{function "fpc_inf_to_flag1"}',
         ):
             self.assertIn(marker, self.waves)
         self.assertEqual(self.waves.count('(\"allied_support_clone_one\")'), 12)
         self.assertEqual(self.waves.count('{"actor_to_waypoint"'), 1)
         self.assertNotIn('{waypoint "1"}', self.waves)
         self.assertNotIn('{target_waypoint "1"}', self.waves)
+        self.assertNotIn('fpc_inf_to_flag1', self.waves)
         self.assertNotIn('allied_support_diag_source', self.waves)
         self.assertNotIn('{control user}', self.waves)
         self.assertNotIn('{"trigger" {name "allied_support/explicit_actor_once"}', self.waves)
