@@ -1,8 +1,8 @@
-; Woodland-only ownership proof for engine-created DefenderBot.
+; CWA Dynamic Conquest ownership proof for the engine-created DefenderBot.
 ; This is intentionally one-shot and uses a 60-second post-preparation delay.
 ; Do not generalize into recurring support waves until ownership is proven live.
 
-			{"allied_support/probe_woodland_ownership"
+			{"allied_support/probe_cwa_ownership"
 				{condition
 					{expression "1 & 2 & 3"}
 					{terms

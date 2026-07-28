@@ -3732,9 +3732,14 @@
 					}
 				}
 			}
+			(include "../allied_support_ownership_probe.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
+			{"allied_support_entry"
+				{position -8198.70 -151.56 0.00}
+				{radius 150}
+			}
 			{"0"
 				{position 9917.56 435.72 0}
 				{radius 800}
