@@ -1,8 +1,8 @@
-; CWA Dynamic Conquest ownership proof for the engine-created DefenderBot.
-; This is intentionally one-shot and uses a 60-second post-preparation delay.
-; Do not generalize into recurring support waves until ownership is proven live.
+; CWA Dynamic Conquest one-minute reinforcement test for the engine-created DefenderBot.
+; Each wave waits 60 seconds, clones five defenders at the map-local support entry,
+; assigns them to DefenderBot, and advances them toward the existing fpc1 route.
 
-			{"allied_support/probe_cwa_ownership"
+			{"allied_support/test_cwa_one_minute_waves"
 				{condition
 					{expression "1 & 2 & 3"}
 					{terms
@@ -1784,5 +1784,9 @@
 						}
 						{tag_remove allied_wave_fresh}
 					}
+				; Test-only recurrence. The trigger opening delay controls the 60-second cadence.
+				{"trigger"
+					{name "allied_support/test_cwa_one_minute_waves"}
+				}
 				}
 			}
