@@ -1,9 +1,7 @@
 name: Apply one-minute allied support test
 
 on:
-  push:
-    branches:
-      - test/one-minute-allied-support-waves
+  pull_request:
     paths:
       - "tools/apply_one_minute_allied_support_test.py"
       - ".github/workflows/apply-one-minute-allied-support-test.yml"
