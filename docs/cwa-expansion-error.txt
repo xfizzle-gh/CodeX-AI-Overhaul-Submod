@@ -1,8 +1,6 @@
-  File "tools/expand_cwa_ownership_probe.py", line 202
-    self.assertIn(f'{{{{value {{player_id}}}}}', self.probe)
-                                             ^
-SyntaxError: f-string: single '}' is not allowed
-  File "/home/runner/work/CodeX-AI-Overhaul-Submod/CodeX-AI-Overhaul-Submod/tools/expand_cwa_ownership_probe.py", line 202
-    self.assertIn(f'{{{{value {{player_id}}}}}', self.probe)
-                                             ^
-SyntaxError: f-string: single '}' is not allowed
+Traceback (most recent call last):
+  File "/home/runner/work/CodeX-AI-Overhaul-Submod/CodeX-AI-Overhaul-Submod/tools/expand_cwa_ownership_probe.py", line 117, in <module>
+    patch(mission)
+  File "/home/runner/work/CodeX-AI-Overhaul-Submod/CodeX-AI-Overhaul-Submod/tools/expand_cwa_ownership_probe.py", line 90, in patch
+    raise RuntimeError(f"{name}: expected one dcg_script include")
+RuntimeError: dcg_[cwa71]_border: expected one dcg_script include
