@@ -96,6 +96,23 @@ class ConquestDefenderBotSourceTests(unittest.TestCase):
         self.assertIn("local function retryMissionIdentityOnce()", self.source)
         self.assertIn("missionIdentityRetryPending = false", self.source)
 
+    def test_normal_calculated_waves_use_global_fifteen_percent_reduction(self) -> None:
+        self.assertIn("local NormalWaveSizeScale = 0.85", self.source)
+        self.assertIn(
+            "rawWaveTotal * ActiveDifficultySettings.waveScale * NormalWaveSizeScale",
+            self.source,
+        )
+        allied_branch = self.source.index(
+            "if isAlliedDefenderBot and waveNumber > 0 then"
+        )
+        allied_return = self.source.index("\t\treturn", allied_branch)
+        normal_formula = self.source.index(
+            "rawWaveTotal * ActiveDifficultySettings.waveScale * NormalWaveSizeScale"
+        )
+        self.assertLess(allied_return, normal_formula)
+        self.assertIn("Min_AlliedSupport = 1", self.source)
+        self.assertIn("Max_AlliedSupport = 3", self.source)
+
 
 if __name__ == "__main__":
     unittest.main()
