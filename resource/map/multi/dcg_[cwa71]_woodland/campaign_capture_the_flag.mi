@@ -1461,6 +1461,7 @@
 	{Link 0x8027 {0x4623 "1"}}
 	{Link 0x803d {0x385f "6"}}
 	(include "../allied_support_templates.inc")
+	(include "../attack_mate_probe_templates.inc")
 	{Tags "fpc1" 0x8000}
 	{Tags "fpc2" 0xc000}
 	{Tags "fpc3" 0xa000}
@@ -2737,9 +2738,14 @@
 				}
 			}
 			(include "../allied_support_waves.inc")
+			(include "../attack_mate_retask_probe.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
+			{"attack_mate_entry"
+				{position 6482.73 154.19 0.00}
+				{radius 150}
+			}
 			{"allied_support_entry"
 				{position -7497.91 -526.98 7.14}
 				{radius 150}

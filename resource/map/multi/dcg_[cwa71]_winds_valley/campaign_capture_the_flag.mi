@@ -1788,6 +1788,7 @@
 		{MID 101}
 	}
 	(include "../allied_support_templates.inc")
+	(include "../attack_mate_probe_templates.inc")
 	{Tags "bare" 0x6e2}
 	{Tags "bare" 0x93d}
 	{Tags "bare" 0x2872}
@@ -3354,9 +3355,14 @@
 				}
 			}
 			(include "../allied_support_waves.inc")
+			(include "../attack_mate_retask_probe.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
+			{"attack_mate_entry"
+				{position 883.47 -7052.5 0.00}
+				{radius 150}
+			}
 			{"allied_support_entry"
 				{position 254.90 8213.70 0.00}
 				{radius 150}

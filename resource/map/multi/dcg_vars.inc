@@ -26,3 +26,11 @@
 			{"attack_mate_probe_started"}
 			{"attack_mate_probe_transferred"}
 			{"attack_mate_probe_retasked"}
+			{"attack_mate_probe_stage"}
+			{"id_attacker_mate"}
+			{"attacker_mate_ready"}
+			{"allied_attack_enabled"}
+			{"allied_attack_started"}
+			{"allied_attack_wave_num"}
+			{"allied_attack_owner_fail"}
+			{"allied_attack_retasked"}

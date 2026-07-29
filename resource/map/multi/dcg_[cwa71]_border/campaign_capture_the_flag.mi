@@ -2630,6 +2630,7 @@
 	{Link 0x807b {0x802 "1"}}
 	{Link 0x807c {0x803 "1"}}
 	(include "../allied_support_templates.inc")
+	(include "../attack_mate_probe_templates.inc")
 	{Tags "spawn_a" "a1" 0x9000}
 	{Tags "spawn_a" "a2" 0xa001}
 	{Tags "spawn_a" "a3" 0xc001}
@@ -4219,6 +4220,7 @@
 		}
 		{triggers
 			(include "../allied_support_waves.inc")
+			(include "../attack_mate_retask_probe.inc")
 			(include "/map/nikral's trigger.mi")
 	(include "/map/blow_panels_trigger.inc")
 			{"parachute"
@@ -30027,6 +30029,10 @@
 			}
 		}
 		{waypoints
+			{"attack_mate_entry"
+				{position 7513.46 883.48 0.00}
+				{radius 150}
+			}
 			{"allied_support_entry"
 				{position -8519.59 -1634.30 36.35}
 				{radius 150}

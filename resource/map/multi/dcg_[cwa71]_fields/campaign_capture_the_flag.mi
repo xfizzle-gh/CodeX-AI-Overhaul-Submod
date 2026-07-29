@@ -1286,6 +1286,7 @@
 	{Link 0x8048 {0x21fb "church_c1" "21"}}
 	{Link 0x8049 {0x21fb "church_base" "25"}}
 	(include "../allied_support_templates.inc")
+	(include "../attack_mate_probe_templates.inc")
 	{Tags "spawn_b" "b2" 0x8009}
 	{Tags "spawn_b" "b1" 0x800a}
 	{Tags "spawn_b" "b3" 0x800b}
@@ -2522,9 +2523,14 @@
 				}
 			}
 			(include "../allied_support_waves.inc")
+			(include "../attack_mate_retask_probe.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
+			{"attack_mate_entry"
+				{position 4960.82 1153.54 0.00}
+				{radius 150}
+			}
 			{"allied_support_entry"
 				{position -5691.72 -800.01 55.97}
 				{radius 150}

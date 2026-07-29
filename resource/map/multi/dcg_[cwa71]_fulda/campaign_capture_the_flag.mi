@@ -2176,6 +2176,7 @@
 	{Link 0x8039 {0x3325 "4"}}
 	{Link 0xf00b {0x4cf2 "church_c1" "21"}}
 	(include "../allied_support_templates.inc")
+	(include "../attack_mate_probe_templates.inc")
 	{Tags "keep_places_without_door" 0x405a}
 	{Tags "keep_places_without_door" 0x4142}
 	{Tags "keep_places_without_door" 0x4178}
@@ -3991,9 +3992,14 @@
 				}
 			}
 			(include "../allied_support_waves.inc")
+			(include "../attack_mate_retask_probe.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
+			{"attack_mate_entry"
+				{position -400.75 -7581.03 0.00}
+				{radius 150}
+			}
 			{"allied_support_entry"
 				{position -447.29 8971.17 0.00}
 				{radius 150}
