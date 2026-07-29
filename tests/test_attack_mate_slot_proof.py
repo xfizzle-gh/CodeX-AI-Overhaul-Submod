@@ -28,9 +28,9 @@ class AttackMateSlotProofTests(unittest.TestCase):
     def test_router_never_loads_conquest_for_team_a_attack_bots(self) -> None:
         for marker in (
             'local ROUTER_PREFIX = "CODEX_ATTACK_MATE_ROUTER"',
-            'local function isCampaignTeamABot(identity)',
-            'if identity.attacking == true then return true end',
-            'identity.playerId == identity.defenderBotId',
+            "local function isCampaignTeamABot(identity)",
+            "if identity.attacking == true then return true end",
+            "identity.playerId == identity.defenderBotId",
             'require("resource/script/multiplayer/modes/attacker_mate")',
             '"team_a_attack_safe_route"',
             'local gameModeScriptPath = "resource/script/multiplayer/modes/" .. mode',
@@ -51,8 +51,8 @@ class AttackMateSlotProofTests(unittest.TestCase):
     def test_probe_is_read_only_and_publishes_only_primary_candidate(self) -> None:
         for marker in (
             'local PREFIX = "CODEX_ATTACK_MATE_PROBE"',
-            'local function isPrimaryAttackMate(id)',
-            'not isDefenderBot(id)',
+            "local function isPrimaryAttackMate(id)",
+            "not isDefenderBot(id)",
             '"primary_attack_mate_candidate"',
             '"attack_defenderbot_shadow"',
             'sc:SetVar("id_attacker_mate", id.playerId)',
@@ -75,10 +75,23 @@ class AttackMateSlotProofTests(unittest.TestCase):
         for marker in forbidden:
             self.assertNotIn(marker, self.attack_mate)
 
-    def test_deployment_rejects_stale_router(self) -> None:
-        self.assertIn("team_a_attack_safe_route", self.deploy)
-        self.assertIn("identity.playerId == identity.firstPlayerId", self.deploy)
-        self.assertIn("primary_attack_mate_candidate", self.deploy)
+    def test_deployment_uses_active_checkout_and_rejects_stale_router(self) -> None:
+        for marker in (
+            "$MyInvocation.MyCommand.Path",
+            'Join-Path $ScriptDirectory ".."',
+            '$ExpectedBranch = "experiment/attack-mate-slot-proof"',
+            "git -C $RepoRoot branch --show-current",
+            "team_a_attack_safe_route",
+            "identity.playerId == identity.firstPlayerId",
+            "primary_attack_mate_candidate",
+        ):
+            self.assertIn(marker, self.deploy)
+
+        self.assertNotIn(
+            "CodeX AI Overhaul Submod",
+            self.deploy,
+            "deployment must not read from the obsolete space-named checkout",
+        )
 
     def test_lua_delimiters_are_reasonably_balanced(self) -> None:
         for text in (self.bot_main, self.attack_mate):
