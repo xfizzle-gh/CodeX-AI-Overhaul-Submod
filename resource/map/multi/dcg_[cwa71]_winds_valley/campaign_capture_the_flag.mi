@@ -3355,7 +3355,7 @@
 				}
 			}
 			(include "../allied_support_waves.inc")
-			(include "../attack_support_probe.inc")
+			(include "../attack_support_waves.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

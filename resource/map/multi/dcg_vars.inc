@@ -23,10 +23,15 @@
 			{"bots_divisions"}
 			{"weatherid"}
 			{"prep_spawn_snap"}
-			{"attack_support_probe_started"}
-			{"attack_support_probe_transferred"}
-			{"attack_support_probe_stage"}
+			{"attack_support_armed"}
+			{"attack_support_transferred"}
+			{"attack_support_stage"}
 			{"attack_support_wave_cmd"}
+			{"attack_support_wave_num"}
+			{"attack_support_waves_left"}
+			{"attack_support_busy"}
+			{"attack_support_next_ok"}
+			{"attack_support_hmmwv_left"}
 			{"attack_support_use_mi"}
 			{"enemy_spawnside"}
 			{"id_attack_support"}

@@ -3,8 +3,10 @@
 -- that path AVs on the attack support slot (no spawn deck) even with spawnPoint nil-guard
 -- (proven 2026-07-29 log: crash in lua.event.notify2 right after Loading utility.lua).
 --
--- Unit delivery is MI: attack_support_probe.inc (real-breed pool, MOVE in).
+-- Unit delivery is MI: attack_support_waves.inc (real-breed pool, MOVE in).
 -- Lua Spawn is not viable on this slot (IsUnitAvailable always false; utility load crashes).
+-- No enable var gates this: attack support is on by default on every human attack
+-- mission, and publishing the identity below is what arms the MI wave engine.
 
 local PREFIX = "CODEX_ATTACK_SUPPORT"
 
@@ -77,9 +79,9 @@ local function publishIdentity(id)
 	end
 	sc:SetVar("id_attack_support", id.playerId)
 	sc:SetVar("attack_support_ready", 1)
-	-- MI probe is the working delivery path for attack support units.
+	-- MI waves are the working delivery path for attack support units.
 	sc:SetVar("attack_support_use_mi", 1)
-	log("identity_published", "id_attack_support", id.playerId, "mi_probe", 1)
+	log("identity_published", "id_attack_support", id.playerId, "mi_waves", 1)
 end
 
 local function pickFlagName()
@@ -130,7 +132,7 @@ local function onGameStart()
 	publishIdentity(id)
 	state.ordered = {}
 	if id.attacking == true then
-		log("mode", "mi_probe_delivery", "lua_spawn", "disabled_av_safe")
+		log("mode", "mi_wave_delivery", "lua_spawn", "disabled_av_safe")
 	else
 		log("mode", "idle_not_attacking")
 	end
@@ -173,7 +175,7 @@ if ev and ev.Subscribe then
 	ev:Subscribe(ev.GameStart, safeEvent("GameStart", onGameStart))
 	ev:Subscribe(ev.Quant, safeEvent("Quant", onQuant))
 	ev:Subscribe(ev.GameEnd, safeEvent("GameEnd", onGameEnd))
-	log("armed", "identity_orders_mi_probe")
+	log("armed", "identity_orders_mi_waves")
 else
 	log("not_armed", "BotApi.Events_missing")
 end
