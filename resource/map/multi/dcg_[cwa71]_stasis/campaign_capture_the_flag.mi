@@ -2212,7 +2212,7 @@
 	{Link 0x8030 {0x3c3 "church_c1" "22"}}
 	{Link 0x8053 {0x3c3 "church_base" "24"}}
 	(include "../allied_support_templates.inc")
-	(include "../attack_mate_probe_templates.inc")
+	(include "../attack_support_templates.inc")
 	{Tags "fpc1" 0x8000}
 	{Tags "fpc3" 0xa000}
 	{Tags "fpc4" 0xe000}
@@ -3903,15 +3903,15 @@
 				}
 			}
 			(include "../allied_support_waves.inc")
-			(include "../attack_mate_retask_probe.inc")
+			(include "../attack_support_probe.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"attack_mate_entry_a"
+			{"attack_support_entry_a"
 				{position -35.79 9636.80 0.00}
 				{radius 150}
 			}
-			{"attack_mate_entry_b"
+			{"attack_support_entry_b"
 				{position -981.34 -9568.28 0.00}
 				{radius 150}
 			}

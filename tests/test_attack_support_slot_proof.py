@@ -7,16 +7,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 GAME_SET = ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set"
 BOT_MAIN = ROOT / "resource/script/multiplayer/bot.main.lua"
-ATTACK_MATE = ROOT / "resource/script/multiplayer/modes/attacker_mate.lua"
+ATTACK_SUPPORT = ROOT / "resource/script/multiplayer/modes/attack_support.lua"
 VARS = ROOT / "resource/map/multi/dcg_vars.inc"
-RETASK = ROOT / "resource/map/multi/attack_mate_retask_probe.inc"
-TEMPLATES = ROOT / "resource/map/multi/attack_mate_probe_templates.inc"
-DEPLOY = ROOT / "tools/deploy_attack_mate_probe.ps1"
+RETASK = ROOT / "resource/map/multi/attack_support_probe.inc"
+TEMPLATES = ROOT / "resource/map/multi/attack_support_templates.inc"
+DEPLOY = ROOT / "tools/deploy_attack_support_probe.ps1"
 
-# Where each map's attack_mate_entry_<side> waypoint sits, as a fraction of that
+# Where each map's attack_support_entry_<side> waypoint sits, as a fraction of that
 # side's spawn centroid. 0,0 is the map centre, so scaling the centroid down pulls
 # the arrival point inward. 1.00 puts it exactly on the spawn centroid - the
-# map-edge spawn area. This is the balance knob: lower it to have mate waves
+# map-edge spawn area. This is the balance knob: lower it to have attack support waves
 # arrive further forward, and regenerate the 28 waypoints from the spawn markers.
 EDGE_FACTOR = 1.00
 
@@ -27,12 +27,12 @@ def strip_comments(text: str) -> str:
     return "\n".join(line.split(";", 1)[0] for line in text.splitlines())
 
 
-class AttackMateSlotProofTests(unittest.TestCase):
+class AttackSupportSlotProofTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.game_set = GAME_SET.read_text(encoding="utf-8")
         cls.bot_main = BOT_MAIN.read_text(encoding="utf-8")
-        cls.attack_mate = ATTACK_MATE.read_text(encoding="utf-8")
+        cls.attack_support = ATTACK_SUPPORT.read_text(encoding="utf-8")
         cls.vars = VARS.read_text(encoding="utf-8")
         cls.retask = RETASK.read_text(encoding="utf-8")
         cls.templates = TEMPLATES.read_text(encoding="utf-8")
@@ -48,10 +48,10 @@ class AttackMateSlotProofTests(unittest.TestCase):
 
     def test_router_routes_team_a_mate_regardless_of_first_player_id(self) -> None:
         for marker in (
-            'local ROUTER_PREFIX = "CODEX_ATTACK_MATE_ROUTER"',
-            "local function isAttackMateCandidate(identity)",
+            'local ROUTER_PREFIX = "CODEX_ATTACK_SUPPORT_ROUTER"',
+            "local function isAttackSupportCandidate(identity)",
             "local function safeRequire(path)",
-            'safeRequire("resource/script/multiplayer/modes/attacker_mate")',
+            'safeRequire("resource/script/multiplayer/modes/attack_support")',
             'local gameModeScriptPath = "resource/script/multiplayer/modes/" .. mode',
             "pcall(initialize)",
         ):
@@ -66,16 +66,16 @@ class AttackMateSlotProofTests(unittest.TestCase):
 
     def test_mate_publishes_identity_and_arms_the_mi_wave_engine(self) -> None:
         for marker in (
-            'local PREFIX = "CODEX_ATTACK_MATE"',
-            'sc:SetVar("id_attacker_mate", id.playerId)',
-            'sc:SetVar("attacker_mate_ready", 1)',
+            'local PREFIX = "CODEX_ATTACK_SUPPORT"',
+            'sc:SetVar("id_attack_support", id.playerId)',
+            'sc:SetVar("attack_support_ready", 1)',
             # The enable switch for the MI wave engine. Lua Spawn on this slot
             # never reports an available unit, so MI delivery is the only path
-            # that puts bodies on the map; the mate must arm it explicitly.
-            'sc:SetVar("attack_mate_use_mi_probe", 1)',
+            # that puts bodies on the map; the attack support module must arm it explicitly.
+            'sc:SetVar("attack_support_use_mi", 1)',
             "if id.attacking ~= true then return end",
         ):
-            self.assertIn(marker, self.attack_mate)
+            self.assertIn(marker, self.attack_support)
 
     def test_mate_never_touches_the_slot_unsafe_engine_surface(self) -> None:
         # Every entry here cost a native crash to learn. Reading the spawn-point
@@ -91,7 +91,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
             "GameModeSpawnUnit(",
         )
         code = "\n".join(
-            line.split("--", 1)[0] for line in self.attack_mate.splitlines()
+            line.split("--", 1)[0] for line in self.attack_support.splitlines()
         )
         for marker in forbidden:
             self.assertNotIn(marker, code)
@@ -103,17 +103,17 @@ class AttackMateSlotProofTests(unittest.TestCase):
             "local ok, err = pcall(fn, ...)",
             "return (BotApi and BotApi.Instance) or {}",
         ):
-            self.assertIn(marker, self.attack_mate)
+            self.assertIn(marker, self.attack_support)
 
     def test_mate_orders_only_squads_it_can_see(self) -> None:
         # Orders are now live (the read-only diagnostics checkpoint is retired),
         # but they stay wrapped: an unsupported command must not take the slot down.
-        self.assertIn("pcall(function() c:CaptureFlag(squad, flagName) end)", self.attack_mate)
-        self.assertIn("pcall(function() c:SeekAndDestroy(squad) end)", self.attack_mate)
+        self.assertIn("pcall(function() c:CaptureFlag(squad, flagName) end)", self.attack_support)
+        self.assertIn("pcall(function() c:SeekAndDestroy(squad) end)", self.attack_support)
         # Flag names come from the scene, never from a hardcoded fpc*/flag list.
-        self.assertIn("local function pickFlagName()", self.attack_mate)
-        self.assertIn('type(sc.Flags) ~= "table"', self.attack_mate)
-        self.assertNotIn("fpc", self.attack_mate)
+        self.assertIn("local function pickFlagName()", self.attack_support)
+        self.assertIn('type(sc.Flags) ~= "table"', self.attack_support)
+        self.assertNotIn("fpc", self.attack_support)
 
     def test_lua_locals_are_defined_before_use(self) -> None:
         # Lua resolves a call sited above its `local function` to a nil global,
@@ -121,7 +121,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
         # matters for every helper the event bodies reach.
         for source, pairs in (
             (
-                self.attack_mate,
+                self.attack_support,
                 (
                     ("local function log(", "log("),
                     ("local function identity()", "identity()"),
@@ -148,15 +148,15 @@ class AttackMateSlotProofTests(unittest.TestCase):
 
     def test_probe_state_is_explicitly_declared(self) -> None:
         for marker in (
-            '{"attack_mate_probe_started"}',
-            '{"attack_mate_probe_transferred"}',
-            '{"attack_mate_probe_stage"}',
+            '{"attack_support_probe_started"}',
+            '{"attack_support_probe_transferred"}',
+            '{"attack_support_probe_stage"}',
             # The wave clock and the MI-delivery enable switch.
-            '{"attack_mate_wave_cmd"}',
-            '{"attack_mate_use_mi_probe"}',
+            '{"attack_support_wave_cmd"}',
+            '{"attack_support_use_mi"}',
             '{"enemy_spawnside"}',
-            '{"id_attacker_mate"}',
-            '{"attacker_mate_ready"}',
+            '{"id_attack_support"}',
+            '{"attack_support_ready"}',
         ):
             self.assertIn(marker, self.vars)
 
@@ -165,52 +165,52 @@ class AttackMateSlotProofTests(unittest.TestCase):
 
         # One arming trigger plus three waves.
         for name in (
-            '{"attack_mate/schedule"',
-            '{"attack_mate/wave1"',
-            '{"attack_mate/wave2"',
-            '{"attack_mate/wave3"',
+            '{"attack_support/schedule"',
+            '{"attack_support/wave1"',
+            '{"attack_support/wave2"',
+            '{"attack_support/wave3"',
         ):
             self.assertEqual(code.count(name), 1, name)
 
         # The schedule arms exactly once and never resets its own latch, so it
         # cannot re-run and stack a second set of waves.
         self.assertIn(
-            '{"1.cmp_i" {var "attack_mate_probe_started$"} {op "=="} {value 0}}', code
+            '{"1.cmp_i" {var "attack_support_probe_started$"} {op "=="} {value 0}}', code
         )
         self.assertIn(
-            '{"set_i" {var "attack_mate_probe_started$"} {op "="} {value 1}}', code
+            '{"set_i" {var "attack_support_probe_started$"} {op "="} {value 1}}', code
         )
         self.assertNotIn(
-            '{"set_i" {var "attack_mate_probe_started$"} {op "="} {value 0}}', code
+            '{"set_i" {var "attack_support_probe_started$"} {op "="} {value 0}}', code
         )
-        # Attack side only, and only once the mate has published its identity and
+        # Attack side only, and only once attack support has published its identity and
         # armed MI delivery.
         self.assertIn('{"2.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}', code)
-        self.assertIn('{"3.cmp_i" {var "attacker_mate_ready$"} {op "=="} {value 1}}', code)
+        self.assertIn('{"3.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}', code)
         self.assertIn(
-            '{"4.cmp_i" {var "attack_mate_use_mi_probe$"} {op "=="} {value 1}}', code
+            '{"4.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}', code
         )
 
         # COMMAND GATING is the fix for waves auto-firing on entity presence
         # alone, which detonated all three at once. Each wave requires its own
         # command value AND clears the command as its first action, so a wave
         # runs exactly once per issue.
-        schedule = code.index('{"attack_mate/schedule"')
+        schedule = code.index('{"attack_support/schedule"')
         for n in (1, 2, 3):
-            wave = code.index('{"attack_mate/wave%d"' % n)
+            wave = code.index('{"attack_support/wave%d"' % n)
             body = code[wave:]
             self.assertIn(
-                '{"2.cmp_i" {var "attack_mate_wave_cmd$"} {op "=="} {value %d}}' % n,
+                '{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value %d}}' % n,
                 body[: body.index("{actions")],
             )
             actions = body[body.index("{actions") :]
             self.assertIn(
-                '{"set_i" {var "attack_mate_wave_cmd$"} {op "="} {value 0}}',
+                '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}',
                 actions[:200],
             )
             # The clock issues the command from the schedule, above every wave.
             issue = code.index(
-                '{"set_i" {var "attack_mate_wave_cmd$"} {op "="} {value %d}}' % n
+                '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value %d}}' % n
             )
             self.assertLess(schedule, issue)
             self.assertLess(issue, wave)
@@ -221,12 +221,12 @@ class AttackMateSlotProofTests(unittest.TestCase):
         # Every wave also needs its own pool present, so an exhausted wave is a
         # no-op rather than an empty deploy.
         for n in (1, 2, 3):
-            self.assertIn("{selector {tag attack_mate_w%d}}" % n, code)
+            self.assertIn("{selector {tag attack_support_w%d}}" % n, code)
 
         # Stage reporting: 1 armed, then <wave>1 entered / <wave>2 completed.
         for value in (1, 11, 12, 21, 22, 31, 32):
             self.assertIn(
-                '{"set_i" {var "attack_mate_probe_stage$"} {op "="} {value %d}}' % value,
+                '{"set_i" {var "attack_support_probe_stage$"} {op "="} {value %d}}' % value,
                 code,
             )
 
@@ -235,15 +235,15 @@ class AttackMateSlotProofTests(unittest.TestCase):
         # The dynamic campaign swaps attacker/defender spawns per mission
         # instance, so a static entry waypoint is never correct.
         self.assertEqual(code.count('{"placement"'), 3)
-        self.assertEqual(code.count('{target_waypoint "attack_mate_entry_a"}'), 1)
-        self.assertEqual(code.count('{target_waypoint "attack_mate_entry_b"}'), 2)
+        self.assertEqual(code.count('{target_waypoint "attack_support_entry_a"}'), 1)
+        self.assertEqual(code.count('{target_waypoint "attack_support_entry_b"}'), 2)
 
         # Enemy on side a means we enter from b, and vice versa - never the same.
         side_a = code.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
         side_b = code.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
         self.assertLess(side_a, side_b)
-        self.assertIn('{target_waypoint "attack_mate_entry_b"}', code[side_a:side_b])
-        self.assertIn('{target_waypoint "attack_mate_entry_a"}', code[side_b:])
+        self.assertIn('{target_waypoint "attack_support_entry_b"}', code[side_a:side_b])
+        self.assertIn('{target_waypoint "attack_support_entry_a"}', code[side_b:])
 
         # Placement happens before promotion, on every wave.
         self.assertEqual(code.count('("am_place_at_entry")'), 5)
@@ -255,21 +255,21 @@ class AttackMateSlotProofTests(unittest.TestCase):
     def test_ownership_switch_covers_every_literal_player_slot(self) -> None:
         code = self.code
         # The engine will not accept a var in the {player} node, so all sixteen
-        # slots are spelled out and matched against id_attacker_mate$.
-        own = code.index('(define "am_own_to_mate"')
+        # slots are spelled out and matched against id_attack_support$.
+        own = code.index('(define "am_own_to_support"')
         block = code[own : code.index('(define "am_finish_deploy"')]
         for n in range(1, 17):
             self.assertIn(
-                '{condition {type cmp_i} {var "id_attacker_mate$"} {op "=="} '
+                '{condition {type cmp_i} {var "id_attack_support$"} {op "=="} '
                 '{value %d}}' % n,
                 block,
             )
             self.assertIn('{player "%d"}' % n, block)
-        self.assertNotIn('{player "id_attacker_mate$"}', code)
+        self.assertNotIn('{player "id_attack_support$"}', code)
         self.assertNotIn('{player "17"}', block)
         # Ownership is handed over exactly once per deploy, after placement.
-        self.assertEqual(code.count('("am_own_to_mate")'), 1)
-        self.assertIn('{"set_i" {var "attack_mate_probe_transferred$"} {op "="} {value 1}}', code)
+        self.assertEqual(code.count('("am_own_to_support")'), 1)
+        self.assertIn('{"set_i" {var "attack_support_probe_transferred$"} {op "="} {value 1}}', code)
 
     def test_probe_never_clones_and_never_decorates_the_pool_selector(self) -> None:
         code = self.code
@@ -291,10 +291,10 @@ class AttackMateSlotProofTests(unittest.TestCase):
         self.assertNotIn("{state {state operatable}}", code)
         self.assertNotIn("{include", code)
         for match in re.finditer(
-            r"\{group \{select \{tag \{tag attack_mate_deploy\}\}\}\}", code
+            r"\{group \{select \{tag \{tag attack_support_deploy\}\}\}\}", code
         ):
             self.assertTrue(match)
-        self.assertIn("{group {select {tag {tag attack_mate_deploy}}}}", code)
+        self.assertIn("{group {select {tag {tag attack_support_deploy}}}}", code)
 
         # fpc1..fpc5 tags are absent from one of the fourteen maps entirely, which
         # left the units standing still on a live run. Capture points are
@@ -302,8 +302,8 @@ class AttackMateSlotProofTests(unittest.TestCase):
         self.assertNotIn("fpc", code)
         self.assertEqual(code.count("{select {tag {tag flag}}}"), 3)
 
-        # attack_mate_src is never removed: it marks everything the probe owns.
-        self.assertNotIn("{tag_remove attack_mate_src}", self.retask)
+        # attack_support_src is never removed: it marks everything the probe owns.
+        self.assertNotIn("{tag_remove attack_support_src}", self.retask)
 
     def test_only_active_flag_points_are_targeted(self) -> None:
         code = self.code
@@ -314,27 +314,27 @@ class AttackMateSlotProofTests(unittest.TestCase):
         self.assertEqual(code.count("{state {state inactive}}"), 3)
         self.assertEqual(code.count("{sort {type shuffle}}"), 3)
         for n in (1, 2, 3):
-            anchor = "{tag_add attack_mate_flag%d}" % n
+            anchor = "{tag_add attack_support_flag%d}" % n
             self.assertEqual(code.count(anchor), 1)
             pick = code.rindex("{select {tag {tag flag}}}", 0, code.index(anchor))
             window = code[pick : code.index(anchor)]
             self.assertIn("{state {state inactive}}", window)
             for earlier in range(1, n):
-                self.assertIn("{tag {tag attack_mate_flag%d}}" % earlier, window)
+                self.assertIn("{tag {tag attack_support_flag%d}}" % earlier, window)
 
         # Every fireteam advances on a claimed flag, not on a raw coordinate.
         for n in (1, 2, 3, 4):
             self.assertIn(
-                "{selector {ignore_captured_by_user 0} {tag attack_mate_g%d}}" % n, code
+                "{selector {ignore_captured_by_user 0} {tag attack_support_g%d}}" % n, code
             )
         self.assertIn(
-            "{target {ignore_captured_by_user 0} {tag attack_mate_flag1}}", code
+            "{target {ignore_captured_by_user 0} {tag attack_support_flag1}}", code
         )
         self.assertIn(
-            "{target {ignore_captured_by_user 0} {tag attack_mate_flag2}}", code
+            "{target {ignore_captured_by_user 0} {tag attack_support_flag2}}", code
         )
         self.assertIn(
-            "{target {ignore_captured_by_user 0} {tag attack_mate_flag3}}", code
+            "{target {ignore_captured_by_user 0} {tag attack_support_flag3}}", code
         )
 
     def test_deploy_promotes_hands_to_ai_and_splits_into_fireteams(self) -> None:
@@ -342,7 +342,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
         finish = code.index('(define "am_finish_deploy"')
         block = code[finish:]
         for marker in (
-            "{tag_remove attack_mate_tpl}",
+            "{tag_remove attack_support_tpl}",
             "{tag_remove hidden}",
             "{inactive off}",
             "{impregnability disabled}",
@@ -351,20 +351,20 @@ class AttackMateSlotProofTests(unittest.TestCase):
             "{ai_move {mode enable}}",
             "{weapon_prepare on}",
             "{fire_mode open}",
-            # Selection is stripped so the human cannot inherit mate units.
+            # Selection is stripped so the human cannot inherit attack support units.
             "{remove select}",
         ):
             self.assertIn(marker, block)
 
         # Four staggered fireteams rather than one blob walking a single line.
         for n in (1, 2, 3, 4):
-            self.assertIn("{tag_add attack_mate_g%d}" % n, block)
-            self.assertIn("{tag_remove attack_mate_g%d}" % n, block)
+            self.assertIn("{tag_add attack_support_g%d}" % n, block)
+            self.assertIn("{tag_remove attack_support_g%d}" % n, block)
         self.assertEqual(block.count("{amount 2}"), 3)
 
         # The deploy tag is consumed at the end of every deploy, so the next wave
         # starts from an empty set instead of re-ordering the previous one.
-        self.assertIn("{tag_remove attack_mate_deploy}", block)
+        self.assertIn("{tag_remove attack_support_deploy}", block)
 
     def test_probe_templates_are_real_breed_prototypes(self) -> None:
         code = strip_comments(self.templates)
@@ -374,10 +374,10 @@ class AttackMateSlotProofTests(unittest.TestCase):
         self.assertEqual(code.count("{Able \"-select\"}"), 27)
         self.assertEqual(code.count("{Tags "), 27)
         self.assertEqual(code.count("{Player 0}"), 27)
-        self.assertEqual(code.count('"attack_mate_tpl"'), 27)
+        self.assertEqual(code.count('"attack_support_tpl"'), 27)
         self.assertEqual(code.count('"hidden"'), 27)
         for n in (1, 2, 3):
-            self.assertEqual(code.count('"attack_mate_w%d"' % n), 7 if n < 3 else 13)
+            self.assertEqual(code.count('"attack_support_w%d"' % n), 7 if n < 3 else 13)
 
         # Real breeds only. The breed-less {Human ""} + baked {Inventory} pool was
         # where every selector anomaly showed up, and it spawned unarmed bodies.
@@ -408,13 +408,13 @@ class AttackMateSlotProofTests(unittest.TestCase):
             self.assertIn('{%s "gunner2"}' % host, code)
         # Humvees deploy one at a time, so each needs its own tag.
         for n in (1, 2):
-            self.assertEqual(code.count('"attack_mate_hmmwv%d"' % n), 3)
+            self.assertEqual(code.count('"attack_support_hmmwv%d"' % n), 3)
 
         # Must not disturb the defense pool's ids.
         self.assertNotIn("0xaf0", code)
         self.assertEqual(code.count("{"), code.count("}"))
 
-    def test_all_cwa_maps_include_attack_mate_probe(self) -> None:
+    def test_all_cwa_maps_include_attack_support_probe(self) -> None:
         maps = sorted(
             p for p in (ROOT / "resource/map/multi").iterdir()
             if p.is_dir() and p.name.startswith("dcg_[cwa71]_")
@@ -423,17 +423,17 @@ class AttackMateSlotProofTests(unittest.TestCase):
         for d in maps:
             mi = (d / "campaign_capture_the_flag.mi").read_text(encoding="utf-8")
             with self.subTest(map=d.name):
-                self.assertEqual(mi.count('(include "../attack_mate_retask_probe.inc")'), 1)
+                self.assertEqual(mi.count('(include "../attack_support_probe.inc")'), 1)
                 self.assertEqual(mi.count('(include "../allied_support_waves.inc")'), 1)
                 # The probe's real-breed pool goes in the ENTITIES section, right
                 # after the existing templates include.
                 self.assertEqual(
-                    mi.count('(include "../attack_mate_probe_templates.inc")'), 1
+                    mi.count('(include "../attack_support_templates.inc")'), 1
                 )
                 # read_text normalises CRLF, so match on \n here.
                 self.assertIn(
                     '(include "../allied_support_templates.inc")\n'
-                    '\t(include "../attack_mate_probe_templates.inc")',
+                    '\t(include "../attack_support_templates.inc")',
                     mi,
                 )
 
@@ -443,20 +443,20 @@ class AttackMateSlotProofTests(unittest.TestCase):
                 # static entry can never be right. Each map carries one waypoint
                 # per side and the probe chooses at runtime.
                 self.assertEqual(mi.count('{"allied_support_entry"'), 1)
-                self.assertEqual(mi.count('{"attack_mate_entry_a"'), 1)
-                self.assertEqual(mi.count('{"attack_mate_entry_b"'), 1)
+                self.assertEqual(mi.count('{"attack_support_entry_a"'), 1)
+                self.assertEqual(mi.count('{"attack_support_entry_b"'), 1)
                 # The pre-split name must be fully gone, not merely rare.
-                self.assertNotIn('{"attack_mate_entry"', mi)
+                self.assertNotIn('{"attack_support_entry"', mi)
 
                 entries = {}
                 for side in ("a", "b"):
                     wp = re.search(
-                        r'\{"attack_mate_entry_%s"\s*\n\s*\{position '
+                        r'\{"attack_support_entry_%s"\s*\n\s*\{position '
                         r'(-?[\d.]+) (-?[\d.]+) [\d.]+\}\s*\n\s*\{radius 150\}' % side,
                         mi,
                     )
                     self.assertIsNotNone(
-                        wp, "malformed attack_mate_entry_%s block" % side
+                        wp, "malformed attack_support_entry_%s block" % side
                     )
                     entries[side] = (float(wp.group(1)), float(wp.group(2)))
 
@@ -493,7 +493,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
                     self.assertLess(
                         d_own, d_opp, "entry_%s is on the wrong side" % side
                     )
-                    # Each entry sits ON its own spawn centroid, so mate waves
+                    # Each entry sits ON its own spawn centroid, so attack support waves
                     # arrive at the map-edge spawn area rather than already
                     # pushed into open ground. EDGE_FACTOR is the tuning knob:
                     # scale the centroid toward the origin (0,0 is map centre) to
@@ -510,18 +510,18 @@ class AttackMateSlotProofTests(unittest.TestCase):
             "Never use FirstPlayerId to exclude a",
             "safeRequire",
             'resource\\map\\multi\\dcg_vars.inc',
-            'resource\\map\\multi\\attack_mate_retask_probe.inc',
-            'resource\\map\\multi\\attack_mate_probe_templates.inc',
-            '(include "../attack_mate_probe_templates.inc")',
+            'resource\\map\\multi\\attack_support_probe.inc',
+            'resource\\map\\multi\\attack_support_templates.inc',
+            '(include "../attack_support_templates.inc")',
             '$tplAnchor = \'(include "../allied_support_templates.inc")\'',
             '{Human "mp/nato/2022s/usmc_rifleman"',
             "Expected exactly one probe-templates include in",
             "^dcg_\\[cwa71\\]_",
             "Expected 14 CWA campaign_capture_the_flag.mi files",
-            '(include "../attack_mate_retask_probe.inc")',
-            "_attack_mate_probe_backups",
+            '(include "../attack_support_probe.inc")',
+            "_attack_support_probe_backups",
             '{var "user_is_defender$"}',
-            '{var "attack_mate_wave_cmd$"}',
+            '{var "attack_support_wave_cmd$"}',
             "superseded blind startup delay",
         ):
             self.assertIn(marker, self.deploy)
@@ -531,7 +531,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
         self.assertNotIn("team_a_attack_safe_route =", self.deploy)
 
     def test_delimiters_are_balanced(self) -> None:
-        for text in (self.bot_main, self.attack_mate):
+        for text in (self.bot_main, self.attack_support):
             self.assertEqual(text.count("("), text.count(")"))
 
         for text in (self.retask, self.templates):

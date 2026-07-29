@@ -1,9 +1,9 @@
-; Attack-mate off-map pool (TEST). Real breeds from conquest squad templates.
+; Attack support off-map pool (TEST). Real breeds from conquest squad templates.
 ; Wave tags:
-;   attack_mate_w1  = USMC diverse fireteam (squad_usmc_rifle roles, compact)
-;   attack_mate_w2  = ACAV / 1AD fireteam (squad_tank1_fireteam)
-;   attack_mate_w3  = German pzgren fireteam (squad_pz10_rifle) + 2 crewed humvees
-; All also tagged attack_mate_tpl. Parked y=-35100, x band -3200..-2000.
+;   attack_support_w1  = USMC diverse fireteam (squad_usmc_rifle roles, compact)
+;   attack_support_w2  = ACAV / 1AD fireteam (squad_tank1_fireteam)
+;   attack_support_w3  = German pzgren fireteam (squad_pz10_rifle) + 2 crewed humvees
+; All also tagged attack_support_tpl. Parked y=-35100, x band -3200..-2000.
 
 ; ===== WAVE 1 — US Marines (7) — squad_usmc_rifle roles =====
 	{Human "mp/nato/2022s/usmc_squadlead" 0xaf20
@@ -180,33 +180,33 @@
 	{Link 0xaf56 {0xaf54 "gunner2"}}
 
 ; ===== TAGS =====
-	{Tags "attack_mate_tpl" "attack_mate_w1" "hidden" 0xaf20}
-	{Tags "attack_mate_tpl" "attack_mate_w1" "hidden" 0xaf21}
-	{Tags "attack_mate_tpl" "attack_mate_w1" "hidden" 0xaf22}
-	{Tags "attack_mate_tpl" "attack_mate_w1" "hidden" 0xaf23}
-	{Tags "attack_mate_tpl" "attack_mate_w1" "hidden" 0xaf24}
-	{Tags "attack_mate_tpl" "attack_mate_w1" "hidden" 0xaf25}
-	{Tags "attack_mate_tpl" "attack_mate_w1" "hidden" 0xaf26}
+	{Tags "attack_support_tpl" "attack_support_w1" "hidden" 0xaf20}
+	{Tags "attack_support_tpl" "attack_support_w1" "hidden" 0xaf21}
+	{Tags "attack_support_tpl" "attack_support_w1" "hidden" 0xaf22}
+	{Tags "attack_support_tpl" "attack_support_w1" "hidden" 0xaf23}
+	{Tags "attack_support_tpl" "attack_support_w1" "hidden" 0xaf24}
+	{Tags "attack_support_tpl" "attack_support_w1" "hidden" 0xaf25}
+	{Tags "attack_support_tpl" "attack_support_w1" "hidden" 0xaf26}
 
-	{Tags "attack_mate_tpl" "attack_mate_w2" "hidden" 0xaf30}
-	{Tags "attack_mate_tpl" "attack_mate_w2" "hidden" 0xaf31}
-	{Tags "attack_mate_tpl" "attack_mate_w2" "hidden" 0xaf32}
-	{Tags "attack_mate_tpl" "attack_mate_w2" "hidden" 0xaf33}
-	{Tags "attack_mate_tpl" "attack_mate_w2" "hidden" 0xaf34}
-	{Tags "attack_mate_tpl" "attack_mate_w2" "hidden" 0xaf35}
-	{Tags "attack_mate_tpl" "attack_mate_w2" "hidden" 0xaf36}
+	{Tags "attack_support_tpl" "attack_support_w2" "hidden" 0xaf30}
+	{Tags "attack_support_tpl" "attack_support_w2" "hidden" 0xaf31}
+	{Tags "attack_support_tpl" "attack_support_w2" "hidden" 0xaf32}
+	{Tags "attack_support_tpl" "attack_support_w2" "hidden" 0xaf33}
+	{Tags "attack_support_tpl" "attack_support_w2" "hidden" 0xaf34}
+	{Tags "attack_support_tpl" "attack_support_w2" "hidden" 0xaf35}
+	{Tags "attack_support_tpl" "attack_support_w2" "hidden" 0xaf36}
 
-	{Tags "attack_mate_tpl" "attack_mate_w3" "hidden" 0xaf40}
-	{Tags "attack_mate_tpl" "attack_mate_w3" "hidden" 0xaf41}
-	{Tags "attack_mate_tpl" "attack_mate_w3" "hidden" 0xaf42}
-	{Tags "attack_mate_tpl" "attack_mate_w3" "hidden" 0xaf43}
-	{Tags "attack_mate_tpl" "attack_mate_w3" "hidden" 0xaf44}
-	{Tags "attack_mate_tpl" "attack_mate_w3" "hidden" 0xaf45}
-	{Tags "attack_mate_tpl" "attack_mate_w3" "hidden" 0xaf46}
+	{Tags "attack_support_tpl" "attack_support_w3" "hidden" 0xaf40}
+	{Tags "attack_support_tpl" "attack_support_w3" "hidden" 0xaf41}
+	{Tags "attack_support_tpl" "attack_support_w3" "hidden" 0xaf42}
+	{Tags "attack_support_tpl" "attack_support_w3" "hidden" 0xaf43}
+	{Tags "attack_support_tpl" "attack_support_w3" "hidden" 0xaf44}
+	{Tags "attack_support_tpl" "attack_support_w3" "hidden" 0xaf45}
+	{Tags "attack_support_tpl" "attack_support_w3" "hidden" 0xaf46}
 
-	{Tags "attack_mate_tpl" "attack_mate_w3" "attack_mate_hmmwv1" "hidden" 0xaf50}
-	{Tags "attack_mate_tpl" "attack_mate_w3" "attack_mate_hmmwv1" "hidden" 0xaf51}
-	{Tags "attack_mate_tpl" "attack_mate_w3" "attack_mate_hmmwv1" "hidden" 0xaf52}
-	{Tags "attack_mate_tpl" "attack_mate_w3" "attack_mate_hmmwv2" "hidden" 0xaf54}
-	{Tags "attack_mate_tpl" "attack_mate_w3" "attack_mate_hmmwv2" "hidden" 0xaf55}
-	{Tags "attack_mate_tpl" "attack_mate_w3" "attack_mate_hmmwv2" "hidden" 0xaf56}
+	{Tags "attack_support_tpl" "attack_support_w3" "attack_support_hmmwv1" "hidden" 0xaf50}
+	{Tags "attack_support_tpl" "attack_support_w3" "attack_support_hmmwv1" "hidden" 0xaf51}
+	{Tags "attack_support_tpl" "attack_support_w3" "attack_support_hmmwv1" "hidden" 0xaf52}
+	{Tags "attack_support_tpl" "attack_support_w3" "attack_support_hmmwv2" "hidden" 0xaf54}
+	{Tags "attack_support_tpl" "attack_support_w3" "attack_support_hmmwv2" "hidden" 0xaf55}
+	{Tags "attack_support_tpl" "attack_support_w3" "attack_support_hmmwv2" "hidden" 0xaf56}

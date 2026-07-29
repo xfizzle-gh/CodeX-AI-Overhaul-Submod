@@ -2079,7 +2079,7 @@
 	{Link 0x8058 {0x788a "117_f2c2" "1"}}
 	{Link 0x8065 {0x605f "14" "6"}}
 	(include "../allied_support_templates.inc")
-	(include "../attack_mate_probe_templates.inc")
+	(include "../attack_support_templates.inc")
 	{Tags "switch_left" 0x3017}
 	{Tags "switch_left" 0x28c}
 	{Tags "switch_right" 0x38}
@@ -3791,15 +3791,15 @@
 				}
 			}
 			(include "../allied_support_waves.inc")
-			(include "../attack_mate_retask_probe.inc")
+			(include "../attack_support_probe.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"attack_mate_entry_a"
+			{"attack_support_entry_a"
 				{position 623.24 7261.83 0.00}
 				{radius 150}
 			}
-			{"attack_mate_entry_b"
+			{"attack_support_entry_b"
 				{position -359.95 -7134.24 0.00}
 				{radius 150}
 			}

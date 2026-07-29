@@ -2026,7 +2026,7 @@
 		{FsmState "snipe"}
 	}
 	(include "../allied_support_templates.inc")
-	(include "../attack_mate_probe_templates.inc")
+	(include "../attack_support_templates.inc")
 	{Tags "switch_left" 0x381c}
 	{Tags "switch_right" 0x2c01}
 	{Tags "keep_places_without_door" 0x60a9}
@@ -3735,15 +3735,15 @@
 				}
 			}
 			(include "../allied_support_waves.inc")
-			(include "../attack_mate_retask_probe.inc")
+			(include "../attack_support_probe.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"attack_mate_entry_a"
+			{"attack_support_entry_a"
 				{position -8198.70 -151.56 0.00}
 				{radius 150}
 			}
-			{"attack_mate_entry_b"
+			{"attack_support_entry_b"
 				{position 5261.03 82.70 0.00}
 				{radius 150}
 			}

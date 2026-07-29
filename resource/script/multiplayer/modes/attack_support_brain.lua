@@ -1,6 +1,6 @@
--- Attack-mate strategic brain (allied attack waves).
+-- Attack support strategic brain (allied attack waves).
 --
--- Decides which flag each friendly attack-mate squad should push, and issues the
+-- Decides which flag each friendly attack support squad should push, and issues the
 -- order. It never purchases, spawns, transfers or teleports anything: unit supply
 -- is the mission script's job (resource/map/multi/allied_attack_waves.inc).
 --
@@ -13,7 +13,7 @@
 -- this file: spread comes from a string hash of squad key + flag name, and from a
 -- standing assignment table that persists across scan pulses.
 
-local PREFIX = "CODEX_ATTACK_MATE_BRAIN"
+local PREFIX = "CODEX_ATTACK_SUPPORT_BRAIN"
 
 -- How often the poll loop scans (in quants).
 local SCAN_PERIOD = 2

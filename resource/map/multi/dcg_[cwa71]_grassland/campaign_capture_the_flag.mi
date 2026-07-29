@@ -1768,7 +1768,7 @@
 	{Link 0x8c12 {0x4349 "4"}}
 	{Link 0x880a {0x2188 "seat01"}}
 	(include "../allied_support_templates.inc")
-	(include "../attack_mate_probe_templates.inc")
+	(include "../attack_support_templates.inc")
 	{Tags "bare" 0xc4}
 	{Tags "fpc4" 0x8014}
 	{Tags "fpc1" 0xc001}
@@ -3349,15 +3349,15 @@
 				}
 			}
 			(include "../allied_support_waves.inc")
-			(include "../attack_mate_retask_probe.inc")
+			(include "../attack_support_probe.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"attack_mate_entry_a"
+			{"attack_support_entry_a"
 				{position -9303.27 481.15 0.00}
 				{radius 150}
 			}
-			{"attack_mate_entry_b"
+			{"attack_support_entry_b"
 				{position 8907.71 393.38 0.00}
 				{radius 150}
 			}

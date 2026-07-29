@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 VARS = ROOT / "resource/map/multi/dcg_vars.inc"
 WAVES = ROOT / "resource/map/multi/allied_attack_waves.inc"
-BRAIN = ROOT / "resource/script/multiplayer/modes/attacker_mate_brain.lua"
+BRAIN = ROOT / "resource/script/multiplayer/modes/attack_support_brain.lua"
 BOT_MAIN = ROOT / "resource/script/multiplayer/bot.main.lua"
 MAP_ROOT = ROOT / "resource/map/multi"
 
@@ -52,9 +52,9 @@ class AlliedAttackWavesTests(unittest.TestCase):
     def test_new_wave_vars_are_declared(self) -> None:
         for name in NEW_VARS:
             self.assertIn('{"%s"}' % name, self.vars)
-        # The attack-mate identity vars this engine depends on must stay declared.
-        self.assertIn('{"id_attacker_mate"}', self.vars)
-        self.assertIn('{"attacker_mate_ready"}', self.vars)
+        # The attack support identity vars this engine depends on must stay declared.
+        self.assertIn('{"id_attack_support"}', self.vars)
+        self.assertIn('{"attack_support_ready"}', self.vars)
 
     # (b) mission-side wave engine -----------------------------------------
 
@@ -62,8 +62,8 @@ class AlliedAttackWavesTests(unittest.TestCase):
         for marker in (
             '{var "allied_attack_enabled$"}',
             '{var "user_is_defender$"}',
-            '{var "attacker_mate_ready$"}',
-            '{var "id_attacker_mate$"}',
+            '{var "attack_support_ready$"}',
+            '{var "id_attack_support$"}',
             '{var "allied_attack_started$"}',
             "ALLIED ATTACK INIT",
         ):
@@ -79,7 +79,7 @@ class AlliedAttackWavesTests(unittest.TestCase):
             self.assertIn('{"%s"' % name, self.waves)
         # No stray trigger names from the defense engine or the probe.
         self.assertNotIn("allied_support/", self.waves)
-        self.assertNotIn("attack_mate/", self.waves)
+        self.assertNotIn("attack_support/", self.waves)
 
     def test_wave_clock_has_cap_defer_and_exhaustion(self) -> None:
         for marker in (
@@ -108,7 +108,7 @@ class AlliedAttackWavesTests(unittest.TestCase):
     def test_ownership_switch_covers_all_slots_with_no_fallback(self) -> None:
         for slot in range(1, 17):
             self.assertIn(
-                '{condition {type cmp_i} {var "id_attacker_mate$"} {op "=="} {value %d}}' % slot,
+                '{condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value %d}}' % slot,
                 self.waves,
             )
             self.assertIn('{player "%d"}' % slot, self.waves)
@@ -163,7 +163,9 @@ class AlliedAttackWavesTests(unittest.TestCase):
             "{tag allied_support}",
             "_ai_defender",
             "allied_support_src",
-            "attack_mate_probe",
+            # Tag form, not a bare substring: the probe's include filename is
+            # attack_support_probe.inc, and this file names it in prose.
+            "{tag attack_support_probe}",
             '{var "id_defenderbot$"}',
         ):
             self.assertNotIn(forbidden, self.waves)
@@ -175,7 +177,7 @@ class AlliedAttackWavesTests(unittest.TestCase):
             "{tag fpc2}",
             "ALLIED ATTACK FPC1 REACHED",
             "ALLIED ATTACK RETASKED TO FPC2",
-            "attacker_mate_brain.lua",
+            "attack_support_brain.lua",
         ):
             self.assertIn(marker, self.waves)
 
@@ -192,10 +194,10 @@ class AlliedAttackWavesTests(unittest.TestCase):
     # (d) router untouched --------------------------------------------------
 
     def test_router_does_not_reference_the_brain(self) -> None:
-        self.assertNotIn("attacker_mate_brain", self.bot_main)
+        self.assertNotIn("attack_support_brain", self.bot_main)
         # The existing probe route must still be there — this branch changes nothing.
         self.assertIn(
-            'safeRequire("resource/script/multiplayer/modes/attacker_mate")',
+            'safeRequire("resource/script/multiplayer/modes/attack_support")',
             self.bot_main,
         )
 
@@ -203,7 +205,7 @@ class AlliedAttackWavesTests(unittest.TestCase):
 
     def test_brain_respects_squad_guards_and_command_budget(self) -> None:
         for marker in (
-            'local PREFIX = "CODEX_ATTACK_MATE_BRAIN"',
+            'local PREFIX = "CODEX_ATTACK_SUPPORT_BRAIN"',
             '"_lua_mi"',
             '"_lua_ignore"',
             '"_lua_alert"',

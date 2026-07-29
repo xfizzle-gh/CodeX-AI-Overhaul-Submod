@@ -1,12 +1,12 @@
--- Attack-mate controller (human ATTACK missions).
+-- Attack support controller (human ATTACK missions).
 -- Identity + orders only. Do NOT require utility.lua / logic/main.lua here:
--- that path AVs on the mate slot (no spawn deck) even with spawnPoint nil-guard
+-- that path AVs on the attack support slot (no spawn deck) even with spawnPoint nil-guard
 -- (proven 2026-07-29 log: crash in lua.event.notify2 right after Loading utility.lua).
 --
--- Unit delivery is MI: attack_mate_retask_probe.inc (real-breed pool, MOVE in).
+-- Unit delivery is MI: attack_support_probe.inc (real-breed pool, MOVE in).
 -- Lua Spawn is not viable on this slot (IsUnitAvailable always false; utility load crashes).
 
-local PREFIX = "CODEX_ATTACK_MATE"
+local PREFIX = "CODEX_ATTACK_SUPPORT"
 
 local DEBUG_LOG = true
 local function log(...)
@@ -75,11 +75,11 @@ local function publishIdentity(id)
 		log("identity_publish_skipped", "Scene.SetVar_missing")
 		return
 	end
-	sc:SetVar("id_attacker_mate", id.playerId)
-	sc:SetVar("attacker_mate_ready", 1)
-	-- MI probe is the working delivery path for mate units.
-	sc:SetVar("attack_mate_use_mi_probe", 1)
-	log("identity_published", "id_attacker_mate", id.playerId, "mi_probe", 1)
+	sc:SetVar("id_attack_support", id.playerId)
+	sc:SetVar("attack_support_ready", 1)
+	-- MI probe is the working delivery path for attack support units.
+	sc:SetVar("attack_support_use_mi", 1)
+	log("identity_published", "id_attack_support", id.playerId, "mi_probe", 1)
 end
 
 local function pickFlagName()

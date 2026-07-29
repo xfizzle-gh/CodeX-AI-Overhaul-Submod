@@ -1,8 +1,8 @@
 -- Function to require and initialize the appropriate game mode .lua file.
--- Campaign CTF additionally routes the extra Team A bot into the attack-mate
+-- Campaign CTF additionally routes the extra Team A bot into the attack support
 -- diagnostic controller without replacing the existing DefenderBot.
 
-local ROUTER_PREFIX = "CODEX_ATTACK_MATE_ROUTER"
+local ROUTER_PREFIX = "CODEX_ATTACK_SUPPORT_ROUTER"
 
 local ROUTER_DEBUG = true
 local function routerLog(...)
@@ -39,11 +39,11 @@ local function campaignIdentity()
     }
 end
 
-local function isAttackMateCandidate(identity)
+local function isAttackSupportCandidate(identity)
     if identity.gameMode ~= "campaign_capture_the_flag" then return false end
     if identity.team ~= "a" then return false end
     if identity.isHuman then return false end
-    -- Live proof (2026-07-29 log: human was playerId 3, mate bot playerId 1 ==
+    -- Live proof (2026-07-29 log: human was playerId 3, attack support bot playerId 1 ==
     -- engine FirstPlayerId) showed FirstPlayerId can point at the Team A AI
     -- process, not the human commander. Never use FirstPlayerId to exclude a
     -- bot from this route; the isHuman guard protects the human client slot.
@@ -58,7 +58,7 @@ local function isAttackMateCandidate(identity)
     if identity.attacking == true then return true end
 
     -- The extra slot can still be instantiated on defense. When the engine
-    -- exposes a distinct DefenderBot ID, route that extra slot to the mate
+    -- exposes a distinct DefenderBot ID, route that extra slot to the attack support
     -- controller as a disabled/read-only instance rather than allowing it to
     -- purchase an unintended second defense army.
     return identity.defenderBotId > 0 and identity.playerId ~= identity.defenderBotId
@@ -103,9 +103,9 @@ local function initializeBotAI()
         return
     end
 
-    if isAttackMateCandidate(identity) then
-        routerLog("route", "attacker_mate", "playerId", identity.playerId)
-        safeRequire("resource/script/multiplayer/modes/attacker_mate")
+    if isAttackSupportCandidate(identity) then
+        routerLog("route", "attack_support", "playerId", identity.playerId)
+        safeRequire("resource/script/multiplayer/modes/attack_support")
         return
     end
 

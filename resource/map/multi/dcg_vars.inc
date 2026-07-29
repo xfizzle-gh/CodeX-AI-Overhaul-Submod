@@ -23,14 +23,14 @@
 			{"bots_divisions"}
 			{"weatherid"}
 			{"prep_spawn_snap"}
-			{"attack_mate_probe_started"}
-			{"attack_mate_probe_transferred"}
-			{"attack_mate_probe_stage"}
-			{"attack_mate_wave_cmd"}
-			{"attack_mate_use_mi_probe"}
+			{"attack_support_probe_started"}
+			{"attack_support_probe_transferred"}
+			{"attack_support_probe_stage"}
+			{"attack_support_wave_cmd"}
+			{"attack_support_use_mi"}
 			{"enemy_spawnside"}
-			{"id_attacker_mate"}
-			{"attacker_mate_ready"}
+			{"id_attack_support"}
+			{"attack_support_ready"}
 			{"allied_attack_enabled"}
 			{"allied_attack_started"}
 			{"allied_attack_wave_num"}
