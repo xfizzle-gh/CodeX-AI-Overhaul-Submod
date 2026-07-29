@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 GAME_SET = ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set"
 BOT_MAIN = ROOT / "resource/script/multiplayer/bot.main.lua"
 ATTACK_MATE = ROOT / "resource/script/multiplayer/modes/attacker_mate.lua"
+VARS = ROOT / "resource/map/multi/dcg_vars.inc"
 RETASK = ROOT / "resource/map/multi/attack_mate_retask_probe.inc"
 DEPLOY = ROOT / "tools/deploy_attack_mate_probe.ps1"
 
@@ -17,6 +18,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
         cls.game_set = GAME_SET.read_text(encoding="utf-8")
         cls.bot_main = BOT_MAIN.read_text(encoding="utf-8")
         cls.attack_mate = ATTACK_MATE.read_text(encoding="utf-8")
+        cls.vars = VARS.read_text(encoding="utf-8")
         cls.retask = RETASK.read_text(encoding="utf-8")
         cls.deploy = DEPLOY.read_text(encoding="utf-8")
 
@@ -70,8 +72,20 @@ class AttackMateSlotProofTests(unittest.TestCase):
         for marker in forbidden:
             self.assertNotIn(marker, self.attack_mate)
 
-    def test_mission_probe_clones_transfers_orders_then_retasks(self) -> None:
+    def test_probe_state_is_explicitly_declared(self) -> None:
         for marker in (
+            '{"attack_mate_probe_started"}',
+            '{"attack_mate_probe_transferred"}',
+            '{"attack_mate_probe_retasked"}',
+        ):
+            self.assertIn(marker, self.vars)
+
+    def test_mission_probe_waits_for_ready_sources_then_retasks(self) -> None:
+        for marker in (
+            '{expression "1 & 2 & 3 & 4"}',
+            '{var "prep_inform$"}',
+            '{var "user_is_defender$"}',
+            '"4.entities"',
             'ATTACK MATE PROBE ARMED CLONE TEST',
             '{tag_add attack_mate_src}',
             '{target_waypoint "allied_support_entry"}',
@@ -90,16 +104,18 @@ class AttackMateSlotProofTests(unittest.TestCase):
         ):
             self.assertIn(marker, self.retask)
 
-        clone = self.retask.index('{clone}')
+        readiness = self.retask.index('{var "prep_inform$"}')
+        clone = self.retask.index("{clone}")
         transfer = self.retask.index('{player "3"}')
-        leg1 = self.retask.index('ATTACK MATE PROBE 3 LEG1 ORDERED')
-        retask = self.retask.index('ATTACK MATE PROBE 4 RETASKED TO FPC2')
+        leg1 = self.retask.index("ATTACK MATE PROBE 3 LEG1 ORDERED")
+        retask = self.retask.index("ATTACK MATE PROBE 4 RETASKED TO FPC2")
+        self.assertLess(readiness, clone)
         self.assertLess(clone, transfer)
         self.assertLess(transfer, leg1)
         self.assertLess(leg1, retask)
+        self.assertNotIn('{"delay" {time 8}}', self.retask)
         self.assertNotIn('{tag {tag player}}', self.retask)
         self.assertNotIn('{tag {tag _user}}', self.retask)
-        self.assertNotIn('prep_inform$', self.retask)
 
     def test_deployment_patches_exactly_the_cwa_map_family(self) -> None:
         for marker in (
@@ -110,12 +126,15 @@ class AttackMateSlotProofTests(unittest.TestCase):
             'route_skip", "first_player_slot',
             "safeRequire",
             "diagnostics_only",
+            'resource\\map\\multi\\dcg_vars.inc',
             'resource\\map\\multi\\attack_mate_retask_probe.inc',
             "^dcg_\\[cwa71\\]_",
             "Expected 14 CWA campaign_capture_the_flag.mi files",
             '(include "../attack_mate_retask_probe.inc")',
             "_attack_mate_probe_backups",
-            "ARMED CLONE TEST",
+            '{var "prep_inform$"}',
+            '{var "user_is_defender$"}',
+            "superseded blind startup delay",
         ):
             self.assertIn(marker, self.deploy)
 
