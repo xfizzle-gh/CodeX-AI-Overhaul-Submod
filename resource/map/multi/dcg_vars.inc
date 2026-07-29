@@ -36,3 +36,16 @@
 			{"enemy_spawnside"}
 			{"id_attack_support"}
 			{"attack_support_ready"}
+			{"enemy_defense_armed"}
+			{"enemy_defense_army"}
+			{"enemy_defense_stage"}
+			{"enemy_defense_transferred"}
+			{"enemy_defense_wave_cmd"}
+			{"enemy_defense_wave_num"}
+			{"enemy_defense_waves_left"}
+			{"enemy_defense_place"}
+			{"enemy_defense_group"}
+			{"enemy_defense_trickle_ok"}
+			{"enemy_defense_trickle_busy"}
+			{"enemy_defense_surge_ok"}
+			{"enemy_defense_surge_busy"}
