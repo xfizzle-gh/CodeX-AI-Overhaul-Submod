@@ -41,7 +41,10 @@ local function isAttackMateCandidate(identity)
     if identity.gameMode ~= "campaign_capture_the_flag" then return false end
     if identity.team ~= "a" then return false end
     if identity.isHuman then return false end
-    if identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId then return false end
+    -- Live proof (2026-07-29 log: human was playerId 3, mate bot playerId 1 ==
+    -- engine FirstPlayerId) showed FirstPlayerId can point at the Team A AI
+    -- process, not the human commander. Never use FirstPlayerId to exclude a
+    -- bot from this route; the isHuman guard protects the human client slot.
 
     -- Never intercept the engine-owned DefenderBot. That bot continues to use
     -- the normal Code:X conquest controller on defense missions.
@@ -95,10 +98,6 @@ local function initializeBotAI()
     -- engine BotApi fields (spawnPointName / Events) and hard-crash the process.
     if identity.isHuman then
         routerLog("route_skip", "human_player", "playerId", identity.playerId)
-        return
-    end
-    if identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId then
-        routerLog("route_skip", "first_player_slot", "playerId", identity.playerId)
         return
     end
 
