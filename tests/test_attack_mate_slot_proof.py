@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 GAME_SET = ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set"
 BOT_MAIN = ROOT / "resource/script/multiplayer/bot.main.lua"
 ATTACK_MATE = ROOT / "resource/script/multiplayer/modes/attacker_mate.lua"
+DEPLOY = ROOT / "tools/deploy_attack_mate_probe.ps1"
 
 
 class AttackMateSlotProofTests(unittest.TestCase):
@@ -15,6 +16,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
         cls.game_set = GAME_SET.read_text(encoding="utf-8")
         cls.bot_main = BOT_MAIN.read_text(encoding="utf-8")
         cls.attack_mate = ATTACK_MATE.read_text(encoding="utf-8")
+        cls.deploy = DEPLOY.read_text(encoding="utf-8")
 
     def test_team_a_requests_exactly_one_ai_mate_slot(self) -> None:
         self.assertEqual(self.game_set.count("{aiTeamPlayers 1}"), 1)
@@ -72,6 +74,11 @@ class AttackMateSlotProofTests(unittest.TestCase):
         )
         for marker in forbidden:
             self.assertNotIn(marker, self.attack_mate)
+
+    def test_deployment_rejects_stale_router(self) -> None:
+        self.assertIn("team_a_attack_safe_route", self.deploy)
+        self.assertIn("identity.playerId == identity.firstPlayerId", self.deploy)
+        self.assertIn("primary_attack_mate_candidate", self.deploy)
 
     def test_lua_delimiters_are_reasonably_balanced(self) -> None:
         for text in (self.bot_main, self.attack_mate):
