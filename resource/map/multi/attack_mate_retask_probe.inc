@@ -1,21 +1,47 @@
 ; TEST-ONLY attack-mate ownership and mission-script retask proof.
-; Human attack missions begin with no player/allied units, so this probe clones
-; four existing defender infantry at allied_support_entry, strips defender tags,
-; transfers the clones to AI ownership slot 3, orders fpc1, then retasks fpc2.
+; Human attack missions begin with no player/allied units, so this probe waits
+; for attack preparation and live defender sources, clones four defenders at
+; allied_support_entry, transfers the clones to AI slot 3, orders fpc1, then fpc2.
 
 			{"attack_mate/probe_init"
 				{condition
-					{expression "1"}
+					{expression "1 & 2 & 3 & 4"}
 					{terms
 						{"1.cmp_i" {var "attack_mate_probe_started$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "prep_inform$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"4.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag {tag cmp_def}}
+										{tag {tag _def}}
+									}
+									{include
+										{prop {prop human}}
+										{state {state operatable}}
+										{zone {zone "gamezone"}}
+									}
+									{exclude
+										{state {state dead}}
+										{state {state inactive}}
+										{state {state linked}}
+										{state {state user_control}}
+										{tag {tag hidden}}
+									}
+								}
+							}
+							{count {op ">"} {value 0}}
+						}
 					}
 				}
 				{actions
 					{"set_i" {var "attack_mate_probe_started$"} {op "="} {value 1}}
 					{"timer" {time 8} {title "ATTACK MATE PROBE ARMED CLONE TEST"}}
-					{"delay" {time 8}}
+					{"delay" {time 0.5}}
 
-					; Use the already-present flag defenders only as clone sources.
+					; Use the ready flag defenders only as clone sources.
 					{"entity_state"
 						{selector
 							{source advanced}
