@@ -1,7 +1,7 @@
 ; TEST-ONLY attack-mate ownership and mission-script retask proof.
-; Starts on a fixed delay so it does not depend on Lua-only prep variables.
-; Run only in a human attack test. Tags up to six player infantry, orders
-; them to fpc1, transfers them to AI ownership slot 3, then retasks to fpc2.
+; Human attack missions begin with no player/allied units, so this probe clones
+; four existing defender infantry at allied_support_entry, strips defender tags,
+; transfers the clones to AI ownership slot 3, orders fpc1, then retasks fpc2.
 
 			{"attack_mate/probe_init"
 				{condition
@@ -12,18 +12,18 @@
 				}
 				{actions
 					{"set_i" {var "attack_mate_probe_started$"} {op "="} {value 1}}
-					{"timer" {time 8} {title "ATTACK MATE PROBE ARMED FIXED DELAY"}}
-					; Map load precedes GameThreadStart by roughly 25-30 seconds.
-					; Forty seconds puts selection after the player army exists.
-					{"delay" {time 40}}
+					{"timer" {time 8} {title "ATTACK MATE PROBE ARMED CLONE TEST"}}
+					{"delay" {time 8}}
 
-					; Prefer the normal player tag.
+					; Use the already-present flag defenders only as clone sources.
 					{"entity_state"
 						{selector
 							{source advanced}
-							{ignore_captured_by_user 0}
 							{group
-								{select {tag {tag player}}}
+								{select
+									{tag {tag cmp_def}}
+									{tag {tag _def}}
+								}
 								{include
 									{prop {prop human}}
 									{state {state operatable}}
@@ -33,99 +33,133 @@
 									{state {state dead}}
 									{state {state inactive}}
 									{state {state linked}}
+									{state {state user_control}}
 									{tag {tag attack_mate_probe}}
+									{tag {tag attack_mate_src}}
+									{tag {tag hidden}}
 								}
 							}
-							{amount 6}
+							{amount 4}
 						}
-						{tag_add attack_mate_probe}
+						{tag_add attack_mate_src}
 					}
 					{"delay" {time 0.1}}
 
-					; Some conquest builds identify player infantry with _user instead.
 					{"switch"
 						{"case"
 							{condition
 								{type entities}
-								{selector {tag attack_mate_probe} {type human} {state operatable}}
+								{selector {tag attack_mate_src} {type human}}
 								{count {op ">"} {value 0}}
 							}
-						}
-						{"default"
+							{"placement"
+								{selector
+									{source advanced}
+									{group {select {tag {tag attack_mate_src}}}}
+									{amount 4}
+								}
+								{target_waypoint "allied_support_entry"}
+								{clone}
+							}
+							{"delay" {time 0.5}}
+
+							; Originals remain in the defended flag zones. Remove the source tag there.
 							{"entity_state"
 								{selector
 									{source advanced}
-									{ignore_captured_by_user 0}
 									{group
-										{select {tag {tag _user}}}
-										{include
-											{prop {prop human}}
-											{state {state operatable}}
-											{zone {zone "gamezone"}}
+										{select {tag {tag attack_mate_src}}}
+										{include {prop {prop human}}}
+									}
+									{group
+										{select
+											{zone {zone "fpc1"}}
+											{zone {zone "fpc2"}}
+											{zone {zone "fpc3"}}
+											{zone {zone "fpc4"}}
+											{zone {zone "fpc5"}}
 										}
+										{include {tag {tag attack_mate_src}}}
+									}
+								}
+								{tag_remove attack_mate_src}
+							}
+							{"delay" {time 0.1}}
+
+							; Remaining source-tagged actors are the entry clones.
+							{"entity_state"
+								{selector
+									{source advanced}
+									{group
+										{select {tag {tag attack_mate_src}}}
+										{include {prop {prop human}}}
 										{exclude
 											{state {state dead}}
-											{state {state inactive}}
 											{state {state linked}}
-											{tag {tag attack_mate_probe}}
+											{state {state user_control}}
 										}
 									}
-									{amount 6}
 								}
 								{tag_add attack_mate_probe}
-							}
-						}
-					}
-					{"delay" {time 0.1}}
-
-					{"switch"
-						{"case"
-							{condition
-								{type entities}
-								{selector {tag attack_mate_probe} {type human} {state operatable}}
-								{count {op ">"} {value 0}}
-							}
-							{"timer" {time 8} {title "ATTACK MATE PROBE 1 SELECTED"}}
-							; Critical order: issue before ownership transfer.
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag attack_mate_probe} {type human} {state operatable}}
-								{drop orders}
-								{action advance}
-								{target {tag fpc1}}
-							}
-							{"timer" {time 8} {title "ATTACK MATE PROBE 2 LEG1 ORDERED"}}
-							{"delay" {time 0.2}}
-							{"player"
-								{selector {ignore_captured_by_user 0} {tag attack_mate_probe} {type human}}
-								{operation set}
-								{player "3"}
-							}
-							{"delay" {time 0.2}}
-							{"actor_state"
-								{selector {ignore_captured_by_user 0} {tag attack_mate_probe} {type human} {state "not dead"}}
-								{control AI}
-								{ai_move {mode enable}}
-								{weapon_prepare on}
-								{fire_mode open}
-								{move_mode free}
-								{movement {speed fast} {kind fast} {type normal}}
-								{ai {no_retreat on} {advance_ratio 2} {retreat_ratio 0}}
-							}
-							{"ables"
-								{selector {ignore_captured_by_user 0} {tag attack_mate_probe} {type human}}
-								{remove select}
-							}
-							{"entity_state"
-								{selector {tag attack_mate_probe}}
 								{tag_add attack_mate_owned}
+								{tag_remove attack_mate_src}
+								{tag_remove cmp_def}
+								{tag_remove _def}
+								{tag_remove _ai_defender}
+								{tag_remove hidden}
+								{tag_remove not_delete}
+								{inactive off}
 							}
-							{"set_i" {var "attack_mate_probe_transferred$"} {op "="} {value 1}}
-							{"timer" {time 10} {title "ATTACK MATE PROBE 3 TRANSFERRED"}}
-							{"trigger" {name "attack_mate/probe_retask"}}
-							{"trigger" {name "attack_mate/probe_timeout"}}
+							{"delay" {time 0.1}}
+
+							{"switch"
+								{"case"
+									{condition
+										{type entities}
+										{selector {tag attack_mate_probe} {type human}}
+										{count {op ">"} {value 0}}
+									}
+									{"timer" {time 8} {title "ATTACK MATE PROBE 1 CLONES READY"}}
+									{"player"
+										{selector {tag attack_mate_probe} {type human}}
+										{operation set}
+										{player "3"}
+									}
+									{"delay" {time 0.2}}
+									{"actor_state"
+										{selector {tag attack_mate_probe} {type human} {state "not dead"}}
+										{control AI}
+										{ai_move {mode enable}}
+										{weapon_prepare on}
+										{fire_mode open}
+										{move_mode free}
+										{movement {speed fast} {kind fast} {type normal}}
+										{ai {no_retreat on} {advance_ratio 2} {retreat_ratio 0}}
+									}
+									{"ables"
+										{selector {tag attack_mate_probe} {type human}}
+										{remove select}
+									}
+									{"set_i" {var "attack_mate_probe_transferred$"} {op "="} {value 1}}
+									{"timer" {time 8} {title "ATTACK MATE PROBE 2 TRANSFERRED"}}
+									; First order is intentionally issued after AI ownership is established.
+									{"action"
+										{selector {tag attack_mate_probe} {type human} {state operatable}}
+										{drop orders}
+										{action advance}
+										{target {tag fpc1}}
+									}
+									{"timer" {time 10} {title "ATTACK MATE PROBE 3 LEG1 ORDERED"}}
+									{"trigger" {name "attack_mate/probe_retask"}}
+									{"trigger" {name "attack_mate/probe_timeout"}}
+								}
+								{"default"
+									{"timer" {time 15} {title "ATTACK MATE PROBE FAIL NO CLONES"}}
+								}
+							}
 						}
 						{"default"
-							{"timer" {time 15} {title "ATTACK MATE PROBE FAIL NO PLAYER INFANTRY"}}
+							{"timer" {time 15} {title "ATTACK MATE PROBE FAIL NO DEFENDER SOURCES"}}
 						}
 					}
 				}
@@ -158,7 +192,7 @@
 					{"set_i" {var "attack_mate_probe_retasked$"} {op "="} {value 1}}
 					{"timer" {time 8} {title "ATTACK MATE PROBE FPC1 REACHED"}}
 					{"action"
-						{selector {ignore_captured_by_user 0} {tag attack_mate_probe} {type human} {state operatable}}
+						{selector {tag attack_mate_probe} {type human} {state operatable}}
 						{drop orders}
 						{action advance}
 						{target {tag fpc2}}
