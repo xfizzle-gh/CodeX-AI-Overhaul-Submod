@@ -29,7 +29,11 @@ $files = @(
     "resource\map\multi\dcg_vars.inc",
     "resource\map\multi\attack_mate_retask_probe.inc",
     "resource\map\multi\attack_mate_probe_templates.inc",
-    "resource\script\multiplayer\modes\conquest.lua"
+    "resource\script\multiplayer\modes\conquest.lua",
+    # utility.lua carries the spawnPoint nil-guard. string.sub on a nil spawn
+    # point faulted natively, so this file has to ship with conquest.lua or the
+    # fix simply is not present in the game.
+    "resource\script\multiplayer\modes\utility.lua"
 )
 
 $gameSetSource = Join-Path $RepoRoot $files[0]
@@ -39,11 +43,17 @@ $varsSource = Join-Path $RepoRoot $files[3]
 $retaskSource = Join-Path $RepoRoot $files[4]
 $tplSource = Join-Path $RepoRoot $files[5]
 $conquestSource = Join-Path $RepoRoot $files[6]
+$utilitySource = Join-Path $RepoRoot $files[7]
 
-foreach ($source in @($gameSetSource, $botMainSource, $mateSource, $varsSource, $retaskSource, $tplSource, $conquestSource)) {
+foreach ($source in @($gameSetSource, $botMainSource, $mateSource, $varsSource, $retaskSource, $tplSource, $conquestSource, $utilitySource)) {
     if (-not (Test-Path -LiteralPath $source)) {
         throw "Missing source file: $source"
     }
+}
+# string.sub on a nil spawnPointName faulted natively on slots the engine gives no
+# spawn point, so the read must stay type-guarded before the substring.
+if (-not (Select-String -Quiet -LiteralPath $utilitySource -SimpleMatch 'if type(spawnPoint) ~= "string" or spawnPoint == "" then')) {
+    throw "Source utility.lua is missing the spawnPoint nil-guard, which crashes natively on a slot with no spawn point"
 }
 
 if (-not (Select-String -Quiet -LiteralPath $gameSetSource -SimpleMatch "{aiTeamPlayers 1}")) {
