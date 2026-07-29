@@ -25,36 +25,32 @@ class AttackMateSlotProofTests(unittest.TestCase):
         self.assertIn("{aiTeamPlayers 1}", self.game_set[team_a:team_b])
         self.assertIn("{minTeamSlots 7}", self.game_set[team_a:team_b])
 
-    def test_router_never_loads_conquest_for_team_a_attack_bots(self) -> None:
+    def test_router_matches_proven_manual_transfer_checkpoint(self) -> None:
         for marker in (
             'local ROUTER_PREFIX = "CODEX_ATTACK_MATE_ROUTER"',
-            "local function isCampaignTeamABot(identity)",
-            "if identity.attacking == true then return true end",
-            "identity.playerId == identity.defenderBotId",
-            'require("resource/script/multiplayer/modes/attacker_mate")',
-            '"team_a_attack_safe_route"',
+            "local function isAttackMateCandidate(identity)",
+            "identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId",
+            'routerLog("route_skip", "first_player_slot", "playerId", identity.playerId)',
+            "local function safeRequire(path)",
+            'safeRequire("resource/script/multiplayer/modes/attacker_mate")',
             'local gameModeScriptPath = "resource/script/multiplayer/modes/" .. mode',
+            "pcall(initialize)",
         ):
             self.assertIn(marker, self.bot_main)
 
-        # FirstPlayerId is not a human-only identity; the first live test proved
-        # it can equal the Team A AI player ID.
-        self.assertNotIn(
-            "identity.playerId == identity.firstPlayerId",
-            self.bot_main,
+        # Live proof: the transferable Team A AI process reported the same ID as
+        # FirstPlayerId. Running a Lua controller on it crashed; skipping it left
+        # the slot alive and allowed engine-level ownership transfer.
+        skip_gate = self.bot_main.index(
+            "identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId"
         )
+        mate_route = self.bot_main.index("if isAttackMateCandidate(identity) then")
+        self.assertLess(skip_gate, mate_route)
+        self.assertNotIn("team_a_attack_safe_route", self.bot_main)
 
-        attack_gate = self.bot_main.index("if identity.attacking == true then return true end")
-        defender_gate = self.bot_main.index("identity.playerId == identity.defenderBotId")
-        self.assertLess(attack_gate, defender_gate)
-
-    def test_probe_is_read_only_and_publishes_only_primary_candidate(self) -> None:
+    def test_probe_remains_read_only(self) -> None:
         for marker in (
             'local PREFIX = "CODEX_ATTACK_MATE_PROBE"',
-            "local function isPrimaryAttackMate(id)",
-            "not isDefenderBot(id)",
-            '"primary_attack_mate_candidate"',
-            '"attack_defenderbot_shadow"',
             'sc:SetVar("id_attacker_mate", id.playerId)',
             'sc:SetVar("attacker_mate_ready", 1)',
             '"scene_squads"',
@@ -75,15 +71,16 @@ class AttackMateSlotProofTests(unittest.TestCase):
         for marker in forbidden:
             self.assertNotIn(marker, self.attack_mate)
 
-    def test_deployment_uses_active_checkout_and_rejects_stale_router(self) -> None:
+    def test_deployment_uses_active_checkout_and_requires_checkpoint_router(self) -> None:
         for marker in (
             "$MyInvocation.MyCommand.Path",
             'Join-Path $ScriptDirectory ".."',
             '$ExpectedBranch = "experiment/attack-mate-slot-proof"',
             "git -C $RepoRoot branch --show-current",
-            "team_a_attack_safe_route",
-            "identity.playerId == identity.firstPlayerId",
-            "primary_attack_mate_candidate",
+            'route_skip", "first_player_slot',
+            "identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId",
+            "safeRequire",
+            "diagnostics_only",
         ):
             self.assertIn(marker, self.deploy)
 
@@ -92,6 +89,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
             self.deploy,
             "deployment must not read from the obsolete space-named checkout",
         )
+        self.assertNotIn("team_a_attack_safe_route", self.deploy)
 
     def test_lua_delimiters_are_reasonably_balanced(self) -> None:
         for text in (self.bot_main, self.attack_mate):
