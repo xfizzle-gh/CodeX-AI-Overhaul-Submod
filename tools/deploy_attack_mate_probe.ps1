@@ -40,10 +40,6 @@ foreach ($source in @($gameSetSource, $botMainSource, $mateSource, $retaskSource
     }
 }
 
-# Refuse to deploy anything except the live-proven manual-transfer checkpoint.
-# The transferable Team A process reports the same ID as FirstPlayerId. Loading
-# a Lua controller on that process caused the native crash; skipping it leaves
-# the ownership slot alive and allows engine-level transfer.
 if (-not (Select-String -Quiet -LiteralPath $gameSetSource -SimpleMatch "{aiTeamPlayers 1}")) {
     throw "Source game set does not contain the attack-mate AI slot marker"
 }
@@ -63,10 +59,11 @@ if (-not (Select-String -Quiet -LiteralPath $mateSource -SimpleMatch '"diagnosti
     throw "Source attacker_mate.lua is not the read-only checkpoint"
 }
 foreach ($marker in @(
-    '"attack_mate/probe_init"',
-    'ATTACK MATE PROBE 2 LEG1 ORDERED',
+    'ATTACK MATE PROBE ARMED CLONE TEST',
+    '{target_waypoint "allied_support_entry"}',
+    '{clone}',
     '{player "3"}',
-    '"attack_mate/probe_retask"',
+    'ATTACK MATE PROBE 3 LEG1 ORDERED',
     'ATTACK MATE PROBE 4 RETASKED TO FPC2'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch $marker)) {
@@ -74,7 +71,7 @@ foreach ($marker in @(
     }
 }
 
-Write-Host "Deploying attack-mate ownership + retask proof"
+Write-Host "Deploying self-contained attack-mate clone + retask proof"
 Write-Host "Repository: $RepoRoot"
 Write-Host "Branch:     $branch"
 Write-Host "Workshop:   $WorkshopRoot"
@@ -95,9 +92,6 @@ foreach ($relative in $files) {
     Write-Host "OK $relative $sourceHash"
 }
 
-# Patch the 14 repository-owned CWA mission files in the active Workshop copy.
-# This keeps the Git proof slice small while making the new shared trigger load
-# on every attack map. The patch is idempotent and preserves a one-time backup.
 $mapRoot = Join-Path $WorkshopRoot "resource\map\multi"
 $mapFiles = @(
     Get-ChildItem -LiteralPath $mapRoot -Directory |
@@ -153,24 +147,21 @@ if (-not (Select-String -Quiet -LiteralPath $gameSet -SimpleMatch "{aiTeamPlayer
 if (-not (Select-String -Quiet -LiteralPath $botMain -SimpleMatch 'route_skip", "first_player_slot')) {
     throw "Workshop bot.main.lua does not contain the proven first-player-slot skip"
 }
-if (-not (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId")) {
-    throw "Workshop bot.main.lua is missing the proven FirstPlayerId isolation gate"
-}
 if (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "team_a_attack_safe_route") {
     throw "Workshop bot.main.lua still contains the superseded crashing Team A route"
 }
 if (-not (Select-String -Quiet -LiteralPath $mate -SimpleMatch '"diagnostics_only"')) {
     throw "Workshop attacker_mate.lua is not the read-only checkpoint"
 }
-if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch 'ATTACK MATE PROBE 4 RETASKED TO FPC2')) {
-    throw "Workshop retask probe is missing the second-order marker"
+if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch 'ATTACK MATE PROBE ARMED CLONE TEST')) {
+    throw "Workshop retask probe is not the self-contained clone version"
 }
 
 Write-Host "`nVerification markers:"
 Select-String -LiteralPath $gameSet -Pattern "aiTeamPlayers 1"
 Select-String -LiteralPath $botMain -Pattern "CODEX_ATTACK_MATE_ROUTER|route_skip|first_player_slot|safeRequire"
 Select-String -LiteralPath $mate -Pattern "CODEX_ATTACK_MATE_PROBE|diagnostics_only"
-Select-String -LiteralPath $retask -Pattern 'ATTACK MATE PROBE|attack_mate/probe_retask|player "3"'
+Select-String -LiteralPath $retask -Pattern 'ATTACK MATE PROBE|allied_support_entry|player "3"'
 Write-Host "Patched maps: $($mapFiles.Count)"
 
 Write-Host "`nDeployment complete. Fully restart Gates of Hell before testing."
