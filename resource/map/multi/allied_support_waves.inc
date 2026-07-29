@@ -44,10 +44,10 @@
 							}
 							{"set_i" {var "allied_support_waves_left$"} {op "="} {value 4}}
 							{"set_i" {var "allied_support_wave_size$"} {op "="} {value 6}}
-							{"timer"
-								{time 8}
-								{title "allied_support init L3 waves=4 size=6"}
-							}
+							; {"timer"
+								; {time 8}
+								; {title "allied_support init L3 waves=4 size=6"}
+							; }
 						}
 						{"case"
 							{condition
@@ -58,18 +58,18 @@
 							}
 							{"set_i" {var "allied_support_waves_left$"} {op "="} {value 3}}
 							{"set_i" {var "allied_support_wave_size$"} {op "="} {value 5}}
-							{"timer"
-								{time 8}
-								{title "allied_support init L2 waves=3 size=5"}
-							}
+							; {"timer"
+								; {time 8}
+								; {title "allied_support init L2 waves=3 size=5"}
+							; }
 						}
 						{"default"
 							{"set_i" {var "allied_support_waves_left$"} {op "="} {value 2}}
 							{"set_i" {var "allied_support_wave_size$"} {op "="} {value 4}}
-							{"timer"
-								{time 8}
-								{title "allied_support init L1 waves=2 size=4"}
-							}
+							; {"timer"
+								; {time 8}
+								; {title "allied_support init L1 waves=2 size=4"}
+							; }
 						}
 					}
 					{"set_i" {var "allied_support_target$"} {op "="} {value 1}}
@@ -113,16 +113,16 @@
 									{value 4}
 								}
 							}
-							{"timer"
-								{time 2}
-								{title "allied_support pool ok"}
-							}
+							; {"timer"
+								; {time 2}
+								; {title "allied_support pool ok"}
+							; }
 						}
 						{"default"
-							{"timer"
-								{time 3}
-								{title "allied_support pool bootstrap"}
-							}
+							; {"timer"
+								; {time 3}
+								; {title "allied_support pool bootstrap"}
+							; }
 							{"entity_state"
 								{selector
 									{source advanced}
@@ -299,10 +299,10 @@
 							}
 						}
 					}
-					{"timer"
-						{time 3}
-						{title "allied_support init done"}
-					}
+					; {"timer"
+						; {time 3}
+						; {title "allied_support init done"}
+					; }
 					{"delay" {time 0.1}}
 					{"trigger" {name "allied_support/chance"}}
 				}
@@ -331,10 +331,10 @@
 				}
 				{actions
 					{"set_i" {var "allied_support_busy$"} {op "="} {value 1}}
-					{"timer"
-						{time 2}
-						{title "allied_support chance start (TEST 60s)"}
-					}
+					; {"timer"
+						; {time 2}
+						; {title "allied_support chance start (TEST 60s)"}
+					; }
 					; TEST delay 60s — restore PRODUCTION 4-8 min block below after log proof
 					{"delay" {time 60}}
 					; PRODUCTION inter-wave delay (Indomitus-style weighted switch):
@@ -428,10 +428,10 @@
 									{value 16}
 								}
 							}
-							{"timer"
-								{time 2}
-								{title "allied_support near-cap defer"}
-							}
+							; {"timer"
+								; {time 2}
+								; {title "allied_support near-cap defer"}
+							; }
 							{"delay" {time 60}}
 							{"set_i" {var "allied_support_busy$"} {op "="} {value 0}}
 							{"trigger" {name "allied_support/chance"}}
@@ -767,10 +767,10 @@
 							}
 						}
 						{"default"
-							{"timer"
-								{time 2}
-								{title "allied_support live-clone fallback"}
-							}
+							; {"timer"
+								; {time 2}
+								; {title "allied_support live-clone fallback"}
+							; }
 							{"switch"
 								{"case"
 									{condition
@@ -1172,16 +1172,16 @@
 									{value 0}
 								}
 							}
-							{"timer"
-								{time 3}
-								{title "allied_support spawn ok"}
-							}
+							; {"timer"
+								; {time 3}
+								; {title "allied_support spawn ok"}
+							; }
 						}
 						{"default"
-							{"timer"
-								{time 5}
-								{title "allied_support spawn FAIL no clone"}
-							}
+							; {"timer"
+								; {time 5}
+								; {title "allied_support spawn FAIL no clone"}
+							; }
 						}
 					}
 					{"switch"
@@ -3087,16 +3087,16 @@
 							}
 							{"set_i" {var "allied_support_waves_left$"} {op "-"} {value 1}}
 							{"set_i" {var "allied_support_wave_num$"} {op "+"} {value 1}}
-							{"timer"
-								{time 4}
-								{title "allied_support wave consumed"}
-							}
+							; {"timer"
+								; {time 4}
+								; {title "allied_support wave consumed"}
+							; }
 						}
 						{"default"
-							{"timer"
-								{time 4}
-								{title "allied_support no consume (fail)"}
-							}
+							; {"timer"
+								; {time 4}
+								; {title "allied_support no consume (fail)"}
+							; }
 						}
 					}
 					{"delay" {time 1}}
@@ -3112,10 +3112,10 @@
 							{"trigger" {name "allied_support/chance"}}
 						}
 						{"default"
-							{"timer"
-								{time 4}
-								{title "allied_support waves exhausted"}
-							}
+							; {"timer"
+								; {time 4}
+								; {title "allied_support waves exhausted"}
+							; }
 						}
 					}
 				}

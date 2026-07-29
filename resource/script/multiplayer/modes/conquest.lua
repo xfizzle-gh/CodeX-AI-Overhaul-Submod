@@ -90,20 +90,34 @@ local function publishConquestIds()
 	if firstEnemyId > 0 then BotApi.Scene:SetVar("id_1st_enemy", firstEnemyId) end
 	if defenderBotId > 0 then BotApi.Scene:SetVar("id_defenderbot", defenderBotId) end
 	if firstPlayerId > 0 then BotApi.Scene:SetVar("id_1st_player", firstPlayerId) end
+end
 
 -- Attack-side scripts need the physical side the enemy bot spawned on: the
 -- dynamic campaign swaps attacker/defender spawns per mission instance, so a
 -- static entry waypoint is never correct. utility.lua derives spawnSide from
 -- BotApi.Instance.spawnPointName ("a1" -> "a"). One writer only: this is
 -- published from the mission-authority branch alongside the perspective vars.
+-- Must be a sibling of publishConquestIds (NOT nested). Nested scope made the
+-- setVarsInMissionScript call resolve to nil and hard-crash enemy bot init.
 local function publishEnemySpawnSide()
-	if spawnSide == "a" then
-		BotApi.Scene:SetVar("enemy_spawnside", 1)
-	elseif spawnSide == "b" then
-		BotApi.Scene:SetVar("enemy_spawnside", 2)
+	local side = spawnSide
+	if type(side) ~= "string" or side == "" then
+		local sp = BotApi.Instance and BotApi.Instance.spawnPointName
+		if type(sp) == "string" and #sp > 0 then
+			side = string.sub(sp, 1, 1)
+		end
 	end
-	if printDebug then print("Print: enemy_spawnside published for side", tostring(spawnSide)) end
-end
+	local sideNum = 0
+	if side == "a" or side == "A" then
+		sideNum = 1
+	elseif side == "b" or side == "B" then
+		sideNum = 2
+	end
+	-- Always publish a number (never nil) so Scene:SetVar cannot native-fault.
+	BotApi.Scene:SetVar("enemy_spawnside", sideNum)
+	if printDebug then
+		print("Print: enemy_spawnside published", sideNum, "rawSide", tostring(side), "spawnPoint", tostring(BotApi.Instance and BotApi.Instance.spawnPointName))
+	end
 end
 
 local DifficultySettings = {

@@ -27,6 +27,8 @@
 			{"attack_mate_probe_transferred"}
 			{"attack_mate_probe_retasked"}
 			{"attack_mate_probe_stage"}
+			{"attack_mate_wave_cmd"}
+			{"attack_mate_use_mi_probe"}
 			{"enemy_spawnside"}
 			{"id_attacker_mate"}
 			{"attacker_mate_ready"}

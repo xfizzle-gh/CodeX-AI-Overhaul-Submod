@@ -4,7 +4,9 @@
 
 local ROUTER_PREFIX = "CODEX_ATTACK_MATE_ROUTER"
 
+local ROUTER_DEBUG = true
 local function routerLog(...)
+    if not ROUTER_DEBUG then return end
     local out = {ROUTER_PREFIX .. ":"}
     for n = 1, select("#", ...) do
         out[#out + 1] = tostring(select(n, ...))
