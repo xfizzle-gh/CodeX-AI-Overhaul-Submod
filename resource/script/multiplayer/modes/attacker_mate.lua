@@ -1,7 +1,7 @@
 -- Attack-mate slot proof and diagnostics.
 --
 -- This controller deliberately does not purchase, spawn, transfer, or command
--- units. Its only job is to prove that the extra Team A bot exists on human
+-- units. Its only job is to prove which Team A bot processes exist on human
 -- attack missions and report what the engine exposes through BotApi.
 
 local PREFIX = "CODEX_ATTACK_MATE_PROBE"
@@ -54,6 +54,20 @@ local function identity()
         defenderBotId = positiveId(c.DefenderBotId, i.CampaignDefenderBotId),
         playerSpawnPoint = tostring(c.PlayerSpawnPoint or ""),
     }
+end
+
+local function isDefenderBot(id)
+    return id.defenderBotId > 0 and id.playerId == id.defenderBotId
+end
+
+local function isPrimaryAttackMate(id)
+    return id.attacking == true and not isDefenderBot(id)
+end
+
+local function roleName(id)
+    if id.attacking ~= true then return "defense_extra_isolated" end
+    if isDefenderBot(id) then return "attack_defenderbot_shadow" end
+    return "primary_attack_mate_candidate"
 end
 
 local function collectSquads()
@@ -119,15 +133,28 @@ local state = {
 }
 
 local function publishAttackMateIdentity(id)
-    if id.attacking ~= true then return end
+    if not isPrimaryAttackMate(id) then
+        log(
+            "identity_publish_skipped",
+            "playerId", id.playerId,
+            "role", roleName(id),
+            "defenderBotId", id.defenderBotId
+        )
+        return
+    end
     local sc = scene()
     if not sc or not sc.SetVar then
-        log("identity_publish_skipped", "reason", "Scene.SetVar_missing")
+        log("identity_publish_skipped", "reason", "Scene.SetVar_missing", "playerId", id.playerId)
         return
     end
     sc:SetVar("id_attacker_mate", id.playerId)
     sc:SetVar("attacker_mate_ready", 1)
-    log("identity_published", "id_attacker_mate", id.playerId, "attacker_mate_ready", 1)
+    log(
+        "identity_published",
+        "id_attacker_mate", id.playerId,
+        "attacker_mate_ready", 1,
+        "role", roleName(id)
+    )
 end
 
 local function report(source, force)
@@ -140,6 +167,8 @@ local function report(source, force)
         log(
             "scene_squads",
             "source", source,
+            "playerId", id.playerId,
+            "role", roleName(id),
             "count", #squads,
             "entries", squadSummary(squads)
         )
@@ -150,6 +179,8 @@ local function report(source, force)
         log(
             "scene_flags",
             "source", source,
+            "playerId", id.playerId,
+            "role", roleName(id),
             "count", #flags,
             "entries", flagsText
         )
@@ -165,6 +196,7 @@ local function report(source, force)
             "difficulty", id.difficulty,
             "gameMode", id.gameMode,
             "attacking", tostring(id.attacking),
+            "role", roleName(id),
             "firstPlayerId", id.firstPlayerId,
             "firstEnemyId", id.firstEnemyId,
             "defenderBotId", id.defenderBotId,
@@ -184,7 +216,12 @@ end
 
 local function onGameStart()
     local id = identity()
-    log("game_start", "playerId", id.playerId, "attacking", tostring(id.attacking))
+    log(
+        "game_start",
+        "playerId", id.playerId,
+        "attacking", tostring(id.attacking),
+        "role", roleName(id)
+    )
     publishAttackMateIdentity(id)
     report("GameStart", true)
 end
@@ -219,6 +256,7 @@ log(
     "playerId", id.playerId,
     "team", id.team,
     "attacking", tostring(id.attacking),
+    "role", roleName(id),
     "defenderBotId", id.defenderBotId
 )
 
@@ -227,7 +265,7 @@ if ev and ev.Subscribe then
     ev:Subscribe(ev.GameStart, safeEvent("GameStart", onGameStart))
     ev:Subscribe(ev.Quant, safeEvent("Quant", onQuant))
     ev:Subscribe(ev.GameEnd, safeEvent("GameEnd", onGameEnd))
-    log("probe_armed", "diagnostics_only", true)
+    log("probe_armed", "diagnostics_only", true, "playerId", id.playerId, "role", roleName(id))
 else
-    log("probe_not_armed", "reason", "BotApi.Events_missing")
+    log("probe_not_armed", "reason", "BotApi.Events_missing", "playerId", id.playerId)
 end
