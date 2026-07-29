@@ -12,7 +12,8 @@
 ;    Live map-garrison defenders are NOT usable: cmp_def/_def/
 ;    _ai_defender is map-state-dependent (armed on woodland, never on border) and
 ;    purchased attack-mission squads never carry those tags.
-; 3) Move 4 to attack_mate_entry, own to id_attacker_mate (fallback P3),
+; 3) Move 4 to the entry waypoint for whichever side the enemy is NOT on,
+;    own to id_attacker_mate (fallback P3),
 ;    advance to the nearest capture point, then retask to the next one.
 ; 4) The prototypes now carry the breed's own loadout (m4a1_v3b, ammo, grenades),
 ;    so nothing has to be filled in on player assignment. What this probe proves
@@ -32,14 +33,19 @@
 ; than by any authored name. This probe does the same. If a run ever reports
 ; stage 51, that assumption is wrong on that map and {tag flag} found nothing.
 ;
-; ENTRY ASYMMETRY. allied_support_entry is a DEFENSE-side anchor: on 13 of the 14
-; CWA maps it sits at exactly the spawn_a centroid, and on fulda within 1.5k of it,
-; i.e. the defender's rear. The defense wave engine wants that. This probe only
-; ever runs with user_is_defender==0, and the attacking human is on the B side -
-; live on outback the units teleported to allied_support_entry, landed in enemy
-; territory and died. So the probe uses its own per-map waypoint attack_mate_entry,
-; placed at that map's spawn_b centroid pulled 12% toward map centre so the units
-; land just forward of the spawn line instead of stacking on the spawn markers.
+; ENTRY SIDE IS RUNTIME, NOT STATIC. allied_support_entry is a DEFENSE-side
+; anchor: on 13 of the 14 CWA maps it sits at exactly the spawn_a centroid, and
+; on fulda within 1.5k of it. The defense wave engine wants that. But the side
+; the ATTACKER occupies is not fixed: the same map (outback) put us on the safe
+; side in one run and in enemy territory the next, because the dynamic campaign
+; swaps attacker/defender spawns per mission instance. So every map carries two
+; waypoints - attack_mate_entry_a and attack_mate_entry_b, each at that side's
+; spawn centroid pulled 12% toward map centre - and the probe picks at runtime
+; from enemy_spawnside$, which conquest.lua's mission authority publishes
+; (1 = enemy on side a, 2 = enemy on side b). We take the OTHER side.
+; Timing is safe: the defender bot publishes at its GameStart, while probe_boot
+; waits 15s and probe_init a further 5s before placing. If the var is still 0 we
+; fall back to entry_b and report stage 53 rather than guessing silently.
 ;
 ; SELECTOR RULE (the hard-won lesson, learned on the breed-less pool). On those
 ; template entities, ANY decoration on an advanced selector - {include {prop
@@ -137,13 +143,45 @@
 							; which teleports the existing entities to the waypoint. Mirrors the
 							; ce_functions.inc:2452-2463 form (advanced selector, amount, target_waypoint,
 							; no clone). PROVEN: all 4 originals teleported with this exact selector.
-							{"placement"
-								{selector
-									{source advanced}
-									{group {select {tag {tag attack_mate_src}}}}
-									{amount 4}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+									; Enemy spawned on side a, so we enter from side b.
+									{"placement"
+										{selector
+											{source advanced}
+											{group {select {tag {tag attack_mate_src}}}}
+											{amount 4}
+										}
+										{target_waypoint "attack_mate_entry_b"}
+									}
 								}
-								{target_waypoint "attack_mate_entry"}
+								{"case"
+									{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+									; Enemy spawned on side b, so we enter from side a.
+									{"placement"
+										{selector
+											{source advanced}
+											{group {select {tag {tag attack_mate_src}}}}
+											{amount 4}
+										}
+										{target_waypoint "attack_mate_entry_a"}
+									}
+								}
+								{"default"
+									; enemy_spawnside$ never arrived. Place somewhere real rather than not
+									; at all, but report it - stage 53 means the side was a guess.
+									{"set_i" {var "attack_mate_probe_stage$"} {op "="} {value 53}}
+									{"timer" {time 15} {title "ATTACK MATE PROBE SIDE UNKNOWN"}}
+									{"placement"
+										{selector
+											{source advanced}
+											{group {select {tag {tag attack_mate_src}}}}
+											{amount 4}
+										}
+										{target_waypoint "attack_mate_entry_b"}
+									}
+								}
 							}
 							{"set_i" {var "attack_mate_probe_stage$"} {op "="} {value 2}}
 							{"delay" {time 0.5}}
@@ -233,7 +271,13 @@
 									{"entity_state"
 										{selector
 											{source advanced}
-											{group {select {tag {tag flag}}}}
+											; Only ACTIVE capture points: a mission uses ~2 of the map's 5, and the
+											; rest sit inactive. dcg_script.inc:2757-2775 proves inactive is queryable
+											; on flag entities. Without this the squad sprinted to a dead objective.
+											{group
+												{select {tag {tag flag}}}
+												{exclude {state {state inactive}}}
+											}
 											{sort
 												{type entity}
 												{entity
@@ -326,7 +370,10 @@
 							{source advanced}
 							{group
 								{select {tag {tag flag}}}
-								{exclude {tag {tag attack_mate_flag1}}}
+								{exclude
+									{tag {tag attack_mate_flag1}}
+									{state {state inactive}}
+								}
 							}
 							{sort
 								{type entity}

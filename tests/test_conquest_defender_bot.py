@@ -107,6 +107,30 @@ class ConquestRuntimeSourceTests(unittest.TestCase):
         quant_body = self.source[body_start:body_end]
         self.assertIn("ensureAttackPrepInform()", quant_body)
 
+    def test_enemy_spawn_side_is_published_by_the_mission_authority(self) -> None:
+        # The dynamic campaign swaps attacker/defender spawn sides per mission
+        # instance, so attack-side scripts cannot rely on a static entry point.
+        # utility.lua derives spawnSide from BotApi.Instance.spawnPointName.
+        definition = self.source.index("local function publishEnemySpawnSide")
+        # Skip past the definition line itself - it also contains "name()".
+        call = self.source.index(
+            "\tpublishEnemySpawnSide()", definition + 1
+        )
+        self.assertLess(definition, call)
+        self.assertNotIn("publishEnemySpawnSide(", self.source[:definition])
+
+        self.assertIn('BotApi.Scene:SetVar("enemy_spawnside", 1)', self.source)
+        self.assertIn('BotApi.Scene:SetVar("enemy_spawnside", 2)', self.source)
+        self.assertIn('if spawnSide == "a" then', self.source)
+        self.assertIn('elseif spawnSide == "b" then', self.source)
+
+        # One writer only: it must sit below the mission-authority gate, with the
+        # other enemy-perspective vars.
+        authority = self.source.index(
+            "if not isMissionAuthority() then return false end"
+        )
+        self.assertLess(authority, call)
+
     def test_scatter_order_helpers_are_defined_before_use(self) -> None:
         # Same nil-global trap as ensureAttackPrepInform: these are `local
         # function`s, so a call sited above the definition resolves to a nil

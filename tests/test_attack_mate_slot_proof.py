@@ -78,6 +78,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
             '{"attack_mate_probe_transferred"}',
             '{"attack_mate_probe_retasked"}',
             '{"attack_mate_probe_stage"}',
+            '{"enemy_spawnside"}',
             '{"id_attacker_mate"}',
             '{"attacker_mate_ready"}',
         ):
@@ -90,7 +91,12 @@ class AttackMateSlotProofTests(unittest.TestCase):
             'ATTACK MATE PROBE BOOT ATTACK SIDE',
             'ATTACK MATE PROBE ARMED CLONE TEST',
             '{tag_add attack_mate_src}',
-            '{target_waypoint "attack_mate_entry"}',
+            # The dynamic campaign swaps attacker/defender spawn sides per mission
+            # instance, so the entry side is chosen at runtime from enemy_spawnside$.
+            '{target_waypoint "attack_mate_entry_a"}',
+            '{target_waypoint "attack_mate_entry_b"}',
+            '{var "enemy_spawnside$"}',
+            'ATTACK MATE PROBE SIDE UNKNOWN',
             'ATTACK MATE PROBE 1 CLONES READY',
             '{player "3"}',
             'id_attacker_mate$',
@@ -107,7 +113,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
             # is why {tag fpc1} left the units standing still on the live run.
             # flag_point_campaign entities exist on all 14 and the engine tags
             # them `flag`, which is how dcg_script.inc addresses them throughout.
-            '{group {select {tag {tag flag}}}}',
+            '{select {tag {tag flag}}}',
             '{tag_add attack_mate_flag1}',
             '{tag_add attack_mate_flag2}',
             '{target {ignore_captured_by_user 0} {tag attack_mate_flag1}}',
@@ -142,13 +148,32 @@ class AttackMateSlotProofTests(unittest.TestCase):
         # notes deliberately quote the bad forms as cautionary examples.
         code = "\n".join(l.split(";", 1)[0] for l in self.retask.splitlines())
 
-        # The move is the placement verb with the clone sub-node dropped.
-        move = code.index('{target_waypoint "attack_mate_entry"}')
+        # The move is the placement verb with the clone sub-node dropped. All three
+        # side branches (enemy on a, enemy on b, unknown) place the same 4 units.
+        self.assertEqual(code.count('{"placement"'), 3)
+        self.assertEqual(code.count('{target_waypoint "attack_mate_entry_a"}'), 1)
+        self.assertEqual(code.count('{target_waypoint "attack_mate_entry_b"}'), 2)
+        move = code.index('{target_waypoint "attack_mate_entry')
         promote = code.index("{tag_add attack_mate_probe}")
         self.assertLess(move, promote)
         move_block = code[code.index('{"placement"'):move]
         self.assertIn("{select {tag {tag attack_mate_src}}}", move_block)
         self.assertIn("{amount 4}", move_block)
+
+        # Enemy on side a means we enter from b, and vice versa - never the same.
+        side_a = code.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
+        side_b = code.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
+        self.assertLess(side_a, side_b)
+        self.assertIn(
+            '{target_waypoint "attack_mate_entry_b"}', code[side_a:side_b]
+        )
+        self.assertIn(
+            '{target_waypoint "attack_mate_entry_a"}', code[side_b:]
+        )
+        # Unknown side must self-report rather than silently guess.
+        self.assertIn(
+            '{"set_i" {var "attack_mate_probe_stage$"} {op "="} {value 53}}', code
+        )
 
         # SELECTOR RULE: on these breed-less templates, decorating an advanced
         # selector zeroes the match. Live proof in one run: bare select moved all
@@ -206,7 +231,17 @@ class AttackMateSlotProofTests(unittest.TestCase):
         self.assertEqual(code.count("{type entity}"), 2)
         self.assertEqual(code.count("{tag_add attack_mate_flag1}"), 1)
         self.assertEqual(code.count("{tag_add attack_mate_flag2}"), 1)
-        self.assertIn("{exclude {tag {tag attack_mate_flag1}}}", code)
+        self.assertIn("{tag {tag attack_mate_flag1}}", code)
+
+        # A mission activates only ~2 of a map's flag points; without this filter
+        # the squad sprinted to a dead objective. Both nearest-flag picks - the
+        # initial order and the retask re-pick - must exclude inactive.
+        self.assertEqual(code.count("{state {state inactive}}"), 2)
+        for anchor in ("{tag_add attack_mate_flag1}", "{tag_add attack_mate_flag2}"):
+            pick = code.rindex("{select {tag {tag flag}}}", 0, code.index(anchor))
+            self.assertIn(
+                "{state {state inactive}}", code[pick:code.index(anchor)]
+            )
 
         # Arrival is the near/near_to/distance idiom, not a zone test.
         self.assertIn('{"3.near"', code)
@@ -300,23 +335,29 @@ class AttackMateSlotProofTests(unittest.TestCase):
                     mi,
                 )
 
-                # Attack-side entry. allied_support_entry is authored at the
-                # spawn_a centroid (the DEFENDER's rear) on 13 of 14 maps, so on an
-                # attack mission it drops the units in enemy territory - confirmed
-                # live on outback. Each map gets its own waypoint at that map's
-                # spawn_b centroid, pulled toward the map centre.
-                self.assertEqual(mi.count('{"attack_mate_entry"'), 1)
+                # Both entry sides. The dynamic campaign swaps attacker/defender
+                # spawns per mission instance - the same map put us on the safe
+                # side one run and in enemy territory the next - so a single
+                # static entry can never be right. Each map carries one waypoint
+                # per side and the probe chooses at runtime.
                 self.assertEqual(mi.count('{"allied_support_entry"'), 1)
-                wp = re.search(
-                    r'\{"attack_mate_entry"\s*\n\s*\{position '
-                    r'(-?[\d.]+) (-?[\d.]+) [\d.]+\}\s*\n\s*\{radius 150\}',
-                    mi,
-                )
-                self.assertIsNotNone(wp, "malformed attack_mate_entry block")
-                x, y = float(wp.group(1)), float(wp.group(2))
+                self.assertEqual(mi.count('{"attack_mate_entry_a"'), 1)
+                self.assertEqual(mi.count('{"attack_mate_entry_b"'), 1)
+                # The pre-split name must be fully gone, not merely rare.
+                self.assertNotIn('{"attack_mate_entry"', mi)
 
-                # It must sit on the B side: nearer the spawn_b centroid than the
-                # spawn_a centroid, and strictly inside the spawn_b line.
+                entries = {}
+                for side in ("a", "b"):
+                    wp = re.search(
+                        r'\{"attack_mate_entry_%s"\s*\n\s*\{position '
+                        r'(-?[\d.]+) (-?[\d.]+) [\d.]+\}\s*\n\s*\{radius 150\}' % side,
+                        mi,
+                    )
+                    self.assertIsNotNone(
+                        wp, "malformed attack_mate_entry_%s block" % side
+                    )
+                    entries[side] = (float(wp.group(1)), float(wp.group(2)))
+
                 tags = dict(
                     (m.group(2).lower(), re.findall(r'"([^"]*)"', m.group(1)))
                     for m in re.finditer(
@@ -341,16 +382,21 @@ class AttackMateSlotProofTests(unittest.TestCase):
                         sum(p[1] for p in pts) / len(pts),
                     )
 
-                ax, ay = centroid("spawn_a")
-                bx, by = centroid("spawn_b")
-                d_a = ((x - ax) ** 2 + (y - ay) ** 2) ** 0.5
-                d_b = ((x - bx) ** 2 + (y - by) ** 2) ** 0.5
-                self.assertLess(d_b, d_a)
-                # Pulled toward the centre, so strictly closer to origin than the
-                # spawn line itself - units land forward of the spawn markers.
-                self.assertLess(
-                    (x * x + y * y) ** 0.5, (bx * bx + by * by) ** 0.5
-                )
+                cent = {"a": centroid("spawn_a"), "b": centroid("spawn_b")}
+                for side, (x, y) in entries.items():
+                    other = "b" if side == "a" else "a"
+                    own, opp = cent[side], cent[other]
+                    d_own = ((x - own[0]) ** 2 + (y - own[1]) ** 2) ** 0.5
+                    d_opp = ((x - opp[0]) ** 2 + (y - opp[1]) ** 2) ** 0.5
+                    self.assertLess(
+                        d_own, d_opp, "entry_%s is on the wrong side" % side
+                    )
+                    # Pulled toward the centre, so strictly closer to origin than
+                    # the spawn line - units land forward of the spawn markers.
+                    self.assertLess(
+                        (x * x + y * y) ** 0.5,
+                        (own[0] ** 2 + own[1] ** 2) ** 0.5,
+                    )
 
     def test_deployment_patches_exactly_the_cwa_map_family(self) -> None:
         for marker in (

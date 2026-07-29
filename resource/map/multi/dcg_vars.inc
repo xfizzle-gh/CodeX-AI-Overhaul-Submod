@@ -27,6 +27,7 @@
 			{"attack_mate_probe_transferred"}
 			{"attack_mate_probe_retasked"}
 			{"attack_mate_probe_stage"}
+			{"enemy_spawnside"}
 			{"id_attacker_mate"}
 			{"attacker_mate_ready"}
 			{"allied_attack_enabled"}

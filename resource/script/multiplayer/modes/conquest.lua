@@ -90,6 +90,20 @@ local function publishConquestIds()
 	if firstEnemyId > 0 then BotApi.Scene:SetVar("id_1st_enemy", firstEnemyId) end
 	if defenderBotId > 0 then BotApi.Scene:SetVar("id_defenderbot", defenderBotId) end
 	if firstPlayerId > 0 then BotApi.Scene:SetVar("id_1st_player", firstPlayerId) end
+
+-- Attack-side scripts need the physical side the enemy bot spawned on: the
+-- dynamic campaign swaps attacker/defender spawns per mission instance, so a
+-- static entry waypoint is never correct. utility.lua derives spawnSide from
+-- BotApi.Instance.spawnPointName ("a1" -> "a"). One writer only: this is
+-- published from the mission-authority branch alongside the perspective vars.
+local function publishEnemySpawnSide()
+	if spawnSide == "a" then
+		BotApi.Scene:SetVar("enemy_spawnside", 1)
+	elseif spawnSide == "b" then
+		BotApi.Scene:SetVar("enemy_spawnside", 2)
+	end
+	if printDebug then print("Print: enemy_spawnside published for side", tostring(spawnSide)) end
+end
 end
 
 local DifficultySettings = {
@@ -154,6 +168,7 @@ local function setVarsInMissionScript()
 
 	-- Everything below is enemy-bot perspective and must have one writer.
 	BotApi.Scene:SetVar("user_is_defender", botDefender and 0 or 1)
+	publishEnemySpawnSide()
 
 	local botNation = BotApi.Instance.army
 	local botDifficulty = BotApi.Instance.difficulty

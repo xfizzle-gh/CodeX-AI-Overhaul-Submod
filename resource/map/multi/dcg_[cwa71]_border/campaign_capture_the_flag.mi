@@ -30029,7 +30029,11 @@
 			}
 		}
 		{waypoints
-			{"attack_mate_entry"
+			{"attack_mate_entry_a"
+				{position -7497.24 -1438.19 0.00}
+				{radius 150}
+			}
+			{"attack_mate_entry_b"
 				{position 7513.46 883.48 0.00}
 				{radius 150}
 			}

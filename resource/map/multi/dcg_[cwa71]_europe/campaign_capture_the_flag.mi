@@ -3692,7 +3692,11 @@
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"attack_mate_entry"
+			{"attack_mate_entry_a"
+				{position 1515.08 -7582.69 0.00}
+				{radius 150}
+			}
+			{"attack_mate_entry_b"
 				{position 724.76 7501.91 0.00}
 				{radius 150}
 			}

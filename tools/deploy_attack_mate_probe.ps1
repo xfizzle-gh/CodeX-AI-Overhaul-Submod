@@ -76,7 +76,9 @@ foreach ($marker in @(
 foreach ($marker in @(
     '{var "user_is_defender$"}',
     'ATTACK MATE PROBE ARMED CLONE TEST',
-    '{target_waypoint "attack_mate_entry"}',
+    '{target_waypoint "attack_mate_entry_a"}',
+    '{target_waypoint "attack_mate_entry_b"}',
+    '{var "enemy_spawnside$"}',
     '{player "3"}',
     'ATTACK MATE PROBE 3 LEG1 ORDERED',
     'ATTACK MATE PROBE 4 RETASKED TO FLAG 2',
@@ -84,7 +86,7 @@ foreach ($marker in @(
     # carries none of those tags, so {tag fpc1} left the units standing still.
     # flag_point_campaign entities exist on all 14 maps and the engine tags them
     # `flag`, which is how dcg_script.inc addresses capture points throughout.
-    '{group {select {tag {tag flag}}}}',
+    '{select {tag {tag flag}}}',
     '{tag_add attack_mate_flag1}',
     '{tag_add attack_mate_flag2}',
     '{select {tag {tag attack_mate_tpl}}}',
@@ -110,6 +112,9 @@ if (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch '{tag attack_ma
 }
 if (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch '{tag_remove attack_mate_src}') {
     throw "Source retask probe removes attack_mate_src, but the entire downstream chain selects on it"
+}
+if ((Select-String -LiteralPath $retaskSource -SimpleMatch '{state {state inactive}}').Count -ne 2) {
+    throw "Source retask probe must exclude inactive flag points on BOTH nearest-flag picks - a mission activates only ~2 of a map's capture points"
 }
 if (Select-String -Quiet -LiteralPath $retaskSource -Pattern '^[^;]*\bfpc') {
     throw "Source retask probe still targets fpc* capture points. Those tags are absent from outback entirely; address capture points as {tag flag}"
@@ -145,6 +150,8 @@ foreach ($marker in @(
     'local function ensureAttackPrepInform',
     'local function IssueScatterOrder',
     'local function ScheduleSpawnOrderNudge',
+    'local function publishEnemySpawnSide',
+    'BotApi.Scene:SetVar("enemy_spawnside"',
     'Context.SpawnSeekTimer = Context.SpawnSeekTimer or {}'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $conquestSource -SimpleMatch $marker)) {
@@ -155,7 +162,8 @@ $conquestText = [System.IO.File]::ReadAllText($conquestSource)
 foreach ($pair in @(
     @('local function ensureAttackPrepInform', 'function OnGameQuant'),
     @('local function IssueScatterOrder', 'IssueScatterOrder(squad, flags'),
-    @('local function ScheduleSpawnOrderNudge', 'ScheduleSpawnOrderNudge(squad)')
+    @('local function ScheduleSpawnOrderNudge', 'ScheduleSpawnOrderNudge(squad)'),
+    @('local function publishEnemySpawnSide', 'publishEnemySpawnSide()')
 )) {
     $defAt = $conquestText.IndexOf($pair[0])
     $useAt = $conquestText.IndexOf($pair[1])
@@ -208,7 +216,7 @@ $probeInclude = '(include "../attack_mate_retask_probe.inc")'
 $tplAnchor = '(include "../allied_support_templates.inc")'
 $tplInclude = '(include "../attack_mate_probe_templates.inc")'
 $waypointsAnchor = "`t`t{waypoints"
-$entryName = '{"attack_mate_entry"'
+$entryName = '{"attack_mate_entry_'
 $backupRoot = Join-Path $WorkshopRoot "_attack_mate_probe_backups"
 
 foreach ($mapFile in $mapFiles) {
@@ -253,21 +261,31 @@ foreach ($mapFile in $mapFiles) {
         throw "Expected exactly one probe-templates include in: $mapFile"
     }
 
-    # Attack-side entry waypoint. allied_support_entry is authored at the spawn_a
-    # centroid (the DEFENDER's rear), so on an attack mission it drops the units in
-    # enemy territory. The per-map replacement lives in the repo copy of the map;
-    # copy that exact block across rather than recomputing coordinates here.
+    # Attack-side entry waypoints, one per spawn side. The dynamic campaign swaps
+    # attacker/defender spawns per mission instance, so the probe picks between
+    # them at runtime from enemy_spawnside$ - a single static entry is never right.
+    # The per-map coordinates live in the repo copy of the map; copy those exact
+    # blocks across rather than recomputing anything here.
+    $repoMap = Join-Path $RepoRoot ("resource\map\multi\" + (Split-Path -Leaf (Split-Path -Parent $mapFile)) + "\campaign_capture_the_flag.mi")
+    if (-not (Test-Path -LiteralPath $repoMap)) {
+        throw "No repo map to source the entry waypoints from: $repoMap"
+    }
+    $repoText = [System.IO.File]::ReadAllText($repoMap)
+
+    # Self-healing and idempotent: strip every attack_mate_entry* block first -
+    # including the superseded side-agnostic one written by earlier deploys - then
+    # rebuild both sides from the repo. Rewriting beats trying to reconcile
+    # whatever an interrupted earlier run happened to leave behind.
     $text = [System.IO.File]::ReadAllText($mapFile)
-    $wpCount = ([regex]::Matches($text, [regex]::Escape($entryName))).Count
-    if ($wpCount -eq 0) {
-        $repoMap = Join-Path $RepoRoot ("resource\map\multi\" + (Split-Path -Leaf (Split-Path -Parent $mapFile)) + "\campaign_capture_the_flag.mi")
-        if (-not (Test-Path -LiteralPath $repoMap)) {
-            throw "No repo map to source the entry waypoint from: $repoMap"
-        }
-        $repoText = [System.IO.File]::ReadAllText($repoMap)
-        $wpMatch = [regex]::Match($repoText, '\{"attack_mate_entry"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}')
+    $text = [regex]::Replace(
+        $text,
+        '\s*\{"attack_mate_entry[a-z_]*"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}',
+        ''
+    )
+    foreach ($side in @("b", "a")) {
+        $wpMatch = [regex]::Match($repoText, '\{"attack_mate_entry_' + $side + '"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}')
         if (-not $wpMatch.Success) {
-            throw "Repo map is missing the attack_mate_entry waypoint block: $repoMap"
+            throw "Repo map is missing the attack_mate_entry_$side waypoint block: $repoMap"
         }
         if (-not $text.Contains($waypointsAnchor)) {
             throw "Map is missing the waypoints anchor: $mapFile"
@@ -276,11 +294,21 @@ foreach ($mapFile in $mapFiles) {
         # line endings to CRLF to match the workshop map.
         $block = "`r`n`t`t`t" + ($wpMatch.Value -replace '\r?\n', "`r`n")
         $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $block)
-        [System.IO.File]::WriteAllText($mapFile, $text, [System.Text.UTF8Encoding]::new($false))
-        $wpCount = 1
     }
-    if ($wpCount -ne 1) {
-        throw "Expected exactly one attack_mate_entry waypoint in: $mapFile"
+    [System.IO.File]::WriteAllText($mapFile, $text, [System.Text.UTF8Encoding]::new($false))
+
+    $text = [System.IO.File]::ReadAllText($mapFile)
+    foreach ($side in @("a", "b")) {
+        $n = ([regex]::Matches($text, [regex]::Escape('{"attack_mate_entry_' + $side + '"'))).Count
+        if ($n -ne 1) {
+            throw "Expected exactly one attack_mate_entry_$side waypoint in: $mapFile (found $n)"
+        }
+    }
+    if ([regex]::IsMatch($text, '\{"attack_mate_entry"')) {
+        throw "Map still carries the superseded single-sided attack_mate_entry: $mapFile"
+    }
+    if (([regex]::Matches($text, [regex]::Escape('{"allied_support_entry"'))).Count -ne 1) {
+        throw "Map lost its allied_support_entry waypoint: $mapFile"
     }
 
     Write-Host "PATCHED $mapFile"
