@@ -170,7 +170,7 @@ Write-Host "`nVerification markers:"
 Select-String -LiteralPath $gameSet -Pattern "aiTeamPlayers 1"
 Select-String -LiteralPath $botMain -Pattern "CODEX_ATTACK_MATE_ROUTER|route_skip|first_player_slot|safeRequire"
 Select-String -LiteralPath $mate -Pattern "CODEX_ATTACK_MATE_PROBE|diagnostics_only"
-Select-String -LiteralPath $retask -Pattern "ATTACK MATE PROBE|attack_mate/probe_retask|player \"3\""
+Select-String -LiteralPath $retask -Pattern 'ATTACK MATE PROBE|attack_mate/probe_retask|player "3"'
 Write-Host "Patched maps: $($mapFiles.Count)"
 
 Write-Host "`nDeployment complete. Fully restart Gates of Hell before testing."
