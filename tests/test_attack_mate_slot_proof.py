@@ -23,20 +23,36 @@ class AttackMateSlotProofTests(unittest.TestCase):
         self.assertIn("{aiTeamPlayers 1}", self.game_set[team_a:team_b])
         self.assertIn("{minTeamSlots 7}", self.game_set[team_a:team_b])
 
-    def test_router_preserves_defenderbot_and_routes_extra_team_a_bot(self) -> None:
+    def test_router_never_loads_conquest_for_team_a_attack_bots(self) -> None:
         for marker in (
             'local ROUTER_PREFIX = "CODEX_ATTACK_MATE_ROUTER"',
-            'identity.team ~= "a"',
+            'local function isCampaignTeamABot(identity)',
+            'if identity.attacking == true then return true end',
             'identity.playerId == identity.defenderBotId',
-            'identity.attacking == true',
             'require("resource/script/multiplayer/modes/attacker_mate")',
+            '"team_a_attack_safe_route"',
             'local gameModeScriptPath = "resource/script/multiplayer/modes/" .. mode',
         ):
             self.assertIn(marker, self.bot_main)
 
-    def test_probe_is_read_only_and_publishes_identity(self) -> None:
+        # FirstPlayerId is not a human-only identity; the first live test proved
+        # it can equal the Team A AI player ID.
+        self.assertNotIn(
+            "identity.playerId == identity.firstPlayerId",
+            self.bot_main,
+        )
+
+        attack_gate = self.bot_main.index("if identity.attacking == true then return true end")
+        defender_gate = self.bot_main.index("identity.playerId == identity.defenderBotId")
+        self.assertLess(attack_gate, defender_gate)
+
+    def test_probe_is_read_only_and_publishes_only_primary_candidate(self) -> None:
         for marker in (
             'local PREFIX = "CODEX_ATTACK_MATE_PROBE"',
+            'local function isPrimaryAttackMate(id)',
+            'not isDefenderBot(id)',
+            '"primary_attack_mate_candidate"',
+            '"attack_defenderbot_shadow"',
             'sc:SetVar("id_attacker_mate", id.playerId)',
             'sc:SetVar("attacker_mate_ready", 1)',
             '"scene_squads"',
