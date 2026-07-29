@@ -38,23 +38,30 @@ foreach ($source in @($gameSetSource, $botMainSource, $mateSource)) {
     }
 }
 
-# Refuse to copy from a stale checkout. The first live tests proved that the old
-# FirstPlayerId exclusion routes the Team A support bot into conquest.lua and
-# crashes the engine while utility.lua is loading.
+# Refuse to deploy anything except the live-proven manual-transfer checkpoint.
+# The transferable Team A process reports the same ID as FirstPlayerId. Loading
+# a Lua controller on that process caused the native crash; skipping it leaves
+# the ownership slot alive and allows engine-level manual transfer.
 if (-not (Select-String -Quiet -LiteralPath $gameSetSource -SimpleMatch "{aiTeamPlayers 1}")) {
     throw "Source game set does not contain the attack-mate AI slot marker"
 }
-if (-not (Select-String -Quiet -LiteralPath $botMainSource -SimpleMatch "team_a_attack_safe_route")) {
-    throw "Source bot.main.lua is stale: safe Team A attack route is missing"
+if (-not (Select-String -Quiet -LiteralPath $botMainSource -SimpleMatch 'route_skip", "first_player_slot')) {
+    throw "Source bot.main.lua is not the proven first-player-slot checkpoint"
 }
-if (Select-String -Quiet -LiteralPath $botMainSource -SimpleMatch "identity.playerId == identity.firstPlayerId") {
-    throw "Source bot.main.lua is stale: invalid FirstPlayerId exclusion is still present"
+if (-not (Select-String -Quiet -LiteralPath $botMainSource -SimpleMatch "identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId")) {
+    throw "Source bot.main.lua is missing the proven FirstPlayerId isolation gate"
 }
-if (-not (Select-String -Quiet -LiteralPath $mateSource -SimpleMatch "primary_attack_mate_candidate")) {
-    throw "Source attacker_mate.lua is stale: primary-candidate marker is missing"
+if (-not (Select-String -Quiet -LiteralPath $botMainSource -SimpleMatch "local function safeRequire(path)")) {
+    throw "Source bot.main.lua is missing guarded module loading"
+}
+if (Select-String -Quiet -LiteralPath $botMainSource -SimpleMatch "team_a_attack_safe_route") {
+    throw "Source bot.main.lua contains the superseded crashing Team A route"
+}
+if (-not (Select-String -Quiet -LiteralPath $mateSource -SimpleMatch '"diagnostics_only"')) {
+    throw "Source attacker_mate.lua is not the read-only checkpoint"
 }
 
-Write-Host "Deploying attack-mate slot proof"
+Write-Host "Deploying proven attack-mate manual-transfer checkpoint"
 Write-Host "Repository: $RepoRoot"
 Write-Host "Branch:     $branch"
 Write-Host "Workshop:   $WorkshopRoot"
@@ -82,19 +89,22 @@ $mate = Join-Path $WorkshopRoot $files[2]
 if (-not (Select-String -Quiet -LiteralPath $gameSet -SimpleMatch "{aiTeamPlayers 1}")) {
     throw "Workshop game set does not contain the attack-mate AI slot marker"
 }
-if (-not (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "team_a_attack_safe_route")) {
-    throw "Workshop bot.main.lua does not contain the safe Team A attack route"
+if (-not (Select-String -Quiet -LiteralPath $botMain -SimpleMatch 'route_skip", "first_player_slot')) {
+    throw "Workshop bot.main.lua does not contain the proven first-player-slot skip"
 }
-if (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "identity.playerId == identity.firstPlayerId") {
-    throw "Workshop bot.main.lua still contains the invalid FirstPlayerId exclusion"
+if (-not (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId")) {
+    throw "Workshop bot.main.lua is missing the proven FirstPlayerId isolation gate"
 }
-if (-not (Select-String -Quiet -LiteralPath $mate -SimpleMatch "primary_attack_mate_candidate")) {
-    throw "Workshop attacker_mate.lua does not contain the primary-candidate marker"
+if (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "team_a_attack_safe_route") {
+    throw "Workshop bot.main.lua still contains the superseded crashing Team A route"
+}
+if (-not (Select-String -Quiet -LiteralPath $mate -SimpleMatch '"diagnostics_only"')) {
+    throw "Workshop attacker_mate.lua is not the read-only checkpoint"
 }
 
 Write-Host "`nVerification markers:"
 Select-String -LiteralPath $gameSet -Pattern "aiTeamPlayers 1"
-Select-String -LiteralPath $botMain -Pattern "CODEX_ATTACK_MATE_ROUTER|team_a_attack_safe_route"
-Select-String -LiteralPath $mate -Pattern "CODEX_ATTACK_MATE_PROBE|primary_attack_mate_candidate|attack_defenderbot_shadow"
+Select-String -LiteralPath $botMain -Pattern "CODEX_ATTACK_MATE_ROUTER|route_skip|first_player_slot|safeRequire"
+Select-String -LiteralPath $mate -Pattern "CODEX_ATTACK_MATE_PROBE|diagnostics_only"
 
 Write-Host "`nDeployment complete. Fully restart Gates of Hell before testing."
