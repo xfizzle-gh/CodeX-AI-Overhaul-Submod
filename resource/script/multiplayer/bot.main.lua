@@ -1,6 +1,6 @@
 -- Function to require and initialize the appropriate game mode .lua file.
--- Campaign CTF routes Team A support bots into the attack-mate diagnostic
--- controller without ever loading the unsafe conquest/utility stack for them.
+-- Campaign CTF additionally routes the extra Team A bot into the attack-mate
+-- diagnostic controller without replacing the existing DefenderBot.
 
 local ROUTER_PREFIX = "CODEX_ATTACK_MATE_ROUTER"
 
@@ -37,24 +37,32 @@ local function campaignIdentity()
     }
 end
 
-local function isCampaignTeamABot(identity)
-    return identity.gameMode == "campaign_capture_the_flag"
-       and identity.team == "a"
-       and not identity.isHuman
-end
+local function isAttackMateCandidate(identity)
+    if identity.gameMode ~= "campaign_capture_the_flag" then return false end
+    if identity.team ~= "a" then return false end
+    if identity.isHuman then return false end
+    if identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId then return false end
 
-local function shouldRouteAttackMate(identity)
-    if not isCampaignTeamABot(identity) then return false end
+    -- Never intercept the engine-owned DefenderBot. That bot continues to use
+    -- the normal Code:X conquest controller on defense missions.
+    if identity.defenderBotId > 0 and identity.playerId == identity.defenderBotId then
+        return false
+    end
 
-    -- Live proof showed FirstPlayerId can point at a Team A AI process, not the
-    -- human commander. Never use FirstPlayerId to exclude a bot from this route.
-    -- On human attacks every Team A bot must avoid conquest.lua/utility.lua.
+    -- On a human attack, the extra Team A bot reports Attacking=true.
     if identity.attacking == true then return true end
 
-    -- On defense the engine-owned DefenderBot remains on normal Code:X conquest
-    -- logic. Any additional Team A slot is isolated in the read-only probe so it
-    -- cannot purchase a second defense army.
-    if identity.defenderBotId > 0 and identity.playerId == identity.defenderBotId then
+    -- The extra slot can still be instantiated on defense. When the engine
+    -- exposes a distinct DefenderBot ID, route that extra slot to the mate
+    -- controller as a disabled/read-only instance rather than allowing it to
+    -- purchase an unintended second defense army.
+    return identity.defenderBotId > 0 and identity.playerId ~= identity.defenderBotId
+end
+
+local function safeRequire(path)
+    local ok, err = pcall(require, path)
+    if not ok then
+        routerLog("require_failed", path, tostring(err))
         return false
     end
     return true
@@ -70,7 +78,6 @@ local function initializeBotAI()
     }
 
     local identity = campaignIdentity()
-    local isDefenderBot = identity.defenderBotId > 0 and identity.playerId == identity.defenderBotId
     routerLog(
         "classify",
         "playerId", identity.playerId,
@@ -78,19 +85,26 @@ local function initializeBotAI()
         "army", identity.army,
         "gameMode", identity.gameMode,
         "attacking", tostring(identity.attacking),
+        "isHuman", tostring(identity.isHuman),
         "firstPlayerId", identity.firstPlayerId,
         "firstEnemyId", identity.firstEnemyId,
-        "defenderBotId", identity.defenderBotId,
-        "isDefenderBot", tostring(isDefenderBot)
+        "defenderBotId", identity.defenderBotId
     )
 
-    if shouldRouteAttackMate(identity) then
-        routerLog(
-            "route", "attacker_mate",
-            "playerId", identity.playerId,
-            "reason", identity.attacking == true and "team_a_attack_safe_route" or "extra_team_a_defense_isolation"
-        )
-        require("resource/script/multiplayer/modes/attacker_mate")
+    -- Never run bot controllers on the human client slot. Doing so can null-deref
+    -- engine BotApi fields (spawnPointName / Events) and hard-crash the process.
+    if identity.isHuman then
+        routerLog("route_skip", "human_player", "playerId", identity.playerId)
+        return
+    end
+    if identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId then
+        routerLog("route_skip", "first_player_slot", "playerId", identity.playerId)
+        return
+    end
+
+    if isAttackMateCandidate(identity) then
+        routerLog("route", "attacker_mate", "playerId", identity.playerId)
+        safeRequire("resource/script/multiplayer/modes/attacker_mate")
         return
     end
 
@@ -101,21 +115,22 @@ local function initializeBotAI()
     end
 
     local gameModeScriptPath = "resource/script/multiplayer/modes/" .. mode
-    routerLog(
-        "route", mode,
-        "playerId", identity.playerId,
-        "reason", isDefenderBot and "defenderbot_normal_controller" or "non_team_a_or_non_campaign"
-    )
-    require(gameModeScriptPath)
+    routerLog("route", mode, "playerId", identity.playerId)
+    if not safeRequire(gameModeScriptPath) then
+        return
+    end
 
     -- Load Battle Zones-specific reliability and purchasing overrides only after
     -- the base mode has registered its shared functions and event handlers.
     if identity.gameMode == "battle_zones" or identity.gameMode == "ammunition" then
-        require([[/script/multiplayer/modes/battlezones_overhaul]])
+        safeRequire([[/script/multiplayer/modes/battlezones_overhaul]])
     end
 
     if initialize then
-        initialize()
+        local ok, err = pcall(initialize)
+        if not ok then
+            routerLog("initialize_failed", tostring(err))
+        end
     end
 end
 
