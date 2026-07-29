@@ -143,7 +143,6 @@ class AttackMateSlotProofTests(unittest.TestCase):
         for marker in (
             '{"attack_mate_probe_started"}',
             '{"attack_mate_probe_transferred"}',
-            '{"attack_mate_probe_retasked"}',
             '{"attack_mate_probe_stage"}',
             # The wave clock and the MI-delivery enable switch.
             '{"attack_mate_wave_cmd"}',

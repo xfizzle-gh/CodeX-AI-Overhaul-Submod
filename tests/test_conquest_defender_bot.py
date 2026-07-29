@@ -180,16 +180,19 @@ class ConquestRuntimeSourceTests(unittest.TestCase):
         self.assertIn("BotApi.Events:KillQuantTimer(", self.source)
 
     def test_order_timers_are_registered_on_every_map(self) -> None:
-        # The adopted external change: waypoint maps previously got a one-shot
-        # GotoNextWaypoint and never re-ordered, so squads sat at spawn.
+        # Waypoint maps previously got a single move order at spawn and never
+        # re-ordered, so squads sat at the spawn line for the rest of the match.
         spawn = self.source.index("function OnGameSpawn(args)")
         body = self.source[spawn:self.source.index("\nfunction ", spawn + 1)]
         self.assertIn("SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)", body)
         self.assertIn("ScheduleSpawnOrderNudge(squad)", body)
-        # GotoNextWaypoint must stay nil-safe: it indexes Waypoints directly.
-        goto = self.source.index("function GotoNextWaypoint(squad)")
-        goto_body = self.source[goto:self.source.index("\nfunction ", goto + 1)]
-        self.assertIn("if not waypoints or #waypoints == 0 then return end", goto_body)
+        # Every map now goes through the rotating CaptureFlag loop, so the
+        # one-shot waypoint walker is gone rather than merely unused.
+        self.assertNotIn("GotoNextWaypoint", self.source)
+        # OnWaypoint hands straight into the same loop.
+        wp = self.source.index("function OnWaypoint(args)")
+        wp_body = self.source[wp:self.source.index("\nfunction ", wp + 1)]
+        self.assertIn("SetSquadOrder(CaptureFlag, args.squadId", wp_body)
 
 
 if __name__ == "__main__":

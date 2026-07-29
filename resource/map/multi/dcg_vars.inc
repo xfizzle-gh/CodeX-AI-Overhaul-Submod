@@ -25,7 +25,6 @@
 			{"prep_spawn_snap"}
 			{"attack_mate_probe_started"}
 			{"attack_mate_probe_transferred"}
-			{"attack_mate_probe_retasked"}
 			{"attack_mate_probe_stage"}
 			{"attack_mate_wave_cmd"}
 			{"attack_mate_use_mi_probe"}

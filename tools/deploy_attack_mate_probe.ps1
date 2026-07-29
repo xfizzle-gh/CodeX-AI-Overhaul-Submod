@@ -88,7 +88,6 @@ foreach ($banned in $SlotUnsafe) {
 foreach ($marker in @(
     '{"attack_mate_probe_started"}',
     '{"attack_mate_probe_transferred"}',
-    '{"attack_mate_probe_retasked"}',
     '{"attack_mate_wave_cmd"}',
     '{"attack_mate_use_mi_probe"}'
 )) {

@@ -344,27 +344,6 @@ end
     -- end
 -- end
 
--- 进阶切换功能
-local function advancedDivisionSwitch(currentDivision, waveNumber)
-    if currentDivision == "inf_div" and waveNumber == 5 then
-        -- local possibleDivisions = {
-            -- {name = "art_div", probability = 70},  -- 70% 概率
-            -- {name = "mech_div", probability = 30}, -- 30% 概率
-        -- }
-        local possibleDivisions = {"mech_div", "inf_div"}
-        return possibleDivisions[math.random(#possibleDivisions)]-- return selectDivisionWithProbability(possibleDivisions)
-    elseif currentDivision == "tank_div" and waveNumber == 5 then
-        -- local possibleDivisions = {
-            -- {name = "heavytank_div", probability = 60}, -- 60% 概率
-            -- {name = "unique_div", probability = 40},   -- 40% 概率
-        -- }
-        local possibleDivisions = {"heavytank_div", "tank_div"}
-        return possibleDivisions[math.random(#possibleDivisions)]-- return selectDivisionWithProbability(possibleDivisions)
-    else
-        return selectRandomDivision()-- return selectDivisionWithProbability(divisionsWithProbability)
-    end
-end
-
 -- 示例：初始随机选择师
 local currentDivision = selectRandomDivision()  -- 初始随机选择师
 
@@ -837,13 +816,6 @@ function OnGameQuant()
 	end
 end
 
-function GotoNextWaypoint(squad)
-	local waypoints = BotApi.Scene.Waypoints
-	if not waypoints or #waypoints == 0 then return end
-	BotApi.Commands:CaptureFlag(squad, waypoints[math.random(#waypoints)]) --captureflag is basically gothereandattack
-	if printDebug then print("Print: #captureFlag call inside GoToNextWaypoint") end
-end
-
 function OnWaypoint(args)
 	if not args or not args.squadId then return end
 	if not BotApi.Scene:IsSquadExists(args.squadId) then return end
@@ -994,7 +966,8 @@ function OnGameSpawn(args)
     end
 
 	-- Always register the CaptureFlag order loop (scatter uses waypoints when present).
-	-- Old path: waypoint maps only got a one-shot GotoNextWaypoint and never re-ordered.
+	-- Waypoint maps used to get a single move order at spawn and never re-order,
+	-- which left squads standing at the spawn line for the rest of the match.
 	SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
 	ScheduleSpawnOrderNudge(squad)
 end
