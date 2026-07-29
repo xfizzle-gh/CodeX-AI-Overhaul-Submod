@@ -1,5 +1,5 @@
 ; Allied support waves for human-defense Dynamic Conquest (CWA).
-; Indomitus-style FSM: init -> chance -> decide (target FPC / near-cap) -> spawn.
+; Wave FSM: init -> chance -> decide (target flag point / near-cap) -> spawn.
 ; Clones permanent allied_support_template pool at waypoint allied_support_entry,
 ; assigns DefenderBot, {control AI}, advances to neediest fpc.
 ;
@@ -337,7 +337,7 @@
 					; }
 					; TEST delay 60s — restore PRODUCTION 4-8 min block below after log proof
 					{"delay" {time 60}}
-					; PRODUCTION inter-wave delay (Indomitus-style weighted switch):
+					; PRODUCTION inter-wave delay (weighted switch over delay buckets):
 					; {"switch"
 					; 	{"case"
 					; 		{condition {type rand} {value 0.2}}
