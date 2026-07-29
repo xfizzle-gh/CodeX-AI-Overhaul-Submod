@@ -23,3 +23,6 @@
 			{"bots_divisions"}
 			{"weatherid"}
 			{"prep_spawn_snap"}
+			{"attack_mate_probe_started"}
+			{"attack_mate_probe_transferred"}
+			{"attack_mate_probe_retasked"}
