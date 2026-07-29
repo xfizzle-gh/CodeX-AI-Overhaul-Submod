@@ -32,18 +32,29 @@ foreach ($relative in $files) {
         throw "Hash mismatch after copying: $relative"
     }
 
-    Write-Host "OK $relative"
+    Write-Host "OK $relative $sourceHash"
+}
+
+$gameSet = Join-Path $WorkshopRoot $files[0]
+$botMain = Join-Path $WorkshopRoot $files[1]
+$mate = Join-Path $WorkshopRoot $files[2]
+
+if (-not (Select-String -Quiet -LiteralPath $gameSet -SimpleMatch "{aiTeamPlayers 1}")) {
+    throw "Workshop game set does not contain the attack-mate AI slot marker"
+}
+if (-not (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "team_a_attack_safe_route")) {
+    throw "Workshop bot.main.lua does not contain the safe Team A attack route"
+}
+if (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "identity.playerId == identity.firstPlayerId") {
+    throw "Workshop bot.main.lua still contains the invalid FirstPlayerId exclusion"
+}
+if (-not (Select-String -Quiet -LiteralPath $mate -SimpleMatch "primary_attack_mate_candidate")) {
+    throw "Workshop attacker_mate.lua does not contain the primary-candidate marker"
 }
 
 Write-Host "`nVerification markers:"
-Select-String -LiteralPath `
-    (Join-Path $WorkshopRoot "resource\set\multiplayer\games\campaign_capture_the_flag.set") `
-    -Pattern "aiTeamPlayers 1"
-Select-String -LiteralPath `
-    (Join-Path $WorkshopRoot "resource\script\multiplayer\bot.main.lua") `
-    -Pattern "CODEX_ATTACK_MATE_ROUTER|attacker_mate"
-Select-String -LiteralPath `
-    (Join-Path $WorkshopRoot "resource\script\multiplayer\modes\attacker_mate.lua") `
-    -Pattern "CODEX_ATTACK_MATE_PROBE|diagnostics_only"
+Select-String -LiteralPath $gameSet -Pattern "aiTeamPlayers 1"
+Select-String -LiteralPath $botMain -Pattern "CODEX_ATTACK_MATE_ROUTER|team_a_attack_safe_route"
+Select-String -LiteralPath $mate -Pattern "CODEX_ATTACK_MATE_PROBE|primary_attack_mate_candidate|attack_defenderbot_shadow"
 
 Write-Host "`nDeployment complete. Fully restart Gates of Hell before testing."
