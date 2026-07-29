@@ -34,7 +34,10 @@
 		{teamsMode normal}
 		{armySelectionMode alliance}
 		{teams
-			{"a" {minTeamSlots 7}}
+			{"a"
+				{minTeamSlots 7}
+				{aiTeamPlayers 1}
+			}
 			{"b" {minTeamSlots 1}}
 		}
 		{alliances
