@@ -1,21 +1,21 @@
-; Attack-side ownership and mission-script retask proof.
-; Human attack only. Tags up to six player infantry, orders them to fpc1,
-; transfers them to the proven Team A AI ownership slot, then retasks them
-; to fpc2 only after at least one tagged actor enters fpc1.
+; TEST-ONLY attack-mate ownership and mission-script retask proof.
+; Starts on a fixed delay so it does not depend on Lua-only prep variables.
+; Run only in a human attack test. Tags up to six player infantry, orders
+; them to fpc1, transfers them to AI ownership slot 3, then retasks to fpc2.
 
 			{"attack_mate/probe_init"
 				{condition
-					{expression "1 & 2 & 3"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
-						{"2.cmp_i" {var "prep_inform$"} {op "=="} {value 1}}
-						{"3.cmp_i" {var "attack_mate_probe_started$"} {op "=="} {value 0}}
-					}
+					{type cmp_i}
+					{var "attack_mate_probe_started$"}
+					{op "=="}
+					{value 0}
 				}
 				{actions
 					{"set_i" {var "attack_mate_probe_started$"} {op "="} {value 1}}
-					{"timer" {time 8} {title "ATTACK MATE PROBE ARMED"}}
-					{"delay" {time 10}}
+					{"timer" {time 8} {title "ATTACK MATE PROBE ARMED FIXED DELAY"}}
+					; Map load precedes GameThreadStart by roughly 25-30 seconds.
+					; Forty seconds puts selection after the player army exists.
+					{"delay" {time 40}}
 
 					; Prefer the normal player tag.
 					{"entity_state"
@@ -95,7 +95,6 @@
 							}
 							{"timer" {time 8} {title "ATTACK MATE PROBE 2 LEG1 ORDERED"}}
 							{"delay" {time 0.2}}
-							; Live manual-transfer proof identified this ownership slot as player "3".
 							{"player"
 								{selector {ignore_captured_by_user 0} {tag attack_mate_probe} {type human}}
 								{operation set}
@@ -134,12 +133,11 @@
 
 			{"attack_mate/probe_retask"
 				{condition
-					{expression "1 & 2 & 3 & 4"}
+					{expression "1 & 2 & 3"}
 					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
-						{"2.cmp_i" {var "attack_mate_probe_transferred$"} {op "=="} {value 1}}
-						{"3.cmp_i" {var "attack_mate_probe_retasked$"} {op "=="} {value 0}}
-						{"4.entities"
+						{"1.cmp_i" {var "attack_mate_probe_transferred$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "attack_mate_probe_retasked$"} {op "=="} {value 0}}
+						{"3.entities"
 							{selector
 								{source advanced}
 								{group
@@ -159,7 +157,6 @@
 				{actions
 					{"set_i" {var "attack_mate_probe_retasked$"} {op "="} {value 1}}
 					{"timer" {time 8} {title "ATTACK MATE PROBE FPC1 REACHED"}}
-					; Critical second order: issue after ownership has already transferred.
 					{"action"
 						{selector {ignore_captured_by_user 0} {tag attack_mate_probe} {type human} {state operatable}}
 						{drop orders}
@@ -172,11 +169,10 @@
 
 			{"attack_mate/probe_timeout"
 				{condition
-					{expression "1 & 2 & 3"}
+					{expression "1 & 2"}
 					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
-						{"2.cmp_i" {var "attack_mate_probe_transferred$"} {op "=="} {value 1}}
-						{"3.cmp_i" {var "attack_mate_probe_retasked$"} {op "=="} {value 0}}
+						{"1.cmp_i" {var "attack_mate_probe_transferred$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "attack_mate_probe_retasked$"} {op "=="} {value 0}}
 					}
 				}
 				{actions
