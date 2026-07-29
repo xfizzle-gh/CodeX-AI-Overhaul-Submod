@@ -777,8 +777,23 @@ local function retryMissionIdentityOnce()
 	if printDebug then print("DCG identity retry", "playerId", myId, "firstEnemyId", firstEnemyId, "defenderBotId", defenderBotId, "firstPlayerId", firstPlayerId) end
 end
 
+-- Attack missions often never raise PrepTimeOver. Publish prep_inform once the
+-- human is confirmed attacker so MI attack probes are not gated forever.
+-- NOTE: must stay ABOVE OnGameQuant — a local defined after its caller resolves
+-- to a nil global at call time and hard-crashes the bot on its first quant.
+local attackPrepInformPublished = false
+local function ensureAttackPrepInform()
+	if attackPrepInformPublished then return end
+	if botDefender then return end -- enemy bot is attacker => human is defender; wait for real prep
+	if not isMissionAuthority or not isMissionAuthority() then return end
+	BotApi.Scene:SetVar("prep_inform", 1)
+	attackPrepInformPublished = true
+	if printDebug then print("Print: prep_inform set to 1 (human attack / no defense prep).") end
+end
+
 function OnGameQuant()
 	retryMissionIdentityOnce()
+	ensureAttackPrepInform()
 	TrySpawnUnit()
 
 	local waypoints = BotApi.Scene.Waypoints

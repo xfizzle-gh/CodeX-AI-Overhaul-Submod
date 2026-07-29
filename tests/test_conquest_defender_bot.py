@@ -95,6 +95,18 @@ class ConquestRuntimeSourceTests(unittest.TestCase):
         self.assertNotIn("KillSpawnCooldownTimer()", prep)
         self.assertNotIn("SetSpawnCooldownTimer()", prep)
 
+    def test_prep_inform_helper_is_defined_before_the_quant_that_calls_it(self) -> None:
+        # Lua resolves an undeclared local to a nil global: defining
+        # ensureAttackPrepInform after OnGameQuant crashes the bot on its first quant.
+        definition = self.source.index("local function ensureAttackPrepInform")
+        quant = self.source.index("function OnGameQuant")
+        self.assertLess(definition, quant)
+
+        body_start = self.source.index("function OnGameQuant")
+        body_end = self.source.index("\nfunction ", body_start + 1)
+        quant_body = self.source[body_start:body_end]
+        self.assertIn("ensureAttackPrepInform()", quant_body)
+
 
 if __name__ == "__main__":
     unittest.main()
