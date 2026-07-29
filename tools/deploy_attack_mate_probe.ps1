@@ -79,7 +79,14 @@ foreach ($marker in @(
     '{target_waypoint "attack_mate_entry"}',
     '{player "3"}',
     'ATTACK MATE PROBE 3 LEG1 ORDERED',
-    'ATTACK MATE PROBE 4 RETASKED TO FPC2',
+    'ATTACK MATE PROBE 4 RETASKED TO FLAG 2',
+    # Real capture points: fpc1..fpc5 is an Indomitus convention and outback
+    # carries none of those tags, so {tag fpc1} left the units standing still.
+    # flag_point_campaign entities exist on all 14 maps and the engine tags them
+    # `flag`, which is how dcg_script.inc addresses capture points throughout.
+    '{group {select {tag {tag flag}}}}',
+    '{tag_add attack_mate_flag1}',
+    '{tag_add attack_mate_flag2}',
     '{select {tag {tag attack_mate_tpl}}}',
     '{tag_add attack_mate_pool}',
     'ATTACK MATE PROBE FAIL NO POOL',
@@ -92,8 +99,7 @@ foreach ($marker in @(
     # templates, so promote reuses the placement's proven bare form and the whole
     # downstream chain keys on attack_mate_src - the one tag proven queryable.
     '{group {select {tag {tag attack_mate_src}}}}',
-    '{tag attack_mate_src} {type human}} {operation set}',
-    '{selector {source standart} {tag attack_mate_src}}'
+    '{tag attack_mate_src} {type human}} {operation set}'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch $marker)) {
         throw "Source retask probe is missing marker: $marker"
@@ -104,6 +110,9 @@ if (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch '{tag attack_ma
 }
 if (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch '{tag_remove attack_mate_src}') {
     throw "Source retask probe removes attack_mate_src, but the entire downstream chain selects on it"
+}
+if (Select-String -Quiet -LiteralPath $retaskSource -Pattern '^[^;]*\bfpc') {
+    throw "Source retask probe still targets fpc* capture points. Those tags are absent from outback entirely; address capture points as {tag flag}"
 }
 if (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch '{clone}') {
     throw "Source retask probe still clones. Three promote designs failed to match a cloned entity; a new entity's provenance is invisible to selectors on this engine. Move the originals instead"
@@ -321,6 +330,12 @@ if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{tag_add attac
 }
 if (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{clone}') {
     throw "Workshop retask probe still clones instead of moving the pool originals"
+}
+if (Select-String -Quiet -LiteralPath $retask -Pattern '^[^;]*\bfpc') {
+    throw "Workshop retask probe still targets fpc* capture points"
+}
+if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{tag_add attack_mate_flag1}')) {
+    throw "Workshop retask probe is not claiming a real flag point"
 }
 if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{group {select {tag {tag attack_mate_src}}}}')) {
     throw "Workshop retask probe is not using the proven bare select form"

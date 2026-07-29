@@ -95,16 +95,23 @@ class AttackMateSlotProofTests(unittest.TestCase):
             '{player "3"}',
             'id_attacker_mate$',
             'ATTACK MATE PROBE OWNER FALLBACK P3',
-            'fpc_inf_to_flag1',
             'ATTACK MATE PROBE 2 TRANSFERRED',
             'ATTACK MATE PROBE 3 LEG1 ORDERED',
-            '{tag fpc1}',
             '"attack_mate/probe_retask"',
-            '{zone "fpc1"}',
-            '{tag fpc2}',
-            'ATTACK MATE PROBE 4 RETASKED TO FPC2',
+            'ATTACK MATE PROBE FLAG 1 REACHED',
+            'ATTACK MATE PROBE 4 RETASKED TO FLAG 2',
             'ATTACK MATE PROBE FAIL NO CLONES',
             'ATTACK MATE PROBE FAIL NO POOL',
+            # Real capture points. fpc1..fpc5 is an Indomitus naming convention:
+            # 13 of 14 CWA maps carry those tags but outback carries none, which
+            # is why {tag fpc1} left the units standing still on the live run.
+            # flag_point_campaign entities exist on all 14 and the engine tags
+            # them `flag`, which is how dcg_script.inc addresses them throughout.
+            '{group {select {tag {tag flag}}}}',
+            '{tag_add attack_mate_flag1}',
+            '{tag_add attack_mate_flag2}',
+            '{target {ignore_captured_by_user 0} {tag attack_mate_flag1}}',
+            '{target {ignore_captured_by_user 0} {tag attack_mate_flag2}}',
             # Source is the probe's OWN real-breed off-map pool. Live map-garrison
             # defenders are map-state-dependent (never armed on border), and the
             # breed-less defense pool is where every selector anomaly showed up.
@@ -177,8 +184,8 @@ class AttackMateSlotProofTests(unittest.TestCase):
         self.assertEqual(self.retask.count("{tag_add attack_mate_probe}"), 1)
         self.assertEqual(self.retask.count("attack_mate_probe}"), 1)
         # Ownership, actor_state, ables, orders and retask all key on the proven
-        # tag: 16 ownership cases + P3 default + actor_state + ables + the fpc1
-        # advance + the fpc2 advance in probe_retask = 21.
+        # tag: 16 ownership cases + P3 default + actor_state + ables + the flag-1
+        # advance + the flag-2 advance in probe_retask = 21.
         self.assertEqual(
             self.retask.count(
                 "{selector {ignore_captured_by_user 0} {tag attack_mate_src} {type human}}"
@@ -187,6 +194,25 @@ class AttackMateSlotProofTests(unittest.TestCase):
         )
         # Nothing anywhere still keys on the unproven marker tag.
         self.assertNotIn("{tag attack_mate_probe}", code)
+
+        # No fpc reference may survive in probe code. dcg_functions.mi keeps its
+        # own fpc_* helpers and other tests may legitimately pin those; this
+        # assertion is scoped to the probe only.
+        self.assertNotIn("fpc", code)
+
+        # Nearest-flag pick: sort the candidate set by distance to a reference
+        # entity then take one (the ai_enhance_dcg.inc:78-101 idiom), and the
+        # retask must exclude the first pick so it is a genuinely new target.
+        self.assertEqual(code.count("{type entity}"), 2)
+        self.assertEqual(code.count("{tag_add attack_mate_flag1}"), 1)
+        self.assertEqual(code.count("{tag_add attack_mate_flag2}"), 1)
+        self.assertIn("{exclude {tag {tag attack_mate_flag1}}}", code)
+
+        # Arrival is the near/near_to/distance idiom, not a zone test.
+        self.assertIn('{"3.near"', code)
+        self.assertIn("{near_to", code)
+        self.assertIn("{distance 60}", code)
+        self.assertNotIn("{zone ", code)
 
         # The move consumes the originals, so the no-pool path must terminate
         # rather than spin once the 8-strong pool is empty.
@@ -205,7 +231,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
         boot = code.index("ATTACK MATE PROBE BOOT ATTACK SIDE")
         transfer = code.index('{player "3"}')
         leg1 = code.index("ATTACK MATE PROBE 3 LEG1 ORDERED")
-        retask = code.index("ATTACK MATE PROBE 4 RETASKED TO FPC2")
+        retask = code.index("ATTACK MATE PROBE 4 RETASKED TO FLAG 2")
         self.assertLess(boot, move)
         self.assertLess(move, transfer)
         self.assertLess(transfer, leg1)

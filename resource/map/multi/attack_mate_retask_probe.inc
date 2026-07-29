@@ -13,10 +13,24 @@
 ;    _ai_defender is map-state-dependent (armed on woodland, never on border) and
 ;    purchased attack-mission squads never carry those tags.
 ; 3) Move 4 to attack_mate_entry, own to id_attacker_mate (fallback P3),
-;    advance fpc1 then fpc2.
+;    advance to the nearest capture point, then retask to the next one.
 ; 4) The prototypes now carry the breed's own loadout (m4a1_v3b, ammo, grenades),
 ;    so nothing has to be filled in on player assignment. What this probe proves
 ;    is ownership transfer plus movement/orders.
+;
+; FLAG ADDRESSING. fpc1..fpc5 is an Indomitus-40k naming convention and is NOT
+; a reliable handle on CWA maps. Census of the 14 dcg_[cwa71]_* maps:
+;   - fpc* tags:  present on 13, but outback has ZERO - which is exactly the
+;     map the live run used, so {tag fpc1} had no target and the units stood
+;     still forever. There is no runtime tag_add for fpc1..fpc5 anywhere.
+;   - "flag" in the .mi {Tags} lines: only 3 maps (europe, factory,
+;     train_station) - so authored tags are not the mechanism either.
+;   - {Entity "flag_point_campaign_N"} with {Extender "map_point" {name fN}}:
+;     present on ALL 14 maps, 2-5 per map. These are the real capture points.
+; The engine tags those entities `flag`, which is why dcg_script.inc addresses
+; capture points as {tag flag} throughout (e.g. lines 1208, 1231, 2770) rather
+; than by any authored name. This probe does the same. If a run ever reports
+; stage 51, that assumption is wrong on that map and {tag flag} found nothing.
 ;
 ; ENTRY ASYMMETRY. allied_support_entry is a DEFENSE-side anchor: on 13 of the 14
 ; CWA maps it sits at exactly the spawn_a centroid, and on fulda within 1.5k of it,
@@ -211,23 +225,54 @@
 									{"set_i" {var "attack_mate_probe_transferred$"} {op "="} {value 1}}
 									{"set_i" {var "attack_mate_probe_stage$"} {op "="} {value 4}}
 									{"timer" {time 8} {title "ATTACK MATE PROBE 2 TRANSFERRED"}}
-									{"action"
-										{selector {ignore_captured_by_user 0} {tag attack_mate_src} {type human}}
-										{drop orders}
-										{action advance}
-										{target {ignore_captured_by_user 0} {tag fpc1}}
+
+									; Claim the capture point nearest our squad. Proximity idiom is
+									; ai_enhance_dcg.inc:78-101: sort the candidate set by distance to a
+									; reference entity, then {amount 1}. Tagging the pick lets the retask
+									; step exclude it and pick a genuinely different one.
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group {select {tag {tag flag}}}}
+											{sort
+												{type entity}
+												{entity
+													{source advanced}
+													{group {select {tag {tag attack_mate_src}}}}
+													{amount 1}
+												}
+											}
+											{amount 1}
+										}
+										{tag_add attack_mate_flag1}
 									}
 									{"delay" {time 0.1}}
-									{"call"
-										{function "fpc_inf_to_flag1"}
-										{context
-											{specified}
-											{selector {source standart} {tag attack_mate_src}}
+									{"switch"
+										{"case"
+											{condition
+												{type entities}
+												{selector {tag attack_mate_flag1}}
+												{count {op ">"} {value 0}}
+											}
+											; Real target: advance to the claimed capture point. The old
+											; fpc_inf_to_flag1 call is gone - it advanced to {tag fpc1} and its
+											; only other useful bits (move_mode free, fast movement, no_retreat)
+											; are already set by the actor_state above.
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag attack_mate_src} {type human}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag attack_mate_flag1}}
+											}
+											{"timer" {time 10} {title "ATTACK MATE PROBE 3 LEG1 ORDERED"}}
+											{"trigger" {name "attack_mate/probe_retask"}}
+											{"trigger" {name "attack_mate/probe_timeout"}}
+										}
+										{"default"
+											{"set_i" {var "attack_mate_probe_stage$"} {op "="} {value 51}}
+											{"timer" {time 15} {title "ATTACK MATE PROBE FAIL NO FLAG POINTS"}}
 										}
 									}
-									{"timer" {time 10} {title "ATTACK MATE PROBE 3 LEG1 ORDERED"}}
-									{"trigger" {name "attack_mate/probe_retask"}}
-									{"trigger" {name "attack_mate/probe_timeout"}}
 								}
 								{"default"
 									{"set_i" {var "attack_mate_probe_stage$"} {op "="} {value 9}}
@@ -252,24 +297,71 @@
 					{terms
 						{"1.cmp_i" {var "attack_mate_probe_transferred$"} {op "=="} {value 1}}
 						{"2.cmp_i" {var "attack_mate_probe_retasked$"} {op "=="} {value 0}}
-						; Simple selector with a zone, the allied_support_waves decide-step
-						; shape. Advanced + include would zero out on these units.
-						{"3.entities"
-							{selector {tag attack_mate_src} {zone "fpc1"} {type human}}
-							{count {op ">"} {value 0}}
+						; Arrival without zones: the {type near} + {near_to} + {distance} idiom
+						; from dcg_script.inc:2757-2775, which is how that file detects units at a
+						; capture point. fpc zones do not exist on these maps.
+						{"3.near"
+							{units
+								{source advanced}
+								{group {select {tag {tag attack_mate_src}}}}
+							}
+							{near_to
+								{source advanced}
+								{ignore_captured_by_user 0}
+								{group {select {tag {tag attack_mate_flag1}}}}
+							}
+							{distance 60}
 						}
 					}
 				}
 				{actions
 					{"set_i" {var "attack_mate_probe_retasked$"} {op "="} {value 1}}
-					{"timer" {time 8} {title "ATTACK MATE PROBE FPC1 REACHED"}}
-					{"action"
-						{selector {ignore_captured_by_user 0} {tag attack_mate_src} {type human}}
-						{drop orders}
-						{action advance}
-						{target {ignore_captured_by_user 0} {tag fpc2}}
+					{"timer" {time 8} {title "ATTACK MATE PROBE FLAG 1 REACHED"}}
+
+					; Second target: nearest capture point that is NOT the one just reached.
+					; Same proximity idiom, with the first pick excluded - that exclusion is
+					; what makes this a retask rather than a re-issue of the same order.
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {tag {tag flag}}}
+								{exclude {tag {tag attack_mate_flag1}}}
+							}
+							{sort
+								{type entity}
+								{entity
+									{source advanced}
+									{group {select {tag {tag attack_mate_src}}}}
+									{amount 1}
+								}
+							}
+							{amount 1}
+						}
+						{tag_add attack_mate_flag2}
 					}
-					{"timer" {time 15} {title "ATTACK MATE PROBE 4 RETASKED TO FPC2"}}
+					{"delay" {time 0.1}}
+					{"switch"
+						{"case"
+							{condition
+								{type entities}
+								{selector {tag attack_mate_flag2}}
+								{count {op ">"} {value 0}}
+							}
+							{"action"
+								{selector {ignore_captured_by_user 0} {tag attack_mate_src} {type human}}
+								{drop orders}
+								{action advance}
+								{target {ignore_captured_by_user 0} {tag attack_mate_flag2}}
+							}
+							{"set_i" {var "attack_mate_probe_stage$"} {op "="} {value 5}}
+							{"timer" {time 15} {title "ATTACK MATE PROBE 4 RETASKED TO FLAG 2"}}
+						}
+						{"default"
+							{"set_i" {var "attack_mate_probe_stage$"} {op "="} {value 52}}
+							{"timer" {time 15} {title "ATTACK MATE PROBE ONLY ONE FLAG POINT"}}
+						}
+					}
 				}
 			}
 
@@ -286,7 +378,7 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "attack_mate_probe_retasked$"} {op "=="} {value 0}}
-							{"timer" {time 20} {title "ATTACK MATE PROBE TIMEOUT BEFORE FPC1"}}
+							{"timer" {time 20} {title "ATTACK MATE PROBE TIMEOUT BEFORE FLAG 1"}}
 						}
 						{"default"}
 					}
