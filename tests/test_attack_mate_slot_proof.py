@@ -73,7 +73,8 @@ class AttackMateSlotProofTests(unittest.TestCase):
     def test_mission_probe_orders_transfers_then_retasks(self) -> None:
         for marker in (
             '"attack_mate/probe_init"',
-            '{var "user_is_defender$"} {op "=="} {value 0}',
+            'ATTACK MATE PROBE ARMED FIXED DELAY',
+            '{"delay" {time 40}}',
             '{tag_add attack_mate_probe}',
             'ATTACK MATE PROBE 2 LEG1 ORDERED',
             '{target {tag fpc1}}',
@@ -92,7 +93,8 @@ class AttackMateSlotProofTests(unittest.TestCase):
         retask = self.retask.index('ATTACK MATE PROBE 4 RETASKED TO FPC2')
         self.assertLess(leg1, transfer)
         self.assertLess(transfer, retask)
-        self.assertNotIn('{var "user_is_defender$"} {op "=="} {value 1}', self.retask)
+        self.assertNotIn('user_is_defender$', self.retask)
+        self.assertNotIn('prep_inform$', self.retask)
 
     def test_deployment_patches_exactly_the_cwa_map_family(self) -> None:
         for marker in (
