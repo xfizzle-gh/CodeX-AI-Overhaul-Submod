@@ -2080,6 +2080,7 @@
 	{Link 0x8065 {0x605f "14" "6"}}
 	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
 	{Tags "switch_left" 0x3017}
 	{Tags "switch_left" 0x28c}
 	{Tags "switch_right" 0x38}
@@ -3792,6 +3793,7 @@
 			}
 			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

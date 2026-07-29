@@ -2177,6 +2177,7 @@
 	{Link 0xf00b {0x4cf2 "church_c1" "21"}}
 	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
 	{Tags "keep_places_without_door" 0x405a}
 	{Tags "keep_places_without_door" 0x4142}
 	{Tags "keep_places_without_door" 0x4178}
@@ -3993,6 +3994,7 @@
 			}
 			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

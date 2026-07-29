@@ -2509,6 +2509,7 @@
 	{Link 0xb814 {0x6024 "3"}}
 	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
 	{Tags "cmp_def" "1_b_2-3_mg" 0x8800}
 	{Tags "spawn_b" "b2" 0x800c}
 	{Tags "spawn_b" "b1" 0x800d}
@@ -4390,6 +4391,7 @@
 			}
 			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

@@ -1991,6 +1991,7 @@
 	{Link 0x8023 {0x507f "5"}}
 	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
 	{Tags "switch_right" 0x190}
 	{Tags "switch_right" 0x650}
 	{Tags "switch_right" 0x40d6}
@@ -3689,6 +3690,7 @@
 			}
 			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

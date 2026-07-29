@@ -1789,6 +1789,7 @@
 	}
 	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
 	{Tags "bare" 0x6e2}
 	{Tags "bare" 0x93d}
 	{Tags "bare" 0x2872}
@@ -3356,6 +3357,7 @@
 			}
 			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

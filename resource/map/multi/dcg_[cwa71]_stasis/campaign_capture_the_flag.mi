@@ -2213,6 +2213,7 @@
 	{Link 0x8053 {0x3c3 "church_base" "24"}}
 	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
 	{Tags "fpc1" 0x8000}
 	{Tags "fpc3" 0xa000}
 	{Tags "fpc4" 0xe000}
@@ -3904,6 +3905,7 @@
 			}
 			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

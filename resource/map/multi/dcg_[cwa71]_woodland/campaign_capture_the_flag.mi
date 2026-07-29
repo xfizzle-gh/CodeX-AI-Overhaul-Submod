@@ -1462,6 +1462,7 @@
 	{Link 0x803d {0x385f "6"}}
 	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
 	{Tags "fpc1" 0x8000}
 	{Tags "fpc2" 0xc000}
 	{Tags "fpc3" 0xa000}
@@ -2739,6 +2740,7 @@
 			}
 			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

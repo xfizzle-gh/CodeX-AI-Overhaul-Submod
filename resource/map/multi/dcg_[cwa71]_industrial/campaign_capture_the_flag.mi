@@ -2474,6 +2474,7 @@
 	{Link 0x802d {0xdb5 "seat01"}}
 	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
 	{Tags "switch_right" 0x3004}
 	{Tags "switch_right" 0x3400}
 	{Tags "switch_right" 0x3401}
@@ -4438,6 +4439,7 @@
 			}
 			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints

@@ -29,6 +29,11 @@ $files = @(
     "resource\map\multi\dcg_vars.inc",
     "resource\map\multi\attack_support_waves.inc",
     "resource\map\multi\attack_support_templates.inc",
+    # Enemy-defender half of the system: garrison at the live flags, patrols, and
+    # reinforcements off the defender's own map edge. Same delivery pipeline, aimed
+    # the other way, gated on user_is_defender$ == 0 AND id_1st_enemy$ > 0.
+    "resource\map\multi\enemy_defense_support.inc",
+    "resource\map\multi\enemy_defense_templates.inc",
     "resource\script\multiplayer\modes\conquest.lua",
     # utility.lua carries the spawnPoint nil-guard. string.sub on a nil spawn
     # point faulted natively, so this file has to ship with conquest.lua or the
@@ -42,10 +47,12 @@ $supportSource = Join-Path $RepoRoot $files[2]
 $varsSource = Join-Path $RepoRoot $files[3]
 $wavesSource = Join-Path $RepoRoot $files[4]
 $tplSource = Join-Path $RepoRoot $files[5]
-$conquestSource = Join-Path $RepoRoot $files[6]
-$utilitySource = Join-Path $RepoRoot $files[7]
+$defSource = Join-Path $RepoRoot $files[6]
+$defTplSource = Join-Path $RepoRoot $files[7]
+$conquestSource = Join-Path $RepoRoot $files[8]
+$utilitySource = Join-Path $RepoRoot $files[9]
 
-foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSource, $wavesSource, $tplSource, $conquestSource, $utilitySource)) {
+foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSource, $wavesSource, $tplSource, $defSource, $defTplSource, $conquestSource, $utilitySource)) {
     if (-not (Test-Path -LiteralPath $source)) {
         throw "Missing source file: $source"
     }
@@ -105,7 +112,22 @@ foreach ($marker in @(
     '{"attack_support_busy"}',
     '{"attack_support_next_ok"}',
     '{"attack_support_hmmwv_left"}',
-    '{"attack_support_use_mi"}'
+    '{"attack_support_use_mi"}',
+    # Enemy defence state. Declared here because dcg_vars.inc is the only var block
+    # every one of the fourteen maps pulls in; an undeclared read is a silent zero.
+    '{"enemy_defense_armed"}',
+    '{"enemy_defense_army"}',
+    '{"enemy_defense_stage"}',
+    '{"enemy_defense_transferred"}',
+    '{"enemy_defense_wave_cmd"}',
+    '{"enemy_defense_wave_num"}',
+    '{"enemy_defense_waves_left"}',
+    '{"enemy_defense_place"}',
+    '{"enemy_defense_group"}',
+    '{"enemy_defense_trickle_ok"}',
+    '{"enemy_defense_trickle_busy"}',
+    '{"enemy_defense_surge_ok"}',
+    '{"enemy_defense_surge_busy"}'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $varsSource -SimpleMatch $marker)) {
         throw "Source dcg_vars.inc is missing marker: $marker"
@@ -212,6 +234,170 @@ if (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch '{zone {zone "ga
 if (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch '{"delay" {time 8}}') {
     throw "Source wave engine still contains the superseded blind startup delay"
 }
+# ===== ENEMY DEFENCE ENGINE (source side) =====
+# The mirror of the attack-support engine. Same hard-won pipeline: no clone, bare
+# pool selectors, literal {player} switch, {tag flag} capture points.
+foreach ($marker in @(
+    '{"enemy_defense/init"',
+    '{"enemy_defense/trickle"',
+    '{"enemy_defense/surge"',
+    '{"enemy_defense/patrol_1"',
+    '{"enemy_defense/patrol_4"',
+    '{var "user_is_defender$"}',
+    '{var "id_1st_enemy$"}',
+    '{var "enemy_spawnside$"}',
+    '{var "bot_army$"}',
+    '{var "defense_level$"}',
+    '{var "enemy_defense_army$"}',
+    '{var "enemy_defense_wave_cmd$"}',
+    '{var "enemy_defense_waves_left$"}',
+    '{var "enemy_defense_place$"}',
+    '{var "enemy_defense_group$"}',
+    # Two independent self-re-arming spawners on different random ladders, so
+    # arrivals never synchronise. Trickle 45-90s, surge 180-300s.
+    '{"trigger" {name "enemy_defense/trickle"}}',
+    '{"trigger" {name "enemy_defense/surge"}}',
+    '{"delay" {time 45}}',
+    '{"delay" {time 90}}',
+    '{"delay" {time 180}}',
+    '{"delay" {time 300}}',
+    # Patrol re-order cadence, 60-120s per group, self-re-arming.
+    '{"trigger" {name "enemy_defense/patrol_1"}}',
+    '{"delay" {time 60}}',
+    '{"delay" {time 120}}',
+    # Garrison lands ON the active flag points; reinforcements at the defender's
+    # OWN map edge - for this system enemy_spawnside$ 1 means side a, not side b.
+    '{target {ignore_captured_by_user 0} {tag enemy_def_af1}}',
+    '{tag_add enemy_def_af1}',
+    '{tag_add enemy_def_r1}',
+    '{target_waypoint "attack_support_entry_a"}',
+    '{target_waypoint "attack_support_entry_b"}',
+    '{waypoint "0"}',
+    # Live cap defers without consuming a wave, exactly as attack support does.
+    '{tag enemy_def_src}',
+    '{state "not dead"}',
+    '{count {op ">"} {value 16}}',
+    'ENEMY DEFENSE NEAR CAP DEFER',
+    'ENEMY DEFENSE WAVES EXHAUSTED',
+    'ENEMY DEFENSE POOL SHORT - LINE TEAM INSTEAD',
+    'ENEMY DEFENSE POOL EXHAUSTED',
+    'ENEMY DEFENSE GARRISON AT FLAG 1',
+    # Patrols may fall back; this is not a suicide push.
+    '{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}',
+    # Pool tags double as availability: a claim strips the tag it took from.
+    '{tag_remove enemy_def_rusa_line}',
+    '{tag_remove enemy_def_ukr_line}',
+    '{tag_remove enemy_def_prc_line}',
+    '{tag_remove enemy_def_nato_line}',
+    '{tag_remove enemy_def_rusa_wpn}',
+    '{tag_remove enemy_def_nato_wpn}',
+    '{tag_remove enemy_def_tpl}',
+    # Capture points are addressed as {tag flag}; fpc* is absent from outback.
+    '{select {tag {tag flag}}}',
+    # Bare deploy selector - decorating it zeroes the match on these units.
+    '{group {select {tag {tag enemy_def_deploy}}}}',
+    '("ed_place")',
+    '("ed_finish")',
+    '("ed_own_to_enemy")',
+    '("ed_assign_group")',
+    '("ed_resolve_army")',
+    '("ed_claim_anchors")',
+    '("ed_pick_garrison")',
+    '("ed_pick_light")',
+    '("ed_pick_squad")'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $defSource -SimpleMatch $marker)) {
+        throw "Source enemy defence engine is missing marker: $marker"
+    }
+}
+foreach ($n in 1..16) {
+    if (-not (Select-String -Quiet -LiteralPath $defSource -SimpleMatch ('{player "' + $n + '"}'))) {
+        throw "Source enemy defence engine is missing literal ownership case for player $n. The engine will not accept a var in the {player} node, so all sixteen slots must be spelled out"
+    }
+}
+# The same pipeline constraints that cost the attack-support engine a live run each.
+foreach ($banned in @('{clone}', '{include {prop human}}', '{prop {prop human}}', '{state {state operatable}}', '{zone {zone "gamezone"}}')) {
+    if (Select-String -Quiet -LiteralPath $defSource -SimpleMatch $banned) {
+        throw "Source enemy defence engine uses the forbidden idiom $banned"
+    }
+}
+if (Select-String -Quiet -LiteralPath $defSource -Pattern '^[^;]*\bfpc') {
+    throw "Source enemy defence engine still targets fpc* capture points. Those tags are absent from outback entirely; address capture points as {tag flag}"
+}
+if (Select-String -Quiet -LiteralPath $defSource -SimpleMatch '{tag_remove enemy_def_src}') {
+    throw "Source enemy defence engine removes enemy_def_src, but the live-unit cap counts it"
+}
+if (Select-String -Quiet -LiteralPath $defSource -SimpleMatch '{var "id_attack_support$"}') {
+    throw "Source enemy defence engine reaches into the attack-support owner var; it must own to id_1st_enemy$"
+}
+# Every trigger must carry the attack-mission gate, or the system fires on a
+# human-DEFENCE mission and reinforces the wrong side.
+$defText = [System.IO.File]::ReadAllText($defSource)
+$defTriggers = [regex]::Matches($defText, '\{"enemy_defense/[a-z0-9_]+"')
+if ($defTriggers.Count -ne 19) {
+    throw "Expected 19 enemy_defense triggers, found $($defTriggers.Count)"
+}
+$defGates = [regex]::Matches($defText, [regex]::Escape('{var "user_is_defender$"} {op "=="} {value 0}'))
+if ($defGates.Count -lt 19) {
+    throw "Only $($defGates.Count) of the 19 enemy_defense triggers carry the user_is_defender$ == 0 gate"
+}
+# 160 prototypes: 4 faction pools x (24 line + 16 weapons). A claim MOVES bodies
+# out and never returns them, so each pool carries the whole L3 budget alone.
+$defTplAble = (Select-String -LiteralPath $defTplSource -SimpleMatch '{Able "-select"}').Count
+if ($defTplAble -ne 160) {
+    throw "Source enemy defence pool must park 160 prototypes with selection stripped (4 factions x 40); found $defTplAble"
+}
+foreach ($pair in @(
+    @('enemy_def_rusa_line', 24), @('enemy_def_rusa_wpn', 16),
+    @('enemy_def_ukr_line', 24), @('enemy_def_ukr_wpn', 16),
+    @('enemy_def_prc_line', 24), @('enemy_def_prc_wpn', 16),
+    @('enemy_def_nato_line', 24), @('enemy_def_nato_wpn', 16)
+)) {
+    $n = (Select-String -LiteralPath $defTplSource -SimpleMatch ('"' + $pair[0] + '"')).Count
+    if ($n -ne $pair[1]) {
+        throw "Source enemy defence pool must tag $($pair[1]) prototypes as $($pair[0]); found $n"
+    }
+}
+if (Select-String -Quiet -LiteralPath $defTplSource -Pattern '^\s*\{Human ""') {
+    throw 'Enemy defence templates must use a real breed, not the breed-less empty-name Human form'
+}
+if (Select-String -Quiet -LiteralPath $defTplSource -Pattern '^\s*\{Inventory') {
+    throw "Enemy defence templates must not bake an Inventory block - the breed supplies the loadout"
+}
+# No vehicles here: the defender bot already buys its own armour.
+if (Select-String -Quiet -LiteralPath $defTplSource -Pattern '^\s*\{(Entity|Vehicle) ') {
+    throw "Enemy defence templates must be infantry only - enemy armour comes from the purchase economy"
+}
+# Paths that do not exist in Code:X and would silently park 160 absent entities.
+foreach ($banned in @('era1960', "$([char]0x65B0)$([char]0x5EFA)$([char]0x6587)$([char]0x4EF6)$([char]0x5939)")) {
+    if (Select-String -Quiet -LiteralPath $defTplSource -SimpleMatch $banned) {
+        throw "Enemy defence templates reference a non-existent breed path: $banned"
+    }
+}
+# Parked in its own off-map band so it cannot collide with the attack-support pool.
+if (Select-String -Quiet -LiteralPath $defTplSource -SimpleMatch '-35100}') {
+    throw "Enemy defence templates park on the attack-support pool's y band (-35100)"
+}
+if (-not (Select-String -Quiet -LiteralPath $defTplSource -SimpleMatch '{Position -9000 -35400}')) {
+    throw "Enemy defence templates are not parked in their own off-map band (y -35400, x from -9000)"
+}
+$defBreedRoot = Join-Path (Split-Path -Parent $WorkshopRoot) "3261086933\resource\set\breed\mp"
+foreach ($breed in @(
+    "rusa\2022s\rus90_squadlead", "rusa\2022s\rus90_rifleman", "rusa\2022s\rus90_mg",
+    "rusa\2022s\rus90_seniorrifleman", "rusa\2022s\rus90_antitank", "rusa\2022s\rus90_marksman",
+    "ukr\2022s\ter_squadlead", "ukr\2022s\ter_rifleman", "ukr\2022s\ter_mg",
+    "ukr\2022s\ter_antitank", "ukr\2022s\ter_marksman",
+    "prc\2022s\pla_squadlead", "prc\2022s\pla_senior", "prc\2022s\pla_rifleman",
+    "prc\2022s\pla_mg", "prc\2022s\pla_antitank_pf98", "prc\2022s\pla_marksman",
+    "nato\2022s\nato_squadlead", "nato\2022s\nato_teamlead", "nato\2022s\nato_rifleman",
+    "nato\2022s\nato_mg", "nato\2022s\nato_antitank", "nato\2022s\nato_sniper"
+)) {
+    $breedSet = Join-Path $defBreedRoot ($breed + ".set")
+    if (-not (Test-Path -LiteralPath $breedSet)) {
+        throw "Enemy defence breed is not installed at: $breedSet"
+    }
+}
+
 foreach ($marker in @(
     '{Human "mp/nato/2022s/usmc_rifleman" 0xaf23',
     '{Human "mp/nato/2022s/1ad_rifleman" 0xaf37',
@@ -300,6 +486,7 @@ foreach ($breed in @("usmc_rifleman", "1ad_rifleman", "pzgd_rifleman", "usarmy_c
 }
 
 Write-Host "Deploying attack support wave engine (opening wave 30-45s, then randomized 150-300s cadence, level-scaled composition pools)"
+Write-Host "  plus the enemy defence engine (garrison on the live flags, four patrol groups, 45-90s trickle + 180-300s surge off the defender's own edge)"
 Write-Host "Repository: $RepoRoot"
 Write-Host "Branch:     $branch"
 Write-Host "Workshop:   $WorkshopRoot"
@@ -350,6 +537,10 @@ $anchor = '(include "../allied_support_waves.inc")'
 $wavesInclude = '(include "../attack_support_waves.inc")'
 $tplAnchor = '(include "../allied_support_templates.inc")'
 $tplInclude = '(include "../attack_support_templates.inc")'
+# Enemy-defence half. Each sits immediately after its attack-support counterpart:
+# the engine in the triggers section, the prototype pool in the entities section.
+$defInclude = '(include "../enemy_defense_support.inc")'
+$defTplInclude = '(include "../enemy_defense_templates.inc")'
 $waypointsAnchor = "`t`t{waypoints"
 $entryName = '{"attack_support_entry_'
 # Name kept from the probe era on purpose: it holds the genuinely pristine
@@ -415,6 +606,39 @@ foreach ($mapFile in $mapFiles) {
     }
     if ($tplCount -ne 1) {
         throw "Expected exactly one wave-templates include in: $mapFile"
+    }
+
+    # Enemy-defence engine, in the triggers section right after the attack-support
+    # engine. Idempotent, and anchored on the attack-support include rather than a
+    # base-game line so the two halves always sit together.
+    $text = [System.IO.File]::ReadAllText($mapFile)
+    $defCount = ([regex]::Matches($text, [regex]::Escape($defInclude))).Count
+    if ($defCount -eq 0) {
+        if (-not $text.Contains($wavesInclude)) {
+            throw "Map is missing the enemy-defence include anchor: $mapFile"
+        }
+        $text = $text.Replace($wavesInclude, $wavesInclude + "`r`n`t`t`t" + $defInclude)
+        [System.IO.File]::WriteAllText($mapFile, $text, [System.Text.UTF8Encoding]::new($false))
+        $defCount = 1
+    }
+    if ($defCount -ne 1) {
+        throw "Expected exactly one enemy-defence include in: $mapFile"
+    }
+
+    # Enemy-defence prototype pool, in the entities section right after the
+    # attack-support pool. Idempotent.
+    $text = [System.IO.File]::ReadAllText($mapFile)
+    $defTplCount = ([regex]::Matches($text, [regex]::Escape($defTplInclude))).Count
+    if ($defTplCount -eq 0) {
+        if (-not $text.Contains($tplInclude)) {
+            throw "Map is missing the enemy-defence templates include anchor: $mapFile"
+        }
+        $text = $text.Replace($tplInclude, $tplInclude + "`r`n`t" + $defTplInclude)
+        [System.IO.File]::WriteAllText($mapFile, $text, [System.Text.UTF8Encoding]::new($false))
+        $defTplCount = 1
+    }
+    if ($defTplCount -ne 1) {
+        throw "Expected exactly one enemy-defence templates include in: $mapFile"
     }
 
     # Attack-side entry waypoints, one per spawn side. The dynamic campaign swaps
@@ -486,7 +710,9 @@ $botMain = Join-Path $WorkshopRoot $files[1]
 $support = Join-Path $WorkshopRoot $files[2]
 $vars = Join-Path $WorkshopRoot $files[3]
 $waves = Join-Path $WorkshopRoot $files[4]
-$conquest = Join-Path $WorkshopRoot $files[6]
+$def = Join-Path $WorkshopRoot $files[6]
+$defTpl = Join-Path $WorkshopRoot $files[7]
+$conquest = Join-Path $WorkshopRoot $files[8]
 
 if (-not (Select-String -Quiet -LiteralPath $gameSet -SimpleMatch "{aiTeamPlayers 1}")) {
     throw "Workshop game set does not contain the attack support AI slot marker"
@@ -600,12 +826,61 @@ if (-not (Select-String -Quiet -LiteralPath $poolTarget -SimpleMatch '{Tags "all
     throw "Workshop off-map template pool is missing or untagged: allied_support_templates.inc"
 }
 
+# ===== ENEMY DEFENCE ENGINE (workshop side) =====
+foreach ($marker in @(
+    '{"enemy_defense/init"',
+    '{"enemy_defense/trickle"',
+    '{"enemy_defense/surge"',
+    '{"enemy_defense/patrol_1"',
+    '{"enemy_defense/patrol_4"',
+    '{var "user_is_defender$"}',
+    '{var "id_1st_enemy$"}',
+    '{var "bot_army$"}',
+    '{"trigger" {name "enemy_defense/trickle"}}',
+    '{"trigger" {name "enemy_defense/surge"}}',
+    '{"trigger" {name "enemy_defense/patrol_1"}}',
+    '{target {ignore_captured_by_user 0} {tag enemy_def_af1}}',
+    'ENEMY DEFENSE NEAR CAP DEFER',
+    'ENEMY DEFENSE WAVES EXHAUSTED',
+    '{group {select {tag {tag enemy_def_deploy}}}}'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $def -SimpleMatch $marker)) {
+        throw "Workshop enemy defence engine is missing marker: $marker"
+    }
+}
+foreach ($banned in @('{clone}', '{include {prop human}}', '{state {state operatable}}', '{zone {zone "gamezone"}}')) {
+    if (Select-String -Quiet -LiteralPath $def -SimpleMatch $banned) {
+        throw "Workshop enemy defence engine uses the forbidden idiom $banned"
+    }
+}
+if (Select-String -Quiet -LiteralPath $def -Pattern '^[^;]*\bfpc') {
+    throw "Workshop enemy defence engine still targets fpc* capture points"
+}
+if ((Select-String -LiteralPath $defTpl -SimpleMatch '{Able "-select"}').Count -ne 160) {
+    throw "Workshop enemy defence pool is not the 160-prototype four-faction pool"
+}
+foreach ($breedRef in @(
+    '{Human "mp/rusa/2022s/rus90_rifleman"',
+    '{Human "mp/ukr/2022s/ter_rifleman"',
+    '{Human "mp/prc/2022s/pla_rifleman"',
+    '{Human "mp/nato/2022s/nato_rifleman"'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $defTpl -SimpleMatch $breedRef)) {
+        throw "Workshop enemy defence pool is missing a faction pool: $breedRef"
+    }
+}
+if (Select-String -Quiet -LiteralPath $defTpl -Pattern '^\s*\{Human ""') {
+    throw "Workshop enemy defence pool reverted to the breed-less empty-name Human form"
+}
+
 Write-Host "`nVerification markers:"
 Select-String -LiteralPath $gameSet -Pattern "aiTeamPlayers 1"
 Select-String -LiteralPath $botMain -Pattern "CODEX_ATTACK_SUPPORT_ROUTER|route_skip|first_player_slot|safeRequire"
 Select-String -LiteralPath $support -Pattern "CODEX_ATTACK_SUPPORT|attack_support_use_mi"
 Select-String -LiteralPath $vars -Pattern "attack_support_armed|attack_support_wave|attack_support_next_ok|attack_support_use_mi"
 Select-String -LiteralPath $waves -Pattern '\{"attack_support/|ATTACK SUPPORT (ARMED|WAVE|NEAR|POOL)'
+Select-String -LiteralPath $vars -Pattern "enemy_defense_"
+Select-String -LiteralPath $def -Pattern '\{"enemy_defense/'
 Write-Host "Patched maps: $($mapFiles.Count)"
 
 Write-Host "`nDeployment complete. Fully restart Gates of Hell before testing."
