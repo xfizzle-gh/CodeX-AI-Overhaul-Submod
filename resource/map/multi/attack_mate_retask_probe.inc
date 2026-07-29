@@ -5,10 +5,10 @@
 
 			{"attack_mate/probe_init"
 				{condition
-					{type cmp_i}
-					{var "attack_mate_probe_started$"}
-					{op "=="}
-					{value 0}
+					{expression "1"}
+					{terms
+						{"1.cmp_i" {var "attack_mate_probe_started$"} {op "=="} {value 0}}
+					}
 				}
 				{actions
 					{"set_i" {var "attack_mate_probe_started$"} {op "="} {value 1}}
