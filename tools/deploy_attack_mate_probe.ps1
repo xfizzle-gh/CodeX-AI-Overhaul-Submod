@@ -26,15 +26,17 @@ $files = @(
     "resource\set\multiplayer\games\campaign_capture_the_flag.set",
     "resource\script\multiplayer\bot.main.lua",
     "resource\script\multiplayer\modes\attacker_mate.lua",
+    "resource\map\multi\dcg_vars.inc",
     "resource\map\multi\attack_mate_retask_probe.inc"
 )
 
 $gameSetSource = Join-Path $RepoRoot $files[0]
 $botMainSource = Join-Path $RepoRoot $files[1]
 $mateSource = Join-Path $RepoRoot $files[2]
-$retaskSource = Join-Path $RepoRoot $files[3]
+$varsSource = Join-Path $RepoRoot $files[3]
+$retaskSource = Join-Path $RepoRoot $files[4]
 
-foreach ($source in @($gameSetSource, $botMainSource, $mateSource, $retaskSource)) {
+foreach ($source in @($gameSetSource, $botMainSource, $mateSource, $varsSource, $retaskSource)) {
     if (-not (Test-Path -LiteralPath $source)) {
         throw "Missing source file: $source"
     }
@@ -59,6 +61,17 @@ if (-not (Select-String -Quiet -LiteralPath $mateSource -SimpleMatch '"diagnosti
     throw "Source attacker_mate.lua is not the read-only checkpoint"
 }
 foreach ($marker in @(
+    '{"attack_mate_probe_started"}',
+    '{"attack_mate_probe_transferred"}',
+    '{"attack_mate_probe_retasked"}'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $varsSource -SimpleMatch $marker)) {
+        throw "Source dcg_vars.inc is missing marker: $marker"
+    }
+}
+foreach ($marker in @(
+    '{var "prep_inform$"}',
+    '{var "user_is_defender$"}',
     'ATTACK MATE PROBE ARMED CLONE TEST',
     '{target_waypoint "allied_support_entry"}',
     '{clone}',
@@ -70,8 +83,11 @@ foreach ($marker in @(
         throw "Source retask probe is missing marker: $marker"
     }
 }
+if (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch '{"delay" {time 8}}') {
+    throw "Source retask probe still contains the superseded blind startup delay"
+}
 
-Write-Host "Deploying self-contained attack-mate clone + retask proof"
+Write-Host "Deploying readiness-gated attack-mate clone + retask proof"
 Write-Host "Repository: $RepoRoot"
 Write-Host "Branch:     $branch"
 Write-Host "Workshop:   $WorkshopRoot"
@@ -139,7 +155,8 @@ foreach ($mapFile in $mapFiles) {
 $gameSet = Join-Path $WorkshopRoot $files[0]
 $botMain = Join-Path $WorkshopRoot $files[1]
 $mate = Join-Path $WorkshopRoot $files[2]
-$retask = Join-Path $WorkshopRoot $files[3]
+$vars = Join-Path $WorkshopRoot $files[3]
+$retask = Join-Path $WorkshopRoot $files[4]
 
 if (-not (Select-String -Quiet -LiteralPath $gameSet -SimpleMatch "{aiTeamPlayers 1}")) {
     throw "Workshop game set does not contain the attack-mate AI slot marker"
@@ -153,15 +170,25 @@ if (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "team_a_attack_safe_
 if (-not (Select-String -Quiet -LiteralPath $mate -SimpleMatch '"diagnostics_only"')) {
     throw "Workshop attacker_mate.lua is not the read-only checkpoint"
 }
-if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch 'ATTACK MATE PROBE ARMED CLONE TEST')) {
-    throw "Workshop retask probe is not the self-contained clone version"
+if (-not (Select-String -Quiet -LiteralPath $vars -SimpleMatch '{"attack_mate_probe_started"}')) {
+    throw "Workshop dcg_vars.inc is missing the attack-mate probe state"
+}
+if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{var "prep_inform$"}')) {
+    throw "Workshop retask probe is missing the preparation readiness gate"
+}
+if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{var "user_is_defender$"}')) {
+    throw "Workshop retask probe is missing the attack-only gate"
+}
+if (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{"delay" {time 8}}') {
+    throw "Workshop retask probe still contains the superseded blind startup delay"
 }
 
 Write-Host "`nVerification markers:"
 Select-String -LiteralPath $gameSet -Pattern "aiTeamPlayers 1"
 Select-String -LiteralPath $botMain -Pattern "CODEX_ATTACK_MATE_ROUTER|route_skip|first_player_slot|safeRequire"
 Select-String -LiteralPath $mate -Pattern "CODEX_ATTACK_MATE_PROBE|diagnostics_only"
-Select-String -LiteralPath $retask -Pattern 'ATTACK MATE PROBE|allied_support_entry|player "3"'
+Select-String -LiteralPath $vars -Pattern "attack_mate_probe_"
+Select-String -LiteralPath $retask -Pattern 'prep_inform|user_is_defender|ATTACK MATE PROBE|allied_support_entry|player "3"'
 Write-Host "Patched maps: $($mapFiles.Count)"
 
 Write-Host "`nDeployment complete. Fully restart Gates of Hell before testing."
