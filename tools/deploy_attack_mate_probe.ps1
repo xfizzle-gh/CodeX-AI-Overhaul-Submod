@@ -322,6 +322,13 @@ foreach ($mapFile in $mapFiles) {
     # them at runtime from enemy_spawnside$ - a single static entry is never right.
     # The per-map coordinates live in the repo copy of the map; copy those exact
     # blocks across rather than recomputing anything here.
+    #
+    # Each entry sits on its own side's spawn centroid - the map-edge spawn area -
+    # derived from that map's spawn_a / spawn_b markers. The centroid multiplier is
+    # the balance knob (0,0 is the map centre, so a factor below 1.0 pulls the
+    # arrival point forward into open ground). It is currently 1.00; changing it
+    # means regenerating all 28 waypoints in the repo maps from the spawn markers,
+    # not editing anything in this script.
     $repoMap = Join-Path $RepoRoot ("resource\map\multi\" + (Split-Path -Leaf (Split-Path -Parent $mapFile)) + "\campaign_capture_the_flag.mi")
     if (-not (Test-Path -LiteralPath $repoMap)) {
         throw "No repo map to source the entry waypoints from: $repoMap"

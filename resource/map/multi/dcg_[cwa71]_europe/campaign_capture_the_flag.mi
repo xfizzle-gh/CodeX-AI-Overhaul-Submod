@@ -3693,11 +3693,11 @@
 		}
 		{waypoints
 			{"attack_mate_entry_a"
-				{position 1515.08 -7582.69 0.00}
+				{position 1721.68 -8616.69 0.00}
 				{radius 150}
 			}
 			{"attack_mate_entry_b"
-				{position 724.76 7501.91 0.00}
+				{position 823.59 8524.90 0.00}
 				{radius 150}
 			}
 			{"allied_support_entry"

@@ -13,6 +13,13 @@ RETASK = ROOT / "resource/map/multi/attack_mate_retask_probe.inc"
 TEMPLATES = ROOT / "resource/map/multi/attack_mate_probe_templates.inc"
 DEPLOY = ROOT / "tools/deploy_attack_mate_probe.ps1"
 
+# Where each map's attack_mate_entry_<side> waypoint sits, as a fraction of that
+# side's spawn centroid. 0,0 is the map centre, so scaling the centroid down pulls
+# the arrival point inward. 1.00 puts it exactly on the spawn centroid - the
+# map-edge spawn area. This is the balance knob: lower it to have mate waves
+# arrive further forward, and regenerate the 28 waypoints from the spawn markers.
+EDGE_FACTOR = 1.00
+
 
 def strip_comments(text: str) -> str:
     """MI comment-stripped view. Headers quote bad forms as cautionary examples,
@@ -486,12 +493,13 @@ class AttackMateSlotProofTests(unittest.TestCase):
                     self.assertLess(
                         d_own, d_opp, "entry_%s is on the wrong side" % side
                     )
-                    # Pulled toward the centre, so strictly closer to origin than
-                    # the spawn line - units land forward of the spawn markers.
-                    self.assertLess(
-                        (x * x + y * y) ** 0.5,
-                        (own[0] ** 2 + own[1] ** 2) ** 0.5,
-                    )
+                    # Each entry sits ON its own spawn centroid, so mate waves
+                    # arrive at the map-edge spawn area rather than already
+                    # pushed into open ground. EDGE_FACTOR is the tuning knob:
+                    # scale the centroid toward the origin (0,0 is map centre) to
+                    # move the arrival point forward. 1.00 = spawn edge.
+                    self.assertAlmostEqual(x, own[0] * EDGE_FACTOR, places=1)
+                    self.assertAlmostEqual(y, own[1] * EDGE_FACTOR, places=1)
 
     def test_deployment_patches_exactly_the_cwa_map_family(self) -> None:
         for marker in (
