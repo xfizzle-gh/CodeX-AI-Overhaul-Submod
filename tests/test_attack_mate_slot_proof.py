@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 GAME_SET = ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set"
 BOT_MAIN = ROOT / "resource/script/multiplayer/bot.main.lua"
 ATTACK_MATE = ROOT / "resource/script/multiplayer/modes/attacker_mate.lua"
+RETASK = ROOT / "resource/map/multi/attack_mate_retask_probe.inc"
 DEPLOY = ROOT / "tools/deploy_attack_mate_probe.ps1"
 
 
@@ -16,6 +17,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
         cls.game_set = GAME_SET.read_text(encoding="utf-8")
         cls.bot_main = BOT_MAIN.read_text(encoding="utf-8")
         cls.attack_mate = ATTACK_MATE.read_text(encoding="utf-8")
+        cls.retask = RETASK.read_text(encoding="utf-8")
         cls.deploy = DEPLOY.read_text(encoding="utf-8")
 
     def test_team_a_requests_exactly_one_ai_mate_slot(self) -> None:
@@ -38,9 +40,6 @@ class AttackMateSlotProofTests(unittest.TestCase):
         ):
             self.assertIn(marker, self.bot_main)
 
-        # Live proof: the transferable Team A AI process reported the same ID as
-        # FirstPlayerId. Running a Lua controller on it crashed; skipping it left
-        # the slot alive and allowed engine-level ownership transfer.
         skip_gate = self.bot_main.index(
             "identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId"
         )
@@ -48,7 +47,7 @@ class AttackMateSlotProofTests(unittest.TestCase):
         self.assertLess(skip_gate, mate_route)
         self.assertNotIn("team_a_attack_safe_route", self.bot_main)
 
-    def test_probe_remains_read_only(self) -> None:
+    def test_lua_probe_remains_read_only(self) -> None:
         for marker in (
             'local PREFIX = "CODEX_ATTACK_MATE_PROBE"',
             'sc:SetVar("id_attacker_mate", id.playerId)',
@@ -71,7 +70,31 @@ class AttackMateSlotProofTests(unittest.TestCase):
         for marker in forbidden:
             self.assertNotIn(marker, self.attack_mate)
 
-    def test_deployment_uses_active_checkout_and_requires_checkpoint_router(self) -> None:
+    def test_mission_probe_orders_transfers_then_retasks(self) -> None:
+        for marker in (
+            '"attack_mate/probe_init"',
+            '{var "user_is_defender$"} {op "=="} {value 0}',
+            '{tag_add attack_mate_probe}',
+            'ATTACK MATE PROBE 2 LEG1 ORDERED',
+            '{target {tag fpc1}}',
+            '{player "3"}',
+            '{tag_add attack_mate_owned}',
+            '"attack_mate/probe_retask"',
+            '{zone {zone "fpc1"}}',
+            '{target {tag fpc2}}',
+            'ATTACK MATE PROBE 4 RETASKED TO FPC2',
+            'ATTACK MATE PROBE TIMEOUT BEFORE FPC1',
+        ):
+            self.assertIn(marker, self.retask)
+
+        leg1 = self.retask.index('ATTACK MATE PROBE 2 LEG1 ORDERED')
+        transfer = self.retask.index('{player "3"}')
+        retask = self.retask.index('ATTACK MATE PROBE 4 RETASKED TO FPC2')
+        self.assertLess(leg1, transfer)
+        self.assertLess(transfer, retask)
+        self.assertNotIn('{var "user_is_defender$"} {op "=="} {value 1}', self.retask)
+
+    def test_deployment_patches_exactly_the_cwa_map_family(self) -> None:
         for marker in (
             "$MyInvocation.MyCommand.Path",
             'Join-Path $ScriptDirectory ".."',
@@ -81,6 +104,11 @@ class AttackMateSlotProofTests(unittest.TestCase):
             "identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId",
             "safeRequire",
             "diagnostics_only",
+            'resource\\map\\multi\\attack_mate_retask_probe.inc',
+            "^dcg_\\[cwa71\\]_",
+            "Expected 14 CWA campaign_capture_the_flag.mi files",
+            '(include "../attack_mate_retask_probe.inc")',
+            "_attack_mate_probe_backups",
         ):
             self.assertIn(marker, self.deploy)
 
@@ -91,9 +119,13 @@ class AttackMateSlotProofTests(unittest.TestCase):
         )
         self.assertNotIn("team_a_attack_safe_route", self.deploy)
 
-    def test_lua_delimiters_are_reasonably_balanced(self) -> None:
+    def test_delimiters_are_balanced(self) -> None:
         for text in (self.bot_main, self.attack_mate):
             self.assertEqual(text.count("("), text.count(")"))
+
+        code = "\n".join(line.split(";", 1)[0] for line in self.retask.splitlines())
+        self.assertEqual(code.count("{"), code.count("}"))
+        self.assertEqual(code.count("("), code.count(")"))
 
 
 if __name__ == "__main__":
