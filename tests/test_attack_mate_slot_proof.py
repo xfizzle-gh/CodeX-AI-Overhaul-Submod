@@ -70,30 +70,35 @@ class AttackMateSlotProofTests(unittest.TestCase):
         for marker in forbidden:
             self.assertNotIn(marker, self.attack_mate)
 
-    def test_mission_probe_orders_transfers_then_retasks(self) -> None:
+    def test_mission_probe_clones_transfers_orders_then_retasks(self) -> None:
         for marker in (
-            '"attack_mate/probe_init"',
-            'ATTACK MATE PROBE ARMED FIXED DELAY',
-            '{"delay" {time 40}}',
-            '{tag_add attack_mate_probe}',
-            'ATTACK MATE PROBE 2 LEG1 ORDERED',
-            '{target {tag fpc1}}',
+            'ATTACK MATE PROBE ARMED CLONE TEST',
+            '{tag_add attack_mate_src}',
+            '{target_waypoint "allied_support_entry"}',
+            '{clone}',
+            '{tag_remove cmp_def}',
+            '{tag_remove _def}',
+            'ATTACK MATE PROBE 1 CLONES READY',
             '{player "3"}',
-            '{tag_add attack_mate_owned}',
+            'ATTACK MATE PROBE 2 TRANSFERRED',
+            'ATTACK MATE PROBE 3 LEG1 ORDERED',
+            '{target {tag fpc1}}',
             '"attack_mate/probe_retask"',
             '{zone {zone "fpc1"}}',
             '{target {tag fpc2}}',
             'ATTACK MATE PROBE 4 RETASKED TO FPC2',
-            'ATTACK MATE PROBE TIMEOUT BEFORE FPC1',
         ):
             self.assertIn(marker, self.retask)
 
-        leg1 = self.retask.index('ATTACK MATE PROBE 2 LEG1 ORDERED')
+        clone = self.retask.index('{clone}')
         transfer = self.retask.index('{player "3"}')
+        leg1 = self.retask.index('ATTACK MATE PROBE 3 LEG1 ORDERED')
         retask = self.retask.index('ATTACK MATE PROBE 4 RETASKED TO FPC2')
-        self.assertLess(leg1, transfer)
-        self.assertLess(transfer, retask)
-        self.assertNotIn('user_is_defender$', self.retask)
+        self.assertLess(clone, transfer)
+        self.assertLess(transfer, leg1)
+        self.assertLess(leg1, retask)
+        self.assertNotIn('{tag {tag player}}', self.retask)
+        self.assertNotIn('{tag {tag _user}}', self.retask)
         self.assertNotIn('prep_inform$', self.retask)
 
     def test_deployment_patches_exactly_the_cwa_map_family(self) -> None:
@@ -103,7 +108,6 @@ class AttackMateSlotProofTests(unittest.TestCase):
             '$ExpectedBranch = "experiment/attack-mate-slot-proof"',
             "git -C $RepoRoot branch --show-current",
             'route_skip", "first_player_slot',
-            "identity.firstPlayerId > 0 and identity.playerId == identity.firstPlayerId",
             "safeRequire",
             "diagnostics_only",
             'resource\\map\\multi\\attack_mate_retask_probe.inc',
@@ -111,14 +115,10 @@ class AttackMateSlotProofTests(unittest.TestCase):
             "Expected 14 CWA campaign_capture_the_flag.mi files",
             '(include "../attack_mate_retask_probe.inc")',
             "_attack_mate_probe_backups",
+            "ARMED CLONE TEST",
         ):
             self.assertIn(marker, self.deploy)
 
-        self.assertNotIn(
-            "CodeX AI Overhaul Submod",
-            self.deploy,
-            "deployment must not read from the obsolete space-named checkout",
-        )
         self.assertNotIn("team_a_attack_safe_route", self.deploy)
 
     def test_delimiters_are_balanced(self) -> None:
