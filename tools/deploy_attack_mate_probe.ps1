@@ -28,7 +28,8 @@ $files = @(
     "resource\script\multiplayer\modes\attacker_mate.lua",
     "resource\map\multi\dcg_vars.inc",
     "resource\map\multi\attack_mate_retask_probe.inc",
-    "resource\map\multi\attack_mate_probe_templates.inc"
+    "resource\map\multi\attack_mate_probe_templates.inc",
+    "resource\script\multiplayer\modes\conquest.lua"
 )
 
 $gameSetSource = Join-Path $RepoRoot $files[0]
@@ -37,8 +38,9 @@ $mateSource = Join-Path $RepoRoot $files[2]
 $varsSource = Join-Path $RepoRoot $files[3]
 $retaskSource = Join-Path $RepoRoot $files[4]
 $tplSource = Join-Path $RepoRoot $files[5]
+$conquestSource = Join-Path $RepoRoot $files[6]
 
-foreach ($source in @($gameSetSource, $botMainSource, $mateSource, $varsSource, $retaskSource, $tplSource)) {
+foreach ($source in @($gameSetSource, $botMainSource, $mateSource, $varsSource, $retaskSource, $tplSource, $conquestSource)) {
     if (-not (Test-Path -LiteralPath $source)) {
         throw "Missing source file: $source"
     }
@@ -125,6 +127,32 @@ foreach ($marker in @(
 # Line-anchored so the header's prose about {Inventory} does not trip this.
 if (Select-String -Quiet -LiteralPath $tplSource -Pattern '^\s*\{Inventory') {
     throw "Probe templates must not bake an Inventory block - the breed supplies the loadout"
+}
+# conquest.lua is tracked by this toolchain now. ensureAttackPrepInform must stay
+# defined above OnGameQuant (a call above the definition resolves to a nil global
+# and crashes the bot on its first quant), and IssueScatterOrder marks the adopted
+# external scatter-order work.
+foreach ($marker in @(
+    'local function ensureAttackPrepInform',
+    'local function IssueScatterOrder',
+    'local function ScheduleSpawnOrderNudge',
+    'Context.SpawnSeekTimer = Context.SpawnSeekTimer or {}'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $conquestSource -SimpleMatch $marker)) {
+        throw "Source conquest.lua is missing marker: $marker"
+    }
+}
+$conquestText = [System.IO.File]::ReadAllText($conquestSource)
+foreach ($pair in @(
+    @('local function ensureAttackPrepInform', 'function OnGameQuant'),
+    @('local function IssueScatterOrder', 'IssueScatterOrder(squad, flags'),
+    @('local function ScheduleSpawnOrderNudge', 'ScheduleSpawnOrderNudge(squad)')
+)) {
+    $defAt = $conquestText.IndexOf($pair[0])
+    $useAt = $conquestText.IndexOf($pair[1])
+    if ($defAt -lt 0 -or $useAt -lt 0 -or $defAt -ge $useAt) {
+        throw "Source conquest.lua defines '$($pair[0])' after its use '$($pair[1])' - Lua resolves that to a nil global and crashes the bot"
+    }
 }
 if (Select-String -Quiet -LiteralPath $tplSource -Pattern '^\s*\{Human ""') {
     throw 'Probe templates must use a real breed, not the breed-less empty-name Human form'
@@ -254,9 +282,18 @@ $botMain = Join-Path $WorkshopRoot $files[1]
 $mate = Join-Path $WorkshopRoot $files[2]
 $vars = Join-Path $WorkshopRoot $files[3]
 $retask = Join-Path $WorkshopRoot $files[4]
+$conquest = Join-Path $WorkshopRoot $files[6]
 
 if (-not (Select-String -Quiet -LiteralPath $gameSet -SimpleMatch "{aiTeamPlayers 1}")) {
     throw "Workshop game set does not contain the attack-mate AI slot marker"
+}
+foreach ($marker in @(
+    'local function ensureAttackPrepInform',
+    'local function IssueScatterOrder'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $conquest -SimpleMatch $marker)) {
+        throw "Workshop conquest.lua is missing marker: $marker"
+    }
 }
 if (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "first_player_slot") {
     throw "Workshop bot.main.lua still contains the regressed FirstPlayerId skip gate"

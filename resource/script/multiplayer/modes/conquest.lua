@@ -51,6 +51,8 @@ local UnitSpawnWaitTime = 1.0 * 60000 -- 1:30min (ms)
 
 -- Time delay for units to get a new move order after spawn move order. Loops.
 local OrderRotationPeriod = 1.75 * 60000 -- 1:45 min (ms)
+-- Re-issue a move shortly after spawn in case the first order is skipped/eaten.
+local SpawnOrderNudgeDelay = 5 * 1000 -- 5s
 
 botDefender = false
 botDifficultyModifier = 0
@@ -214,8 +216,10 @@ local function setVarsInMissionScript()
 	return true
 end
 
--- Each order tick: 50% SeekAndDestroy / 50% CaptureFlag.
+-- Each order tick: 50% scatter flank / 50% weighted CaptureFlag.
+-- Flank = real path order (uniform non-owned flag, or waypoint) so squads leave spawn and spread.
 local FlankOrderChance = 0.50
+local FlankWaypointChance = 0.30
 local waveSpawnPossible = true
 local waveSpawnActive = true
 local waveUnitCount = 0
@@ -796,18 +800,17 @@ function OnGameQuant()
 	ensureAttackPrepInform()
 	TrySpawnUnit()
 
-	local waypoints = BotApi.Scene.Waypoints
-	if #waypoints == 0 then
-		for i, squad in pairs(BotApi.Scene.Squads) do
-			if not Context.SquadTimers[squad] then
-				SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
-			end
+	-- Always keep order timers (waypoint maps used to skip this and only got a one-shot move).
+	for i, squad in pairs(BotApi.Scene.Squads) do
+		if not Context.SquadTimers[squad] then
+			SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
 		end
 	end
 end
 
 function GotoNextWaypoint(squad)
 	local waypoints = BotApi.Scene.Waypoints
+	if not waypoints or #waypoints == 0 then return end
 	BotApi.Commands:CaptureFlag(squad, waypoints[math.random(#waypoints)]) --captureflag is basically gothereandattack
 	if printDebug then print("Print: #captureFlag call inside GoToNextWaypoint") end
 end
@@ -815,7 +818,12 @@ end
 function OnWaypoint(args)
 	if not args or not args.squadId then return end
 	if not BotApi.Scene:IsSquadExists(args.squadId) then return end
-	GotoNextWaypoint(args.squadId)
+	-- Hand off to CaptureFlag loop so flanks/scatter apply after first waypoint.
+	if not Context.SquadTimers[args.squadId] then
+		SetSquadOrder(CaptureFlag, args.squadId, OrderRotationPeriod)
+	else
+		CaptureFlag(args.squadId)
+	end
 end
 
 -- NOTE: Returns true if squad tagged "_lua_mi" / "repairing" / alert tags.
@@ -839,11 +847,46 @@ function IsSquadInScript(squad)
 	return false
 end
 
+-- MI/repair only — alert must not block a forced spawn kick.
+local function IsSquadReserved(squad)
+	return BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing")
+end
+
 	-- NOTE: Returns true if squad tagged "_lua_ignore" for general ignore.
 function IsSquadToIgnore(squad)
 	if BotApi.Scene:IsSquadTagged(squad, "_lua_ignore") then
 		return true
 	end
+end
+
+-- Scatter move: ~30% waypoint / ~70% uniform non-owned flag (enemy+neutral); S&D only if nothing else.
+-- Ignores priority weighting so flanks fan out instead of bunching on the same objective.
+local function IssueScatterOrder(squad, flags, logTag)
+	local waypoints = BotApi.Scene.Waypoints
+	local hasWaypoints = waypoints and #waypoints > 0
+
+	local candidates = {}
+	for _, f in pairs(flags) do
+		if f.owner ~= team then
+			table.insert(candidates, f)
+		end
+	end
+
+	local preferWaypoint = hasWaypoints and (#candidates == 0 or math.random() <= FlankWaypointChance)
+	if preferWaypoint then
+		local wp = waypoints[math.random(#waypoints)]
+		if printDebug then print("Print:", logTag, "waypoint", wp, "squad", squad, "Player#", BotApi.Instance.playerId) end
+		return BotApi.Commands:CaptureFlag(squad, wp)
+	end
+
+	if #candidates > 0 then
+		local pick = candidates[math.random(#candidates)]
+		if printDebug then print("Print:", logTag, "flag", pick.name, "squad", squad, "Player#", BotApi.Instance.playerId) end
+		return BotApi.Commands:CaptureFlag(squad, pick.name)
+	end
+
+	if printDebug then print("Print:", logTag, "S&D fallback squad", squad, "Player#", BotApi.Instance.playerId) end
+	BotApi.Commands:SeekAndDestroy(squad)
 end
 
 function CaptureFlag(squad)
@@ -861,15 +904,15 @@ function CaptureFlag(squad)
             if printDebug then print("Print: [see_enemy] seek by squad ", squad, "Player#", BotApi.Instance.playerId) end
             BotApi.Commands:SeekAndDestroy(squad)
         else
-            if printDebug then print("Print: [see_enemy] donothing by squad ", squad, "Player#", BotApi.Instance.playerId) end
+            -- Was idle for full OrderRotationPeriod; give a real path instead.
+            IssueScatterOrder(squad, flags, "[see_enemy] scatter")
         end
         return
     end
 
-    -- 50/50 S&D vs CaptureFlag every order tick.
+    -- 50/50 scatter flank vs weighted CaptureFlag every order tick.
     if math.random() <= FlankOrderChance then
-        if printDebug then print("Print: [flank order] S&D squad", squad, "Player#", BotApi.Instance.playerId) end
-        BotApi.Commands:SeekAndDestroy(squad)
+        IssueScatterOrder(squad, flags, "[flank order]")
         return
     end
 
@@ -888,6 +931,25 @@ local function IsSquadActive(squad)
 	return squad ~= nil and BotApi.Scene:IsSquadExists(squad)
 end
 
+local function ScheduleSpawnOrderNudge(squad)
+	if Context.SpawnSeekTimer[squad] then
+		BotApi.Events:KillQuantTimer(Context.SpawnSeekTimer[squad])
+		Context.SpawnSeekTimer[squad] = nil
+	end
+	Context.SpawnSeekTimer[squad] = BotApi.Events:SetQuantTimer(function()
+		Context.SpawnSeekTimer[squad] = nil
+		if not IsSquadActive(squad) then return end
+		if IsSquadReserved(squad) then return end
+		if printDebug then print("Print: [spawn nudge] squad", squad, "Player#", BotApi.Instance.playerId) end
+		-- Force a real path (ignore alert/ignore tags for this kick only).
+		local flags = {}
+		for i, flag in pairs(BotApi.Scene.Flags) do
+			table.insert(flags, {id = i, name = flag.name, priority = getDefaultFlagPriority(flag), owner = flag.occupant})
+		end
+		IssueScatterOrder(squad, flags, "[spawn nudge]")
+	end, SpawnOrderNudgeDelay)
+end
+
 function OnGameSpawn(args)
     if not args or not args.squadId then return end
     local squad = args.squadId
@@ -902,13 +964,10 @@ function OnGameSpawn(args)
         SelectAiSpawnStrategy()
     end
 
-    local waypoints = BotApi.Scene.Waypoints
-    if #waypoints == 0 then
-        SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
-    else
-        GotoNextWaypoint(squad)
-    end
-
+	-- Always register the CaptureFlag order loop (scatter uses waypoints when present).
+	-- Old path: waypoint maps only got a one-shot GotoNextWaypoint and never re-ordered.
+	SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
+	ScheduleSpawnOrderNudge(squad)
 end
 
 -- v1.064+: prep phase ended (timer or Skip Preparation). Mission scripts key off prep_inform.

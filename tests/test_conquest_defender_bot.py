@@ -107,6 +107,47 @@ class ConquestRuntimeSourceTests(unittest.TestCase):
         quant_body = self.source[body_start:body_end]
         self.assertIn("ensureAttackPrepInform()", quant_body)
 
+    def test_scatter_order_helpers_are_defined_before_use(self) -> None:
+        # Same nil-global trap as ensureAttackPrepInform: these are `local
+        # function`s, so a call sited above the definition resolves to a nil
+        # global and crashes the bot the moment that path runs.
+        for helper in (
+            "IsSquadReserved",
+            "IssueScatterOrder",
+            "ScheduleSpawnOrderNudge",
+            "IsSquadActive",
+        ):
+            definition = self.source.index("local function %s" % helper)
+            call = self.source.index("%s(" % helper, definition + 1)
+            self.assertLess(definition, call, "%s called before definition" % helper)
+            self.assertNotIn(
+                "%s(" % helper,
+                self.source[:definition],
+                "%s called before its definition" % helper,
+            )
+
+    def test_scatter_helpers_only_use_established_engine_apis(self) -> None:
+        # SetQuantTimer/KillQuantTimer are used by utility.lua and bot.ai_logic.lua;
+        # Context.SpawnSeekTimer must be initialised or the nudge nil-indexes.
+        self.assertIn("Context.SpawnSeekTimer = Context.SpawnSeekTimer or {}", self.source)
+        init = self.source.index("Context.SpawnSeekTimer = Context.SpawnSeekTimer or {}")
+        first_use = self.source.index("Context.SpawnSeekTimer[squad]")
+        self.assertLess(init, first_use)
+        self.assertIn("BotApi.Events:SetQuantTimer(", self.source)
+        self.assertIn("BotApi.Events:KillQuantTimer(", self.source)
+
+    def test_order_timers_are_registered_on_every_map(self) -> None:
+        # The adopted external change: waypoint maps previously got a one-shot
+        # GotoNextWaypoint and never re-ordered, so squads sat at spawn.
+        spawn = self.source.index("function OnGameSpawn(args)")
+        body = self.source[spawn:self.source.index("\nfunction ", spawn + 1)]
+        self.assertIn("SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)", body)
+        self.assertIn("ScheduleSpawnOrderNudge(squad)", body)
+        # GotoNextWaypoint must stay nil-safe: it indexes Waypoints directly.
+        goto = self.source.index("function GotoNextWaypoint(squad)")
+        goto_body = self.source[goto:self.source.index("\nfunction ", goto + 1)]
+        self.assertIn("if not waypoints or #waypoints == 0 then return end", goto_body)
+
 
 if __name__ == "__main__":
     unittest.main()
