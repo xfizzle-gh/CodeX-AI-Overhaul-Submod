@@ -31,8 +31,3 @@
 			{"enemy_spawnside"}
 			{"id_attack_support"}
 			{"attack_support_ready"}
-			{"allied_attack_enabled"}
-			{"allied_attack_started"}
-			{"allied_attack_wave_num"}
-			{"allied_attack_owner_fail"}
-			{"allied_attack_retasked"}
