@@ -61,13 +61,36 @@ if (-not (Select-String -Quiet -LiteralPath $botMainSource -SimpleMatch "local f
 if (Select-String -Quiet -LiteralPath $botMainSource -SimpleMatch "team_a_attack_safe_route") {
     throw "Source bot.main.lua contains the superseded crashing Team A route"
 }
-if (-not (Select-String -Quiet -LiteralPath $mateSource -SimpleMatch '"diagnostics_only"')) {
-    throw "Source attacker_mate.lua is not the read-only checkpoint"
+foreach ($marker in @(
+    'sc:SetVar("id_attacker_mate", id.playerId)',
+    'sc:SetVar("attacker_mate_ready", 1)',
+    # The mate arms MI delivery explicitly. Lua Spawn on this slot never reports
+    # an available unit, so MI is the only path that puts bodies on the map.
+    'sc:SetVar("attack_mate_use_mi_probe", 1)'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $mateSource -SimpleMatch $marker)) {
+        throw "Source attacker_mate.lua is missing marker: $marker"
+    }
+}
+# These reads AV on a slot with no spawn deck, and pulling in utility.lua from
+# here crashed in lua.event.notify2 the moment the module loaded. Checked against
+# a comment-stripped view: the file's own header names these forms as the rule.
+function Get-LuaCode([string]$path) {
+    return ((Get-Content -LiteralPath $path) | ForEach-Object { ($_ -split '--', 2)[0] }) -join "`n"
+}
+$SlotUnsafe = @('spawnPointName', 'PlayerSpawnPoint', 'require(')
+$mateCode = Get-LuaCode $mateSource
+foreach ($banned in $SlotUnsafe) {
+    if ($mateCode.Contains($banned)) {
+        throw "Source attacker_mate.lua touches the slot-unsafe surface: $banned"
+    }
 }
 foreach ($marker in @(
     '{"attack_mate_probe_started"}',
     '{"attack_mate_probe_transferred"}',
-    '{"attack_mate_probe_retasked"}'
+    '{"attack_mate_probe_retasked"}',
+    '{"attack_mate_wave_cmd"}',
+    '{"attack_mate_use_mi_probe"}'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $varsSource -SimpleMatch $marker)) {
         throw "Source dcg_vars.inc is missing marker: $marker"
@@ -75,36 +98,42 @@ foreach ($marker in @(
 }
 foreach ($marker in @(
     '{var "user_is_defender$"}',
-    'ATTACK MATE PROBE ARMED CLONE TEST',
+    '{var "attacker_mate_ready$"}',
+    '{var "attack_mate_use_mi_probe$"}',
     '{target_waypoint "attack_mate_entry_a"}',
     '{target_waypoint "attack_mate_entry_b"}',
     '{var "enemy_spawnside$"}',
     '{player "3"}',
-    'ATTACK MATE PROBE 3 LEG1 ORDERED',
-    'ATTACK MATE PROBE 4 RETASKED TO FLAG 2',
-    # Real capture points: fpc1..fpc5 is an Indomitus convention and outback
-    # carries none of those tags, so {tag fpc1} left the units standing still.
-    # flag_point_campaign entities exist on all 14 maps and the engine tags them
-    # `flag`, which is how dcg_script.inc addresses capture points throughout.
+    # Command-gated wave clock. Waves keyed on entity presence alone all fired at
+    # once; each wave now needs its own command value and clears it on entry.
+    '{var "attack_mate_wave_cmd$"}',
+    '{"attack_mate/schedule"',
+    '{"attack_mate/wave1"',
+    '{"attack_mate/wave2"',
+    '{"attack_mate/wave3"',
+    '("am_place_at_entry")',
+    '("am_own_to_mate")',
+    '("am_finish_deploy")',
+    # Capture points are addressed as {tag flag}. The fpc1..fpc5 tags are absent
+    # from one of the fourteen maps entirely, which left units standing still.
     '{select {tag {tag flag}}}',
     '{tag_add attack_mate_flag1}',
     '{tag_add attack_mate_flag2}',
-    '{select {tag {tag attack_mate_tpl}}}',
-    '{tag_add attack_mate_pool}',
-    'ATTACK MATE PROBE FAIL NO POOL',
+    '{tag_add attack_mate_flag3}',
     # No-clone design: the pool originals are MOVED to the entry waypoint and
     # promoted in place, so they still carry the tag we put on them.
     '{tag_remove attack_mate_tpl}',
-    '{group {select {tag {tag attack_mate_tpl}}}}',
-    '{amount 4}',
-    # Decorating an advanced selector zeroes the match on these breed-less
-    # templates, so promote reuses the placement's proven bare form and the whole
-    # downstream chain keys on attack_mate_src - the one tag proven queryable.
-    '{group {select {tag {tag attack_mate_src}}}}',
-    '{tag attack_mate_src} {type human}} {operation set}'
+    # Decorating the advanced selector that addresses pool units zeroes the
+    # match, so the deploy set is selected bare and nothing else.
+    '{group {select {tag {tag attack_mate_deploy}}}}'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch $marker)) {
         throw "Source retask probe is missing marker: $marker"
+    }
+}
+foreach ($n in 1..16) {
+    if (-not (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch ('{player "' + $n + '"}'))) {
+        throw "Source retask probe is missing literal ownership case for player $n. The engine will not accept a var in the {player} node, so all sixteen slots must be spelled out"
     }
 }
 if (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch '{tag attack_mate_probe}') {
@@ -113,8 +142,16 @@ if (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch '{tag attack_ma
 if (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch '{tag_remove attack_mate_src}') {
     throw "Source retask probe removes attack_mate_src, but the entire downstream chain selects on it"
 }
-if ((Select-String -LiteralPath $retaskSource -SimpleMatch '{state {state inactive}}').Count -ne 2) {
-    throw "Source retask probe must exclude inactive flag points on BOTH nearest-flag picks - a mission activates only ~2 of a map's capture points"
+if ((Select-String -LiteralPath $retaskSource -SimpleMatch '{state {state inactive}}').Count -ne 3) {
+    throw "Source retask probe must exclude inactive flag points on ALL THREE shuffled flag picks - a mission activates only ~2 of a map's capture points, and a squad sent to a dead objective just sprints and stands there"
+}
+# Decorating the advanced selector that addresses pool units zeroes the match.
+# Live proof in one run: a bare select moved all four; the same select plus a
+# prop/state decoration matched nothing in the very next action.
+foreach ($banned in @('{include {prop human}}', '{prop {prop human}}', '{state {state operatable}}')) {
+    if (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch $banned) {
+        throw "Source retask probe decorates a pool selector with $banned, which zeroes the match on these units"
+    }
 }
 if (Select-String -Quiet -LiteralPath $retaskSource -Pattern '^[^;]*\bfpc') {
     throw "Source retask probe still targets fpc* capture points. Those tags are absent from outback entirely; address capture points as {tag flag}"
@@ -129,14 +166,29 @@ if (Select-String -Quiet -LiteralPath $retaskSource -SimpleMatch '{"delay" {time
     throw "Source retask probe still contains the superseded blind startup delay"
 }
 foreach ($marker in @(
-    '{Human "mp/nato/2022s/1ad_rifleman" 0xaf11',
-    '{Human "mp/nato/2022s/1ad_rifleman" 0xaf14',
-    '{Tags "attack_mate_tpl" "hidden" 0xaf11}',
-    '{Tags "attack_mate_tpl" "hidden" 0xaf14}'
+    '{Human "mp/nato/2022s/usmc_rifleman" 0xaf25',
+    '{Human "mp/nato/2022s/1ad_rifleman" 0xaf34',
+    '{Human "mp/nato/2022s/pzgd_rifleman" 0xaf42',
+    '{Tags "attack_mate_tpl" "attack_mate_w1" "hidden" 0xaf25}',
+    '{Tags "attack_mate_tpl" "attack_mate_w2" "hidden" 0xaf34}',
+    '{Tags "attack_mate_tpl" "attack_mate_w3" "hidden" 0xaf42}',
+    # Both humvees are crewed by explicit links so they arrive drivable with the
+    # M2HB manned, and each carries its own tag because they deploy one at a time
+    # (placed together they clip and flip).
+    '{Entity "humvee_m2hb_usa" 0xaf50',
+    '{Entity "humvee_m2hb_usa" 0xaf54',
+    '{Link 0xaf51 {0xaf50 "driver"}}',
+    '{Link 0xaf52 {0xaf50 "gunner2"}}',
+    '"attack_mate_hmmwv1"',
+    '"attack_mate_hmmwv2"'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $tplSource -SimpleMatch $marker)) {
         throw "Source probe template pool is missing marker: $marker"
     }
+}
+$tplAbleCount = (Select-String -LiteralPath $tplSource -SimpleMatch '{Able "-select"}').Count
+if ($tplAbleCount -ne 27) {
+    throw "Source probe template pool must park 27 prototypes with selection stripped (3 fireteams of 7 plus 2 crewed humvees); found $tplAbleCount"
 }
 # Line-anchored so the header's prose about {Inventory} does not trip this.
 if (Select-String -Quiet -LiteralPath $tplSource -Pattern '^\s*\{Inventory') {
@@ -174,12 +226,17 @@ foreach ($pair in @(
 if (Select-String -Quiet -LiteralPath $tplSource -Pattern '^\s*\{Human ""') {
     throw 'Probe templates must use a real breed, not the breed-less empty-name Human form'
 }
-$breedSet = Join-Path (Split-Path -Parent $WorkshopRoot) "3261086933\resource\set\breed\mp\nato\2022s\1ad_rifleman.set"
-if (-not (Test-Path -LiteralPath $breedSet)) {
-    throw "Breed mp/nato/2022s/1ad_rifleman is not installed at: $breedSet"
+# The pool has no breeds of its own; every prototype resolves against the base
+# mod's breed tree, so a missing install means 27 silently absent entities.
+$breedRoot = Join-Path (Split-Path -Parent $WorkshopRoot) "3261086933\resource\set\breed\mp\nato\2022s"
+foreach ($breed in @("usmc_rifleman", "1ad_rifleman", "pzgd_rifleman", "usarmy_crew")) {
+    $breedSet = Join-Path $breedRoot ($breed + ".set")
+    if (-not (Test-Path -LiteralPath $breedSet)) {
+        throw "Breed mp/nato/2022s/$breed is not installed at: $breedSet"
+    }
 }
 
-Write-Host "Deploying readiness-gated attack-mate clone + retask proof"
+Write-Host "Deploying command-gated attack-mate wave engine (W1 30s / W2 90s / W3 150s)"
 Write-Host "Repository: $RepoRoot"
 Write-Host "Branch:     $branch"
 Write-Host "Workshop:   $WorkshopRoot"
@@ -341,20 +398,38 @@ if (-not (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "Never use Fir
 if (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "team_a_attack_safe_route") {
     throw "Workshop bot.main.lua still contains the superseded crashing Team A route"
 }
-if (-not (Select-String -Quiet -LiteralPath $mate -SimpleMatch '"diagnostics_only"')) {
-    throw "Workshop attacker_mate.lua is not the read-only checkpoint"
+if (-not (Select-String -Quiet -LiteralPath $mate -SimpleMatch 'sc:SetVar("attack_mate_use_mi_probe", 1)')) {
+    throw "Workshop attacker_mate.lua does not arm MI delivery, so no mate units will ever reach the map"
 }
-if (-not (Select-String -Quiet -LiteralPath $vars -SimpleMatch '{"attack_mate_probe_started"}')) {
-    throw "Workshop dcg_vars.inc is missing the attack-mate probe state"
+$mateTargetCode = Get-LuaCode $mate
+foreach ($banned in $SlotUnsafe) {
+    if ($mateTargetCode.Contains($banned)) {
+        throw "Workshop attacker_mate.lua touches the slot-unsafe surface: $banned"
+    }
+}
+foreach ($marker in @('{"attack_mate_probe_started"}', '{"attack_mate_wave_cmd"}', '{"attack_mate_use_mi_probe"}')) {
+    if (-not (Select-String -Quiet -LiteralPath $vars -SimpleMatch $marker)) {
+        throw "Workshop dcg_vars.inc is missing the attack-mate probe state: $marker"
+    }
 }
 if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{var "user_is_defender$"}')) {
     throw "Workshop retask probe is missing the attack-only gate"
 }
+if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{var "attack_mate_wave_cmd$"}')) {
+    throw "Workshop retask probe is missing the wave command gate - without it the waves all fire at once on entity presence"
+}
+foreach ($wave in @('{"attack_mate/wave1"', '{"attack_mate/wave2"', '{"attack_mate/wave3"')) {
+    if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch $wave)) {
+        throw "Workshop retask probe is missing wave trigger: $wave"
+    }
+}
 if (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{"delay" {time 8}}') {
     throw "Workshop retask probe still contains the superseded blind startup delay"
 }
-if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{tag_add attack_mate_pool}')) {
-    throw "Workshop retask probe is not sourcing the off-map template pool"
+foreach ($n in 1..3) {
+    if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch ('{selector {tag attack_mate_w' + $n + '}}'))) {
+        throw "Workshop retask probe does not gate wave $n on its own pool being present"
+    }
 }
 if (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{clone}') {
     throw "Workshop retask probe still clones instead of moving the pool originals"
@@ -365,7 +440,7 @@ if (Select-String -Quiet -LiteralPath $retask -Pattern '^[^;]*\bfpc') {
 if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{tag_add attack_mate_flag1}')) {
     throw "Workshop retask probe is not claiming a real flag point"
 }
-if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{group {select {tag {tag attack_mate_src}}}}')) {
+if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{group {select {tag {tag attack_mate_deploy}}}}')) {
     throw "Workshop retask probe is not using the proven bare select form"
 }
 if (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{tag attack_mate_probe}') {
@@ -375,11 +450,14 @@ if (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{zone {zone "gamezon
     throw "Workshop retask probe still separates entities by zone"
 }
 $tplTarget = Join-Path $WorkshopRoot "resource\map\multi\attack_mate_probe_templates.inc"
-if (-not (Select-String -Quiet -LiteralPath $tplTarget -SimpleMatch '{Human "mp/nato/2022s/1ad_rifleman" 0xaf11')) {
+if (-not (Select-String -Quiet -LiteralPath $tplTarget -SimpleMatch '{Human "mp/nato/2022s/usmc_rifleman" 0xaf25')) {
     throw "Workshop probe template pool is missing or not real-breed"
 }
-if (-not (Select-String -Quiet -LiteralPath $retask -SimpleMatch '{group {select {tag {tag attack_mate_tpl}}}}')) {
-    throw "Workshop retask probe is not sourcing its own real-breed pool"
+if (Select-String -Quiet -LiteralPath $tplTarget -Pattern '^\s*\{Human ""') {
+    throw "Workshop probe template pool reverted to the breed-less empty-name Human form, which spawns unarmed bodies"
+}
+if ((Select-String -LiteralPath $tplTarget -SimpleMatch '{Able "-select"}').Count -ne 27) {
+    throw "Workshop probe template pool is not the 27-prototype wave pool"
 }
 $poolTarget = Join-Path $WorkshopRoot "resource\map\multi\allied_support_templates.inc"
 if (-not (Select-String -Quiet -LiteralPath $poolTarget -SimpleMatch '{Tags "allied_support_template" "hidden" "cmp_def" 0xaf01}')) {
@@ -389,9 +467,9 @@ if (-not (Select-String -Quiet -LiteralPath $poolTarget -SimpleMatch '{Tags "all
 Write-Host "`nVerification markers:"
 Select-String -LiteralPath $gameSet -Pattern "aiTeamPlayers 1"
 Select-String -LiteralPath $botMain -Pattern "CODEX_ATTACK_MATE_ROUTER|route_skip|first_player_slot|safeRequire"
-Select-String -LiteralPath $mate -Pattern "CODEX_ATTACK_MATE_PROBE|diagnostics_only"
-Select-String -LiteralPath $vars -Pattern "attack_mate_probe_"
-Select-String -LiteralPath $retask -Pattern 'prep_inform|user_is_defender|ATTACK MATE PROBE|allied_support_entry|player "3"'
+Select-String -LiteralPath $mate -Pattern "CODEX_ATTACK_MATE|attack_mate_use_mi_probe"
+Select-String -LiteralPath $vars -Pattern "attack_mate_probe_|attack_mate_wave_cmd|attack_mate_use_mi_probe"
+Select-String -LiteralPath $retask -Pattern 'user_is_defender|attack_mate_wave_cmd|attack_mate/wave|ATTACK MATE WAVE'
 Write-Host "Patched maps: $($mapFiles.Count)"
 
 Write-Host "`nDeployment complete. Fully restart Gates of Hell before testing."

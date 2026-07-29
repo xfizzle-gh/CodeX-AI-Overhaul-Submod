@@ -10,7 +10,14 @@ BOT_MAIN = ROOT / "resource/script/multiplayer/bot.main.lua"
 ATTACK_MATE = ROOT / "resource/script/multiplayer/modes/attacker_mate.lua"
 VARS = ROOT / "resource/map/multi/dcg_vars.inc"
 RETASK = ROOT / "resource/map/multi/attack_mate_retask_probe.inc"
+TEMPLATES = ROOT / "resource/map/multi/attack_mate_probe_templates.inc"
 DEPLOY = ROOT / "tools/deploy_attack_mate_probe.ps1"
+
+
+def strip_comments(text: str) -> str:
+    """MI comment-stripped view. Headers quote bad forms as cautionary examples,
+    so every structural count must run on code only."""
+    return "\n".join(line.split(";", 1)[0] for line in text.splitlines())
 
 
 class AttackMateSlotProofTests(unittest.TestCase):
@@ -21,7 +28,9 @@ class AttackMateSlotProofTests(unittest.TestCase):
         cls.attack_mate = ATTACK_MATE.read_text(encoding="utf-8")
         cls.vars = VARS.read_text(encoding="utf-8")
         cls.retask = RETASK.read_text(encoding="utf-8")
+        cls.templates = TEMPLATES.read_text(encoding="utf-8")
         cls.deploy = DEPLOY.read_text(encoding="utf-8")
+        cls.code = strip_comments(cls.retask)
 
     def test_team_a_requests_exactly_one_ai_mate_slot(self) -> None:
         self.assertEqual(self.game_set.count("{aiTeamPlayers 1}"), 1)
@@ -48,29 +57,87 @@ class AttackMateSlotProofTests(unittest.TestCase):
         self.assertIn("Never use FirstPlayerId to exclude a", self.bot_main)
         self.assertNotIn("team_a_attack_safe_route", self.bot_main)
 
-    def test_lua_probe_remains_read_only(self) -> None:
+    def test_mate_publishes_identity_and_arms_the_mi_wave_engine(self) -> None:
         for marker in (
-            'local PREFIX = "CODEX_ATTACK_MATE_PROBE"',
+            'local PREFIX = "CODEX_ATTACK_MATE"',
             'sc:SetVar("id_attacker_mate", id.playerId)',
             'sc:SetVar("attacker_mate_ready", 1)',
-            '"scene_squads"',
-            '"scene_flags"',
-            '"diagnostics_only"',
-            '"orders", "disabled"',
-            '"stage", readVar("attack_mate_probe_stage")',
+            # The enable switch for the MI wave engine. Lua Spawn on this slot
+            # never reports an available unit, so MI delivery is the only path
+            # that puts bodies on the map; the mate must arm it explicitly.
+            'sc:SetVar("attack_mate_use_mi_probe", 1)',
+            "if id.attacking ~= true then return end",
         ):
             self.assertIn(marker, self.attack_mate)
 
+    def test_mate_never_touches_the_slot_unsafe_engine_surface(self) -> None:
+        # Every entry here cost a native crash to learn. Reading the spawn-point
+        # fields or pulling in utility.lua / logic.main.lua AVs on a slot that has
+        # no spawn deck, and the Lua spawn/purchase calls are inert there anyway.
         forbidden = (
-            "CaptureFlag(",
-            "SeekAndDestroy(",
+            "spawnPointName",
+            "PlayerSpawnPoint",
+            "require(",
             ":Spawn(",
             ":SpawnAt(",
             ":Purchase(",
             "GameModeSpawnUnit(",
         )
+        code = "\n".join(
+            line.split("--", 1)[0] for line in self.attack_mate.splitlines()
+        )
         for marker in forbidden:
-            self.assertNotIn(marker, self.attack_mate)
+            self.assertNotIn(marker, code)
+
+        # Nothing may reach the engine unguarded: every BotApi accessor returns a
+        # table/nil fallback and every event body runs inside pcall.
+        for marker in (
+            "local function safeEvent(name, fn)",
+            "local ok, err = pcall(fn, ...)",
+            "return (BotApi and BotApi.Instance) or {}",
+        ):
+            self.assertIn(marker, self.attack_mate)
+
+    def test_mate_orders_only_squads_it_can_see(self) -> None:
+        # Orders are now live (the read-only diagnostics checkpoint is retired),
+        # but they stay wrapped: an unsupported command must not take the slot down.
+        self.assertIn("pcall(function() c:CaptureFlag(squad, flagName) end)", self.attack_mate)
+        self.assertIn("pcall(function() c:SeekAndDestroy(squad) end)", self.attack_mate)
+        # Flag names come from the scene, never from a hardcoded fpc*/flag list.
+        self.assertIn("local function pickFlagName()", self.attack_mate)
+        self.assertIn('type(sc.Flags) ~= "table"', self.attack_mate)
+        self.assertNotIn("fpc", self.attack_mate)
+
+    def test_lua_locals_are_defined_before_use(self) -> None:
+        # Lua resolves a call sited above its `local function` to a nil global,
+        # which crashes the bot silently the moment that path first runs. Order
+        # matters for every helper the event bodies reach.
+        for source, pairs in (
+            (
+                self.attack_mate,
+                (
+                    ("local function log(", "log("),
+                    ("local function identity()", "identity()"),
+                    ("local function publishIdentity(id)", "publishIdentity(id)"),
+                    ("local function pickFlagName()", "pickFlagName()"),
+                    ("local function orderSquad(squad)", "orderSquad(squad)"),
+                    ("local function orderNewSquads()", "orderNewSquads()"),
+                    ("local function safeEvent(name, fn)", 'safeEvent("GameStart"'),
+                ),
+            ),
+            (
+                self.bot_main,
+                (
+                    ("local function routerLog(", "routerLog("),
+                    ("local function safeRequire(path)", "safeRequire("),
+                ),
+            ),
+        ):
+            for definition, use in pairs:
+                at_def = source.index(definition)
+                at_use = source.index(use, at_def + len(definition))
+                self.assertLess(at_def, at_use, "%s used before definition" % use)
+                self.assertNotIn(use, source[:at_def])
 
     def test_probe_state_is_explicitly_declared(self) -> None:
         for marker in (
@@ -78,236 +145,265 @@ class AttackMateSlotProofTests(unittest.TestCase):
             '{"attack_mate_probe_transferred"}',
             '{"attack_mate_probe_retasked"}',
             '{"attack_mate_probe_stage"}',
+            # The wave clock and the MI-delivery enable switch.
+            '{"attack_mate_wave_cmd"}',
+            '{"attack_mate_use_mi_probe"}',
             '{"enemy_spawnside"}',
             '{"id_attacker_mate"}',
             '{"attacker_mate_ready"}',
         ):
             self.assertIn(marker, self.vars)
 
-    def test_mission_probe_waits_for_ready_sources_then_retasks(self) -> None:
-        for marker in (
-            '{expression "1 & 2 & 3"}',
-            '{var "user_is_defender$"}',
-            'ATTACK MATE PROBE BOOT ATTACK SIDE',
-            'ATTACK MATE PROBE ARMED CLONE TEST',
-            '{tag_add attack_mate_src}',
-            # The dynamic campaign swaps attacker/defender spawn sides per mission
-            # instance, so the entry side is chosen at runtime from enemy_spawnside$.
-            '{target_waypoint "attack_mate_entry_a"}',
-            '{target_waypoint "attack_mate_entry_b"}',
-            '{var "enemy_spawnside$"}',
-            'ATTACK MATE PROBE SIDE UNKNOWN',
-            'ATTACK MATE PROBE 1 CLONES READY',
-            '{player "3"}',
-            'id_attacker_mate$',
-            'ATTACK MATE PROBE OWNER FALLBACK P3',
-            'ATTACK MATE PROBE 2 TRANSFERRED',
-            'ATTACK MATE PROBE 3 LEG1 ORDERED',
-            '"attack_mate/probe_retask"',
-            'ATTACK MATE PROBE FLAG 1 REACHED',
-            'ATTACK MATE PROBE 4 RETASKED TO FLAG 2',
-            'ATTACK MATE PROBE FAIL NO CLONES',
-            'ATTACK MATE PROBE FAIL NO POOL',
-            # Real capture points. fpc1..fpc5 is an Indomitus naming convention:
-            # 13 of 14 CWA maps carry those tags but outback carries none, which
-            # is why {tag fpc1} left the units standing still on the live run.
-            # flag_point_campaign entities exist on all 14 and the engine tags
-            # them `flag`, which is how dcg_script.inc addresses them throughout.
-            '{select {tag {tag flag}}}',
-            '{tag_add attack_mate_flag1}',
-            '{tag_add attack_mate_flag2}',
-            '{target {ignore_captured_by_user 0} {tag attack_mate_flag1}}',
-            '{target {ignore_captured_by_user 0} {tag attack_mate_flag2}}',
-            # Source is the probe's OWN real-breed off-map pool. Live map-garrison
-            # defenders are map-state-dependent (never armed on border), and the
-            # breed-less defense pool is where every selector anomaly showed up.
-            '{select {tag {tag attack_mate_tpl}}}',
-            '{tag_add attack_mate_pool}',
+    def test_wave_schedule_is_armed_once_and_command_gated(self) -> None:
+        code = self.code
+
+        # One arming trigger plus three waves.
+        for name in (
+            '{"attack_mate/schedule"',
+            '{"attack_mate/wave1"',
+            '{"attack_mate/wave2"',
+            '{"attack_mate/wave3"',
         ):
-            self.assertIn(marker, self.retask)
+            self.assertEqual(code.count(name), 1, name)
 
-        self.assertNotIn('ATTACK MATE PROBE FAIL NO DEFENDER SOURCES', self.retask)
+        # The schedule arms exactly once and never resets its own latch, so it
+        # cannot re-run and stack a second set of waves.
+        self.assertIn(
+            '{"1.cmp_i" {var "attack_mate_probe_started$"} {op "=="} {value 0}}', code
+        )
+        self.assertIn(
+            '{"set_i" {var "attack_mate_probe_started$"} {op "="} {value 1}}', code
+        )
+        self.assertNotIn(
+            '{"set_i" {var "attack_mate_probe_started$"} {op "="} {value 0}}', code
+        )
+        # Attack side only, and only once the mate has published its identity and
+        # armed MI delivery.
+        self.assertIn('{"2.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}', code)
+        self.assertIn('{"3.cmp_i" {var "attacker_mate_ready$"} {op "=="} {value 1}}', code)
+        self.assertIn(
+            '{"4.cmp_i" {var "attack_mate_use_mi_probe$"} {op "=="} {value 1}}', code
+        )
 
-        # Pipeline stage reporting: 1 claimed, 2 moved, 21 pre-promote, 3 promoted,
-        # 4 transferred, 8 no pool (terminal), 9 promote matched none.
-        for value in (1, 2, 21, 3, 4, 8, 9):
+        # COMMAND GATING is the fix for waves auto-firing on entity presence
+        # alone, which detonated all three at once. Each wave requires its own
+        # command value AND clears the command as its first action, so a wave
+        # runs exactly once per issue.
+        schedule = code.index('{"attack_mate/schedule"')
+        for n in (1, 2, 3):
+            wave = code.index('{"attack_mate/wave%d"' % n)
+            body = code[wave:]
+            self.assertIn(
+                '{"2.cmp_i" {var "attack_mate_wave_cmd$"} {op "=="} {value %d}}' % n,
+                body[: body.index("{actions")],
+            )
+            actions = body[body.index("{actions") :]
+            self.assertIn(
+                '{"set_i" {var "attack_mate_wave_cmd$"} {op "="} {value 0}}',
+                actions[:200],
+            )
+            # The clock issues the command from the schedule, above every wave.
+            issue = code.index(
+                '{"set_i" {var "attack_mate_wave_cmd$"} {op "="} {value %d}}' % n
+            )
+            self.assertLess(schedule, issue)
+            self.assertLess(issue, wave)
+
+        # 30 / 90 / 150 seconds: a 30s lead-in then two 60s gaps.
+        self.assertEqual(code.count('{"delay" {time 30}}'), 1)
+        self.assertEqual(code.count('{"delay" {time 60}}'), 2)
+        # Every wave also needs its own pool present, so an exhausted wave is a
+        # no-op rather than an empty deploy.
+        for n in (1, 2, 3):
+            self.assertIn("{selector {tag attack_mate_w%d}}" % n, code)
+
+        # Stage reporting: 1 armed, then <wave>1 entered / <wave>2 completed.
+        for value in (1, 11, 12, 21, 22, 31, 32):
             self.assertIn(
                 '{"set_i" {var "attack_mate_probe_stage$"} {op "="} {value %d}}' % value,
-                self.retask,
+                code,
             )
 
-        # NO CLONING. Three promote designs (runtime tag, gamezone, player-0
-        # identity) each matched zero freshly created entities. A new entity's
-        # provenance is invisible to every selector we can express on this engine,
-        # so the probe moves the pool originals instead of copying them.
-        self.assertNotIn("{clone}", self.retask)
-        self.assertNotIn('{zone {zone "gamezone"}}', self.retask)
-        self.assertNotIn('{player "0"}', self.retask)
-
-        # Slices are taken over the comment-stripped view: the header and inline
-        # notes deliberately quote the bad forms as cautionary examples.
-        code = "\n".join(l.split(";", 1)[0] for l in self.retask.splitlines())
-
-        # The move is the placement verb with the clone sub-node dropped. All three
-        # side branches (enemy on a, enemy on b, unknown) place the same 4 units.
+    def test_entry_side_is_chosen_at_runtime(self) -> None:
+        code = self.code
+        # The dynamic campaign swaps attacker/defender spawns per mission
+        # instance, so a static entry waypoint is never correct.
         self.assertEqual(code.count('{"placement"'), 3)
         self.assertEqual(code.count('{target_waypoint "attack_mate_entry_a"}'), 1)
         self.assertEqual(code.count('{target_waypoint "attack_mate_entry_b"}'), 2)
-        move = code.index('{target_waypoint "attack_mate_entry')
-        promote = code.index("{tag_add attack_mate_probe}")
-        self.assertLess(move, promote)
-        move_block = code[code.index('{"placement"'):move]
-        self.assertIn("{select {tag {tag attack_mate_src}}}", move_block)
-        self.assertIn("{amount 4}", move_block)
 
         # Enemy on side a means we enter from b, and vice versa - never the same.
         side_a = code.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
         side_b = code.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
         self.assertLess(side_a, side_b)
-        self.assertIn(
-            '{target_waypoint "attack_mate_entry_b"}', code[side_a:side_b]
-        )
-        self.assertIn(
-            '{target_waypoint "attack_mate_entry_a"}', code[side_b:]
-        )
-        # Unknown side must self-report rather than silently guess.
-        self.assertIn(
-            '{"set_i" {var "attack_mate_probe_stage$"} {op "="} {value 53}}', code
-        )
+        self.assertIn('{target_waypoint "attack_mate_entry_b"}', code[side_a:side_b])
+        self.assertIn('{target_waypoint "attack_mate_entry_a"}', code[side_b:])
 
-        # SELECTOR RULE: on these breed-less templates, decorating an advanced
-        # selector zeroes the match. Live proof in one run: bare select moved all
-        # 4; the same select plus {include {prop {prop human}}} and state excludes
-        # matched nothing in the very next action. So promote's selector must be
-        # byte-for-byte the placement's proven form - bare select, nothing else.
+        # Placement happens before promotion, on every wave.
+        self.assertEqual(code.count('("am_place_at_entry")'), 5)
+        self.assertEqual(code.count('("am_finish_deploy")'), 5)
+        place = code.index('(define "am_place_at_entry"')
+        finish = code.index('(define "am_finish_deploy"')
+        self.assertLess(place, finish)
+
+    def test_ownership_switch_covers_every_literal_player_slot(self) -> None:
+        code = self.code
+        # The engine will not accept a var in the {player} node, so all sixteen
+        # slots are spelled out and matched against id_attacker_mate$.
+        own = code.index('(define "am_own_to_mate"')
+        block = code[own : code.index('(define "am_finish_deploy"')]
+        for n in range(1, 17):
+            self.assertIn(
+                '{condition {type cmp_i} {var "id_attacker_mate$"} {op "=="} '
+                '{value %d}}' % n,
+                block,
+            )
+            self.assertIn('{player "%d"}' % n, block)
+        self.assertNotIn('{player "id_attacker_mate$"}', code)
+        self.assertNotIn('{player "17"}', block)
+        # Ownership is handed over exactly once per deploy, after placement.
+        self.assertEqual(code.count('("am_own_to_mate")'), 1)
+        self.assertIn('{"set_i" {var "attack_mate_probe_transferred$"} {op "="} {value 1}}', code)
+
+    def test_probe_never_clones_and_never_decorates_the_pool_selector(self) -> None:
+        code = self.code
+        # NO CLONING. Three promote designs (runtime tag, gamezone, player-0
+        # identity) each matched zero freshly created entities: a new entity's
+        # provenance is invisible to every selector we can express here. The pool
+        # originals are MOVED instead, so they keep the tags we put on them.
+        self.assertNotIn("{clone}", code)
+        self.assertNotIn('{zone {zone "gamezone"}}', code)
+        self.assertNotIn('{player "0"}', code)
+        self.assertNotIn("{zone ", code)
+
+        # SELECTOR RULE: decorating the advanced selector that addresses pool
+        # units zeroes the match. Live proof in one run: a bare select moved all
+        # four; the same select plus a prop/state decoration matched nothing in
+        # the very next action. Selecting the deploy set must stay bare.
         self.assertNotIn("{prop {prop human}}", code)
+        self.assertNotIn("{include {prop human}}", code)
         self.assertNotIn("{state {state operatable}}", code)
-        promote_sel = code[move:promote]
-        self.assertIn("{select {tag {tag attack_mate_src}}}", promote_sel)
-        for decoration in ("{include", "{exclude"):
-            self.assertNotIn(decoration, promote_sel)
+        self.assertNotIn("{include", code)
+        for match in re.finditer(
+            r"\{group \{select \{tag \{tag attack_mate_deploy\}\}\}\}", code
+        ):
+            self.assertTrue(match)
+        self.assertIn("{group {select {tag {tag attack_mate_deploy}}}}", code)
 
-        payload = code[promote:promote + 500]
+        # fpc1..fpc5 tags are absent from one of the fourteen maps entirely, which
+        # left the units standing still on a live run. Capture points are
+        # addressed as {tag flag}, the way the mission scripts do it throughout.
+        self.assertNotIn("fpc", code)
+        self.assertEqual(code.count("{select {tag {tag flag}}}"), 3)
+
+        # attack_mate_src is never removed: it marks everything the probe owns.
+        self.assertNotIn("{tag_remove attack_mate_src}", self.retask)
+
+    def test_only_active_flag_points_are_targeted(self) -> None:
+        code = self.code
+        # A mission activates only ~2 of a map's flag points; without this filter
+        # the squad sprinted to a dead objective. All three shuffled picks must
+        # exclude inactive, and each must exclude the earlier picks so the three
+        # tags land on three different flags.
+        self.assertEqual(code.count("{state {state inactive}}"), 3)
+        self.assertEqual(code.count("{sort {type shuffle}}"), 3)
+        for n in (1, 2, 3):
+            anchor = "{tag_add attack_mate_flag%d}" % n
+            self.assertEqual(code.count(anchor), 1)
+            pick = code.rindex("{select {tag {tag flag}}}", 0, code.index(anchor))
+            window = code[pick : code.index(anchor)]
+            self.assertIn("{state {state inactive}}", window)
+            for earlier in range(1, n):
+                self.assertIn("{tag {tag attack_mate_flag%d}}" % earlier, window)
+
+        # Every fireteam advances on a claimed flag, not on a raw coordinate.
+        for n in (1, 2, 3, 4):
+            self.assertIn(
+                "{selector {ignore_captured_by_user 0} {tag attack_mate_g%d}}" % n, code
+            )
+        self.assertIn(
+            "{target {ignore_captured_by_user 0} {tag attack_mate_flag1}}", code
+        )
+        self.assertIn(
+            "{target {ignore_captured_by_user 0} {tag attack_mate_flag2}}", code
+        )
+        self.assertIn(
+            "{target {ignore_captured_by_user 0} {tag attack_mate_flag3}}", code
+        )
+
+    def test_deploy_promotes_hands_to_ai_and_splits_into_fireteams(self) -> None:
+        code = self.code
+        finish = code.index('(define "am_finish_deploy"')
+        block = code[finish:]
         for marker in (
-            "{tag_remove attack_mate_pool}",
             "{tag_remove attack_mate_tpl}",
             "{tag_remove hidden}",
             "{inactive off}",
             "{impregnability disabled}",
             "{discovered on}",
+            "{control AI}",
+            "{ai_move {mode enable}}",
+            "{weapon_prepare on}",
+            "{fire_mode open}",
+            # Selection is stripped so the human cannot inherit mate units.
+            "{remove select}",
         ):
-            self.assertIn(marker, payload)
+            self.assertIn(marker, block)
 
-        # The probe owns its pool outright: it never selects, tags or consumes
-        # the breed-less defense pool.
-        self.assertNotIn("allied_support_template", code)
-        # attack_mate_src is never removed: the whole downstream chain keys on it.
-        self.assertNotIn("{tag_remove attack_mate_src}", self.retask)
+        # Four staggered fireteams rather than one blob walking a single line.
+        for n in (1, 2, 3, 4):
+            self.assertIn("{tag_add attack_mate_g%d}" % n, block)
+            self.assertIn("{tag_remove attack_mate_g%d}" % n, block)
+        self.assertEqual(block.count("{amount 2}"), 3)
 
-        # Nothing gates on attack_mate_probe any more - it is a best-effort marker
-        # applied by promote and referenced nowhere else.
-        self.assertEqual(self.retask.count("{tag_add attack_mate_probe}"), 1)
-        self.assertEqual(self.retask.count("attack_mate_probe}"), 1)
-        # Ownership, actor_state, ables, orders and retask all key on the proven
-        # tag: 16 ownership cases + P3 default + actor_state + ables + the flag-1
-        # advance + the flag-2 advance in probe_retask = 21.
-        self.assertEqual(
-            self.retask.count(
-                "{selector {ignore_captured_by_user 0} {tag attack_mate_src} {type human}}"
-            ),
-            21,
-        )
-        # Nothing anywhere still keys on the unproven marker tag.
-        self.assertNotIn("{tag attack_mate_probe}", code)
-
-        # No fpc reference may survive in probe code. dcg_functions.mi keeps its
-        # own fpc_* helpers and other tests may legitimately pin those; this
-        # assertion is scoped to the probe only.
-        self.assertNotIn("fpc", code)
-
-        # Nearest-flag pick: sort the candidate set by distance to a reference
-        # entity then take one (the ai_enhance_dcg.inc:78-101 idiom), and the
-        # retask must exclude the first pick so it is a genuinely new target.
-        self.assertEqual(code.count("{type entity}"), 2)
-        self.assertEqual(code.count("{tag_add attack_mate_flag1}"), 1)
-        self.assertEqual(code.count("{tag_add attack_mate_flag2}"), 1)
-        self.assertIn("{tag {tag attack_mate_flag1}}", code)
-
-        # A mission activates only ~2 of a map's flag points; without this filter
-        # the squad sprinted to a dead objective. Both nearest-flag picks - the
-        # initial order and the retask re-pick - must exclude inactive.
-        self.assertEqual(code.count("{state {state inactive}}"), 2)
-        for anchor in ("{tag_add attack_mate_flag1}", "{tag_add attack_mate_flag2}"):
-            pick = code.rindex("{select {tag {tag flag}}}", 0, code.index(anchor))
-            self.assertIn(
-                "{state {state inactive}}", code[pick:code.index(anchor)]
-            )
-
-        # Arrival is the near/near_to/distance idiom, not a zone test.
-        self.assertIn('{"3.near"', code)
-        self.assertIn("{near_to", code)
-        self.assertIn("{distance 60}", code)
-        self.assertNotIn("{zone ", code)
-
-        # The move consumes the originals, so the no-pool path must terminate
-        # rather than spin once the 8-strong pool is empty.
-        stage8 = self.retask.index(
-            '{"set_i" {var "attack_mate_probe_stage$"} {op "="} {value 8}}'
-        )
-        self.assertNotIn(
-            '{"trigger" {name "attack_mate/probe_init"}}', self.retask[stage8:]
-        )
-        self.assertNotIn(
-            '{"set_i" {var "attack_mate_probe_started$"} {op "="} {value 0}}',
-            self.retask,
-        )
-
-        # All indices below are in the same comment-stripped coordinate space.
-        boot = code.index("ATTACK MATE PROBE BOOT ATTACK SIDE")
-        transfer = code.index('{player "3"}')
-        leg1 = code.index("ATTACK MATE PROBE 3 LEG1 ORDERED")
-        retask = code.index("ATTACK MATE PROBE 4 RETASKED TO FLAG 2")
-        self.assertLess(boot, move)
-        self.assertLess(move, transfer)
-        self.assertLess(transfer, leg1)
-        self.assertLess(leg1, retask)
-        self.assertNotIn('{"delay" {time 8}}', self.retask)
-        # The prep_inform gate was removed on purpose: an attack mission often
-        # never raises PrepTimeOver, so gating on it would stall the probe.
-        self.assertNotIn('{var "prep_inform$"}', self.retask)
-        # The probe only ever touches the 4 pool originals it tagged itself, so it
-        # has no reason to name player- or user-owned entities at all.
-        self.assertNotIn('{tag {tag player}}', self.retask)
-        self.assertNotIn('{tag {tag _user}}', self.retask)
+        # The deploy tag is consumed at the end of every deploy, so the next wave
+        # starts from an empty set instead of re-ordering the previous one.
+        self.assertIn("{tag_remove attack_mate_deploy}", block)
 
     def test_probe_templates_are_real_breed_prototypes(self) -> None:
-        tpl = (ROOT / "resource/map/multi/attack_mate_probe_templates.inc").read_text(
-            encoding="utf-8"
-        )
-        # Breed path is verified twice: the .set file exists in the Code:X base mod,
-        # and the same string is used by this mod's own purchase list
-        # (resource/set/multiplayer/units/conquest/inf_nato.set).
-        # The header documents the form, so structural counts run on code only.
-        code = "\n".join(l.split(";", 1)[0] for l in tpl.splitlines())
+        code = strip_comments(self.templates)
 
-        breed = "mp/nato/2022s/1ad_rifleman"
-        self.assertEqual(code.count('{Human "%s"' % breed), 4)
-        units = (
-            ROOT / "resource/set/multiplayer/units/conquest/inf_nato.set"
-        ).read_text(encoding="utf-8")
-        self.assertIn('"%s"' % breed, units)
+        # 27 parked prototypes: three seven-strong fireteams plus two crewed
+        # humvees. Parked off-map at player 0 and claimed by tag on deploy.
+        self.assertEqual(code.count("{Able \"-select\"}"), 27)
+        self.assertEqual(code.count("{Tags "), 27)
+        self.assertEqual(code.count("{Player 0}"), 27)
+        self.assertEqual(code.count('"attack_mate_tpl"'), 27)
+        self.assertEqual(code.count('"hidden"'), 27)
+        for n in (1, 2, 3):
+            self.assertEqual(code.count('"attack_mate_w%d"' % n), 7 if n < 3 else 13)
 
-        for n in range(1, 5):
-            self.assertIn("0xaf1%d" % n, code)
-            self.assertIn("{MID 901%d}" % n, code)
-            self.assertIn('{Tags "attack_mate_tpl" "hidden" 0xaf1%d}' % n, code)
-
-        # DOTD's parked-prototype form: {Able "-select"}, and NO baked Inventory,
-        # so the breed's own loadout stands. This is the point of the switch away
-        # from the breed-less {Human ""} + {Inventory {box {clear}}} pool.
-        self.assertEqual(code.count('{Able "-select"}'), 4)
-        self.assertNotIn("{Inventory", code)
+        # Real breeds only. The breed-less {Human ""} + baked {Inventory} pool was
+        # where every selector anomaly showed up, and it spawned unarmed bodies.
         self.assertNotIn('{Human ""', code)
+        self.assertNotIn("{Inventory", code)
+        for breed in (
+            "mp/nato/2022s/usmc_rifleman",
+            "mp/nato/2022s/1ad_rifleman",
+            "mp/nato/2022s/pzgd_rifleman",
+            "mp/nato/2022s/usarmy_crew",
+        ):
+            self.assertIn('{Human "%s"' % breed, code)
+            self.assertTrue(
+                (
+                    ROOT.parent / "3261086933/resource/set/breed" / (breed + ".set")
+                ).exists()
+                or breed in (ROOT / "resource/set/multiplayer/units/conquest/inf_nato.set")
+                .read_text(encoding="utf-8"),
+                "breed not resolvable: %s" % breed,
+            )
+
+        # Both humvees are crewed by explicit links, so they arrive drivable and
+        # with the M2HB manned rather than as empty hulls.
+        self.assertEqual(code.count('{Entity "humvee_m2hb_usa"'), 2)
+        self.assertEqual(code.count("{Link "), 4)
+        for host in ("0xaf50", "0xaf54"):
+            self.assertIn('{%s "driver"}' % host, code)
+            self.assertIn('{%s "gunner2"}' % host, code)
+        # Humvees deploy one at a time, so each needs its own tag.
+        for n in (1, 2):
+            self.assertEqual(code.count('"attack_mate_hmmwv%d"' % n), 3)
+
         # Must not disturb the defense pool's ids.
         self.assertNotIn("0xaf0", code)
         self.assertEqual(code.count("{"), code.count("}"))
@@ -406,19 +502,19 @@ class AttackMateSlotProofTests(unittest.TestCase):
             "git -C $RepoRoot branch --show-current",
             "Never use FirstPlayerId to exclude a",
             "safeRequire",
-            "diagnostics_only",
             'resource\\map\\multi\\dcg_vars.inc',
             'resource\\map\\multi\\attack_mate_retask_probe.inc',
             'resource\\map\\multi\\attack_mate_probe_templates.inc',
             '(include "../attack_mate_probe_templates.inc")',
             '$tplAnchor = \'(include "../allied_support_templates.inc")\'',
-            '{Human "mp/nato/2022s/1ad_rifleman" 0xaf11',
+            '{Human "mp/nato/2022s/usmc_rifleman"',
             "Expected exactly one probe-templates include in",
             "^dcg_\\[cwa71\\]_",
             "Expected 14 CWA campaign_capture_the_flag.mi files",
             '(include "../attack_mate_retask_probe.inc")',
             "_attack_mate_probe_backups",
             '{var "user_is_defender$"}',
+            '{var "attack_mate_wave_cmd$"}',
             "superseded blind startup delay",
         ):
             self.assertIn(marker, self.deploy)
@@ -431,9 +527,10 @@ class AttackMateSlotProofTests(unittest.TestCase):
         for text in (self.bot_main, self.attack_mate):
             self.assertEqual(text.count("("), text.count(")"))
 
-        code = "\n".join(line.split(";", 1)[0] for line in self.retask.splitlines())
-        self.assertEqual(code.count("{"), code.count("}"))
-        self.assertEqual(code.count("("), code.count(")"))
+        for text in (self.retask, self.templates):
+            code = strip_comments(text)
+            self.assertEqual(code.count("{"), code.count("}"))
+            self.assertEqual(code.count("("), code.count(")"))
 
 
 if __name__ == "__main__":
