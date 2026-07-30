@@ -754,36 +754,19 @@
 			; mission-authority call, so a positive spawn side proves the defence-side
 			; perspective vars have actually been published rather than merely defaulting
 			; to 0 - which is what makes this engine provably inert on a defence mission.
-			; Phase 4: unmanned supply + L2+ crewless weapon on defended flags.
+			; Phase 4: L2+ crewless weapon on defended flags.
 			; Parked prototypes in flag_props_templates.inc - claim by static tag,
 			; placement MOVE to flag anchor (same pipeline as every other pool).
 			; No runtime spawn verb. No entity-name selectors. Tag flag_prop on claimed props.
+			; The supply half of Phase 4 is RETIRED and deliberately absent here: every
+			; flag now carries a real flagpoint_ammo supply point linked into its own
+			; built-in "ammo" placer slot by the deploy script, which is the vanilla
+			; mechanism, follows the flag when it changes hands and needs no engine at
+			; all. A prop crate on top of it would be a second, worse supply source.
 
 			(define "ed_props_af1"
 				{"if"
 					{condition {type entities} {selector {tag enemy_def_af1}}}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select {tag {tag flag_prop_ammo}}}
-								{exclude {tag {tag flag_prop}}}
-							}
-							{amount 1}
-						}
-						{tag_add flag_prop}
-						{tag_add flag_prop_move}
-						{tag_remove flag_prop_ammo}
-					}
-					{"delay" {time 0.05}}
-					{"placement"
-						{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
-						{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
-					}
-					{"entity_state"
-						{selector {tag flag_prop_move}}
-						{tag_remove flag_prop_move}
-					}
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
@@ -897,28 +880,6 @@
 			(define "ed_props_af2"
 				{"if"
 					{condition {type entities} {selector {tag enemy_def_af2}}}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select {tag {tag flag_prop_ammo}}}
-								{exclude {tag {tag flag_prop}}}
-							}
-							{amount 1}
-						}
-						{tag_add flag_prop}
-						{tag_add flag_prop_move}
-						{tag_remove flag_prop_ammo}
-					}
-					{"delay" {time 0.05}}
-					{"placement"
-						{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
-						{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
-					}
-					{"entity_state"
-						{selector {tag flag_prop_move}}
-						{tag_remove flag_prop_move}
-					}
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
@@ -1032,28 +993,6 @@
 			(define "ed_props_af3"
 				{"if"
 					{condition {type entities} {selector {tag enemy_def_af3}}}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select {tag {tag flag_prop_ammo}}}
-								{exclude {tag {tag flag_prop}}}
-							}
-							{amount 1}
-						}
-						{tag_add flag_prop}
-						{tag_add flag_prop_move}
-						{tag_remove flag_prop_ammo}
-					}
-					{"delay" {time 0.05}}
-					{"placement"
-						{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
-						{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
-					}
-					{"entity_state"
-						{selector {tag flag_prop_move}}
-						{tag_remove flag_prop_move}
-					}
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}

@@ -1053,8 +1053,11 @@ class EnemyDefenseSupportTests(unittest.TestCase):
         code_only = "\n".join(line.split(";", 1)[0] for line in code.splitlines())
         self.assertNotIn("{select {entity", code_only)
         self.assertNotIn('{"spawn"', code_only)
-        self.assertIn("flag_prop_ammo", code)
+        self.assertIn("flag_prop_wpn_nato", code)
         self.assertIn('{tag_add flag_prop_move}', code)
+        # The crate half of Phase 4 is retired - flags carry a real linked
+        # flagpoint_ammo supply point instead - so this engine must not claim one.
+        self.assertNotIn("flag_prop_ammo", code_only)
 
     def test_delimiters_are_balanced(self) -> None:
         for text in (self.engine, self.templates):

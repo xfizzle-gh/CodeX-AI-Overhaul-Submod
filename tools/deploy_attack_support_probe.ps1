@@ -2076,17 +2076,27 @@ $flagPropsTarget = Join-Path $WorkshopRoot "resource\map\multi\flag_props_templa
 if (-not (Test-Path -LiteralPath $flagPropsTarget)) {
     throw "Workshop is missing flag_props_templates.inc"
 }
-if ((Select-String -LiteralPath $flagPropsTarget -SimpleMatch '{Able "-select"}').Count -ne 15) {
-    throw "Workshop flag-prop pool is not the 15-prototype pool"
+# Twelve, not the original fifteen: the three ammo crates are retired. Flags get
+# their supply from a real flagpoint_ammo linked into the flag's own "ammo" placer
+# slot (see Set-FlagAmmoSupply), which is the vanilla mechanism and follows the flag
+# when it changes hands, so a crate prop on top of it is dead weight. Only the L2+
+# crewless weapon half of Phase 4 still comes out of this pool.
+if ((Select-String -LiteralPath $flagPropsTarget -SimpleMatch '{Able "-select"}').Count -ne 12) {
+    throw "Workshop flag-prop pool is not the 12-prototype weapons-only pool"
+}
+$flagPropsCode = Get-MiCode $flagPropsTarget
+if ($flagPropsCode -match 'para_ammo') {
+    throw "Workshop flag-prop pool still parks the retired ammo crates"
+}
+if ($flagPropsCode -match 'flag_prop_ammo') {
+    throw "Workshop flag-prop pool still carries the retired ammo-crate role tag"
 }
 foreach ($marker in @(
-    '{Entity "para_ammo"',
     '{Entity "mg_stand_nsvt_rus_ai"',
     '{Entity "mg_stand_nsvt_ukr_ai"',
     '{Entity "mg_stand_qjz171"',
     '{Entity "bgm71_tow_ai"',
     '"flag_prop_tpl"',
-    '"flag_prop_ammo"',
     '"flag_prop_wpn_rusa"',
     '"flag_prop_wpn_nato"'
 )) {
@@ -2110,8 +2120,13 @@ foreach ($pair in @(
     if ($codeOnly -match '\{"spawn"') {
         throw ("Workshop {0} still uses runtime spawn" -f $pair[1])
     }
-    if ($codeOnly -notmatch 'flag_prop_ammo') {
-        throw ("Workshop {0} missing flag_prop_ammo claim" -f $pair[1])
+    # The weapon half of Phase 4 stays; the crate half is retired and must not
+    # reappear in either garrison path.
+    if ($codeOnly -notmatch 'flag_prop_wpn_nato') {
+        throw ("Workshop {0} missing the L2+ crewless weapon claim" -f $pair[1])
+    }
+    if ($codeOnly -match 'flag_prop_ammo') {
+        throw ("Workshop {0} still claims the retired ammo crate" -f $pair[1])
     }
 }
 

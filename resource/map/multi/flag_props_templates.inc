@@ -1,31 +1,17 @@
 ; Flag-prop prototype pool (Phase 4 rewrite).
 ; Parked off-map at player 0; claimed by static tag and MOVEd to flag anchors.
 ; No runtime spawn. Shared by defense_support + enemy_defense (mutual exclusion).
-; MID band 9260-9274. Tags: flag_prop_tpl + pool role + hidden.
-;   flag_prop_ammo x3  para_ammo crates (faction-neutral)
+; MID band 9263-9274. Tags: flag_prop_tpl + pool role + hidden.
 ;   flag_prop_wpn_rusa/ukr/prc/nato x3 each  crewless weapons (L2+)
-; y=-35200, x band -4000..-3700.
-
-	{Entity "para_ammo" 0xb040
-		{Position -4000 -35200}
-		{Player 0}
-		{MID 9260}
-		{Able "-select"}
-	}
-
-	{Entity "para_ammo" 0xb041
-		{Position -3980 -35200}
-		{Player 0}
-		{MID 9261}
-		{Able "-select"}
-	}
-
-	{Entity "para_ammo" 0xb042
-		{Position -3960 -35200}
-		{Player 0}
-		{MID 9262}
-		{Able "-select"}
-	}
+; y=-35200, x band -3940..-3720.
+;
+; RETIRED: the three ammo-crate prototypes that used to open this pool (MIDs
+; 9260-9262, ids 0xb040-0xb042) are gone and must not come back. Ammo supply on a
+; flag is now the vanilla mechanism - a flagpoint_ammo entity linked into the
+; flag's own built-in "ammo" placer slot by the deploy script, drawing Code:X's
+; modern resupply table through our shadow flagpoint_ammo.def. That follows the
+; flag when it changes hands, costs no pool depth and needs no engine step, so a
+; crate prop alongside it was strictly worse.
 
 	{Entity "mg_stand_nsvt_rus_ai" 0xb043
 		{Position -3940 -35200}
@@ -112,9 +98,6 @@
 	}
 
 ; ===== STATIC TAGS =====
-	{Tags "flag_prop_tpl" "flag_prop_ammo" "hidden" 0xb040}
-	{Tags "flag_prop_tpl" "flag_prop_ammo" "hidden" 0xb041}
-	{Tags "flag_prop_tpl" "flag_prop_ammo" "hidden" 0xb042}
 	{Tags "flag_prop_tpl" "flag_prop_wpn_rusa" "hidden" 0xb043}
 	{Tags "flag_prop_tpl" "flag_prop_wpn_rusa" "hidden" 0xb044}
 	{Tags "flag_prop_tpl" "flag_prop_wpn_rusa" "hidden" 0xb045}

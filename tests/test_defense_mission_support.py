@@ -430,9 +430,11 @@ class DefenceMissionSupportTests(unittest.TestCase):
             return set(re.findall(r"\{tag(?:_add|_remove)? ([a-z0-9_]+)\}", code))
 
         # "player" is the stock radio {"talk"} portrait selector, not engine state.
-        # "flag_prop" / "flag_prop_move" mark unmanned Phase-4 supply/MG props.
+        # "flag_prop" / "flag_prop_move" mark the unmanned Phase-4 crewless MG props.
+        # There is no flag_prop_ammo any more: flag supply is a linked flagpoint_ammo
+        # entity in the flag's own placer slot, not a claimed prop.
         shared = {"flag", "hidden", "player", "flag_prop", "flag_prop_move",
-                  "flag_prop_tpl", "flag_prop_ammo",
+                  "flag_prop_tpl",
                   "flag_prop_wpn_rusa", "flag_prop_wpn_ukr",
                   "flag_prop_wpn_prc", "flag_prop_wpn_nato",
                   "_bot"}
@@ -1753,19 +1755,44 @@ class DefenceMissionSupportTests(unittest.TestCase):
         code_only = "\n".join(line.split(";", 1)[0] for line in code.splitlines())
         self.assertNotIn("{select {entity", code_only)
         self.assertNotIn('{"spawn"', code_only)
-        self.assertIn("flag_prop_ammo", code)
         self.assertIn("flag_prop_wpn_nato", code)
         self.assertIn('{tag_add flag_prop_move}', code)
         self.assertIn('{tag_remove flag_prop_move}', code)
         tpl = (ROOT / "resource/map/multi/flag_props_templates.inc").read_text(encoding="utf-8")
-        self.assertEqual(tpl.count('{Able "-select"}'), 15)
-        self.assertIn('{Entity "para_ammo"', tpl)
+        self.assertEqual(tpl.count('{Able "-select"}'), 12)
         self.assertIn('{Entity "bgm71_tow_ai"', tpl)
         self.assertIn('"flag_prop_tpl"', tpl)
         # enemy defense same pipeline
         ea_code = "\n".join(line.split(";", 1)[0] for line in self.q4.splitlines())
         self.assertNotIn("{select {entity", ea_code)
-        self.assertIn("flag_prop_ammo", self.q4)
+        self.assertIn("flag_prop_wpn_nato", self.q4)
+
+    def test_flag_prop_crates_are_retired(self) -> None:
+        """The crate half of Phase 4 is gone; the L2+ weapon half stays.
+
+        Ammo supply on a flag is now the vanilla mechanism - a flagpoint_ammo
+        entity linked into the flag's own built-in "ammo" placer slot, written by
+        the deploy script. It follows the flag when it changes hands and needs no
+        engine step, so a claimed crate prop alongside it would be a second, worse
+        supply source. Comment-stripped view: the retirement is documented in prose
+        in all three files and the prose must stay readable.
+        """
+        tpl = (ROOT / "resource/map/multi/flag_props_templates.inc").read_text(encoding="utf-8")
+        for label, text in (("Q2", self.ds), ("Q4", self.q4), ("pool", tpl)):
+            code_only = "\n".join(line.split(";", 1)[0] for line in text.splitlines())
+            self.assertNotIn("flag_prop_ammo", code_only, label)
+            self.assertNotIn("para_ammo", code_only, label)
+        # ... and the weapon half is untouched: one claim per faction per anchor.
+        for text, label in ((self.ds, "Q2"), (self.q4, "Q4")):
+            for army in ("rusa", "ukr", "prc", "nato"):
+                self.assertEqual(
+                    text.count("{select {tag {tag flag_prop_wpn_%s}}}" % army), 3,
+                    "%s %s" % (label, army),
+                )
+        # Deploy guards moved with the pool: twelve prototypes, crates banned.
+        self.assertIn("is not the 12-prototype weapons-only pool", self.deploy)
+        self.assertIn("still parks the retired ammo crates", self.deploy)
+        self.assertIn("still claims the retired ammo crate", self.deploy)
 
     def test_defense_airmobile_has_parity_gates(self) -> None:
         """Defense airmobile mirrors attack: cap, announce, proximity guard, L2+."""
