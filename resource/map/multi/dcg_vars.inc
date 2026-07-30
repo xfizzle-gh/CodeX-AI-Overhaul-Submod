@@ -18,6 +18,8 @@
 			{"prep_inform"}
 			{"user_is_defender"}
 			{"user_nation"}
+			{"user_nation_hint"}
+			{"faction_support_army"}
 			{"user_team"}
 			{"tier2"}
 			{"bots_divisions"}
@@ -32,6 +34,8 @@
 			{"attack_support_busy"}
 			{"attack_support_next_ok"}
 			{"attack_support_hmmwv_left"}
+			{"attack_support_ukr_veh_left"}
+			{"attack_support_nato_veh_left"}
 			{"attack_support_use_mi"}
 			{"enemy_spawnside"}
 			{"id_attack_support"}
@@ -59,6 +63,8 @@
 			{"defense_support_next_ok"}
 			{"defense_support_group"}
 			{"defense_support_owner_fail"}
+			{"defense_support_place"}
+			{"defense_support_garrison_done"}
 			{"enemy_attack_armed"}
 			{"enemy_attack_army"}
 			{"enemy_attack_stage"}

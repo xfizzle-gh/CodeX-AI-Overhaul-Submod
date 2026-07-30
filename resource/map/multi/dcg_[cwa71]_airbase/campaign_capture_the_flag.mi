@@ -3259,6 +3259,7 @@
 	{Link 0x8016 {0x382f "8"}}
 	{Link 0x8018 {0x382f "4"}}
 	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "spawn_b" "b2" 0x8009}
 	{Tags "spawn_b" "b1" 0x800a}

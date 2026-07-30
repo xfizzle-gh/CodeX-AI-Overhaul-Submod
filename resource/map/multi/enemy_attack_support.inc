@@ -79,37 +79,68 @@
 			; same reading enemy_defense_support.inc uses when it delivers to the enemy's
 			; own edge, and the opposite of attack_support_waves.inc, which deliberately
 			; enters from the side the enemy is NOT on.
-			(define "ea_place_at_entry"
+			; Stagger one body at a time onto the entry pad (stops corpse piles).
+			(define "ea_place_one"
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group
+							{select {tag {tag ea_deploy}}}
+							{exclude {tag {tag ea_placed}}}
+						}
+						{amount 1}
+					}
+					{tag_add ea_place_one}
+				}
+				{"delay" {time 0.05}}
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
-						{"placement"
-							{selector
-								{source advanced}
-								{group {select {tag {tag ea_deploy}}}}
+						{condition {type entities} {selector {tag ea_place_one}}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+								{"placement"
+									{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+									{target_waypoint "attack_support_entry_a"}
+								}
 							}
-							{target_waypoint "attack_support_entry_a"}
-						}
-					}
-					{"case"
-						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
-						{"placement"
-							{selector
-								{source advanced}
-								{group {select {tag {tag ea_deploy}}}}
+							{"case"
+								{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+								{"placement"
+									{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+									{target_waypoint "attack_support_entry_b"}
+								}
 							}
-							{target_waypoint "attack_support_entry_b"}
-						}
-					}
-					{"default"
-						{"placement"
-							{selector
-								{source advanced}
-								{group {select {tag {tag ea_deploy}}}}
+							{"default"
+								{"placement"
+									{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+									{target_waypoint "attack_support_entry_a"}
+								}
 							}
-							{target_waypoint "attack_support_entry_a"}
 						}
+						{"entity_state"
+							{selector {tag ea_place_one}}
+							{tag_add ea_placed}
+							{tag_remove ea_place_one}
+						}
+						{"delay" {time 0.2}}
 					}
+					{"default"}
+				}
+			)
+
+			(define "ea_place_at_entry"
+				("ea_place_one")
+				("ea_place_one")
+				("ea_place_one")
+				("ea_place_one")
+				("ea_place_one")
+				("ea_place_one")
+				("ea_place_one")
+				("ea_place_one")
+				{"entity_state"
+					{selector {tag ea_placed}}
+					{tag_remove ea_placed}
 				}
 			)
 
@@ -236,8 +267,8 @@
 					{selector {ignore_captured_by_user 0} {tag ea_deploy}}
 					{remove select}
 				}
-				; Settle before anything is ordered anywhere.
-				{"delay" {time 2}}
+				; Brief settle only — long pad dwell stacked corpses (parity fix).
+				{"delay" {time 0.25}}
 				; Up to 3 active flags, shuffled - a mission activates only ~2 of a map's
 				; 2-5 flag_point entities and a squad sent to a dead objective just
 				; stands there, so every pick excludes inactive.
@@ -310,20 +341,14 @@
 					}
 					{tag_add ea_g2}
 				}
-				; G1: straight in at the first flag.
+				; Off the pad immediately (no multi-second dwell / stack deaths).
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag ea_g1}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag ea_flag1}}
 				}
-				{"delay" {time 3}}
-				; G2: cover beat first, which breaks the line, then peel to the second
-				; flag - or the third if the mission activated three.
-				{"actor_to_cover"
-					{selector {ignore_captured_by_user 0} {tag ea_g2}}
-				}
-				{"delay" {time 5}}
+				{"delay" {time 0.35}}
 				{"switch"
 					{"case"
 						{condition {type rand} {value 0.34}}

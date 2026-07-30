@@ -84,75 +84,94 @@
 				}
 			)
 
-			; Delivery point. The garrison is MOVED onto the flag point it is meant to
-			; hold - {"placement"} takes a plain {target} entity selector, the same form
-			; dcg_functions.inc uses to drop conquest spawn helpers onto a1..b4 - while
-			; every reinforcement enters at the defender's own map edge.
-			(define "ed_place"
+			; Delivery point. Stagger one body at a time (same targets) so a full
+			; fireteam is not crushed into one pile on the pad / flag.
+			(define "ed_place_one"
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group
+							{select {tag {tag enemy_def_deploy}}}
+							{exclude {tag {tag enemy_def_placed}}}
+						}
+						{amount 1}
+					}
+					{tag_add enemy_def_place_one}
+				}
+				{"delay" {time 0.05}}
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "enemy_defense_place$"} {op "=="} {value 1}}
-						{"placement"
-							{selector
-								{source advanced}
-								{group {select {tag {tag enemy_def_deploy}}}}
-							}
-							{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
-						}
-					}
-					{"case"
-						{condition {type cmp_i} {var "enemy_defense_place$"} {op "=="} {value 2}}
-						{"placement"
-							{selector
-								{source advanced}
-								{group {select {tag {tag enemy_def_deploy}}}}
-							}
-							{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
-						}
-					}
-					{"case"
-						{condition {type cmp_i} {var "enemy_defense_place$"} {op "=="} {value 3}}
-						{"placement"
-							{selector
-								{source advanced}
-								{group {select {tag {tag enemy_def_deploy}}}}
-							}
-							{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
-						}
-					}
-					{"default"
+						{condition {type entities} {selector {tag enemy_def_place_one}}}
 						{"switch"
 							{"case"
-								{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+								{condition {type cmp_i} {var "enemy_defense_place$"} {op "=="} {value 1}}
 								{"placement"
-									{selector
-										{source advanced}
-										{group {select {tag {tag enemy_def_deploy}}}}
-									}
-									{target_waypoint "attack_support_entry_a"}
+									{selector {ignore_captured_by_user 0} {tag enemy_def_place_one}}
+									{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
 								}
 							}
 							{"case"
-								{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+								{condition {type cmp_i} {var "enemy_defense_place$"} {op "=="} {value 2}}
 								{"placement"
-									{selector
-										{source advanced}
-										{group {select {tag {tag enemy_def_deploy}}}}
-									}
-									{target_waypoint "attack_support_entry_b"}
+									{selector {ignore_captured_by_user 0} {tag enemy_def_place_one}}
+									{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
+								}
+							}
+							{"case"
+								{condition {type cmp_i} {var "enemy_defense_place$"} {op "=="} {value 3}}
+								{"placement"
+									{selector {ignore_captured_by_user 0} {tag enemy_def_place_one}}
+									{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
 								}
 							}
 							{"default"
-								{"placement"
-									{selector
-										{source advanced}
-										{group {select {tag {tag enemy_def_deploy}}}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag enemy_def_place_one}}
+											{target_waypoint "attack_support_entry_a"}
+										}
 									}
-									{target_waypoint "attack_support_entry_a"}
+									{"case"
+										{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag enemy_def_place_one}}
+											{target_waypoint "attack_support_entry_b"}
+										}
+									}
+									{"default"
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag enemy_def_place_one}}
+											{target_waypoint "attack_support_entry_a"}
+										}
+									}
 								}
 							}
 						}
+						{"entity_state"
+							{selector {tag enemy_def_place_one}}
+							{tag_add enemy_def_placed}
+							{tag_remove enemy_def_place_one}
+						}
+						{"delay" {time 0.2}}
 					}
+					{"default"}
+				}
+			)
+
+			(define "ed_place"
+				("ed_place_one")
+				("ed_place_one")
+				("ed_place_one")
+				("ed_place_one")
+				("ed_place_one")
+				("ed_place_one")
+				("ed_place_one")
+				("ed_place_one")
+				{"entity_state"
+					{selector {tag enemy_def_placed}}
+					{tag_remove enemy_def_placed}
 				}
 			)
 
@@ -239,12 +258,23 @@
 					{selector {ignore_captured_by_user 0} {tag enemy_def_deploy}}
 					{remove select}
 				}
-				{"delay" {time 1}}
+				; Leave pad / unstack immediately (parity with friendly support engines).
+				{"delay" {time 0.25}}
 				("ed_assign_group")
-				{"delay" {time 0.2}}
+				{"delay" {time 0.1}}
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "enemy_defense_place$"} {op ">"} {value 0}}
+						{"action"
+							{selector {ignore_captured_by_user 0} {tag enemy_def_deploy}}
+							{drop orders}
+							{action advance}
+							{target
+								{ignore_captured_by_user 0}
+								{tag enemy_def_af1}
+							}
+						}
+						{"delay" {time 0.5}}
 						{"actor_to_cover"
 							{selector {ignore_captured_by_user 0} {tag enemy_def_deploy}}
 						}

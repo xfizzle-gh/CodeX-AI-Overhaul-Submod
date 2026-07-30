@@ -2473,6 +2473,7 @@
 	{Link 0x8029 {0x206a "2"}}
 	{Link 0x802d {0xdb5 "seat01"}}
 	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "switch_right" 0x3004}
 	{Tags "switch_right" 0x3400}

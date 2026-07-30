@@ -10,9 +10,10 @@
 ; gate can simply count it.
 ;   attack_support_inf_usmc  20 = 4 x 5-strong USMC rifle team   (composition 1, also the fallback)
 ;   attack_support_inf_1ad   20 = 4 x 5-strong 1AD rifle team    (compositions 2 and 3)
+;   attack_support_inf_arf   20 = 4 x 5-strong ARF/NATO rifle team (composition 5, L1+)
 ;   attack_support_inf_pzgd  12 = 2 x 6-strong German pzgren team (composition 4)
 ;   attack_support_hmmwv1..4  4 crewed humvees, taken in order by attack_support_hmmwv_left$
-; All also carry attack_support_tpl and hidden. Parked y=-35100, x band -3200..-1790.
+; All also carry attack_support_tpl and hidden. Parked y=-35100, x band -3200..-1600.
 
 ; ===== COMPOSITION 1 POOL — USMC rifle teams (20 = 4 x 5) =====
 	{Human "mp/nato/2022s/usmc_teamlead" 0xaf20
@@ -339,6 +340,131 @@
 		{Able "-select"}
 	}
 
+; ===== COMPOSITION 5 POOL — ARF / NATO rifle teams (20 = 4 x 5) =====
+	{Human "mp/nato/2022s/nato_teamlead" 0xaf60
+		{Position -1700 -35100}
+		{Player 0}
+		{MID 9084}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_mg" 0xaf61
+		{Position -1680 -35100}
+		{Player 0}
+		{MID 9085}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_grenadier" 0xaf62
+		{Position -1660 -35100}
+		{Player 0}
+		{MID 9086}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xaf63
+		{Position -1640 -35100}
+		{Player 0}
+		{MID 9087}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_medic" 0xaf64
+		{Position -1620 -35100}
+		{Player 0}
+		{MID 9088}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_teamlead" 0xaf65
+		{Position -1600 -35100}
+		{Player 0}
+		{MID 9089}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_mg" 0xaf66
+		{Position -1580 -35100}
+		{Player 0}
+		{MID 9090}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_grenadier" 0xaf67
+		{Position -1560 -35100}
+		{Player 0}
+		{MID 9091}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xaf68
+		{Position -1540 -35100}
+		{Player 0}
+		{MID 9092}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_medic" 0xaf69
+		{Position -1520 -35100}
+		{Player 0}
+		{MID 9093}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_teamlead" 0xaf6a
+		{Position -1500 -35100}
+		{Player 0}
+		{MID 9094}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_mg" 0xaf6b
+		{Position -1480 -35100}
+		{Player 0}
+		{MID 9095}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_grenadier" 0xaf6c
+		{Position -1460 -35100}
+		{Player 0}
+		{MID 9096}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xaf6d
+		{Position -1440 -35100}
+		{Player 0}
+		{MID 9097}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_medic" 0xaf6e
+		{Position -1420 -35100}
+		{Player 0}
+		{MID 9098}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_teamlead" 0xaf6f
+		{Position -1400 -35100}
+		{Player 0}
+		{MID 9099}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_mg" 0xaf70
+		{Position -1380 -35100}
+		{Player 0}
+		{MID 9100}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_grenadier" 0xaf71
+		{Position -1360 -35100}
+		{Player 0}
+		{MID 9101}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xaf72
+		{Position -1340 -35100}
+		{Player 0}
+		{MID 9102}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_medic" 0xaf73
+		{Position -1320 -35100}
+		{Player 0}
+		{MID 9103}
+		{Able "-select"}
+	}
+
 ; ===== VEHICLE POOL — 4 crewed humvees, one per instance tag =====
 	{Entity "humvee_m2hb_usa" 0xaf54
 		{Position -2100 -35100}
@@ -480,6 +606,27 @@
 	{Tags "attack_support_tpl" "attack_support_inf_pzgd" "hidden" 0xaf51}
 	{Tags "attack_support_tpl" "attack_support_inf_pzgd" "hidden" 0xaf52}
 	{Tags "attack_support_tpl" "attack_support_inf_pzgd" "hidden" 0xaf53}
+
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf60}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf61}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf62}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf63}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf64}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf65}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf66}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf67}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf68}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf69}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf6a}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf6b}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf6c}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf6d}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf6e}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf6f}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf70}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf71}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf72}
+	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf73}
 
 	{Tags "attack_support_tpl" "attack_support_hmmwv1" "hidden" 0xaf54}
 	{Tags "attack_support_tpl" "attack_support_hmmwv1" "hidden" 0xaf55}

@@ -1461,6 +1461,7 @@
 	{Link 0x8027 {0x4623 "1"}}
 	{Link 0x803d {0x385f "6"}}
 	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "fpc1" 0x8000}
 	{Tags "fpc2" 0xc000}

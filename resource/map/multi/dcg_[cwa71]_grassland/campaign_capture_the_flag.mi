@@ -1768,6 +1768,7 @@
 	{Link 0x8c12 {0x4349 "4"}}
 	{Link 0x880a {0x2188 "seat01"}}
 	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "bare" 0xc4}
 	{Tags "fpc4" 0x8014}

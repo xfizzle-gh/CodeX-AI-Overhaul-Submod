@@ -1788,6 +1788,7 @@
 		{MID 101}
 	}
 	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "bare" 0x6e2}
 	{Tags "bare" 0x93d}

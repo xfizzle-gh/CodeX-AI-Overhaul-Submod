@@ -2212,6 +2212,7 @@
 	{Link 0x8030 {0x3c3 "church_c1" "22"}}
 	{Link 0x8053 {0x3c3 "church_base" "24"}}
 	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "fpc1" 0x8000}
 	{Tags "fpc3" 0xa000}

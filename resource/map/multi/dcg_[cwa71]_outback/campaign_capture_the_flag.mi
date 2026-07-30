@@ -2508,6 +2508,7 @@
 	{Link 0xb80b {0x6025 "3"}}
 	{Link 0xb814 {0x6024 "3"}}
 	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "cmp_def" "1_b_2-3_mg" 0x8800}
 	{Tags "spawn_b" "b2" 0x800c}

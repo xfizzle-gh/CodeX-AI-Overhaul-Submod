@@ -2630,6 +2630,7 @@
 	{Link 0x807b {0x802 "1"}}
 	{Link 0x807c {0x803 "1"}}
 	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "spawn_a" "a1" 0x9000}
 	{Tags "spawn_a" "a2" 0xa001}

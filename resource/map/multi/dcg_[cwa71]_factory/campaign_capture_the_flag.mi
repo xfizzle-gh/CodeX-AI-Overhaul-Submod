@@ -2026,6 +2026,7 @@
 		{FsmState "snipe"}
 	}
 	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "switch_left" 0x381c}
 	{Tags "switch_right" 0x2c01}
