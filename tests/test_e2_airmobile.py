@@ -393,6 +393,7 @@ class E2SequentialComboTests(unittest.TestCase):
     def test_combo_transition_is_claim_free_and_ordered(self) -> None:
         transition = mi_block(self.e2, '{"attack_support/e2_combo_transition"')
         condition, actions = transition.split("{actions", 1)
+        self.assertIn('{var "user_is_defender$"} {op "=="} {value 0}', condition)
         self.assertIn('{var "support_e2_test$"} {op "=="} {value 3}', condition)
         self.assertIn('{var "support_e2_stage$"} {op "=="} {value 70}', condition)
         self.assertIn('{tag support_e2_claim}', condition)

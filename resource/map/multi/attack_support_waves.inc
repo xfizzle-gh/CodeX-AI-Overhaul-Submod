@@ -3978,11 +3978,12 @@
 
 			{"attack_support/e2_combo_transition"
 				{condition
-					{expression "1 & 2 & !3"}
+					{expression "1 & 2 & !3 & 4"}
 					{terms
 						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 3}}
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 70}}
 						{"3.entities" {selector {tag support_e2_claim}}}
+						{"4.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 					}
 				}
 				{actions
