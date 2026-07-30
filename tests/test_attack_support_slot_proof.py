@@ -11,6 +11,9 @@ ATTACK_SUPPORT = ROOT / "resource/script/multiplayer/modes/attack_support.lua"
 VARS = ROOT / "resource/map/multi/dcg_vars.inc"
 WAVES = ROOT / "resource/map/multi/attack_support_waves.inc"
 TEMPLATES = ROOT / "resource/map/multi/attack_support_templates.inc"
+FACTION_TEMPLATES = ROOT / "resource/map/multi/faction_support_templates.inc"
+# The publisher of user_nation$, which the faction fold reads.
+DCG_SCRIPT = ROOT / "resource/map/multi/dcg_script.inc"
 DEPLOY = ROOT / "tools/deploy_attack_support_probe.ps1"
 
 # Files retired with the productionised wave engine. The Lua brain went with them:
@@ -113,6 +116,136 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         cls.templates = TEMPLATES.read_text(encoding="utf-8")
         cls.deploy = DEPLOY.read_text(encoding="utf-8")
         cls.code = strip_comments(cls.waves)
+        cls.faction_tpl = strip_comments(FACTION_TEMPLATES.read_text(encoding="utf-8"))
+        cls.dcg_script = strip_comments(DCG_SCRIPT.read_text(encoding="utf-8"))
+
+    def test_player_nation_fold_matches_what_the_mission_publishes(self) -> None:
+        """faction_support_army$ is folded out of user_nation$, which dcg_script.inc's
+        dcg/player_nation trigger publishes. If the fold and the publisher ever
+        disagree, a player draws another nation's troops - or, worse, silently gets
+        the NATO default. So both halves are pinned here, together."""
+        resolve = define_body(self.code, "as_resolve_army")
+        for nation, army in sorted(NATION_FOLD.items()):
+            with self.subTest(user_nation=nation):
+                case = (
+                    '{"case"\n'
+                    '\t\t\t\t\t\t{condition {type cmp_i} {var "user_nation$"} '
+                    '{op "=="} {value %d}}\n' % nation
+                )
+                at = resolve.index(
+                    '{condition {type cmp_i} {var "user_nation$"} {op "=="} '
+                    "{value %d}}" % nation
+                )
+                self.assertIn(
+                    '{"set_i" {var "faction_support_army$"} {op "="} {value %d}}' % army,
+                    resolve[at : at + 200],
+                    "user_nation %d must fold to army %d" % (nation, army),
+                )
+                del case
+        # Exactly the eight published nations are handled, nothing invented.
+        handled = set(
+            int(m) for m in re.findall(
+                r'\{condition \{type cmp_i\} \{var "user_nation\$"\} \{op "=="\} '
+                r"\{value (\d+)\}\}",
+                resolve,
+            )
+        )
+        self.assertEqual(handled, set(NATION_FOLD))
+        # Fail closed: an unpublished nation lands on NATO, never on nothing.
+        default = resolve[resolve.rindex('{"default"'):]
+        self.assertIn(
+            '{"set_i" {var "faction_support_army$"} {op "="} {value 3}}', default
+        )
+
+        # The publisher side. dcg/player_nation must emit every value the fold maps.
+        # It writes some cases one-line and some across four lines, so match on the
+        # var/op/value triple with whitespace collapsed rather than on a literal.
+        flat = re.sub(r"\s+", " ", self.dcg_script)
+        published = set(
+            int(m) for m in re.findall(
+                r'\{ ?"set_i" \{var "user_nation\$"\} \{op "="\} \{value (\d+)\} ?\}',
+                flat,
+            )
+        )
+        self.assertTrue(published, "found no user_nation$ writes at all")
+        missing = set(NATION_FOLD) - published
+        self.assertFalse(
+            missing, "the fold maps nations the mission never publishes: %s" % missing
+        )
+        # And nothing is published that the fold would drop on the floor.
+        unmapped = published - set(NATION_FOLD)
+        self.assertFalse(
+            unmapped, "published nations with no fold entry: %s" % unmapped
+        )
+        # Published ~1s in (0.9s delay), and every consumer of the fold runs far
+        # later than that - the attack opening wave is 30s+ - so nothing reads a
+        # silent zero. See the header note in attack_support_waves.inc.
+        init = trigger_block(self.code, "init")
+        before_resolve = init[: init.index('("as_resolve_army")')]
+        waits = [int(m) for m in re.findall(r'\{"delay" \{time (\d+)\}\}',
+                                            before_resolve)]
+        self.assertTrue(waits, "resolve runs with no delay ahead of it")
+        # Worst case the engine waits the shortest opening bucket, which is 30s -
+        # comfortably past the ~1s at which dcg/player_nation publishes.
+        self.assertGreaterEqual(min(waits), 30)
+
+    def test_faction_pool_is_deep_enough_for_every_faction(self) -> None:
+        """Depths are per faction, and each pool is shared by the attack and defence
+        engines - which never run on the same mission, so each only has to cover ONE
+        engine's worst case. The binding number is the L3 budget of 8 waves."""
+        code = self.faction_tpl
+        self.assertEqual(code.count('{Able "-select"}'), 379)
+        self.assertEqual(code.count("{Player 0}"), 379)
+        self.assertEqual(code.count('"ally_sup_tpl"'), 379)
+        self.assertEqual(code.count('"hidden"'), 379)
+
+        for key, _army in FACTION_ARMIES:
+            for suffix, _cmd, take, depth in FACTION_COMPS:
+                tag = "ally_sup_%s_%s" % (key, suffix)
+                with self.subTest(pool=tag):
+                    self.assertEqual(code.count('"%s"' % tag), depth, tag)
+                    # A pool must field at least four consecutive draws of its own
+                    # comp; beyond that the gate declines and the pick falls back to
+                    # the faction line pool rather than deploying a partial team.
+                    self.assertGreaterEqual(depth // take, 4, tag)
+            # No faction can be exhausted outright: the largest per-wave draw is 4
+            # bodies, so an 8-wave L3 run can consume at most 32 from a faction that
+            # parks 91 or more.
+            total = sum(
+                code.count('"ally_sup_%s_%s"' % (key, suffix))
+                for suffix, _c, _t, _d in FACTION_COMPS
+            )
+            self.assertGreaterEqual(total, 8 * 4, key)
+            self.assertEqual(total, 91)
+
+        # Vehicles: Ukraine three, NATO two, nobody else any. Counter-gated rather
+        # than pool-counted, so the counter is what must match the parked instances.
+        for key, _army, instances in FACTION_VEH:
+            self.assertEqual(code.count('"ally_sup_%s_veh"' % key), instances * 3, key)
+            for n in range(1, instances + 1):
+                self.assertEqual(code.count('"ally_sup_%s_veh%d"' % (key, n)), 3)
+            self.assertIn(
+                '{"set_i" {var "attack_support_%s_veh_left$"} {op "="} {value %d}}'
+                % (key, instances),
+                self.code,
+            )
+        for key in ("rusa", "prc"):
+            self.assertNotIn('"ally_sup_%s_veh"' % key, code)
+
+        # Bands: this pool must not collide with either neighbour in a resolved map.
+        ids = re.findall(r"\{(?:Entity|Human) \"[^\"]*\" (0x[0-9a-f]+)", code)
+        self.assertEqual(len(ids), 379)
+        self.assertEqual(len(set(ids)), 379)
+        self.assertTrue(all(i.startswith(("0xb2", "0xb3")) for i in ids))
+        mids = [int(m) for m in re.findall(r"\{MID (\d+)\}", code)]
+        self.assertEqual(len(set(mids)), 379)
+        self.assertGreaterEqual(min(mids), 9300)
+        # Real breeds only, and none of the retired idioms.
+        self.assertNotIn('{Human ""', code)
+        self.assertNotIn("{Inventory", code)
+        for banned in ("{clone}", "{include {prop human}}", "allied_support"):
+            self.assertNotIn(banned, code, banned)
+        self.assertEqual(code.count("{"), code.count("}"))
 
     def test_team_a_requests_exactly_one_ai_mate_slot(self) -> None:
         self.assertEqual(self.game_set.count("{aiTeamPlayers 1}"), 1)

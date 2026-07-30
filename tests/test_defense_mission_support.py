@@ -261,6 +261,49 @@ class DefenceMissionSupportTests(unittest.TestCase):
             self.assertEqual(defined, set(names))
             self.assertEqual(called, defined)
 
+    def test_defence_faction_fold_matches_the_attack_side_exactly(self) -> None:
+        """Q1 and Q2 draw from the same faction pools, so they must fold user_nation$
+        the same way. A disagreement would have the defence engine reach into a
+        different nation's pool than the attack engine does on the same save."""
+        resolve = define_body(self.ds, "ds_resolve_army")
+        for nation, army in sorted(NATION_FOLD.items()):
+            with self.subTest(user_nation=nation):
+                at = resolve.index(
+                    '{condition {type cmp_i} {var "user_nation$"} {op "=="} '
+                    "{value %d}}" % nation
+                )
+                self.assertIn(
+                    '{"set_i" {var "faction_support_army$"} {op "="} {value %d}}' % army,
+                    resolve[at : at + 200],
+                )
+        handled = set(
+            int(m) for m in re.findall(
+                r'\{condition \{type cmp_i\} \{var "user_nation\$"\} \{op "=="\} '
+                r"\{value (\d+)\}\}",
+                resolve,
+            )
+        )
+        self.assertEqual(handled, set(NATION_FOLD))
+        # Fail closed to NATO, same as the attack engine.
+        self.assertIn(
+            '{"set_i" {var "faction_support_army$"} {op "="} {value 3}}',
+            resolve[resolve.rindex('{"default"'):],
+        )
+        # Both consumers resolve before they read, so neither can pick on a zero.
+        for holder in ("ds_pick_composition", "ds_pick_garrison"):
+            body = define_body(self.ds, holder)
+            self.assertIn('("ds_resolve_army")', body)
+            self.assertLess(body.index('("ds_resolve_army")'),
+                            body.index('{"switch"'), holder)
+        # The garrison is the earliest consumer on a defence mission. It waits well
+        # past the ~1s at which dcg/player_nation publishes user_nation$: the arming
+        # trigger delays before it reaches the first pick.
+        garrison = trigger_block(self.ds, "defense_support/garrison_init")
+        before = garrison[: garrison.index('("ds_pick_garrison")')]
+        waits = [float(m) for m in re.findall(r'\{"delay" \{time ([\d.]+)\}\}', before)]
+        self.assertGreaterEqual(sum(waits), 5.0,
+                                "garrison could read user_nation$ before it is published")
+
     def test_engine_state_is_explicitly_declared(self) -> None:
         for name in (
             "defense_support_armed",
