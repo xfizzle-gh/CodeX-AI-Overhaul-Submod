@@ -47,7 +47,14 @@ $files = @(
     # faction pools, which is safe because the attack-mission engines that own
     # those pools are inert on exactly the missions these two run on.
     "resource\map\multi\defense_support_waves.inc",
-    "resource\map\multi\enemy_attack_support.inc"
+    "resource\map\multi\enemy_attack_support.inc",
+    # Player-nation prototype pools, drawn by BOTH the attack-support and the
+    # defence-support engine. Safe to share because those two never run on the same
+    # mission: attack support gates every trigger on user_is_defender$ == 0 and
+    # defence support on == 1. APPENDED, never inserted - the $files[n] lookups
+    # below are positional, so inserting this anywhere earlier silently repoints
+    # every later index at the wrong file.
+    "resource\map\multi\faction_support_templates.inc"
 )
 
 $gameSetSource = Join-Path $RepoRoot $files[0]
@@ -62,8 +69,9 @@ $conquestSource = Join-Path $RepoRoot $files[8]
 $utilitySource = Join-Path $RepoRoot $files[9]
 $dsSource = Join-Path $RepoRoot $files[10]
 $eaSource = Join-Path $RepoRoot $files[11]
+$factionTplSource = Join-Path $RepoRoot $files[12]
 
-foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSource, $wavesSource, $tplSource, $defSource, $defTplSource, $conquestSource, $utilitySource, $dsSource, $eaSource)) {
+foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSource, $wavesSource, $tplSource, $defSource, $defTplSource, $conquestSource, $utilitySource, $dsSource, $eaSource, $factionTplSource)) {
     if (-not (Test-Path -LiteralPath $source)) {
         throw "Missing source file: $source"
     }
@@ -203,11 +211,25 @@ foreach ($marker in @(
     '{"attack_support/comp_1ad"',
     '{"attack_support/comp_acav"',
     '{"attack_support/comp_pzgren"',
-    # Self-re-arming randomized cadence and the level-scaled wave budget.
+    '{"attack_support/comp_arf"',
+    # Faction-aware pools: the player's own nation supplies the wave. One trigger per
+    # faction per comp, cmds 10-16, folded out of user_nation$ by as_resolve_army.
+    '{var "faction_support_army$"}',
+    '("as_resolve_army")',
+    '("as_pick_hybrid_non_nato")',
+    '{"attack_support/ally_rusa_line"',
+    '{"attack_support/ally_ukr_line"',
+    '{"attack_support/ally_prc_line"',
+    '{"attack_support/ally_nato_line"',
+    '{"attack_support/ally_rusa_manpad"',
+    '{"attack_support/ally_ukr_veh"',
+    '{"attack_support/ally_nato_veh"',
+    # Self-re-arming randomized cadence and the level-scaled wave budget. The ladder
+    # is 120-240s, about 20% tighter than the retired 150-300s one.
     '{"trigger" {name "attack_support/clock"}}',
     '{condition {type rand} {value 0.2}}',
-    '{"delay" {time 150}}',
-    '{"delay" {time 300}}',
+    '{"delay" {time 120}}',
+    '{"delay" {time 240}}',
     '{var "defense_level$"}',
     '{var "attack_support_waves_left$"}',
     '{var "attack_support_next_ok$"}',
@@ -222,6 +244,9 @@ foreach ($marker in @(
     '{tag_remove attack_support_inf_usmc}',
     '{tag_remove attack_support_inf_1ad}',
     '{tag_remove attack_support_inf_pzgd}',
+    '{tag_remove attack_support_inf_arf}',
+    '{tag_remove ally_sup_rusa_line}',
+    '{tag_remove ally_sup_nato_manpad}',
     # Crewed humvees are {Link}ed to one hull, so instances move whole and in order.
     '{var "attack_support_hmmwv_left$"}',
     '("am_deploy_next_hmmwv")',
@@ -467,12 +492,14 @@ foreach ($marker in @(
     '{var "defense_support_waves_left$"}',
     '{var "defense_support_group$"}',
     # Self-re-arming cadence and hold-group re-order ladders, both randomized. The
-    # 140-290s clock shares no value with enemy_attack_support.inc's 125-280s clock,
-    # which is the only other engine live on the same mission.
+    # 115-230s clock shares no value with enemy_attack_support.inc's 125-280s clock,
+    # which is the only other engine live on the same mission, and none with its own
+    # 90-150s hold ladder either - a shared value lets wave arrivals drift into phase
+    # with the hold redistribution. The first bucket is 115, not 110, for that reason.
     '{"trigger" {name "defense_support/clock"}}',
     '{"trigger" {name "defense_support/hold_1"}}',
-    '{"delay" {time 140}}',
-    '{"delay" {time 290}}',
+    '{"delay" {time 115}}',
+    '{"delay" {time 230}}',
     '{"delay" {time 90}}',
     '{"delay" {time 150}}',
     # Reinforcements enter at the DEFENDER's own edge, which is the side the enemy is
@@ -490,13 +517,25 @@ foreach ($marker in @(
     '{count {op ">"} {value 14}}',
     'DEFENSE SUPPORT NEAR CAP DEFER',
     'DEFENSE SUPPORT WAVES EXHAUSTED',
-    'DEFENSE SUPPORT POOL SHORT - RIFLE TEAM INSTEAD',
+    'DEFENSE SUPPORT POOL SHORT - FACTION LINE',
     'DEFENSE SUPPORT POOL EXHAUSTED',
     # Shared NATO pool: a claim strips the pool tag it took from.
     '{tag_remove attack_support_inf_usmc}',
     '{tag_remove attack_support_inf_1ad}',
     '{tag_remove attack_support_inf_pzgd}',
+    '{tag_remove attack_support_inf_arf}',
     '{tag_remove attack_support_tpl}',
+    # Shared player-nation pools, claimed the same way. The garrison is line-or-recon
+    # only and the whole engine is vehicle-free: vehicles are attack-only.
+    '{var "faction_support_army$"}',
+    '("ds_resolve_army")',
+    '("ds_pick_garrison")',
+    '("ds_pick_hybrid_non_nato")',
+    '{"defense_support/garrison_init"',
+    '{"defense_support/ally_rusa_line"',
+    '{"defense_support/ally_nato_manpad"',
+    '{tag_remove ally_sup_rusa_line}',
+    '{tag_remove ally_sup_prc_recon}',
     # Capture points are addressed as {tag flag}; fpc* is absent from outback.
     '{select {tag {tag flag}}}',
     # Bare deploy selector - decorating it zeroes the match on these units.
@@ -681,18 +720,83 @@ foreach ($marker in @(
 # has to carry the whole level budget (L3 = 8 waves) across every composition it can
 # draw, or a late wave silently deploys nothing.
 $tplAbleCount = (Select-String -LiteralPath $tplSource -SimpleMatch '{Able "-select"}').Count
-if ($tplAbleCount -ne 64) {
-    throw "Source template pool must park 64 prototypes with selection stripped (20 USMC + 20 1AD + 12 pzgren infantry plus 4 crewed humvees); found $tplAbleCount"
+if ($tplAbleCount -ne 84) {
+    throw "Source template pool must park 84 prototypes with selection stripped (20 USMC + 20 1AD + 20 ARF + 12 pzgren infantry plus 4 crewed humvees); found $tplAbleCount"
 }
 foreach ($pair in @(
     @('attack_support_inf_usmc', 20),
     @('attack_support_inf_1ad', 20),
-    @('attack_support_inf_pzgd', 12)
+    @('attack_support_inf_pzgd', 12),
+    @('attack_support_inf_arf', 20)
 )) {
     $n = (Select-String -LiteralPath $tplSource -SimpleMatch ('"' + $pair[0] + '"')).Count
     if ($n -ne $pair[1]) {
         throw "Source template pool must tag $($pair[1]) prototypes as $($pair[0]); found $n"
     }
+}
+# This pool shares every resolved map with enemy_defense_templates.inc, whose MID band
+# opens at 9100. The ARF block first shipped as 9084..9103 and duplicated four MIDs in
+# all fourteen maps, so the whole file has to stay strictly below that band.
+$tplMids = [regex]::Matches((Get-Content -Raw -LiteralPath $tplSource), '\{MID (\d+)\}') |
+    ForEach-Object { [int]$_.Groups[1].Value }
+if ($tplMids.Count -ne 84) {
+    throw "Source template pool must carry 84 MIDs; found $($tplMids.Count)"
+}
+if (($tplMids | Sort-Object -Unique).Count -ne 84) {
+    throw "Source template pool has duplicate MIDs"
+}
+$tplMidMax = ($tplMids | Measure-Object -Maximum).Maximum
+if ($tplMidMax -ge 9100) {
+    throw "Source template pool MID $tplMidMax runs into the enemy-defence band at 9100"
+}
+
+# Player-nation pools: 379 prototypes across four factions. Depths are per faction and
+# each is shared by the attack and defence engines, which never run on the same mission,
+# so each only has to cover ONE engine's L3 budget of 8 waves.
+$factionAble = (Select-String -LiteralPath $factionTplSource -SimpleMatch '{Able "-select"}').Count
+if ($factionAble -ne 379) {
+    throw "Faction pool must park 379 prototypes with selection stripped; found $factionAble"
+}
+foreach ($faction in @('rusa', 'ukr', 'prc', 'nato')) {
+    foreach ($pair in @(
+        @('line', 24), @('wpn', 16), @('recon', 15),
+        @('assault', 16), @('eng', 12), @('manpad', 8)
+    )) {
+        $tag = 'ally_sup_' + $faction + '_' + $pair[0]
+        $n = (Select-String -LiteralPath $factionTplSource -SimpleMatch ('"' + $tag + '"')).Count
+        if ($n -ne $pair[1]) {
+            throw "Faction pool must tag $($pair[1]) prototypes as $tag; found $n"
+        }
+    }
+}
+# Light vehicles exist for Ukraine and NATO only, and are attack-only at the wave layer.
+foreach ($pair in @(@('ally_sup_ukr_veh', 9), @('ally_sup_nato_veh', 6))) {
+    $n = (Select-String -LiteralPath $factionTplSource -SimpleMatch ('"' + $pair[0] + '"')).Count
+    if ($n -ne $pair[1]) {
+        throw "Faction pool must tag $($pair[1]) prototypes as $($pair[0]); found $n"
+    }
+}
+foreach ($faction in @('rusa', 'prc')) {
+    if (Select-String -Quiet -LiteralPath $factionTplSource -SimpleMatch ('"ally_sup_' + $faction + '_veh"')) {
+        throw "Faction $faction must not park a vehicle pool"
+    }
+}
+# Same idiom bans as every other pool, plus the band check against both neighbours.
+foreach ($banned in @('{clone}', '{include {prop human}}', '{state {state operatable}}', 'allied_support')) {
+    if (Select-String -Quiet -LiteralPath $factionTplSource -SimpleMatch $banned) {
+        throw "Faction pool uses the forbidden idiom $banned"
+    }
+}
+if (Select-String -Quiet -LiteralPath $factionTplSource -Pattern '^\s*\{Human ""') {
+    throw "Faction pool must use real breeds, never breed-less {Human ''}"
+}
+$factionMids = [regex]::Matches((Get-Content -Raw -LiteralPath $factionTplSource), '\{MID (\d+)\}') |
+    ForEach-Object { [int]$_.Groups[1].Value }
+if (($factionMids | Sort-Object -Unique).Count -ne 379) {
+    throw "Faction pool must carry 379 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"
+}
+if (($factionMids | Measure-Object -Minimum).Minimum -lt 9300) {
+    throw "Faction pool MIDs must start at 9300, clear of the other two pools"
 }
 # Line-anchored so the header's prose about {Inventory} does not trip this.
 if (Select-String -Quiet -LiteralPath $tplSource -Pattern '^\s*\{Inventory') {
@@ -753,9 +857,10 @@ foreach ($breed in @("usmc_rifleman", "1ad_rifleman", "pzgd_rifleman", "usarmy_c
     }
 }
 
-Write-Host "Deploying attack support wave engine (opening wave 30-45s, then randomized 150-300s cadence, level-scaled composition pools)"
+Write-Host "Deploying attack support wave engine (opening wave 30-45s, then randomized 120-240s cadence, level-scaled composition pools)"
 Write-Host "  plus the enemy defence engine (garrison on the live flags, four patrol groups, 45-90s trickle + 180-300s surge off the defender's own edge)"
-Write-Host "  plus the two human-DEFENCE mission engines, both behind prep_inform: defensive support for the defender bot (25-40s opening, 140-290s cadence, hold groups on the active flags) and enemy attacker pressure (65-95s opening, 125-280s cadence, assault on the player's flags)"
+Write-Host "  plus the two human-DEFENCE mission engines, both behind prep_inform: defensive support for the defender bot (25-40s opening, 115-230s cadence, hold groups on the active flags) and enemy attacker pressure (65-95s opening, 125-280s cadence, assault on the player's flags)"
+Write-Host "  plus the player-nation pools in faction_support_templates.inc: the friendly waves follow the PLAYER's faction (user_nation$ folded to rusa/ukr/nato/prc), with recon, assault, engineer and MANPAD teams gated by campaign level and light vehicles on attack missions only"
 Write-Host "  and retiring the allied-support experiment: both .inc files removed, includes and entry waypoint stripped from all fourteen maps"
 Write-Host "Repository: $RepoRoot"
 Write-Host "Branch:     $branch"
@@ -822,6 +927,11 @@ $legacyConversions = @(
 )
 $wavesInclude = '(include "../attack_support_waves.inc")'
 $tplInclude = '(include "../attack_support_templates.inc")'
+# Player-nation prototype pools, shared by the attack-support and defence-support
+# engines. Sits between the two NATO pools in the entities section. The name matters:
+# the retired experiment was called allied_support_*, and that substring is banned
+# outright by the guards below, so this file must never be renamed back into it.
+$factionTplInclude = '(include "../faction_support_templates.inc")'
 # Enemy-defence half. Each sits immediately after its attack-support counterpart:
 # the engine in the triggers section, the prototype pool in the entities section.
 $defInclude = '(include "../enemy_defense_support.inc")'
@@ -930,15 +1040,33 @@ foreach ($mapFile in $mapFiles) {
         throw "Expected exactly one enemy-defence include in: $mapFile"
     }
 
+    # Player-nation prototype pools, in the entities section right after the
+    # attack-support pool and ahead of the enemy-defence pool. Injected before the
+    # enemy-defence pool below so the three always land in a fixed order even on a
+    # map that has none of them yet. Idempotent.
+    $text = [System.IO.File]::ReadAllText($mapFile)
+    $factionTplCount = ([regex]::Matches($text, [regex]::Escape($factionTplInclude))).Count
+    if ($factionTplCount -eq 0) {
+        if (-not $text.Contains($tplInclude)) {
+            throw "Map is missing the faction-pool templates include anchor: $mapFile"
+        }
+        $text = $text.Replace($tplInclude, $tplInclude + "`r`n`t" + $factionTplInclude)
+        [System.IO.File]::WriteAllText($mapFile, $text, [System.Text.UTF8Encoding]::new($false))
+        $factionTplCount = 1
+    }
+    if ($factionTplCount -ne 1) {
+        throw "Expected exactly one faction-pool templates include in: $mapFile"
+    }
+
     # Enemy-defence prototype pool, in the entities section right after the
-    # attack-support pool. Idempotent.
+    # faction pools. Idempotent.
     $text = [System.IO.File]::ReadAllText($mapFile)
     $defTplCount = ([regex]::Matches($text, [regex]::Escape($defTplInclude))).Count
     if ($defTplCount -eq 0) {
-        if (-not $text.Contains($tplInclude)) {
+        if (-not $text.Contains($factionTplInclude)) {
             throw "Map is missing the enemy-defence templates include anchor: $mapFile"
         }
-        $text = $text.Replace($tplInclude, $tplInclude + "`r`n`t" + $defTplInclude)
+        $text = $text.Replace($factionTplInclude, $factionTplInclude + "`r`n`t" + $defTplInclude)
         [System.IO.File]::WriteAllText($mapFile, $text, [System.Text.UTF8Encoding]::new($false))
         $defTplCount = 1
     }
@@ -1065,7 +1193,7 @@ foreach ($mapFile in $mapFiles) {
     # Every include the four quadrants need, exactly once each, and nothing from the
     # retired allied-support experiment.
     $text = [System.IO.File]::ReadAllText($mapFile)
-    foreach ($include in @($varsInclude, $tplInclude, $defTplInclude, $wavesInclude, $defInclude, $dsInclude, $eaInclude)) {
+    foreach ($include in @($varsInclude, $tplInclude, $factionTplInclude, $defTplInclude, $wavesInclude, $defInclude, $dsInclude, $eaInclude)) {
         $n = ([regex]::Matches($text, [regex]::Escape($include))).Count
         if ($n -ne 1) {
             throw "Expected exactly one $include in: $mapFile (found $n)"
@@ -1198,14 +1326,51 @@ if (-not (Select-String -Quiet -LiteralPath $tplTarget -SimpleMatch '{Human "mp/
 if (Select-String -Quiet -LiteralPath $tplTarget -Pattern '^\s*\{Human ""') {
     throw "Workshop template pool reverted to the breed-less empty-name Human form, which spawns unarmed bodies"
 }
-if ((Select-String -LiteralPath $tplTarget -SimpleMatch '{Able "-select"}').Count -ne 64) {
-    throw "Workshop template pool is not the 64-prototype wave pool"
+if ((Select-String -LiteralPath $tplTarget -SimpleMatch '{Able "-select"}').Count -ne 84) {
+    throw "Workshop template pool is not the 84-prototype wave pool"
 }
+
+# Player-nation pools, workshop side. Same depths and the same band separation the
+# source check enforces, so a hand-edited workshop copy cannot drift.
+$factionTarget = Join-Path $WorkshopRoot "resource\map\multi\faction_support_templates.inc"
+if (-not (Test-Path -LiteralPath $factionTarget)) {
+    throw "Workshop is missing the player-nation pool: faction_support_templates.inc"
+}
+if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able "-select"}').Count -ne 379) {
+    throw "Workshop faction pool is not the 379-prototype player-nation pool"
+}
+if (Select-String -Quiet -LiteralPath $factionTarget -Pattern '^\s*\{Human ""') {
+    throw "Workshop faction pool reverted to the breed-less empty-name Human form"
+}
+foreach ($marker in @(
+    '{Human "mp/rusa/2022s/rus90_squadlead" 0xb200',
+    '"ally_sup_tpl"',
+    '"ally_sup_rusa_line"',
+    '"ally_sup_ukr_recon"',
+    '"ally_sup_prc_manpad"',
+    '"ally_sup_nato_assault"',
+    '{Entity "fennek"',
+    '{Entity "humvee_m2hb_ukr"'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $factionTarget -SimpleMatch $marker)) {
+        throw "Workshop faction pool is missing marker: $marker"
+    }
+}
+foreach ($banned in @('{clone}', '{include {prop human}}', '{state {state operatable}}', 'allied_support')) {
+    if (Select-String -Quiet -LiteralPath $factionTarget -SimpleMatch $banned) {
+        throw "Workshop faction pool uses the forbidden idiom $banned"
+    }
+}
+
 # The retired allied-support experiment must be gone from the workshop, not merely
 # unreferenced: a leftover .inc is dead weight and invites a map to include it again.
+# NOTE: faction_support_templates.inc is the LIVE player-nation pool and is not one of
+# these. It was deliberately renamed off the allied_support_* prefix precisely because
+# that substring is banned outright by the guards in this script.
 foreach ($retired in @(
     "resource\map\multi\allied_support_waves.inc",
-    "resource\map\multi\allied_support_templates.inc"
+    "resource\map\multi\allied_support_templates.inc",
+    "resource\map\multi\allied_support_faction_templates.inc"
 )) {
     if (Test-Path -LiteralPath (Join-Path $WorkshopRoot $retired)) {
         throw "Workshop still carries the retired allied-support file: $retired"
