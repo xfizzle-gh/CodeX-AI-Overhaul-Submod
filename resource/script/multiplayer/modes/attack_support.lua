@@ -7,17 +7,32 @@
 -- Lua Spawn is not viable on this slot (IsUnitAvailable always false; utility load crashes).
 -- No enable var gates this: attack support is on by default on every human attack
 -- mission, and publishing the identity below is what arms the MI wave engine.
+--
+-- This slot also carries the ENGINE-STATE MIRROR. Every MIRROR_QUANTS quants it writes
+-- one game.log line per wave engine - attack_support, enemy_defense (plus its garrison
+-- anchors), defense_support, enemy_attack - and the resolved faction_support_army$.
+-- Always on and log-only, because the on-screen diagnostics in those engines are gated
+-- behind support_debug$ and default to off, so the log is all a shipped run leaves
+-- behind. Reads go through readVar, which pcall-guards GetVar.
 
 local PREFIX = "CODEX_ATTACK_SUPPORT"
 
 local DEBUG_LOG = true
-local function log(...)
-	if not DEBUG_LOG then return end
+
+-- Two writers: emit always writes, log is the DEBUG_LOG-gated chatter. The engine-state
+-- mirror below goes through the ungated one because it is the only remaining way to read
+-- the four wave engines on a shipped build - their timers are gated on support_debug$.
+local function emit(...)
 	local out = { PREFIX .. ":" }
 	for n = 1, select("#", ...) do
 		out[#out + 1] = tostring(select(n, ...))
 	end
 	print(table.concat(out, " "))
+end
+
+local function log(...)
+	if not DEBUG_LOG then return end
+	emit(...)
 end
 
 local function instance()
@@ -38,6 +53,22 @@ end
 
 local function cmds()
 	return (BotApi and BotApi.Commands) or nil
+end
+
+-- GetVar is not proven on this BotApi surface, and this slot is the one that AVs when
+-- a native getter is touched wrong. So every read is pcall-guarded and degrades to a
+-- printable placeholder rather than taking the report path - or the process - down:
+--   "na"  no Scene at all
+--   "err" the guarded GetVar raised
+--   "nil" the var read back as nil (undeclared, or never written)
+-- This is the probe-era pattern verbatim; it is the only var read ever proven here.
+local function readVar(name)
+	local sc = scene()
+	if not sc then return "na" end
+	local ok, v = pcall(function() return sc:GetVar(name) end)
+	if not ok then return "err" end
+	if v == nil then return "nil" end
+	return tostring(v)
 end
 
 local function positiveId(primary, fallback)
@@ -126,6 +157,37 @@ local function orderNewSquads()
 	end
 end
 
+-- ENGINE-STATE MIRROR. One line per wave engine into game.log every MIRROR_QUANTS
+-- quants, always on. The on-screen diagnostics are gated behind support_debug$ so a
+-- player sees nothing, which leaves the log as the only place a run can be read back:
+-- whether each engine armed, how far into its budget it is, and which faction pool the
+-- friendly waves are drawing from. This slot is loaded on every campaign_capture_the_flag
+-- mission, attack or defence, so all four quadrants report from the same place.
+local MIRROR_QUANTS = 200
+
+local function mirrorEngineState()
+	emit("mirror", "q", state.quant,
+		"faction_support_army", readVar("faction_support_army"))
+	emit("mirror", "attack_support",
+		"armed", readVar("attack_support_armed"),
+		"wave_num", readVar("attack_support_wave_num"),
+		"waves_left", readVar("attack_support_waves_left"))
+	emit("mirror", "enemy_defense",
+		"armed", readVar("enemy_defense_armed"),
+		"wave_num", readVar("enemy_defense_wave_num"),
+		"waves_left", readVar("enemy_defense_waves_left"),
+		"garrison_place", readVar("enemy_defense_place"),
+		"garrison_group", readVar("enemy_defense_group"))
+	emit("mirror", "defense_support",
+		"armed", readVar("defense_support_armed"),
+		"wave_num", readVar("defense_support_wave_num"),
+		"waves_left", readVar("defense_support_waves_left"))
+	emit("mirror", "enemy_attack",
+		"armed", readVar("enemy_attack_armed"),
+		"wave_num", readVar("enemy_attack_wave_num"),
+		"waves_left", readVar("enemy_attack_waves_left"))
+end
+
 local function onGameStart()
 	local id = identity()
 	log("game_start", "playerId", id.playerId, "attacking", tostring(id.attacking), "army", id.army)
@@ -151,6 +213,9 @@ local function onQuant()
 	end
 	if DEBUG_LOG and state.quant % 200 == 0 then
 		log("heartbeat", "q", state.quant)
+	end
+	if state.quant % MIRROR_QUANTS == 0 then
+		mirrorEngineState()
 	end
 end
 

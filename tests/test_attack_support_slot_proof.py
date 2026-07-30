@@ -337,6 +337,66 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         self.assertIn('type(sc.Flags) ~= "table"', self.attack_support)
         self.assertNotIn("fpc", self.attack_support)
 
+    def test_engine_state_is_mirrored_to_the_game_log(self) -> None:
+        """With the on-screen diagnostics gated behind support_debug$, game.log is the
+        only place a shipped run can be read back. This slot loads on every
+        campaign_capture_the_flag mission, attack or defence, so it mirrors all four
+        wave engines from one place - always on, log only."""
+        lua = self.attack_support
+
+        # Reads are pcall-guarded with printable fallbacks. GetVar is not proven on this
+        # BotApi surface and this is the slot that AVs when a native getter is misused.
+        self.assertIn("local function readVar(name)", lua)
+        self.assertIn(
+            "local ok, v = pcall(function() return sc:GetVar(name) end)", lua
+        )
+        for fallback in ('return "na"', 'return "err"', 'return "nil"'):
+            self.assertIn(fallback, lua)
+
+        # One line per engine, plus the resolved player-faction pool.
+        self.assertIn(
+            'emit("mirror", "q", state.quant,\n'
+            '\t\t"faction_support_army", readVar("faction_support_army"))',
+            lua,
+        )
+        body = lua[lua.index("local function mirrorEngineState()") :]
+        body = body[: body.index("\nend\n")]
+        calls = body.split('emit("mirror", ')
+        self.assertEqual(len(calls), 6, "expected the header line plus four engines")
+        for engine, extra in (
+            ("attack_support", ()),
+            (
+                "enemy_defense",
+                (
+                    ("garrison_place", "enemy_defense_place"),
+                    ("garrison_group", "enemy_defense_group"),
+                ),
+            ),
+            ("defense_support", ()),
+            ("enemy_attack", ()),
+        ):
+            call = next(c for c in calls if c.startswith('"%s",' % engine))
+            for field in ("armed", "wave_num", "waves_left"):
+                self.assertIn(
+                    '"%s", readVar("%s_%s")' % (field, engine, field), call, engine
+                )
+            for label, var in extra:
+                self.assertIn('"%s", readVar("%s")' % (label, var), call)
+
+        # Ungated writer: the mirror must not disappear with the DEBUG_LOG chatter.
+        self.assertIn("local function emit(", lua)
+        self.assertIn(
+            "local function log(...)\n\tif not DEBUG_LOG then return end\n\temit(...)", lua
+        )
+        self.assertNotIn("\tlog(", body)
+
+        # Cadence, and the pre-existing heartbeat is untouched.
+        self.assertIn("local MIRROR_QUANTS = 200", lua)
+        self.assertIn(
+            "if state.quant % MIRROR_QUANTS == 0 then\n\t\tmirrorEngineState()", lua
+        )
+        self.assertIn('log("heartbeat", "q", state.quant)', lua)
+
     def test_lua_locals_are_defined_before_use(self) -> None:
         # Lua resolves a call sited above its `local function` to a nil global,
         # which crashes the bot silently the moment that path first runs. Order
@@ -345,12 +405,15 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             (
                 self.attack_support,
                 (
+                    ("local function emit(", "emit("),
                     ("local function log(", "log("),
+                    ("local function readVar(name)", "readVar("),
                     ("local function identity()", "identity()"),
                     ("local function publishIdentity(id)", "publishIdentity(id)"),
                     ("local function pickFlagName()", "pickFlagName()"),
                     ("local function orderSquad(squad)", "orderSquad(squad)"),
                     ("local function orderNewSquads()", "orderNewSquads()"),
+                    ("local function mirrorEngineState()", "mirrorEngineState()"),
                     ("local function safeEvent(name, fn)", 'safeEvent("GameStart"'),
                 ),
             ),

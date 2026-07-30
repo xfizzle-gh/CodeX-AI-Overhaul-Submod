@@ -108,6 +108,32 @@ foreach ($marker in @(
         throw "Source attack_support.lua is missing marker: $marker"
     }
 }
+# THE ENGINE-STATE MIRROR. The on-screen diagnostics are gated behind support_debug$ and
+# ship off, so game.log is the only place a run can be read back. This slot loads on every
+# campaign_capture_the_flag mission - attack or defence - so it reports all four wave
+# engines from one place, always on, every MIRROR_QUANTS quants. Reads go through readVar,
+# which pcall-guards GetVar: that getter is not proven on this BotApi surface and this is
+# the slot where a mishandled native getter takes the whole process with it.
+$MirrorMarkers = @(
+    'local function readVar(name)',
+    'local ok, v = pcall(function() return sc:GetVar(name) end)',
+    'local MIRROR_QUANTS = 200',
+    'local function mirrorEngineState()',
+    '"faction_support_army", readVar("faction_support_army")',
+    'emit("mirror", "attack_support",',
+    'emit("mirror", "enemy_defense",',
+    '"garrison_place", readVar("enemy_defense_place")',
+    'emit("mirror", "defense_support",',
+    'emit("mirror", "enemy_attack",',
+    'if state.quant % MIRROR_QUANTS == 0 then',
+    # The heartbeat predates the mirror and stays.
+    'log("heartbeat", "q", state.quant)'
+)
+foreach ($marker in $MirrorMarkers) {
+    if (-not (Select-String -Quiet -LiteralPath $supportSource -SimpleMatch $marker)) {
+        throw "Source attack_support.lua is missing the engine-state mirror: $marker"
+    }
+}
 # These reads AV on a slot with no spawn deck, and pulling in utility.lua from
 # here crashed in lua.event.notify2 the moment the module loaded. Checked against
 # a comment-stripped view: the file's own header names these forms as the rule.
@@ -1289,6 +1315,12 @@ if (Select-String -Quiet -LiteralPath $botMain -SimpleMatch "team_a_attack_safe_
 }
 if (-not (Select-String -Quiet -LiteralPath $support -SimpleMatch 'sc:SetVar("attack_support_use_mi", 1)')) {
     throw "Workshop attack_support.lua does not arm MI delivery, so no attack support units will ever reach the map"
+}
+# The deployed copy is the one the game reads, so the mirror is verified there too.
+foreach ($marker in $MirrorMarkers) {
+    if (-not (Select-String -Quiet -LiteralPath $support -SimpleMatch $marker)) {
+        throw "Workshop attack_support.lua is missing the engine-state mirror: $marker"
+    }
 }
 $supportTargetCode = Get-LuaCode $support
 foreach ($banned in $SlotUnsafe) {
