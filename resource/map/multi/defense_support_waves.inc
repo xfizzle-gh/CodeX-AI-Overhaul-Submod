@@ -87,6 +87,8 @@
 ; anywhere that runs, or sc:SetVar("support_debug", 1) from Lua - restores every diagnostic
 ; in all four engines at once. Never add an ungated timer: tools/deploy_attack_support_probe.ps1
 ; and the test suite both fail the build the moment one appears.
+; PLAYER ANNOUNCEMENTS / support_announce$ - separate gate (default ON via init).
+; Player-facing timers use support_announce$, never support_debug$. Declared in dcg_vars.inc.
 ;
 ; ENTRY POINTS / triple pads. Each side's map-edge arrival is THREE waypoints, not one:
 ; attack_support_entry_a1/a2/a3 and b1/b2/b3, an equilateral triangle of side ~27m whose
@@ -114,6 +116,38 @@
 					}
 				}
 			)
+
+			(define "ds_announce_wave"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"timer" {time 5} {title "mission/multi/support/wave_inbound"}}
+						{"sound" {name "interface/task_new"}}
+					}
+					{"default"}
+				}
+			)
+			(define "ds_announce_defense"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"timer" {time 5} {title "mission/multi/support/defense_reinforced"}}
+						{"sound" {name "interface/task_new"}}
+					}
+					{"default"}
+				}
+			)
+			(define "ds_announce_exhausted"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"timer" {time 6} {title "mission/multi/support/waves_exhausted"}}
+						{"sound" {name "interface/task_new"}}
+					}
+					{"default"}
+				}
+			)
+
 			; Delivery point: the DEFENDER's own map edge, which is the side the enemy
 			; is NOT on. enemy_spawnside$ is published from conquest.lua's
 			; mission-authority branch and on a defence mission the mission authority
@@ -505,6 +539,7 @@
 					{"case"
 						{condition {type cmp_i} {var "defense_support_wave_cmd$"} {op ">"} {value 0}}
 						{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+						("ds_announce_wave")
 						{"switch"
 							{"case"
 								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -560,6 +595,15 @@
 			; on the flag its hold group is responsible for, then takes cover - this is a
 			; defence, so arrivals hold ground instead of pushing on.
 			(define "ds_finish"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "defense_support_place$"} {op ">"} {value 0}}
+						("ds_announce_defense")
+					}
+					{"default"
+						("ds_announce_wave")
+					}
+				}
 				{"delay" {time 0.5}}
 				{"entity_state"
 					{selector
@@ -886,6 +930,7 @@
 					{"case"
 						{condition {type cmp_i} {var "defense_support_wave_cmd$"} {op ">"} {value 0}}
 						{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+						("ds_announce_wave")
 						{"switch"
 							{"case"
 								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -912,6 +957,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_garrison_done$"} {op "="} {value 1}}
+					{"set_i" {var "support_announce$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_place$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 0}}
@@ -995,9 +1041,11 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_armed$"} {op "="} {value 1}}
+					{"set_i" {var "support_announce$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_busy$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_next_ok$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"set_i" {var "defense_support_wave_num$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_place$"} {op "="} {value 0}}
 					{"switch"
@@ -1167,6 +1215,7 @@
 								}
 								{"default"}
 							}
+						("ds_announce_exhausted")
 						}
 						{"default"}
 					}
@@ -1484,6 +1533,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"set_i" {var "defense_support_stage$"} {op "="} {value 11}}
 					{"switch"
 						{"case"
@@ -1524,6 +1574,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"set_i" {var "defense_support_stage$"} {op "="} {value 21}}
 					{"switch"
 						{"case"
@@ -1564,6 +1615,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"set_i" {var "defense_support_stage$"} {op "="} {value 51}}
 					{"switch"
 						{"case"
@@ -1606,6 +1658,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"set_i" {var "defense_support_stage$"} {op "="} {value 31}}
 					{"switch"
 						{"case"
@@ -1644,6 +1697,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1674,6 +1728,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1704,6 +1759,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1734,6 +1790,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1764,6 +1821,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1794,6 +1852,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1824,6 +1883,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1854,6 +1914,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1886,6 +1947,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1916,6 +1978,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1946,6 +2009,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1976,6 +2040,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2006,6 +2071,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2036,6 +2102,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2066,6 +2133,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2096,6 +2164,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2126,6 +2195,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2156,6 +2226,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2186,6 +2257,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2216,6 +2288,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2246,6 +2319,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2276,6 +2350,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2306,6 +2381,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2336,6 +2412,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					("ds_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}

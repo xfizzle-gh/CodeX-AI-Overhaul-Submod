@@ -235,7 +235,9 @@ class DefenceMissionSupportTests(unittest.TestCase):
 
     def test_mi_defines_are_declared_before_they_are_called(self) -> None:
         for code, names in (
-            (self.ds, ("ds_entry_next", "ds_place_at_entry", "ds_place_one",
+            (self.ds, ("ds_entry_next", "ds_announce_wave", "ds_announce_defense",
+                       "ds_announce_exhausted",
+                       "ds_place_at_entry", "ds_place_one",
                        "ds_own_to_defenderbot",
                        "ds_report_owner", "ds_claim_anchors", "ds_assign_group",
                        "ds_finish", "ds_pick_composition", "ds_pick_garrison",
@@ -243,7 +245,8 @@ class DefenceMissionSupportTests(unittest.TestCase):
                        "ds_poke_faction_line", "ds_poke_faction_wpn",
                        "ds_poke_faction_recon", "ds_poke_faction_assault",
                        "ds_poke_faction_eng", "ds_poke_faction_manpad")),
-            (self.ea, ("ea_entry_next", "ea_place_at_entry", "ea_place_one",
+            (self.ea, ("ea_entry_next", "ea_announce_enemy", "ea_announce_exhausted",
+                       "ea_place_at_entry", "ea_place_one",
                        "ea_own_to_enemy",
                        "ea_resolve_army", "ea_finish", "ea_poke_line", "ea_poke_wpn",
                        "ea_pick_wave")),

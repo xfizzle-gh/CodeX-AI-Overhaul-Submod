@@ -1,0 +1,31 @@
+﻿msgid ""
+msgstr ""
+"Project-Id-Version: CodeX Support Events\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "mission/multi/support/wave_inbound"
+msgid "Friendly support team inbound."
+msgstr "Friendly support team inbound."
+
+msgctxt "mission/multi/support/vehicle_inbound"
+msgid "Friendly light armor moving up."
+msgstr "Friendly light armor moving up."
+
+msgctxt "mission/multi/support/flank_inbound"
+msgid "Friendly support approaching from the flank."
+msgstr "Friendly support approaching from the flank."
+
+msgctxt "mission/multi/support/waves_exhausted"
+msgid "No further friendly support expected."
+msgstr "No further friendly support expected."
+
+msgctxt "mission/multi/support/defense_reinforced"
+msgid "Defensive positions reinforced."
+msgstr "Defensive positions reinforced."
+
+msgctxt "mission/multi/support/enemy_activity"
+msgid "Enemy activity reported near the front."
+msgstr "Enemy activity reported near the front."

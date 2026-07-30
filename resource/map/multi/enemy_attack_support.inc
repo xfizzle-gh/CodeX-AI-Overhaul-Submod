@@ -1,4 +1,5 @@
 ; Enemy attacker pressure waves - MI-driven reinforcements for the AI attacker.
+; Diagnostics: support_debug$ (default OFF). Player text: support_announce$ (default ON).
 ; Quadrant 3 of the four-way support parity, and the mirror image of
 ; attack_support_waves.inc pointed at the player's own flags: on a HUMAN DEFENCE
 ; mission (campaign_capture_the_flag, user_is_defender$ == 1) it gives the AI attacker
@@ -85,6 +86,8 @@
 ; anywhere that runs, or sc:SetVar("support_debug", 1) from Lua - restores every diagnostic
 ; in all four engines at once. Never add an ungated timer: tools/deploy_attack_support_probe.ps1
 ; and the test suite both fail the build the moment one appears.
+; PLAYER ANNOUNCEMENTS / support_announce$ - separate gate (default ON via init).
+; Player-facing timers use support_announce$, never support_debug$. Declared in dcg_vars.inc.
 ;
 ; ENTRY POINTS / triple pads. Each side's map-edge arrival is THREE waypoints, not one:
 ; attack_support_entry_a1/a2/a3 and b1/b2/b3, an equilateral triangle of side ~27m whose
@@ -112,6 +115,28 @@
 					}
 				}
 			)
+
+			(define "ea_announce_enemy"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"timer" {time 5} {title "mission/multi/support/enemy_activity"}}
+						{"sound" {name "world/alarm/sirene"}}
+					}
+					{"default"}
+				}
+			)
+			(define "ea_announce_exhausted"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"timer" {time 6} {title "mission/multi/support/waves_exhausted"}}
+						{"sound" {name "interface/task_new"}}
+					}
+					{"default"}
+				}
+			)
+
 			; Delivery point: the ATTACKER's own map edge. enemy_spawnside$ is published
 			; from conquest.lua's mission-authority branch and on a defence mission the
 			; mission authority is the enemy bot, i.e. the ATTACKER - so side 1 (a) means
@@ -640,6 +665,7 @@
 					{"case"
 						{condition {type cmp_i} {var "enemy_attack_wave_cmd$"} {op ">"} {value 0}}
 						{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+						("ea_announce_enemy")
 						{"switch"
 							{"case"
 								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -671,9 +697,11 @@
 				}
 				{actions
 					{"set_i" {var "enemy_attack_armed$"} {op "="} {value 1}}
+					{"set_i" {var "support_announce$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_attack_busy$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_attack_next_ok$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					("ea_announce_enemy")
 					{"set_i" {var "enemy_attack_wave_num$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_owner_fail$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 1}}
@@ -828,6 +856,7 @@
 								}
 								{"default"}
 							}
+						("ea_announce_exhausted")
 						}
 						{"default"}
 					}
@@ -857,6 +886,7 @@
 				}
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					("ea_announce_enemy")
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 11}}
 					{"switch"
 						{"case"
@@ -897,6 +927,7 @@
 				}
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					("ea_announce_enemy")
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 21}}
 					{"switch"
 						{"case"
@@ -937,6 +968,7 @@
 				}
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					("ea_announce_enemy")
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 11}}
 					{"switch"
 						{"case"
@@ -977,6 +1009,7 @@
 				}
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					("ea_announce_enemy")
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 21}}
 					{"switch"
 						{"case"
@@ -1017,6 +1050,7 @@
 				}
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					("ea_announce_enemy")
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 11}}
 					{"switch"
 						{"case"
@@ -1057,6 +1091,7 @@
 				}
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					("ea_announce_enemy")
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 21}}
 					{"switch"
 						{"case"
@@ -1097,6 +1132,7 @@
 				}
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					("ea_announce_enemy")
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 11}}
 					{"switch"
 						{"case"
@@ -1137,6 +1173,7 @@
 				}
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					("ea_announce_enemy")
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 21}}
 					{"switch"
 						{"case"

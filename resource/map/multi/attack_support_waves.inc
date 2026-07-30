@@ -48,6 +48,8 @@
 ; anywhere that runs, or sc:SetVar("support_debug", 1) from Lua - restores every diagnostic
 ; in all four engines at once. Never add an ungated timer: tools/deploy_attack_support_probe.ps1
 ; and the test suite both fail the build the moment one appears.
+; PLAYER ANNOUNCEMENTS / support_announce$ - separate gate (default ON via init).
+; Player-facing timers use support_announce$, never support_debug$. Declared in dcg_vars.inc.
 ;
 ; ENTRY POINTS / triple pads. Each side's map-edge arrival is THREE waypoints, not one:
 ; attack_support_entry_a1/a2/a3 and b1/b2/b3, an equilateral triangle of side ~27m whose
@@ -75,6 +77,50 @@
 					}
 				}
 			)
+
+			; Player-facing announcements (support_announce$ default ON via init).
+			; Distinct from support_debug$ diagnostics. Never mix the two gates.
+			(define "as_announce_wave"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"timer" {time 5} {title "mission/multi/support/wave_inbound"}}
+						{"sound" {name "interface/task_new"}}
+					}
+					{"default"}
+				}
+			)
+			(define "as_announce_vehicle"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"timer" {time 5} {title "mission/multi/support/vehicle_inbound"}}
+						{"sound" {name "interface/task_new"}}
+					}
+					{"default"}
+				}
+			)
+			(define "as_announce_flank"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"timer" {time 5} {title "mission/multi/support/flank_inbound"}}
+						{"sound" {name "interface/task_new"}}
+					}
+					{"default"}
+				}
+			)
+			(define "as_announce_exhausted"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"timer" {time 6} {title "mission/multi/support/waves_exhausted"}}
+						{"sound" {name "interface/task_new"}}
+					}
+					{"default"}
+				}
+			)
+
 			; Place a single currently-tagged body, then clear the one-shot tag.
 			(define "am_place_one"
 				{"entity_state"
@@ -826,6 +872,7 @@
 					{"case"
 						{condition {type cmp_i} {var "attack_support_wave_cmd$"} {op ">"} {value 0}}
 						{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+						("as_announce_wave")
 						{"switch"
 							{"case"
 								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -857,9 +904,11 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_armed$"} {op "="} {value 1}}
+					{"set_i" {var "support_announce$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_busy$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_next_ok$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"set_i" {var "attack_support_wave_num$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_hmmwv_left$"} {op "="} {value 4}}
 					{"set_i" {var "attack_support_ukr_veh_left$"} {op "="} {value 3}}
@@ -1008,6 +1057,7 @@
 								}
 								{"default"}
 							}
+						("as_announce_exhausted")
 						}
 						{"default"}
 					}
@@ -1032,6 +1082,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"set_i" {var "attack_support_stage$"} {op "="} {value 11}}
 					{"switch"
 						{"case"
@@ -1072,6 +1123,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"set_i" {var "attack_support_stage$"} {op "="} {value 51}}
 					{"switch"
 						{"case"
@@ -1112,6 +1164,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"set_i" {var "attack_support_stage$"} {op "="} {value 21}}
 					{"switch"
 						{"case"
@@ -1154,6 +1207,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_vehicle")
 					{"set_i" {var "attack_support_stage$"} {op "="} {value 31}}
 					{"switch"
 						{"case"
@@ -1205,6 +1259,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_vehicle")
 					{"set_i" {var "attack_support_stage$"} {op "="} {value 41}}
 					{"switch"
 						{"case"
@@ -1263,6 +1318,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_vehicle")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1293,6 +1349,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1323,6 +1380,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1353,6 +1411,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1383,6 +1442,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1413,6 +1473,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1443,6 +1504,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1473,6 +1535,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1505,6 +1568,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1535,6 +1599,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1565,6 +1630,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1595,6 +1661,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1625,6 +1692,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1655,6 +1723,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1685,6 +1754,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1715,6 +1785,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1745,6 +1816,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1775,6 +1847,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1805,6 +1878,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1835,6 +1909,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1865,6 +1940,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1895,6 +1971,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1925,6 +2002,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1955,6 +2033,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_wave")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1986,6 +2065,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_vehicle")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2042,6 +2122,7 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_vehicle")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}

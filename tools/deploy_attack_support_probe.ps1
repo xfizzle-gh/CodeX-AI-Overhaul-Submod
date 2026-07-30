@@ -54,7 +54,9 @@ $files = @(
     # defence support on == 1. APPENDED, never inserted - the $files[n] lookups
     # below are positional, so inserting this anywhere earlier silently repoints
     # every later index at the wrong file.
-    "resource\map\multi\faction_support_templates.inc"
+    "resource\map\multi\faction_support_templates.inc",
+    # Player-facing support announcement strings (Phase 1). APPENDED only.
+    "localizations\default\interface\text\mission\multi\support_events.pot"
 )
 
 $gameSetSource = Join-Path $RepoRoot $files[0]
@@ -146,32 +148,31 @@ function Get-LuaCode([string]$path) {
 function Get-MiCode([string]$path) {
     return ((Get-Content -LiteralPath $path) | ForEach-Object { ($_ -split ';', 2)[0] }) -join "`n"
 }
-# THE SUPPORT DIAGNOSTIC GATE (ship requirement). The four wave engines carry a lot of
-# {"timer"} lines; every one of them is a developer diagnostic and none of them is
-# player-facing text. Each is wrapped in exactly one shape:
+# THE SUPPORT TIMER GATE (ship requirement). Every {"timer"} in the four wave engines
+# is either a developer diagnostic (support_debug$ == 1, default OFF) or a player-facing
+# announcement (support_announce$ == 1, default ON via engine init). Both shapes are:
 #   {"switch"
-#     {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} <timer>}
+#     {"case" {condition {type cmp_i} {var "support_debug|announce$"} {op "=="} {value 1}} <timer>}
 #     {"default"}
 #   }
-# so an ungated timer is a timer that would appear on a player's HUD. This runs on the
-# comment-stripped view because the engine headers quote the gate itself in prose.
-$SupportDebugGate = '\{condition \{type cmp_i\} \{var "support_debug\$"\} \{op "=="\} \{value 1\}\}\s*\{"timer"'
+# An ungated timer fails the deploy. Comment-stripped view only (headers quote the gate).
+$SupportTimerGate = '\{condition \{type cmp_i\} \{var "support_(?:debug|announce)\$"\} \{op "=="\} \{value 1\}\}\s*\{"timer"'
 function Test-SupportTimerGate([string]$path, [string]$label) {
     $code = Get-MiCode $path
     $timers = ([regex]::Matches($code, '\{"timer"')).Count
-    $gated = ([regex]::Matches($code, $SupportDebugGate)).Count
+    $gated = ([regex]::Matches($code, $SupportTimerGate)).Count
     if ($timers -eq 0) {
-        throw "$label has no diagnostics left at all, which means the gate rewrite lost them: $path"
+        throw "$label has no timers left at all, which means the gate rewrite lost them: $path"
     }
     if ($gated -ne $timers) {
-        throw "$label ships $($timers - $gated) UNGATED on-screen timer(s) of $timers - players would see support diagnostics: $path"
+        throw "$label ships $($timers - $gated) UNGATED on-screen timer(s) of $timers - must gate on support_debug`$ or support_announce`$: $path"
     }
-    # Checked on the comment-stripped view as well: the file header quotes the enable
-    # line verbatim as documentation, and that must not read as the engine doing it.
+    # Diagnostics stay default-OFF: engines must never write support_debug$.
+    # support_announce$ IS written (init sets it to 1) and that is intentional.
     if ($code.Contains('{var "support_debug$"} {op "="}')) {
         throw "$label writes support_debug`$, so the shipped default is not OFF: $path"
     }
-    Write-Host "OK gate $label $gated/$timers timers behind support_debug`$"
+    Write-Host "OK gate $label $gated/$timers timers behind support_debug|announce`$"
 }
 $SlotUnsafe = @('spawnPointName', 'PlayerSpawnPoint', 'require(')
 $supportCode = Get-LuaCode $supportSource
@@ -190,6 +191,17 @@ foreach ($marker in @(
     # comes back at once. The Test-SupportTimerGate check below is what keeps that true:
     # an ungated timer fails the deploy rather than shipping HUD spam to players.
     '{"support_debug"}',
+    # Player-facing support announcements (default ON). Engines set this to 1 at init.
+    # Distinct from support_debug$: diagnostics stay OFF; announcements stay ON.
+    '{"support_announce"}',
+    # Round-robin cursor over the two attack-support flank pads (Phase 2).
+    '{"attack_support_flank_rr"}',
+    # Rare IFV wave budget (Phase 3). 1 per mission max.
+    '{"attack_support_ifv_left"}',
+    # 1 when the current attack wave elected a flank pad (announce + place path).
+    '{"attack_support_use_flank"}',
+    # One-shot flag-prop placement per mission (Phase 4).
+    '{"flag_props_done"}',
     # Round-robin cursor per engine over that side's three entry pads. Bumped once per
     # placement batch, so no two consecutive batches land on the same pad. Undeclared it
     # would read a silent zero forever and every batch would pile onto pad 1 again.
@@ -1646,6 +1658,25 @@ foreach ($pair in @(@($ds, 'defence support'), @($ea, 'enemy attack'))) {
 # declare the toggle: an undeclared var reads 0 too, but then the flip has nothing to set.
 if (-not (Select-String -Quiet -LiteralPath $vars -SimpleMatch '{"support_debug"}')) {
     throw "Workshop dcg_vars.inc does not declare the support_debug toggle"
+}
+if (-not (Select-String -Quiet -LiteralPath $vars -SimpleMatch '{"support_announce"}')) {
+    throw "Workshop dcg_vars.inc does not declare the support_announce toggle"
+}
+$pot = Join-Path $WorkshopRoot "localizations\default\interface\text\mission\multi\support_events.pot"
+if (-not (Test-Path -LiteralPath $pot)) {
+    throw "Workshop is missing support_events.pot"
+}
+foreach ($key in @(
+    'mission/multi/support/wave_inbound',
+    'mission/multi/support/vehicle_inbound',
+    'mission/multi/support/flank_inbound',
+    'mission/multi/support/waves_exhausted',
+    'mission/multi/support/defense_reinforced',
+    'mission/multi/support/enemy_activity'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $pot -SimpleMatch "msgctxt `"$key`"")) {
+        throw "support_events.pot is missing msgctxt $key"
+    }
 }
 foreach ($pair in @(
     @($waves, 'workshop attack support engine'),

@@ -1267,14 +1267,17 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
 
 class SupportDiagnosticGateTests(unittest.TestCase):
-    """Ship requirement: a player must see ZERO support timers.
+    """Every on-screen timer is gated on support_debug$ (diagnostics, default OFF)
+    or support_announce$ (player text, default ON via init). No ungated timers."""
 
-    Every on-screen {"timer" ...} in the four wave engines is a developer diagnostic,
-    and each one is wrapped in a single-shape gate on support_debug$ == 1. Nothing
-    writes that var, an unwritten MI var reads 0, so the shipped default is OFF and
-    one flip brings all four engines' diagnostics back at once."""
-
-    GATE = '{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}'
+    DEBUG_GATE = '{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}'
+    ANNOUNCE_GATE = (
+        '{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}'
+    )
+    ANY_GATE = re.compile(
+        r'\{condition \{type cmp_i\} \{var "support_(?:debug|announce)\$"\} '
+        r'\{op "=="\} \{value 1\}\}\s*\{"timer"'
+    )
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -1284,48 +1287,91 @@ class SupportDiagnosticGateTests(unittest.TestCase):
             )
             for name in ENGINES
         }
+        cls.raw_engines = {
+            name: (ROOT / ("resource/map/multi/%s.inc" % name)).read_text(
+                encoding="utf-8"
+            )
+            for name in ENGINES
+        }
         cls.vars = VARS.read_text(encoding="utf-8")
         cls.deploy = DEPLOY.read_text(encoding="utf-8")
+        cls.pot = (
+            ROOT
+            / "localizations/default/interface/text/mission/multi/support_events.pot"
+        ).read_text(encoding="utf-8")
 
     def test_no_engine_ships_an_ungated_on_screen_timer(self) -> None:
-        gate = re.escape(self.GATE) + r'\s*\{"timer"'
         for name, code in self.engines.items():
             timers = code.count('{"timer"')
-            gated = len(re.findall(gate, code))
-            self.assertGreater(timers, 0, "%s lost its diagnostics entirely" % name)
+            gated = len(self.ANY_GATE.findall(code))
+            self.assertGreater(timers, 0, "%s lost its timers entirely" % name)
             self.assertEqual(
                 timers - gated, 0, "%s has %d ungated timer(s)" % (name, timers - gated)
             )
 
     def test_gate_uses_one_consistent_minimal_shape(self) -> None:
-        """Every gate is {"switch" {"case" <cond> <timer>} {"default"}}, so the number
-        of gates and of on-screen timers agree and each gate has an empty default."""
         for name, code in self.engines.items():
-            gates = code.count(self.GATE)
+            gates = code.count(self.DEBUG_GATE) + code.count(self.ANNOUNCE_GATE)
             self.assertEqual(code.count('{"timer"'), gates, name)
             self.assertGreaterEqual(code.count('{"default"}'), gates, name)
 
-    def test_toggle_is_declared_and_never_forced_on(self) -> None:
+    def test_debug_toggle_is_declared_and_never_forced_on(self) -> None:
         self.assertIn('{"support_debug"}', self.vars)
         for name, code in self.engines.items():
             self.assertNotIn(
-                '{var "support_debug$"} {op "="}', code, "%s writes the toggle" % name
+                '{var "support_debug$"} {op "="}', code, "%s writes debug toggle" % name
             )
+
+    def test_announce_toggle_is_declared_and_enabled_at_init(self) -> None:
+        self.assertIn('{"support_announce"}', self.vars)
+        for name, code in self.engines.items():
+            self.assertIn(
+                '{var "support_announce$"} {op "="} {value 1}',
+                code,
+                "%s never enables announcements" % name,
+            )
+
+    def test_announce_keys_are_localized(self) -> None:
+        keys = [
+            "mission/multi/support/wave_inbound",
+            "mission/multi/support/vehicle_inbound",
+            "mission/multi/support/flank_inbound",
+            "mission/multi/support/waves_exhausted",
+            "mission/multi/support/defense_reinforced",
+            "mission/multi/support/enemy_activity",
+        ]
+        for key in keys:
+            self.assertIn('msgctxt "%s"' % key, self.pot)
+            # filled msgstr (repo convention)
+            idx = self.pot.index('msgctxt "%s"' % key)
+            chunk = self.pot[idx : idx + 400]
+            self.assertRegex(chunk, r'msgstr "[^"]+"')
+
+    def test_engines_reference_only_known_announce_keys(self) -> None:
+        key_re = re.compile(r'title "mission/multi/support/([^"]+)"')
+        known = {
+            "wave_inbound",
+            "vehicle_inbound",
+            "flank_inbound",
+            "waves_exhausted",
+            "defense_reinforced",
+            "enemy_activity",
+        }
+        for name, code in self.raw_engines.items():
+            for match in key_re.finditer(code):
+                self.assertIn(match.group(1), known, name)
 
     def test_toggle_is_documented_in_every_engine_header_and_the_deploy(self) -> None:
         for name in ENGINES:
-            header = (ROOT / ("resource/map/multi/%s.inc" % name)).read_text(
-                encoding="utf-8"
-            )
+            header = self.raw_engines[name]
             head = "\n".join(
                 line for line in header.splitlines() if line.startswith(";")
             )
             self.assertIn("support_debug$", head, "%s header undocumented" % name)
-            self.assertIn("dcg_vars.inc", head, name)
-        self.assertIn("THE SHIP TOGGLE", self.deploy)
+            self.assertIn("support_announce$", head, "%s announce undocumented" % name)
         self.assertIn("Test-SupportTimerGate", self.deploy)
-        # The deploy checks both the repo sources and the deployed copies.
         self.assertEqual(self.deploy.count("Test-SupportTimerGate $pair[0]"), 2)
+        self.assertIn("support_announce", self.deploy)
 
 
 if __name__ == "__main__":

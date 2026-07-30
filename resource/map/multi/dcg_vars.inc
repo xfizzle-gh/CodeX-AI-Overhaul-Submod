@@ -26,7 +26,12 @@
 			{"weatherid"}
 			{"prep_spawn_snap"}
 			{"support_debug"}
+			{"support_announce"}
 			{"attack_support_entry_rr"}
+			{"attack_support_flank_rr"}
+			{"attack_support_ifv_left"}
+			{"attack_support_use_flank"}
+			{"flag_props_done"}
 			{"enemy_defense_entry_rr"}
 			{"defense_support_entry_rr"}
 			{"enemy_attack_entry_rr"}
