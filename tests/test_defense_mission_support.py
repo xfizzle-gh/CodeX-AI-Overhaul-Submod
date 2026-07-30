@@ -249,6 +249,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
                        "ds_poke_faction_recon", "ds_poke_faction_assault",
                        "ds_poke_faction_eng", "ds_poke_faction_manpad",
                        "ds_poke_faction_air",
+                       "ds_drop_prop",
                        "ds_props_af1", "ds_props_af2", "ds_props_af3",
                        "ds_place_flag_props")),
             (self.ea, ("ea_entry_next",
@@ -267,8 +268,9 @@ class DefenceMissionSupportTests(unittest.TestCase):
                         "%s called above its define" % name,
                     )
             # No define is dead weight, and no call has no define behind it.
+            # Calls may be bare ("name") or parameterized ("name" arg1 arg2).
             defined = set(re.findall(r'\(define "([a-z0-9_]+)"', code))
-            called = set(re.findall(r'\("([a-z0-9_]+)"\)', code))
+            called = set(re.findall(r'\("([a-z0-9_]+)"(?:\s|\))', code))
             self.assertEqual(defined, set(names))
             self.assertEqual(called, defined)
 
@@ -428,8 +430,8 @@ class DefenceMissionSupportTests(unittest.TestCase):
             return set(re.findall(r"\{tag(?:_add|_remove)? ([a-z0-9_]+)\}", code))
 
         # "player" is the stock radio {"talk"} portrait selector, not engine state.
-        # "flag_prop" marks unmanned Phase-4 supply/MG props (not support roster).
-        shared = {"flag", "hidden", "player", "flag_prop"}
+        # "flag_prop" / "flag_prop_move" mark unmanned Phase-4 supply/MG props.
+        shared = {"flag", "hidden", "player", "flag_prop", "flag_prop_move"}
         # Pool tags the defence engine is ALLOWED to claim from: the original NATO
         # comps plus the player-nation faction pools it now shares with Q1. These are
         # claims against parked prototypes, not another engine's runtime state - and

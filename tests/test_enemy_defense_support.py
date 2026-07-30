@@ -154,6 +154,7 @@ class EnemyDefenseSupportTests(unittest.TestCase):
             "ed_pick_garrison",
             "ed_pick_light",
             "ed_pick_squad",
+            "ed_drop_prop",
             "ed_props_af1",
             "ed_props_af2",
             "ed_props_af3",
