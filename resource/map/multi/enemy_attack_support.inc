@@ -725,6 +725,8 @@
 				{actions
 					{"set_i" {var "enemy_attack_armed$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_attack_motor_left$"} {op "="} {value 1}}
+					{"set_i" {var "enemy_attack_motor_test$"} {op "="} {value 1}}	; TEST: 1=forced staggered trucks, 0=production rolls
+					{"set_i" {var "enemy_attack_motor_test_done$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_busy$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_attack_next_ok$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
@@ -1496,3 +1498,30 @@
 				}
 			}
 
+			; TEST ONLY - forced motorized inserts, staggered. Gate enemy_attack_motor_test$:
+			;   1 = force two trucks (prep+15s, prep+60s), bypassing the L2+ gate and the roll
+			;   0 = production only (L2+ random roll, cap 1) - flip in enemy_attack/init
+			; enemy_attack/init already waits on prep_inform$, so armed==1 means prep is over.
+			; The 45s spacing exceeds one truck's full drive+emit sequence (~32s), so two
+			; trucks never share a pad or an unload zone.
+			{"enemy_attack/motor_test"
+				{condition
+					{expression "1 & 2 & 3 & 4"}
+					{terms
+						{"1.cmp_i" {var "enemy_attack_armed$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "enemy_attack_motor_test$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "enemy_attack_motor_test_done$"} {op "=="} {value 0}}
+						{"4.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_attack_motor_test_done$"} {op "="} {value 1}}
+					{"set_i" {var "enemy_attack_motor_left$"} {op "="} {value 2}}
+					{"delay" {time 15}}
+					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 19}}
+					("ea_poke_motor")
+					{"delay" {time 45}}
+					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 19}}
+					("ea_poke_motor")
+				}
+			}

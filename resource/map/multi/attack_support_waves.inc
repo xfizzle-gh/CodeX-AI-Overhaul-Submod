@@ -1335,6 +1335,8 @@
 					{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_ifv_left$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_motor_left$"} {op "="} {value 1}}
+					{"set_i" {var "attack_support_motor_test$"} {op "="} {value 1}}	; TEST: 1=forced staggered trucks, 0=production rolls
+					{"set_i" {var "attack_support_motor_test_done$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_air_left$"} {op "="} {value 2}}
 					; DAY-2 TEST default ON. Set value 0 to restore production airmobile schedule only.
 					{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}
@@ -3483,3 +3485,29 @@
 				}
 			}
 
+			; TEST ONLY - forced motorized inserts, staggered. Gate attack_support_motor_test$:
+			;   1 = force two trucks (armed+15s, +60s), bypassing the L2+ gate and the roll
+			;   0 = production only (L2+ random roll, cap 1) - flip in attack_support/init
+			; The 45s spacing exceeds one truck's full drive+emit sequence, so two trucks
+			; never share a pad or an unload zone.
+			{"attack_support/motor_test"
+				{condition
+					{expression "1 & 2 & 3 & 4"}
+					{terms
+						{"1.cmp_i" {var "attack_support_armed$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "attack_support_motor_test$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "attack_support_motor_test_done$"} {op "=="} {value 0}}
+						{"4.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+					}
+				}
+				{actions
+					{"set_i" {var "attack_support_motor_test_done$"} {op "="} {value 1}}
+					{"set_i" {var "attack_support_motor_left$"} {op "="} {value 2}}
+					{"delay" {time 15}}
+					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 19}}
+					("as_poke_faction_motor")
+					{"delay" {time 45}}
+					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 19}}
+					("as_poke_faction_motor")
+				}
+			}

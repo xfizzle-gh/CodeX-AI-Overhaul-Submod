@@ -93,3 +93,7 @@
 			{"enemy_attack_next_ok"}
 			{"enemy_attack_owner_fail"}
 			{"enemy_attack_motor_left"}
+			{"attack_support_motor_test"}
+			{"attack_support_motor_test_done"}
+			{"enemy_attack_motor_test"}
+			{"enemy_attack_motor_test_done"}

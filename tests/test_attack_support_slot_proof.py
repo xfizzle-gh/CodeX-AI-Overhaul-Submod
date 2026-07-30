@@ -890,8 +890,9 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             code.count('("am_place_at_entry")'),
             code.count('("am_finish_deploy")') + code.count('("as_finish_motor")'),
         )
+        # motor_test is a scheduler: it pokes the faction motor triggers, which deploy.
         deployers = [n for n in re.findall(r'\{"attack_support/([a-z0-9_]+)"', code)
-                     if n not in ("init", "clock")]
+                     if n not in ("init", "clock", "motor_test")]
         self.assertTrue(deployers)
         for name in deployers:
             with self.subTest(deployer=name):
