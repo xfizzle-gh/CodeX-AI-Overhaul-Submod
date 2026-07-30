@@ -1344,6 +1344,7 @@
 					{"set_i" {var "support_e2_test$"} {op "="} {value 0}}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 0}}
 					{"set_i" {var "support_e2_fail$"} {op "="} {value 0}}
+					{"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 0}}
 					{"set_i" {var "support_e2_lz$"} {op "="} {value 0}}
 					{"set_i" {var "support_e2_flag$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_busy$"} {op "="} {value 1}}
@@ -3551,13 +3552,14 @@
 
 			{"attack_support/e2_helo_rusa"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10"}
+					{expression "1 & 2 & 3 & 4 & (5 | 11) & 6 & 7 & 8 & 9 & 10"}
 					{terms
 						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 						{"2.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
 						{"3.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
 						{"5.cmp_i" {var "support_e2_test$"} {op "=="} {value 1}}
+						{"11.cmp_i" {var "support_e2_test$"} {op "=="} {value 3}}
 						{"6.cmp_i" {var "support_e2_stage$"} {op "=="} {value 10}}
 						{"7.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
 						{"8.entities" {selector {tag support_e2_rusa_helo}} {count {op ">="} {value 1}}}
@@ -3670,13 +3672,14 @@
 
 			{"attack_support/e2_helo_ukr"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10"}
+					{expression "1 & 2 & 3 & 4 & (5 | 11) & 6 & 7 & 8 & 9 & 10"}
 					{terms
 						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 						{"2.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
 						{"3.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
 						{"5.cmp_i" {var "support_e2_test$"} {op "=="} {value 1}}
+						{"11.cmp_i" {var "support_e2_test$"} {op "=="} {value 3}}
 						{"6.cmp_i" {var "support_e2_stage$"} {op "=="} {value 10}}
 						{"7.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
 						{"8.entities" {selector {tag support_e2_ukr_helo}} {count {op ">="} {value 1}}}
@@ -3789,13 +3792,14 @@
 
 			{"attack_support/e2_helo_nato"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10"}
+					{expression "1 & 2 & 3 & 4 & (5 | 11) & 6 & 7 & 8 & 9 & 10"}
 					{terms
 						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 						{"2.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
 						{"3.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
 						{"5.cmp_i" {var "support_e2_test$"} {op "=="} {value 1}}
+						{"11.cmp_i" {var "support_e2_test$"} {op "=="} {value 3}}
 						{"6.cmp_i" {var "support_e2_stage$"} {op "=="} {value 10}}
 						{"7.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
 						{"8.entities" {selector {tag support_e2_nato_helo}} {count {op ">="} {value 1}}}
@@ -3906,6 +3910,24 @@
 			}
 
 
+			(define "e2_trigger_helo_by_army"
+				{"switch"
+					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}} {"trigger" {name "attack_support/e2_helo_rusa"}}}
+					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}} {"trigger" {name "attack_support/e2_helo_ukr"}}}
+					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 3}} {"trigger" {name "attack_support/e2_helo_nato"}}}
+					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 1}} ("e2_fail_and_cleanup")}
+				}
+			)
+
+			(define "e2_trigger_para_by_army"
+				{"switch"
+					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}} {"trigger" {name "attack_support/e2_para_rusa"}}}
+					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}} {"trigger" {name "attack_support/e2_para_ukr"}}}
+					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 3}} {"trigger" {name "attack_support/e2_para_nato"}}}
+					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 1}} ("e2_fail_and_cleanup")}
+				}
+			)
+
 			{"attack_support/e2_dispatch"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5 & 6"}
@@ -3925,29 +3947,15 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_test$"} {op "=="} {value 1}}
-							{"switch"
-								{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}} {"trigger" {name "attack_support/e2_helo_rusa"}}}
-								{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}} {"trigger" {name "attack_support/e2_helo_ukr"}}}
-								{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 3}} {"trigger" {name "attack_support/e2_helo_nato"}}}
-								{"default"
-									{"set_i" {var "support_e2_fail$"} {op "="} {value 1}}
-									("e2_fail_and_cleanup")
-								}
-							}
+							("e2_trigger_helo_by_army")
+						}
+						{"case"
+							{condition {type cmp_i} {var "support_e2_test$"} {op "=="} {value 3}}
+							("e2_trigger_helo_by_army")
 						}
 						{"case"
 							{condition {type cmp_i} {var "support_e2_test$"} {op "=="} {value 2}}
-							; Task 4 supplies these triggers. Keeping the dispatch cases here makes
-							; gate 2 explicit while the default-zero ship state remains inert.
-							{"switch"
-								{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}} {"trigger" {name "attack_support/e2_para_rusa"}}}
-								{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}} {"trigger" {name "attack_support/e2_para_ukr"}}}
-								{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 3}} {"trigger" {name "attack_support/e2_para_nato"}}}
-								{"default"
-									{"set_i" {var "support_e2_fail$"} {op "="} {value 1}}
-									("e2_fail_and_cleanup")
-								}
-							}
+							("e2_trigger_para_by_army")
 						}
 						{"default"
 							{"set_i" {var "support_e2_fail$"} {op "="} {value 1}}
@@ -3965,6 +3973,23 @@
 						}
 						{"default"}
 					}
+				}
+			}
+
+			{"attack_support/e2_combo_transition"
+				{condition
+					{expression "1 & 2 & !3"}
+					{terms
+						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 3}}
+						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 70}}
+						{"3.entities" {selector {tag support_e2_claim}}}
+					}
+				}
+				{actions
+					{"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {var "support_e2_fail$"}}
+					{"set_i" {var "support_e2_fail$"} {op "="} {value 0}}
+					{"set_i" {var "support_e2_test$"} {op "="} {value 2}}
+					{"set_i" {var "support_e2_stage$"} {op "="} {value 0}}
 				}
 			}
 

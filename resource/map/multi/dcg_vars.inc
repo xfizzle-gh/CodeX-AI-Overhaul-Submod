@@ -96,6 +96,7 @@
 			{"support_e2_test"}
 			{"support_e2_stage"}
 			{"support_e2_fail"}
+			{"support_e2_combo_helo_fail"}
 			{"support_e2_lz"}
 			{"support_e2_flag"}
 			{"enemy_attack_motor_first"}

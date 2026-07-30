@@ -217,7 +217,7 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
     def test_dispatch_reserves_stage_before_async_child_and_pool_short_is_atomic(self) -> None:
         dispatch = mi_block(self.waves, '{"attack_support/e2_dispatch"')
         reserve = '{"set_i" {var "support_e2_stage$"} {op "="} {value 10}}'
-        first_child = '{"trigger" {name "attack_support/e2_helo_rusa"}}'
+        first_child = '("e2_trigger_helo_by_army")'
         self.assertLess(dispatch.index(reserve), dispatch.index(first_child))
         timeout = dispatch.split('{"delay" {time 1}}', 1)[1]
         self.assertIn('{var "support_e2_stage$"} {op "=="} {value 10}', timeout)
@@ -344,6 +344,59 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
         task3 = block(plan, "### Task 3:", "### Task 4:")
         self.assertIn("set support_e2_flag$ to 1 as the portable active-target sentinel", task3)
         self.assertNotIn("testing the selected entity against fpc1..fpc5", task3)
+
+
+class E2SequentialComboTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.vars = VARS.read_text(encoding="utf-8")
+        cls.waves = WAVES.read_text(encoding="utf-8")
+        cls.lua = LUA.read_text(encoding="utf-8")
+        cls.e2 = block(cls.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== MOTORIZED INSERT")
+
+    def test_combo_result_is_declared_initialized_and_mirrored(self) -> None:
+        name = "support_e2_combo_helo_fail"
+        self.assertIn(f'{{"{name}"}}', self.vars)
+        self.assertIn(f'{{var "{name}$"}} {{op "="}} {{value 0}}', self.waves)
+        self.assertIn(f'readVar("{name}")', self.lua)
+        init = block(self.waves, '{"attack_support/init"', '{"attack_support/clock"')
+        self.assertIn('{var "support_e2_test$"} {op "="} {value 0}', init)
+
+    def test_mode_three_enters_only_the_helicopter_dispatch_first(self) -> None:
+        dispatch = mi_block(self.e2, '{"attack_support/e2_dispatch"')
+        mode3 = dispatch.split('{var "support_e2_test$"} {op "=="} {value 3}', 1)[1]
+        mode3 = mode3.split('{var "support_e2_test$"} {op "=="} {value 2}', 1)[0]
+        self.assertIn('("e2_trigger_helo_by_army")', mode3)
+        self.assertNotIn('("e2_trigger_para_by_army")', mode3)
+
+    def test_helicopter_children_accept_exactly_modes_one_and_three(self) -> None:
+        for faction in ("rusa", "ukr", "nato"):
+            child = mi_block(self.e2, f'{{"attack_support/e2_helo_{faction}"')
+            condition = child.split("{actions", 1)[0]
+            self.assertIn('{var "support_e2_test$"} {op "=="} {value 1}', condition)
+            self.assertIn('{var "support_e2_test$"} {op "=="} {value 3}', condition)
+            self.assertNotIn('{var "support_e2_test$"} {op ">"}', condition)
+
+    def test_combo_transition_is_claim_free_and_ordered(self) -> None:
+        transition = mi_block(self.e2, '{"attack_support/e2_combo_transition"')
+        condition, actions = transition.split("{actions", 1)
+        self.assertIn('{var "support_e2_test$"} {op "=="} {value 3}', condition)
+        self.assertIn('{var "support_e2_stage$"} {op "=="} {value 70}', condition)
+        self.assertIn('{tag support_e2_claim}', condition)
+        self.assertIn("!3", condition)
+        copy_at = actions.index('{var "support_e2_combo_helo_fail$"} {op "="} {var "support_e2_fail$"}')
+        clear_at = actions.index('{var "support_e2_fail$"} {op "="} {value 0}')
+        mode2_at = actions.index('{var "support_e2_test$"} {op "="} {value 2}')
+        stage0_at = actions.index('{var "support_e2_stage$"} {op "="} {value 0}')
+        self.assertLess(copy_at, clear_at)
+        self.assertLess(clear_at, mode2_at)
+        self.assertLess(mode2_at, stage0_at)
+
+    def test_combo_is_budget_neutral_and_mode_two_cannot_retrigger(self) -> None:
+        transition = mi_block(self.e2, '{"attack_support/e2_combo_transition"')
+        for budget in ("attack_support_waves_left$", "attack_support_air_left$", "attack_support_motor_left$", "attack_support_ifv_left$"):
+            self.assertNotIn(budget, transition)
+        self.assertNotIn('{var "support_e2_test$"} {op "=="} {value 2}', transition.split("{actions", 1)[0])
 
 
 class E2ParadropLifecycleTests(unittest.TestCase):
