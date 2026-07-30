@@ -3261,6 +3261,7 @@
 	(include "../attack_support_templates.inc")
 	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "spawn_b" "b2" 0x8009}
 	{Tags "spawn_b" "b1" 0x800a}
 	{Tags "spawn_b" "b3" 0x800b}

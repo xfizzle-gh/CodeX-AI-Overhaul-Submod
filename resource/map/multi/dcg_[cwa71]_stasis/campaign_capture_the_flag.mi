@@ -2214,6 +2214,7 @@
 	(include "../attack_support_templates.inc")
 	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "fpc1" 0x8000}
 	{Tags "fpc3" 0xa000}
 	{Tags "fpc4" 0xe000}

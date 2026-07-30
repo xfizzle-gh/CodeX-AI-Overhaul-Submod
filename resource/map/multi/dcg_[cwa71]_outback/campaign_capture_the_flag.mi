@@ -2510,6 +2510,7 @@
 	(include "../attack_support_templates.inc")
 	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "cmp_def" "1_b_2-3_mg" 0x8800}
 	{Tags "spawn_b" "b2" 0x800c}
 	{Tags "spawn_b" "b1" 0x800d}

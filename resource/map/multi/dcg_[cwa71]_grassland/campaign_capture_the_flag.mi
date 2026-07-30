@@ -1770,6 +1770,7 @@
 	(include "../attack_support_templates.inc")
 	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "bare" 0xc4}
 	{Tags "fpc4" 0x8014}
 	{Tags "fpc1" 0xc001}

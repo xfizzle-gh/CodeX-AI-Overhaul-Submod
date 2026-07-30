@@ -2475,6 +2475,7 @@
 	(include "../attack_support_templates.inc")
 	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "switch_right" 0x3004}
 	{Tags "switch_right" 0x3400}
 	{Tags "switch_right" 0x3401}

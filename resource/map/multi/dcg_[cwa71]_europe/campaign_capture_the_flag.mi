@@ -1992,6 +1992,7 @@
 	(include "../attack_support_templates.inc")
 	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "switch_right" 0x190}
 	{Tags "switch_right" 0x650}
 	{Tags "switch_right" 0x40d6}
