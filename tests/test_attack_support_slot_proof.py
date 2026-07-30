@@ -208,10 +208,16 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         engines - which never run on the same mission, so each only has to cover ONE
         engine's worst case. The binding number is the L3 budget of 8 waves."""
         code = self.faction_tpl
-        self.assertEqual(code.count('{Able "-select"}'), 526)
-        self.assertEqual(code.count("{Player 0}"), 526)
-        self.assertEqual(code.count('"ally_sup_tpl"'), 526)
-        self.assertEqual(code.count('"hidden"'), 526)
+        # 526 + 100 motor top-up (4 factions x [3 hulls + 6 crew + 16 pax]) so each
+        # faction can field four trucks a mission: 1 hull + 2 crew + 6 pax per truck.
+        self.assertEqual(code.count('{Able "-select"}'), 626)
+        self.assertEqual(code.count("{Player 0}"), 626)
+        self.assertEqual(code.count('"ally_sup_tpl"'), 626)
+        self.assertEqual(code.count('"hidden"'), 626)
+        for fac in ("rusa", "ukr", "nato", "prc"):
+            self.assertEqual(code.count('"ally_sup_%s_motor_hull"' % fac), 4)
+            self.assertEqual(code.count('"ally_sup_%s_motor_crew"' % fac), 8)
+            self.assertEqual(code.count('"ally_sup_%s_motor_pax"' % fac), 24)
 
         for key, _army in FACTION_ARMIES:
             for suffix, _cmd, take, depth in FACTION_COMPS:
@@ -248,11 +254,12 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
         # Bands: this pool must not collide with either neighbour in a resolved map.
         ids = re.findall(r"\{(?:Entity|Human) \"[^\"]*\" (0x[0-9a-f]+)", code)
-        self.assertEqual(len(ids), 526)
-        self.assertEqual(len(set(ids)), 526)
-        self.assertTrue(all(i.startswith(("0xb2", "0xb3", "0xb4")) for i in ids))
+        self.assertEqual(len(ids), 626)
+        self.assertEqual(len(set(ids)), 626)
+        # 0xc1 is the motor top-up band, swept against every pool and base map.
+        self.assertTrue(all(i.startswith(("0xb2", "0xb3", "0xb4", "0xc1")) for i in ids))
         mids = [int(m) for m in re.findall(r"\{MID (\d+)\}", code)]
-        self.assertEqual(len(set(mids)), 526)
+        self.assertEqual(len(set(mids)), 626)
         self.assertGreaterEqual(min(mids), 9300)
         # Real breeds only, and none of the retired idioms.
         self.assertNotIn('{Human ""', code)
@@ -902,7 +909,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         # E2 has dedicated MOVE-placement and flight contracts in
         # test_e2_airmobile.py; this enumeration covers legacy wave deployers only.
         deployers = [n for n in re.findall(r'\{"attack_support/([a-z0-9_]+)"', code)
-                     if n not in ("init", "clock", "motor_test", "motor_cleanup")
+                     if n not in ("init", "clock", "motor_clock", "motor_cleanup")
                      and not n.startswith("e2_")]
         self.assertTrue(deployers)
         for name in deployers:
@@ -1677,7 +1684,7 @@ class AttackSupportMotorizedInsertTests(unittest.TestCase):
 
     def test_motor_var_budget_and_announce(self) -> None:
         self.assertIn('{"attack_support_motor_left"}', self.vars)
-        self.assertIn('{var "attack_support_motor_left$"} {op "="} {value 1}', self.waves)
+        self.assertIn('{var "attack_support_motor_left$"} {op "="} {value 4}', self.waves)
         self.assertIn("motorized_inbound", self.pot)
         self.assertIn('("as_announce_motor")', self.waves)
 

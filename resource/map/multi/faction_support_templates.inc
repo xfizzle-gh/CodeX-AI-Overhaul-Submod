@@ -3940,3 +3940,731 @@
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_line" "hidden" 0xb445}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_line" "hidden" 0xb446}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_line" "hidden" 0xb447}
+
+; ----- MOTOR POOL TOP-UP: sustains four trucks per mission per engine -----
+; A truck claims 1 hull + 2 crew + 6 pax, so each faction parks 4 / 8 / 24.
+; Ids 0xc100-0xc163, MIDs 9900-9999, y=-37200. Swept against every pool and base map.
+	{Entity "ural" 0xc100
+		{Position -9000 -37200}
+		{Player 0}
+		{MID 9900}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xc101
+		{Position -8995 -37200}
+		{Player 0}
+		{MID 9901}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xc102
+		{Position -8994 -37200}
+		{Player 0}
+		{MID 9902}
+		{Able "-select"}
+	}
+	{Entity "ural" 0xc103
+		{Position -8960 -37200}
+		{Player 0}
+		{MID 9903}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xc104
+		{Position -8955 -37200}
+		{Player 0}
+		{MID 9904}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xc105
+		{Position -8954 -37200}
+		{Player 0}
+		{MID 9905}
+		{Able "-select"}
+	}
+	{Entity "ural" 0xc106
+		{Position -8920 -37200}
+		{Player 0}
+		{MID 9906}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xc107
+		{Position -8915 -37200}
+		{Player 0}
+		{MID 9907}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xc108
+		{Position -8914 -37200}
+		{Player 0}
+		{MID 9908}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc109
+		{Position -8800 -37200}
+		{Player 0}
+		{MID 9909}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc10a
+		{Position -8796 -37200}
+		{Player 0}
+		{MID 9910}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc10b
+		{Position -8792 -37200}
+		{Player 0}
+		{MID 9911}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc10c
+		{Position -8788 -37200}
+		{Player 0}
+		{MID 9912}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc10d
+		{Position -8784 -37200}
+		{Player 0}
+		{MID 9913}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc10e
+		{Position -8780 -37200}
+		{Player 0}
+		{MID 9914}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc10f
+		{Position -8776 -37200}
+		{Player 0}
+		{MID 9915}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc110
+		{Position -8772 -37200}
+		{Player 0}
+		{MID 9916}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc111
+		{Position -8768 -37200}
+		{Player 0}
+		{MID 9917}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc112
+		{Position -8764 -37200}
+		{Player 0}
+		{MID 9918}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc113
+		{Position -8760 -37200}
+		{Player 0}
+		{MID 9919}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc114
+		{Position -8756 -37200}
+		{Player 0}
+		{MID 9920}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc115
+		{Position -8752 -37200}
+		{Player 0}
+		{MID 9921}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc116
+		{Position -8748 -37200}
+		{Player 0}
+		{MID 9922}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc117
+		{Position -8744 -37200}
+		{Player 0}
+		{MID 9923}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xc118
+		{Position -8740 -37200}
+		{Player 0}
+		{MID 9924}
+		{Able "-select"}
+	}
+	{Entity "ural_vsu" 0xc119
+		{Position -8100 -37200}
+		{Player 0}
+		{MID 9925}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xc11a
+		{Position -8095 -37200}
+		{Player 0}
+		{MID 9926}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xc11b
+		{Position -8094 -37200}
+		{Player 0}
+		{MID 9927}
+		{Able "-select"}
+	}
+	{Entity "ural_vsu" 0xc11c
+		{Position -8060 -37200}
+		{Player 0}
+		{MID 9928}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xc11d
+		{Position -8055 -37200}
+		{Player 0}
+		{MID 9929}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xc11e
+		{Position -8054 -37200}
+		{Player 0}
+		{MID 9930}
+		{Able "-select"}
+	}
+	{Entity "ural_vsu" 0xc11f
+		{Position -8020 -37200}
+		{Player 0}
+		{MID 9931}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xc120
+		{Position -8015 -37200}
+		{Player 0}
+		{MID 9932}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xc121
+		{Position -8014 -37200}
+		{Player 0}
+		{MID 9933}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc122
+		{Position -7900 -37200}
+		{Player 0}
+		{MID 9934}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc123
+		{Position -7896 -37200}
+		{Player 0}
+		{MID 9935}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc124
+		{Position -7892 -37200}
+		{Player 0}
+		{MID 9936}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc125
+		{Position -7888 -37200}
+		{Player 0}
+		{MID 9937}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc126
+		{Position -7884 -37200}
+		{Player 0}
+		{MID 9938}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc127
+		{Position -7880 -37200}
+		{Player 0}
+		{MID 9939}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc128
+		{Position -7876 -37200}
+		{Player 0}
+		{MID 9940}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc129
+		{Position -7872 -37200}
+		{Player 0}
+		{MID 9941}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc12a
+		{Position -7868 -37200}
+		{Player 0}
+		{MID 9942}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc12b
+		{Position -7864 -37200}
+		{Player 0}
+		{MID 9943}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc12c
+		{Position -7860 -37200}
+		{Player 0}
+		{MID 9944}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc12d
+		{Position -7856 -37200}
+		{Player 0}
+		{MID 9945}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc12e
+		{Position -7852 -37200}
+		{Player 0}
+		{MID 9946}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc12f
+		{Position -7848 -37200}
+		{Player 0}
+		{MID 9947}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc130
+		{Position -7844 -37200}
+		{Player 0}
+		{MID 9948}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xc131
+		{Position -7840 -37200}
+		{Player 0}
+		{MID 9949}
+		{Able "-select"}
+	}
+	{Entity "fmtv" 0xc132
+		{Position -7200 -37200}
+		{Player 0}
+		{MID 9950}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/usarmy_crew" 0xc133
+		{Position -7195 -37200}
+		{Player 0}
+		{MID 9951}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/usarmy_crew" 0xc134
+		{Position -7194 -37200}
+		{Player 0}
+		{MID 9952}
+		{Able "-select"}
+	}
+	{Entity "fmtv" 0xc135
+		{Position -7160 -37200}
+		{Player 0}
+		{MID 9953}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/usarmy_crew" 0xc136
+		{Position -7155 -37200}
+		{Player 0}
+		{MID 9954}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/usarmy_crew" 0xc137
+		{Position -7154 -37200}
+		{Player 0}
+		{MID 9955}
+		{Able "-select"}
+	}
+	{Entity "fmtv" 0xc138
+		{Position -7120 -37200}
+		{Player 0}
+		{MID 9956}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/usarmy_crew" 0xc139
+		{Position -7115 -37200}
+		{Player 0}
+		{MID 9957}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/usarmy_crew" 0xc13a
+		{Position -7114 -37200}
+		{Player 0}
+		{MID 9958}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc13b
+		{Position -7000 -37200}
+		{Player 0}
+		{MID 9959}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc13c
+		{Position -6996 -37200}
+		{Player 0}
+		{MID 9960}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc13d
+		{Position -6992 -37200}
+		{Player 0}
+		{MID 9961}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc13e
+		{Position -6988 -37200}
+		{Player 0}
+		{MID 9962}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc13f
+		{Position -6984 -37200}
+		{Player 0}
+		{MID 9963}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc140
+		{Position -6980 -37200}
+		{Player 0}
+		{MID 9964}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc141
+		{Position -6976 -37200}
+		{Player 0}
+		{MID 9965}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc142
+		{Position -6972 -37200}
+		{Player 0}
+		{MID 9966}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc143
+		{Position -6968 -37200}
+		{Player 0}
+		{MID 9967}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc144
+		{Position -6964 -37200}
+		{Player 0}
+		{MID 9968}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc145
+		{Position -6960 -37200}
+		{Player 0}
+		{MID 9969}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc146
+		{Position -6956 -37200}
+		{Player 0}
+		{MID 9970}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc147
+		{Position -6952 -37200}
+		{Player 0}
+		{MID 9971}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc148
+		{Position -6948 -37200}
+		{Player 0}
+		{MID 9972}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc149
+		{Position -6944 -37200}
+		{Player 0}
+		{MID 9973}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xc14a
+		{Position -6940 -37200}
+		{Player 0}
+		{MID 9974}
+		{Able "-select"}
+	}
+	{Entity "shaanxi_sx2190_passenger" 0xc14b
+		{Position -6300 -37200}
+		{Player 0}
+		{MID 9975}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xc14c
+		{Position -6295 -37200}
+		{Player 0}
+		{MID 9976}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xc14d
+		{Position -6294 -37200}
+		{Player 0}
+		{MID 9977}
+		{Able "-select"}
+	}
+	{Entity "shaanxi_sx2190_passenger" 0xc14e
+		{Position -6260 -37200}
+		{Player 0}
+		{MID 9978}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xc14f
+		{Position -6255 -37200}
+		{Player 0}
+		{MID 9979}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xc150
+		{Position -6254 -37200}
+		{Player 0}
+		{MID 9980}
+		{Able "-select"}
+	}
+	{Entity "shaanxi_sx2190_passenger" 0xc151
+		{Position -6220 -37200}
+		{Player 0}
+		{MID 9981}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xc152
+		{Position -6215 -37200}
+		{Player 0}
+		{MID 9982}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xc153
+		{Position -6214 -37200}
+		{Player 0}
+		{MID 9983}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc154
+		{Position -6100 -37200}
+		{Player 0}
+		{MID 9984}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc155
+		{Position -6096 -37200}
+		{Player 0}
+		{MID 9985}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc156
+		{Position -6092 -37200}
+		{Player 0}
+		{MID 9986}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc157
+		{Position -6088 -37200}
+		{Player 0}
+		{MID 9987}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc158
+		{Position -6084 -37200}
+		{Player 0}
+		{MID 9988}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc159
+		{Position -6080 -37200}
+		{Player 0}
+		{MID 9989}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc15a
+		{Position -6076 -37200}
+		{Player 0}
+		{MID 9990}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc15b
+		{Position -6072 -37200}
+		{Player 0}
+		{MID 9991}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc15c
+		{Position -6068 -37200}
+		{Player 0}
+		{MID 9992}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc15d
+		{Position -6064 -37200}
+		{Player 0}
+		{MID 9993}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc15e
+		{Position -6060 -37200}
+		{Player 0}
+		{MID 9994}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc15f
+		{Position -6056 -37200}
+		{Player 0}
+		{MID 9995}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc160
+		{Position -6052 -37200}
+		{Player 0}
+		{MID 9996}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc161
+		{Position -6048 -37200}
+		{Player 0}
+		{MID 9997}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc162
+		{Position -6044 -37200}
+		{Player 0}
+		{MID 9998}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc163
+		{Position -6040 -37200}
+		{Player 0}
+		{MID 9999}
+		{Able "-select"}
+	}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_hull" "hidden" 0xc100}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "hidden" 0xc101}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "hidden" 0xc102}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_hull" "hidden" 0xc103}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "hidden" 0xc104}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "hidden" 0xc105}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_hull" "hidden" 0xc106}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "hidden" 0xc107}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "hidden" 0xc108}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc109}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc10a}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc10b}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc10c}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc10d}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc10e}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc10f}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc110}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc111}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc112}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc113}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc114}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc115}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc116}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc117}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xc118}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_hull" "hidden" 0xc119}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "hidden" 0xc11a}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "hidden" 0xc11b}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_hull" "hidden" 0xc11c}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "hidden" 0xc11d}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "hidden" 0xc11e}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_hull" "hidden" 0xc11f}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "hidden" 0xc120}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "hidden" 0xc121}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc122}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc123}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc124}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc125}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc126}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc127}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc128}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc129}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc12a}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc12b}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc12c}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc12d}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc12e}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc12f}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc130}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xc131}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_hull" "hidden" 0xc132}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "hidden" 0xc133}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "hidden" 0xc134}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_hull" "hidden" 0xc135}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "hidden" 0xc136}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "hidden" 0xc137}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_hull" "hidden" 0xc138}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "hidden" 0xc139}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "hidden" 0xc13a}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc13b}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc13c}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc13d}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc13e}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc13f}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc140}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc141}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc142}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc143}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc144}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc145}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc146}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc147}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc148}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc149}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xc14a}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_hull" "hidden" 0xc14b}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "hidden" 0xc14c}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "hidden" 0xc14d}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_hull" "hidden" 0xc14e}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "hidden" 0xc14f}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "hidden" 0xc150}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_hull" "hidden" 0xc151}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "hidden" 0xc152}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "hidden" 0xc153}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc154}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc155}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc156}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc157}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc158}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc159}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc15a}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc15b}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc15c}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc15d}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc15e}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc15f}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc160}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc161}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc162}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xc163}
+	{Link 0xc101 {0xc100 "driver"}}
+	{Link 0xc102 {0xc100 "commander"}}
+	{Link 0xc104 {0xc103 "driver"}}
+	{Link 0xc105 {0xc103 "commander"}}
+	{Link 0xc107 {0xc106 "driver"}}
+	{Link 0xc108 {0xc106 "commander"}}
+	{Link 0xc11a {0xc119 "driver"}}
+	{Link 0xc11b {0xc119 "commander"}}
+	{Link 0xc11d {0xc11c "driver"}}
+	{Link 0xc11e {0xc11c "commander"}}
+	{Link 0xc120 {0xc11f "driver"}}
+	{Link 0xc121 {0xc11f "commander"}}
+	{Link 0xc133 {0xc132 "driver"}}
+	{Link 0xc134 {0xc132 "commander"}}
+	{Link 0xc136 {0xc135 "driver"}}
+	{Link 0xc137 {0xc135 "commander"}}
+	{Link 0xc139 {0xc138 "driver"}}
+	{Link 0xc13a {0xc138 "commander"}}
+	{Link 0xc14c {0xc14b "driver"}}
+	{Link 0xc14d {0xc14b "commander"}}
+	{Link 0xc14f {0xc14e "driver"}}
+	{Link 0xc150 {0xc14e "commander"}}
+	{Link 0xc152 {0xc151 "driver"}}
+	{Link 0xc153 {0xc151 "commander"}}

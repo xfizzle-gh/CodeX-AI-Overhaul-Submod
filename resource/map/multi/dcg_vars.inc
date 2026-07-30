@@ -93,12 +93,10 @@
 			{"enemy_attack_next_ok"}
 			{"enemy_attack_owner_fail"}
 			{"enemy_attack_motor_left"}
-			{"attack_support_motor_test"}
-			{"attack_support_motor_test_done"}
-			{"enemy_attack_motor_test"}
-			{"enemy_attack_motor_test_done"}
 			{"support_e2_test"}
 			{"support_e2_stage"}
 			{"support_e2_fail"}
 			{"support_e2_lz"}
 			{"support_e2_flag"}
+			{"enemy_attack_motor_first"}
+			{"attack_support_motor_first"}

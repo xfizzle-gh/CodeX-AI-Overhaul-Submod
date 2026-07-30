@@ -1334,9 +1334,8 @@
 					{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_ifv_left$"} {op "="} {value 1}}
-					{"set_i" {var "attack_support_motor_left$"} {op "="} {value 1}}
-					{"set_i" {var "attack_support_motor_test$"} {op "="} {value 1}}	; TEST: 1=forced staggered trucks, 0=production rolls
-					{"set_i" {var "attack_support_motor_test_done$"} {op "="} {value 0}}
+					{"set_i" {var "attack_support_motor_left$"} {op "="} {value 4}}
+					{"set_i" {var "attack_support_motor_first$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_air_left$"} {op "="} {value 2}}
 					; DAY-2 TEST default ON. Set value 0 to restore production airmobile schedule only.
 					{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}
@@ -4507,19 +4506,21 @@
 					}
 					; Claim whole package (hull + linked crew + pax).
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor}}}}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_crew}}}} {amount 2}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_rusa_motor}
 						{tag_remove ally_sup_rusa_motor_crew}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_hull}}}}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_hull}}}} {amount 1}}
 						{tag_add attack_support_motor_hull}
+						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_rusa_motor_hull}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_pax}}}}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_pax}}}} {amount 6}}
 						{tag_add attack_support_motor_pax}
+						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_rusa_motor_pax}
 					}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
@@ -4553,19 +4554,21 @@
 					}
 					; Claim whole package (hull + linked crew + pax).
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor}}}}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_crew}}}} {amount 2}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_ukr_motor}
 						{tag_remove ally_sup_ukr_motor_crew}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_hull}}}}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_hull}}}} {amount 1}}
 						{tag_add attack_support_motor_hull}
+						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_ukr_motor_hull}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_pax}}}}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_pax}}}} {amount 6}}
 						{tag_add attack_support_motor_pax}
+						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_ukr_motor_pax}
 					}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
@@ -4599,19 +4602,21 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor}}}}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_crew}}}} {amount 2}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_prc_motor}
 						{tag_remove ally_sup_prc_motor_crew}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_hull}}}}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_hull}}}} {amount 1}}
 						{tag_add attack_support_motor_hull}
+						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_prc_motor_hull}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_pax}}}}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_pax}}}} {amount 6}}
 						{tag_add attack_support_motor_pax}
+						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_prc_motor_pax}
 					}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
@@ -4645,19 +4650,21 @@
 					}
 					; Claim whole package (hull + linked crew + pax).
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor}}}}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_crew}}}} {amount 2}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_nato_motor}
 						{tag_remove ally_sup_nato_motor_crew}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_hull}}}}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_hull}}}} {amount 1}}
 						{tag_add attack_support_motor_hull}
+						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_nato_motor_hull}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_pax}}}}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_pax}}}} {amount 6}}
 						{tag_add attack_support_motor_pax}
+						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_nato_motor_pax}
 					}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
@@ -4672,25 +4679,42 @@
 			;   0 = production only (L2+ random roll, cap 1) - flip in attack_support/init
 			; The 45s spacing exceeds one truck's full drive+emit sequence, so two trucks
 			; never share a pad or an unload zone.
-			{"attack_support/motor_test"
+						; Motorised inserts run on their own randomised clock, independent of the wave
+			; ladder so truck and infantry arrivals never sync. First truck 90-150s after the
+			; engine arms, then every 180-300s until the per-mission budget of four is spent.
+			; The pool parks four packages per faction, so every one of those can be filled.
+			{"attack_support/motor_clock"
 				{condition
-					{expression "1 & 2 & 3 & 4"}
+					{expression "1 & 2 & 3"}
 					{terms
 						{"1.cmp_i" {var "attack_support_armed$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "attack_support_motor_test$"} {op "=="} {value 1}}
-						{"3.cmp_i" {var "attack_support_motor_test_done$"} {op "=="} {value 0}}
-						{"4.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_motor_left$"} {op ">"} {value 0}}
+						{"3.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 					}
 				}
 				{actions
-					{"set_i" {var "attack_support_motor_test_done$"} {op "="} {value 1}}
-					{"set_i" {var "attack_support_motor_left$"} {op "="} {value 2}}
-					{"delay" {time 15}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "attack_support_motor_first$"} {op "=="} {value 0}}
+							{"set_i" {var "attack_support_motor_first$"} {op "="} {value 1}}
+							{"switch"
+								{"case" {condition {type rand} {value 0.34}} {"delay" {time 105}}}
+								{"case" {condition {type rand} {value 0.5}} {"delay" {time 135}}}
+								{"default" {"delay" {time 160}}}
+							}
+						}
+						{"default"
+							{"switch"
+								{"case" {condition {type rand} {value 0.34}} {"delay" {time 185}}}
+								{"case" {condition {type rand} {value 0.5}} {"delay" {time 250}}}
+								{"default" {"delay" {time 310}}}
+							}
+						}
+					}
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 19}}
 					("as_poke_faction_motor")
-					{"delay" {time 45}}
-					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 19}}
-					("as_poke_faction_motor")
+					{"delay" {time 20}}
+					{"trigger" {name "attack_support/motor_clock"}}
 				}
 			}
 

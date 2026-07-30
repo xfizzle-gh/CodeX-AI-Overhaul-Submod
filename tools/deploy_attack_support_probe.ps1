@@ -1110,15 +1110,15 @@ if ($tplMidMax -ge 9100) {
     throw "Source template pool MID $tplMidMax runs into the enemy-defence band at 9100"
 }
 
-# Player-nation pools: 526 prototypes across four factions (incl. rare IFV packages). Depths are per faction and
+# Player-nation pools: 626 prototypes across four factions (incl. rare IFV packages). Depths are per faction and
 # each is shared by the attack and defence engines, which never run on the same mission,
 # so each only has to cover ONE engine's L3 budget of 8 waves. The line pool is 30
 # rather than the original 24 because the three flag emplacements the defence engine
 # plants are CREWED from it: 3 anchors x 2 crew = 6 extra draws per mission, funded
 # one for one so the wave budget is unchanged.
 $factionAble = (Select-String -LiteralPath $factionTplSource -SimpleMatch '{Able "-select"}').Count
-if ($factionAble -ne 526) {
-    throw "Faction pool must park 526 prototypes with selection stripped; found $factionAble"
+if ($factionAble -ne 626) {
+    throw "Faction pool must park 626 prototypes with selection stripped; found $factionAble"
 }
 foreach ($faction in @('rusa', 'ukr', 'prc', 'nato')) {
     foreach ($pair in @(
@@ -1155,8 +1155,8 @@ if (Select-String -Quiet -LiteralPath $factionTplSource -Pattern '^\s*\{Human ""
 }
 $factionMids = [regex]::Matches((Get-Content -Raw -LiteralPath $factionTplSource), '\{MID (\d+)\}') |
     ForEach-Object { [int]$_.Groups[1].Value }
-if (($factionMids | Sort-Object -Unique).Count -ne 526) {
-    throw "Faction pool must carry 526 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"
+if (($factionMids | Sort-Object -Unique).Count -ne 626) {
+    throw "Faction pool must carry 626 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"
 }
 if (($factionMids | Measure-Object -Minimum).Minimum -lt 9300) {
     throw "Faction pool MIDs must start at 9300, clear of the other two pools"
@@ -1903,7 +1903,7 @@ if (-not (Test-Path -LiteralPath $factionTarget)) {
 foreach ($marker in $E2HeloTemplateMarkers) {
     if (-not (Select-String -Quiet -LiteralPath $factionTarget -SimpleMatch $marker)) { throw "Workshop E2 helicopter template is missing marker: $marker" }
 }
-if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able "-select"}').Count -ne 526) {
+if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able "-select"}').Count -ne 626) {
     throw "Workshop faction pool is not the 526-prototype player-nation pool"
 }
 if (Select-String -Quiet -LiteralPath $factionTarget -Pattern '^\s*\{Human ""') {

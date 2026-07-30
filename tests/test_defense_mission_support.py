@@ -227,7 +227,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
         self.assertEqual(len(ea), len(set(ea)), "duplicate enemy-attack trigger")
         self.assertEqual(
             set(ea),
-            {"init", "clock", "motor_test", "motor_cleanup"} | {
+            {"init", "clock", "motor_clock", "motor_cleanup"} | {
                 "%s_%s" % (key, suffix)
                 for key, _army in EA_FACTIONS
                 for suffix, _cmd, _role, _take, _stage in EA_DRAWS
@@ -1876,7 +1876,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
         """When player defends, enemy attacker gets cmd 19 motor trucks (shared ally_sup motor pools)."""
         code = self.ea
         self.assertIn("enemy_attack_motor_left", self.vars)
-        self.assertIn('{var "enemy_attack_motor_left$"} {op "="} {value 1}', code)
+        self.assertIn('{var "enemy_attack_motor_left$"} {op "="} {value 4}', code)
         self.assertIn('("ea_poke_motor")', code)
         self.assertIn('("ea_finish_motor")', code)
         self.assertIn("{mode passengers}", code)
