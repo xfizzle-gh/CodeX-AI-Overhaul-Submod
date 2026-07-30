@@ -40,6 +40,7 @@ CE_SETUP = MULTI / "ce/map_setup/ce_map_setup_triggers.inc"
 CONQUEST = ROOT / "resource/script/multiplayer/modes/conquest.lua"
 GAME_SET = ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set"
 DEPLOY = ROOT / "tools/deploy_attack_support_probe.ps1"
+WORKSHOP = Path("E:/Steam/steamapps/workshop/content/400750/3636883799")
 
 # Every include the four quadrants need in a patched map, in the order the deploy script
 # lays them down. Two entities-section pools and four triggers-section engines: Q2 and Q3
@@ -1281,6 +1282,10 @@ class DefenceMissionSupportTests(unittest.TestCase):
                     '\t(include "../enemy_defense_templates.inc")',
                     mi,
                 )
+                # ZERO legacy allied-support references: both .inc files are deleted, so
+                # a surviving include is a dangling reference the engine cannot resolve,
+                # and the entry waypoint it cloned into has no readers left.
+                self.assertNotIn("allied_support", mi)
                 # Both entry waypoints, which the four engines read in two different
                 # directions, must be present exactly once each.
                 self.assertEqual(mi.count('{"attack_support_entry_a"'), 1)
@@ -1331,6 +1336,51 @@ class DefenceMissionSupportTests(unittest.TestCase):
         for include in MAP_INCLUDES:
             self.assertEqual(border.count(include), 1, include)
 
+    def test_no_orphans_in_the_repo_or_the_workshop(self) -> None:
+        # The retired experiment is gone from the repo, includes and all.
+        for retired in ("allied_support_waves.inc", "allied_support_templates.inc"):
+            self.assertFalse((MULTI / retired).exists(), retired)
+        # And nothing anywhere in the mod still names it, except the deploy script,
+        # which has to keep the names in order to strip them.
+        # The only surviving mentions anywhere are the retirement machinery itself: the
+        # deploy script has to keep the names in order to strip them, and the tests have
+        # to keep them in order to forbid them. No shipped .inc may name it. CE's own
+        # allied_support_template tag is unrelated - CE tag_adds it to ten of its own
+        # off-map reserve entities and then only ever excludes them from a cleanup
+        # sweep, so it is self-contained and stays untouched.
+        for path in sorted(MULTI.glob("*.inc")):
+            self.assertNotIn(
+                "allied_support", path.read_text(encoding="utf-8", errors="ignore"),
+                str(path),
+            )
+        ce_setup = CE_SETUP.read_text(encoding="utf-8")
+        self.assertEqual(ce_setup.count("{tag_add allied_support_template}"), 1)
+        for m in re.finditer(r"\{tag\s+\{tag\s+allied_support_template\}\s*\}", ce_setup):
+            self.assertIn("{exclude", ce_setup[max(0, m.start() - 400) : m.start()])
+        # Every .inc the maps include exists, and every engine .inc is included.
+        for include in MAP_INCLUDES:
+            name = re.search(r'\.\./([\w.]+)', include).group(1)
+            self.assertTrue((MULTI / name).exists(), name)
+
+        if WORKSHOP.exists():
+            wmulti = WORKSHOP / "resource/map/multi"
+            for retired in ("allied_support_waves.inc", "allied_support_templates.inc"):
+                self.assertFalse((wmulti / retired).exists(), "workshop orphan: " + retired)
+            for include in MAP_INCLUDES:
+                name = re.search(r'\.\./([\w.]+)', include).group(1)
+                self.assertTrue((wmulti / name).exists(), "workshop missing: " + name)
+            wmaps = sorted(
+                p for p in wmulti.iterdir()
+                if p.is_dir() and p.name.startswith("dcg_[cwa71]_")
+            )
+            self.assertEqual(len(wmaps), 14)
+            for d in wmaps:
+                mi = (d / "campaign_capture_the_flag.mi").read_text(encoding="utf-8")
+                with self.subTest(workshop_map=d.name):
+                    for include in MAP_INCLUDES:
+                        self.assertEqual(mi.count(include), 1, include)
+                    self.assertNotIn("allied_support", mi)
+
     def test_deployment_ships_and_guards_both_defence_mission_engines(self) -> None:
         for marker in (
             "resource\\map\\multi\\defense_support_waves.inc",
@@ -1357,6 +1407,12 @@ class DefenceMissionSupportTests(unittest.TestCase):
             "It must claim from the existing parked pools, not park its own",
             "reaches into other-system state",
             "share cadence values",
+            # Legacy retirement.
+            "resource\\map\\multi\\allied_support_waves.inc",
+            "resource\\map\\multi\\allied_support_templates.inc",
+            "LEGACY-STRIPPED retired allied support from",
+            "Workshop still carries the retired allied-support file",
+            "Map still references the retired allied-support experiment",
             # The corrected prep-inform gate has to ship with the engines.
             "if not botDefender then return end",
             "still carries the inverted ensureAttackPrepInform gate",

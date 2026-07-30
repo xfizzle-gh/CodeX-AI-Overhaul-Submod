@@ -3258,7 +3258,6 @@
 	}
 	{Link 0x8016 {0x382f "8"}}
 	{Link 0x8018 {0x382f "4"}}
-	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "spawn_b" "b2" 0x8009}
@@ -5667,7 +5666,6 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
 			(include "../enemy_defense_support.inc")
 			(include "../defense_support_waves.inc")
@@ -5681,10 +5679,6 @@
 			}
 			{"attack_support_entry_b"
 				{position 638.20 9177.10 0.00}
-				{radius 150}
-			}
-			{"allied_support_entry"
-				{position -606.75 -9522.62 0.00}
 				{radius 150}
 			}
 			{"0"

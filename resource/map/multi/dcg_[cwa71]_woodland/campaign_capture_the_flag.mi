@@ -1460,7 +1460,6 @@
 	}
 	{Link 0x8027 {0x4623 "1"}}
 	{Link 0x803d {0x385f "6"}}
-	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "fpc1" 0x8000}
@@ -2738,7 +2737,6 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
 			(include "../enemy_defense_support.inc")
 			(include "../defense_support_waves.inc")
@@ -2752,10 +2750,6 @@
 			}
 			{"attack_support_entry_b"
 				{position 7366.74 175.21 0.00}
-				{radius 150}
-			}
-			{"allied_support_entry"
-				{position -7497.91 -526.98 7.14}
 				{radius 150}
 			}
 			{"0"

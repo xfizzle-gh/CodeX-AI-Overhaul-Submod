@@ -172,6 +172,13 @@ foreach ($marker in @(
         throw "Source dcg_vars.inc is missing marker: $marker"
     }
 }
+# The retired allied-support experiment owned these. Its files are gone; a stale
+# declaration invites someone to re-gate a production engine behind one.
+foreach ($banned in @('allied_support_initialized', 'allied_support_wave_size', 'allied_support_target')) {
+    if (Select-String -Quiet -LiteralPath $varsSource -SimpleMatch $banned) {
+        throw "Source dcg_vars.inc declares retired allied-support state: $banned"
+    }
+}
 # The retired inert wave skeleton owned these. Nothing reads them any more, and a
 # stale declaration invites someone to re-gate the production engine behind one.
 foreach ($banned in @('allied_attack_enabled', 'allied_attack_started', 'allied_attack_wave_num')) {
@@ -582,6 +589,10 @@ foreach ($pair in @(@($dsSource, 'defence support'), @($eaSource, 'enemy attack'
     if (Select-String -Quiet -LiteralPath $path -Pattern '^[^;]*\bfpc') {
         throw "Source $label engine still targets fpc* capture points. Those tags are absent from outback entirely; address capture points as {tag flag}"
     }
+    # Nothing from the retired allied-support experiment may be resurrected here.
+    if (Select-String -Quiet -LiteralPath $path -SimpleMatch 'allied_support') {
+        throw "Source $label engine references the retired allied-support experiment"
+    }
     # Every trigger must carry the defence-mission gate, or the system fires on a
     # human-ATTACK mission and reinforces the wrong side.
     $text = [System.IO.File]::ReadAllText($path)
@@ -745,6 +756,7 @@ foreach ($breed in @("usmc_rifleman", "1ad_rifleman", "pzgd_rifleman", "usarmy_c
 Write-Host "Deploying attack support wave engine (opening wave 30-45s, then randomized 150-300s cadence, level-scaled composition pools)"
 Write-Host "  plus the enemy defence engine (garrison on the live flags, four patrol groups, 45-90s trickle + 180-300s surge off the defender's own edge)"
 Write-Host "  plus the two human-DEFENCE mission engines, both behind prep_inform: defensive support for the defender bot (25-40s opening, 140-290s cadence, hold groups on the active flags) and enemy attacker pressure (65-95s opening, 125-280s cadence, assault on the player's flags)"
+Write-Host "  and retiring the allied-support experiment: both .inc files removed, includes and entry waypoint stripped from all fourteen maps"
 Write-Host "Repository: $RepoRoot"
 Write-Host "Branch:     $branch"
 Write-Host "Workshop:   $WorkshopRoot"
@@ -771,7 +783,14 @@ foreach ($relative in $files) {
 foreach ($orphan in @(
     "resource\map\multi\attack_support_probe.inc",
     "resource\map\multi\allied_attack_waves.inc",
-    "resource\script\multiplayer\modes\attack_support_brain.lua"
+    "resource\script\multiplayer\modes\attack_support_brain.lua",
+    # The retired allied-support experiment. It predates the no-clone discovery: it
+    # cloned breed-less {Human ""} prototypes with cleared inventories, sized waves off
+    # a defence_level switch and drove them with an FSM, and none of it was ever proven
+    # to put a body on the map. defense_support_waves.inc replaces it entirely, so both
+    # files go and their includes are stripped from every map below.
+    "resource\map\multi\allied_support_waves.inc",
+    "resource\map\multi\allied_support_templates.inc"
 )) {
     $orphanPath = Join-Path $WorkshopRoot $orphan
     if (Test-Path -LiteralPath $orphanPath) {
@@ -791,9 +810,17 @@ if ($mapFiles.Count -ne 14) {
     throw "Expected 14 CWA campaign_capture_the_flag.mi files, found $($mapFiles.Count)"
 }
 
-$anchor = '(include "../allied_support_waves.inc")'
+# The retired allied-support includes were the insertion anchors for the two
+# attack-support includes, and a pristine base map has nothing else in either place to
+# anchor on. So they are not deleted, they are CONVERTED: a map that still carries a
+# legacy include has it rewritten into its live replacement in situ, which both retires
+# the experiment and preserves the exact position everything downstream anchors on. A
+# map that already carries the live include just loses the legacy line.
+$legacyConversions = @(
+    @('(include "../allied_support_waves.inc")', '(include "../attack_support_waves.inc")'),
+    @('(include "../allied_support_templates.inc")', '(include "../attack_support_templates.inc")')
+)
 $wavesInclude = '(include "../attack_support_waves.inc")'
-$tplAnchor = '(include "../allied_support_templates.inc")'
 $tplInclude = '(include "../attack_support_templates.inc")'
 # Enemy-defence half. Each sits immediately after its attack-support counterpart:
 # the engine in the triggers section, the prototype pool in the entities section.
@@ -833,44 +860,53 @@ foreach ($mapFile in $mapFiles) {
         Write-Host "LEGACY-STRIPPED superseded includes from $mapFile"
     }
 
-    $wavesCount = ([regex]::Matches($text, [regex]::Escape($wavesInclude))).Count
-
-    if ($wavesCount -eq 0) {
-        if (-not $text.Contains($anchor)) {
-            throw "Map is missing allied-support include anchor: $mapFile"
-        }
-
+    # Retire the allied-support experiment. Back the map up FIRST if this is the first
+    # time this toolchain has touched it - a pristine map is the only thing that can
+    # still be restored to base behaviour.
+    $legacyBefore = $text
+    $carriesLegacy = $false
+    foreach ($pair in $legacyConversions) {
+        if ($text.Contains($pair[0])) { $carriesLegacy = $true }
+    }
+    if ($carriesLegacy) {
         $relativeMap = $mapFile.Substring($WorkshopRoot.Length).TrimStart('\')
         $backup = Join-Path $backupRoot $relativeMap
         if (-not (Test-Path -LiteralPath $backup)) {
             New-Item -ItemType Directory -Force -Path (Split-Path $backup) | Out-Null
             Copy-Item -LiteralPath $mapFile -Destination $backup -Force
         }
-
-        $replacement = $anchor + "`r`n`t`t`t" + $wavesInclude
-        $text = $text.Replace($anchor, $replacement)
-        [System.IO.File]::WriteAllText($mapFile, $text, [System.Text.UTF8Encoding]::new($false))
-        $wavesCount = 1
-    }
-
-    if ($wavesCount -ne 1) {
-        throw "Expected exactly one wave-engine include in: $mapFile"
-    }
-
-    # Entities-section include for the wave engine's real-breed prototype pool,
-    # placed immediately after the existing templates include. Idempotent.
-    $text = [System.IO.File]::ReadAllText($mapFile)
-    $tplCount = ([regex]::Matches($text, [regex]::Escape($tplInclude))).Count
-    if ($tplCount -eq 0) {
-        if (-not $text.Contains($tplAnchor)) {
-            throw "Map is missing the templates include anchor: $mapFile"
+        foreach ($pair in $legacyConversions) {
+            $legacy = $pair[0]
+            $live = $pair[1]
+            if (-not $text.Contains($legacy)) { continue }
+            if ($text.Contains($live)) {
+                # Already patched by an earlier deploy: just drop the legacy line.
+                $text = [regex]::Replace($text, '[ \t]*' + [regex]::Escape($legacy) + '\r?\n', '')
+            } else {
+                # Pristine map: convert the legacy include into its replacement in place.
+                $text = $text.Replace($legacy, $live)
+            }
         }
-        $text = $text.Replace($tplAnchor, $tplAnchor + "`r`n`t" + $tplInclude)
+        # The waypoint the retired engine cloned into. Nothing reads it any more.
+        $text = [regex]::Replace(
+            $text,
+            '[ \t]*\{"allied_support_entry"\r?\n[ \t]*\{position [^}]*\}\r?\n[ \t]*\{radius \d+\}\r?\n[ \t]*\}\r?\n',
+            ''
+        )
         [System.IO.File]::WriteAllText($mapFile, $text, [System.Text.UTF8Encoding]::new($false))
-        $tplCount = 1
+        Write-Host "LEGACY-STRIPPED retired allied support from $mapFile"
     }
+    if ($text -match 'allied_support') {
+        throw "Map still references the retired allied-support experiment: $mapFile"
+    }
+
+    $wavesCount = ([regex]::Matches($text, [regex]::Escape($wavesInclude))).Count
+    if ($wavesCount -ne 1) {
+        throw "Expected exactly one wave-engine include in: $mapFile (found $wavesCount)"
+    }
+    $tplCount = ([regex]::Matches($text, [regex]::Escape($tplInclude))).Count
     if ($tplCount -ne 1) {
-        throw "Expected exactly one wave-templates include in: $mapFile"
+        throw "Expected exactly one wave-templates include in: $mapFile (found $tplCount)"
     }
 
     # Enemy-defence engine, in the triggers section right after the attack-support
@@ -998,8 +1034,8 @@ foreach ($mapFile in $mapFiles) {
             throw "Expected exactly one $include in: $mapFile (found $n)"
         }
     }
-    if (([regex]::Matches($text, [regex]::Escape('{"allied_support_entry"'))).Count -ne 1) {
-        throw "Map lost its allied_support_entry waypoint: $mapFile"
+    if ([regex]::IsMatch($text, 'allied_support')) {
+        throw "Map still references the retired allied-support experiment: $mapFile"
     }
 
     Write-Host "PATCHED $mapFile"
@@ -1128,9 +1164,15 @@ if (Select-String -Quiet -LiteralPath $tplTarget -Pattern '^\s*\{Human ""') {
 if ((Select-String -LiteralPath $tplTarget -SimpleMatch '{Able "-select"}').Count -ne 64) {
     throw "Workshop template pool is not the 64-prototype wave pool"
 }
-$poolTarget = Join-Path $WorkshopRoot "resource\map\multi\allied_support_templates.inc"
-if (-not (Select-String -Quiet -LiteralPath $poolTarget -SimpleMatch '{Tags "allied_support_template" "hidden" "cmp_def" 0xaf01}')) {
-    throw "Workshop off-map template pool is missing or untagged: allied_support_templates.inc"
+# The retired allied-support experiment must be gone from the workshop, not merely
+# unreferenced: a leftover .inc is dead weight and invites a map to include it again.
+foreach ($retired in @(
+    "resource\map\multi\allied_support_waves.inc",
+    "resource\map\multi\allied_support_templates.inc"
+)) {
+    if (Test-Path -LiteralPath (Join-Path $WorkshopRoot $retired)) {
+        throw "Workshop still carries the retired allied-support file: $retired"
+    }
 }
 
 # ===== ENEMY DEFENCE ENGINE (workshop side) =====
@@ -1223,7 +1265,7 @@ foreach ($marker in @(
 foreach ($pair in @(@($ds, 'defence support'), @($ea, 'enemy attack'))) {
     $path = $pair[0]
     $label = $pair[1]
-    foreach ($banned in @('{clone}', '{include {prop human}}', '{state {state operatable}}', '{zone {zone "gamezone"}}')) {
+    foreach ($banned in @('{clone}', '{include {prop human}}', '{state {state operatable}}', '{zone {zone "gamezone"}}', 'allied_support')) {
         if (Select-String -Quiet -LiteralPath $path -SimpleMatch $banned) {
             throw "Workshop $label engine uses the forbidden idiom $banned"
         }

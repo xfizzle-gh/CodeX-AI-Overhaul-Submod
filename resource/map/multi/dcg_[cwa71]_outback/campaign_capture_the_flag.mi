@@ -2507,7 +2507,6 @@
 	{Link 0xc027 {0x31e6 "p02" "3"}}
 	{Link 0xb80b {0x6025 "3"}}
 	{Link 0xb814 {0x6024 "3"}}
-	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "cmp_def" "1_b_2-3_mg" 0x8800}
@@ -4389,7 +4388,6 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
 			(include "../enemy_defense_support.inc")
 			(include "../defense_support_waves.inc")
@@ -4403,10 +4401,6 @@
 			}
 			{"attack_support_entry_b"
 				{position -3560.62 -6465.07 0.00}
-				{radius 150}
-			}
-			{"allied_support_entry"
-				{position 5220.57 5430.89 0.00}
 				{radius 150}
 			}
 			{"0"

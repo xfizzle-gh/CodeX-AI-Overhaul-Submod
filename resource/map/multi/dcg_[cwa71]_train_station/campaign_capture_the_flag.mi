@@ -2078,7 +2078,6 @@
 	{Link 0x8056 {0x60e1 "2"}}
 	{Link 0x8058 {0x788a "117_f2c2" "1"}}
 	{Link 0x8065 {0x605f "14" "6"}}
-	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "switch_left" 0x3017}
@@ -3791,7 +3790,6 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
 			(include "../enemy_defense_support.inc")
 			(include "../defense_support_waves.inc")
@@ -3805,10 +3803,6 @@
 			}
 			{"attack_support_entry_b"
 				{position -359.95 -7134.24 0.00}
-				{radius 150}
-			}
-			{"allied_support_entry"
-				{position 623.24 7261.83 0.00}
 				{radius 150}
 			}
 			{"0"

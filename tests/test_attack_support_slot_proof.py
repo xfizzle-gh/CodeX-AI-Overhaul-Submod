@@ -748,25 +748,30 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             mi = (d / "campaign_capture_the_flag.mi").read_text(encoding="utf-8")
             with self.subTest(map=d.name):
                 self.assertEqual(mi.count('(include "../attack_support_waves.inc")'), 1)
-                self.assertEqual(mi.count('(include "../allied_support_waves.inc")'), 1)
-                # The engine's real-breed pool goes in the ENTITIES section, right
-                # after the existing templates include.
+                # The engine's real-breed pool goes in the ENTITIES section, and it is
+                # the first thing there now: the retired allied-support experiment's
+                # includes were the original anchors and the deploy script converts
+                # them into these two in place rather than deleting them, so a pristine
+                # map still lands the includes in exactly the same positions.
                 self.assertEqual(
                     mi.count('(include "../attack_support_templates.inc")'), 1
                 )
                 # read_text normalises CRLF, so match on \n here.
                 self.assertIn(
-                    '(include "../allied_support_templates.inc")\n'
-                    '\t(include "../attack_support_templates.inc")',
+                    '(include "../attack_support_templates.inc")\n'
+                    '\t(include "../enemy_defense_templates.inc")',
                     mi,
                 )
+                # Nothing from the retired allied-support experiment survives: the two
+                # .inc files are deleted, so a surviving include is a dangling
+                # reference the engine cannot resolve.
+                self.assertNotIn("allied_support", mi)
 
                 # Both entry sides. The dynamic campaign swaps attacker/defender
                 # spawns per mission instance - the same map put us on the safe
                 # side one run and in enemy territory the next - so a single
                 # static entry can never be right. Each map carries one waypoint
                 # per side and the engine chooses at runtime.
-                self.assertEqual(mi.count('{"allied_support_entry"'), 1)
                 self.assertEqual(mi.count('{"attack_support_entry_a"'), 1)
                 self.assertEqual(mi.count('{"attack_support_entry_b"'), 1)
                 # The pre-split name must be fully gone, not merely rare.
@@ -837,7 +842,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             'resource\\map\\multi\\attack_support_waves.inc',
             'resource\\map\\multi\\attack_support_templates.inc',
             '(include "../attack_support_templates.inc")',
-            '$tplAnchor = \'(include "../allied_support_templates.inc")\'',
+            # The retired allied-support includes are the insertion anchors for these
+            # two, and a pristine base map has nothing else in either place. So they
+            # are converted in place rather than deleted.
+            '@(\'(include "../allied_support_templates.inc")\', \'(include "../attack_support_templates.inc")\')',
             '{Human "mp/nato/2022s/usmc_rifleman"',
             "Expected exactly one wave-templates include in",
             "Expected exactly one wave-engine include in",

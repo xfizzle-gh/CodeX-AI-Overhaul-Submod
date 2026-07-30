@@ -1767,7 +1767,6 @@
 	{Link 0x800f {0x2186 "seat01"}}
 	{Link 0x8c12 {0x4349 "4"}}
 	{Link 0x880a {0x2188 "seat01"}}
-	(include "../allied_support_templates.inc")
 	(include "../attack_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	{Tags "bare" 0xc4}
@@ -3349,7 +3348,6 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
 			(include "../attack_support_waves.inc")
 			(include "../enemy_defense_support.inc")
 			(include "../defense_support_waves.inc")
@@ -3363,10 +3361,6 @@
 			}
 			{"attack_support_entry_b"
 				{position 8907.71 393.38 0.00}
-				{radius 150}
-			}
-			{"allied_support_entry"
-				{position -9303.27 481.15 0.00}
 				{radius 150}
 			}
 			{"0"
