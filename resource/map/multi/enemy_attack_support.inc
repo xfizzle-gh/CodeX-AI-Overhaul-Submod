@@ -1344,12 +1344,6 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_crew}}}} {amount 2}}
-						{tag_add ea_deploy}
-						{tag_remove ally_sup_rusa_motor}
-						{tag_remove ally_sup_rusa_motor_crew}
-					}
-					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_hull}}}} {amount 1}}
 						{tag_add ea_motor_hull}
 						{tag_add ea_deploy}
@@ -1390,12 +1384,6 @@
 							{"timer" {time 8} {title "ENEMY ATTACK MOTORIZED INSERT"}}
 						}
 						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_crew}}}} {amount 2}}
-						{tag_add ea_deploy}
-						{tag_remove ally_sup_ukr_motor}
-						{tag_remove ally_sup_ukr_motor_crew}
 					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_hull}}}} {amount 1}}
@@ -1440,12 +1428,6 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_crew}}}} {amount 2}}
-						{tag_add ea_deploy}
-						{tag_remove ally_sup_prc_motor}
-						{tag_remove ally_sup_prc_motor_crew}
-					}
-					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_hull}}}} {amount 1}}
 						{tag_add ea_motor_hull}
 						{tag_add ea_deploy}
@@ -1486,12 +1468,6 @@
 							{"timer" {time 8} {title "ENEMY ATTACK MOTORIZED INSERT"}}
 						}
 						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_crew}}}} {amount 2}}
-						{tag_add ea_deploy}
-						{tag_remove ally_sup_nato_motor}
-						{tag_remove ally_sup_nato_motor_crew}
 					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_hull}}}} {amount 1}}
@@ -1538,9 +1514,9 @@
 							{condition {type cmp_i} {var "enemy_attack_motor_first$"} {op "=="} {value 0}}
 							{"set_i" {var "enemy_attack_motor_first$"} {op "="} {value 1}}
 							{"switch"
-								{"case" {condition {type rand} {value 0.34}} {"delay" {time 105}}}
-								{"case" {condition {type rand} {value 0.5}} {"delay" {time 135}}}
-								{"default" {"delay" {time 160}}}
+								{"case" {condition {type rand} {value 0.34}} {"delay" {time 62}}}
+								{"case" {condition {type rand} {value 0.5}} {"delay" {time 88}}}
+								{"default" {"delay" {time 118}}}
 							}
 						}
 						{"default"

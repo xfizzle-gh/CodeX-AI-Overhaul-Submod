@@ -1320,13 +1320,16 @@
 			; condition is already true here and it fires alongside init.
 			{"attack_support/init"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
 					{terms
 						{"1.cmp_i" {var "attack_support_armed$"} {op "=="} {value 0}}
 						{"2.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 						{"3.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
 						{"5.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						; Wait for the published side: placing before it is known drops the first
+						; wave on the unpublished-side default pad, i.e. the enemy edge.
+						{"6.cmp_i" {var "enemy_spawnside$"} {op ">"} {value 0}}
 					}
 				}
 				{actions
@@ -4112,6 +4115,8 @@
 					{"set_i" {var "support_e2_fail$"} {op "="} {value 0}}
 					{"set_i" {var "support_e2_test$"} {op "="} {value 2}}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 0}}
+					; The dispatcher fires once; resetting stage alone will not re-arm it.
+					{"trigger" {name "attack_support/e2_dispatch"}}
 				}
 			}
 
@@ -4653,12 +4658,6 @@
 					}
 					; Claim whole package (hull + linked crew + pax).
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_crew}}}} {amount 2}}
-						{tag_add attack_support_deploy}
-						{tag_remove ally_sup_rusa_motor}
-						{tag_remove ally_sup_rusa_motor_crew}
-					}
-					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_hull}}}} {amount 1}}
 						{tag_add attack_support_motor_hull}
 						{tag_add attack_support_deploy}
@@ -4701,12 +4700,6 @@
 					}
 					; Claim whole package (hull + linked crew + pax).
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_crew}}}} {amount 2}}
-						{tag_add attack_support_deploy}
-						{tag_remove ally_sup_ukr_motor}
-						{tag_remove ally_sup_ukr_motor_crew}
-					}
-					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_hull}}}} {amount 1}}
 						{tag_add attack_support_motor_hull}
 						{tag_add attack_support_deploy}
@@ -4747,12 +4740,6 @@
 							{"timer" {time 8} {title "ATTACK SUPPORT MOTORIZED INSERT"}}
 						}
 						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_crew}}}} {amount 2}}
-						{tag_add attack_support_deploy}
-						{tag_remove ally_sup_prc_motor}
-						{tag_remove ally_sup_prc_motor_crew}
 					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_hull}}}} {amount 1}}
@@ -4797,12 +4784,6 @@
 					}
 					; Claim whole package (hull + linked crew + pax).
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_crew}}}} {amount 2}}
-						{tag_add attack_support_deploy}
-						{tag_remove ally_sup_nato_motor}
-						{tag_remove ally_sup_nato_motor_crew}
-					}
-					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_hull}}}} {amount 1}}
 						{tag_add attack_support_motor_hull}
 						{tag_add attack_support_deploy}
@@ -4845,9 +4826,9 @@
 							{condition {type cmp_i} {var "attack_support_motor_first$"} {op "=="} {value 0}}
 							{"set_i" {var "attack_support_motor_first$"} {op "="} {value 1}}
 							{"switch"
-								{"case" {condition {type rand} {value 0.34}} {"delay" {time 105}}}
-								{"case" {condition {type rand} {value 0.5}} {"delay" {time 135}}}
-								{"default" {"delay" {time 160}}}
+								{"case" {condition {type rand} {value 0.34}} {"delay" {time 62}}}
+								{"case" {condition {type rand} {value 0.5}} {"delay" {time 88}}}
+								{"default" {"delay" {time 118}}}
 							}
 						}
 						{"default"
