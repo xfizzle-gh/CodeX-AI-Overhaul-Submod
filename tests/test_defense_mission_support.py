@@ -1296,43 +1296,50 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 self.assertNotIn("defense_support_templates", mi)
                 self.assertNotIn("enemy_attack_templates", mi)
 
-    def test_border_is_the_one_map_that_declares_no_engine_state(self) -> None:
-        # KNOWN GAP, pinned rather than silently inherited. dcg_vars.inc is where all
-        # four quadrants declare their state, and thirteen of the fourteen maps include
-        # it. border does not: it carries an eleven-var inline block of its own and
-        # includes neither dcg_vars.inc nor dcg_script.inc.
-        #
-        # An undeclared read is a silent zero, so on border user_is_defender$ reads 0
-        # (which fails Q2's and Q3's == 1 gate outright) and every owner id reads 0
-        # (which fails Q1's and Q4's > 0 gate). All four engines are therefore INERT on
-        # border rather than misbehaving, which is why this is a coverage gap and not a
-        # correctness bug. It predates this phase - Q1 and Q4 shipped with it - and
-        # closing it means giving border the shared var block, which would activate four
-        # wave engines on a map that has never run one.
-        with_vars = []
+    def test_border_declares_engine_state_via_the_shared_var_block(self) -> None:
+        # CLOSED GAP. border used to be the one map that declared no engine state: it
+        # carried an inline eleven-var block instead of dcg_vars.inc, an undeclared MI
+        # var read is a silent zero, so every engine gate failed (user_is_defender$
+        # fails Q2/Q3's == 1 gate at 0, the owner ids fail Q1/Q4's > 0 gate at 0) and
+        # all four quadrants were inert there. The fix swaps the inline block for the
+        # shared include on border too, so all fourteen maps now declare the same
+        # engine state.
         for d in self.maps:
             mi = (d / "campaign_capture_the_flag.mi").read_text(encoding="utf-8")
-            if '(include "../dcg_vars.inc")' in mi:
-                with_vars.append(d.name)
-        self.assertEqual(len(with_vars), 13)
-        self.assertNotIn("dcg_[cwa71]_border", with_vars)
+            with self.subTest(map=d.name):
+                self.assertEqual(mi.count('(include "../dcg_vars.inc")'), 1)
 
         border = (
             MULTI / "dcg_[cwa71]_border/campaign_capture_the_flag.mi"
         ).read_text(encoding="utf-8")
-        for name in (
-            "user_is_defender",
-            "prep_inform",
-            "id_defenderbot",
-            "id_1st_enemy",
-            "defense_support_armed",
-            "enemy_attack_armed",
-            "attack_support_armed",
-            "enemy_defense_armed",
-        ):
+        # The whole vars block, byte for byte: the shared include plus "balance", the
+        # one inline var dcg_vars.inc does not declare. Keeping balance inline next to
+        # the include means nothing is ever declared twice, which keeps us off the
+        # untested question of whether the MI parser tolerates duplicate declarations.
+        # (read_text normalises CRLF, so match on \n here.)
+        self.assertIn(
+            "\t\t{vars\n"
+            '\t\t\t(include "../dcg_vars.inc")\n'
+            '\t\t\t{"balance"}\n'
+            "\t\t}",
+            border,
+        )
+        self.assertEqual(border.count('{"balance"}'), 1)
+        # Every name the shared block declares comes in via the include and ONLY via
+        # the include: no survivor from the old inline block may remain as a literal.
+        shared = re.findall(r'\{"([a-z0-9_]+)"\}', VARS.read_text(encoding="utf-8"))
+        self.assertIn("user_is_defender", shared)
+        self.assertNotIn("balance", shared)
+        for name in shared:
             self.assertNotIn('{"%s"}' % name, border, name)
-        # It still gets the includes, so a later fix is a one-line vars change and not
-        # a re-wiring job.
+        # Deliberately NOT dcg_script.inc: border runs nikral's trigger set where the
+        # other maps run the DCG one, and the four engines depend on nothing in
+        # dcg_script.inc - their perspective gates (user_is_defender$, the owner ids,
+        # prep_inform$, enemy_spawnside$) are published from conquest.lua, they arm
+        # themselves, and defense_level$ comes from CE's dummy entity. All of that is
+        # map-agnostic, so the var declarations alone are what border was missing.
+        self.assertNotIn('(include "../dcg_script.inc")', border)
+        self.assertEqual(border.count('(include "/map/nikral\'s trigger.mi")'), 1)
         for include in MAP_INCLUDES:
             self.assertEqual(border.count(include), 1, include)
 
@@ -1379,6 +1386,9 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 with self.subTest(workshop_map=d.name):
                     for include in MAP_INCLUDES:
                         self.assertEqual(mi.count(include), 1, include)
+                    # Engine state declaration, border included: the deploy script
+                    # converts border's inline vars block into the shared include.
+                    self.assertEqual(mi.count('(include "../dcg_vars.inc")'), 1)
                     self.assertNotIn("allied_support", mi)
 
     def test_deployment_ships_and_guards_both_defence_mission_engines(self) -> None:
@@ -1416,6 +1426,13 @@ class DefenceMissionSupportTests(unittest.TestCase):
             # The corrected prep-inform gate has to ship with the engines.
             "if not botDefender then return end",
             "still carries the inverted ensureAttackPrepInform gate",
+            # Border vars-block conversion: the one map whose engine state was inline
+            # gets the shared include, keeping its map-local balance var, and every
+            # map must end up with the include exactly once.
+            "BORDER-VARS converted inline vars block in",
+            "Inline vars block is missing the map-local balance var",
+            "Expected exactly one dcg_vars.inc include in",
+            '(include "../dcg_vars.inc")',
         ):
             self.assertIn(marker, self.deploy)
 

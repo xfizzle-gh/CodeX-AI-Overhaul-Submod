@@ -4203,17 +4203,8 @@
 			{scoreCurrent 0}
 		}
 		{vars
-			{"music_intense"}
+			(include "../dcg_vars.inc")
 			{"balance"}
-			{"user_nation"}
-			{"dcg_error"}
-			{"dcg_on"}
-			{"enemyid"}
-			{"ai_air_on"}
-			{"user_team"}
-			{"def_team"}
-			{"tier2"}
-			{"arrows"}
 		}
 		{functions
 			(include "../dcg_functions.inc")

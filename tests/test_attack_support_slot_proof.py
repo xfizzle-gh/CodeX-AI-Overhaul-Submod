@@ -766,6 +766,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
                 # .inc files are deleted, so a surviving include is a dangling
                 # reference the engine cannot resolve.
                 self.assertNotIn("allied_support", mi)
+                # Engine state declaration on every map, border included: an
+                # undeclared MI var read is a silent zero, and a map without
+                # dcg_vars.inc leaves all four wave engines gated shut.
+                self.assertEqual(mi.count('(include "../dcg_vars.inc")'), 1)
 
                 # Both entry sides. The dynamic campaign swaps attacker/defender
                 # spawns per mission instance - the same map put us on the safe
@@ -865,6 +869,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             "ATTACK SUPPORT NEAR CAP DEFER",
             "{state \"not dead\"}",
             "must park 64 prototypes",
+            # Border's inline vars block is converted to the shared include so the
+            # engine gates stop reading silent zeroes there.
+            "BORDER-VARS converted inline vars block in",
+            '(include "../dcg_vars.inc")',
         ):
             self.assertIn(marker, self.deploy)
 

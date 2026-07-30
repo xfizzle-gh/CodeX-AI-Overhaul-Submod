@@ -833,6 +833,10 @@ $defTplInclude = '(include "../enemy_defense_templates.inc")'
 # nothing extra to park.
 $dsInclude = '(include "../defense_support_waves.inc")'
 $eaInclude = '(include "../enemy_attack_support.inc")'
+# The shared engine-state declaration. Thirteen maps ship it from the base pack;
+# border ships an inline eleven-var block instead, which leaves every engine gate
+# reading a silent zero, so the conversion step below rewrites it into this include.
+$varsInclude = '(include "../dcg_vars.inc")'
 $waypointsAnchor = "`t`t{waypoints"
 $entryName = '{"attack_support_entry_'
 # Name kept from the probe era on purpose: it holds the genuinely pristine
@@ -1026,9 +1030,42 @@ foreach ($mapFile in $mapFiles) {
     if (-not [regex]::IsMatch($text, '\{"0"\s*\r?\n\s*\{position ')) {
         throw "Map lost its waypoint 0: $mapFile"
     }
+
+    # Engine-state declaration. border is the one map in the family whose vars block
+    # is inline rather than the shared dcg_vars.inc include; an undeclared MI var read
+    # is a silent zero, so on that map user_is_defender$ failed Q2/Q3's == 1 gate and
+    # the owner ids failed Q1/Q4's > 0 gate - all four wave engines inert. Convert the
+    # inline block to the shared include, keeping "balance" - the one var dcg_vars.inc
+    # does not declare - inline so nothing is ever declared twice. dcg_script.inc is
+    # deliberately NOT added: border runs nikral's trigger set instead, and the
+    # engines' gates are published from conquest.lua, which is map-agnostic. Idempotent:
+    # a map that already carries the include skips straight to the count check.
+    $varsCount = ([regex]::Matches($text, [regex]::Escape($varsInclude))).Count
+    if ($varsCount -eq 0) {
+        $inlineBlock = [regex]::Match(
+            $text,
+            '\{vars\r?\n(?:[ \t]*\{"[a-z0-9_]+"\}\r?\n)+[ \t]*\}'
+        )
+        if (-not $inlineBlock.Success) {
+            throw "Map has neither the dcg_vars.inc include nor a recognisable inline vars block: $mapFile"
+        }
+        if (-not $inlineBlock.Value.Contains('{"balance"}')) {
+            throw "Inline vars block is missing the map-local balance var: $mapFile"
+        }
+        $converted = "{vars`r`n`t`t`t$varsInclude`r`n`t`t`t{`"balance`"}`r`n`t`t}"
+        $text = $text.Replace($inlineBlock.Value, $converted)
+        [System.IO.File]::WriteAllText($mapFile, $text, [System.Text.UTF8Encoding]::new($false))
+        Write-Host "BORDER-VARS converted inline vars block in $mapFile"
+        $varsCount = 1
+    }
+    if ($varsCount -ne 1) {
+        throw "Expected exactly one dcg_vars.inc include in: $mapFile (found $varsCount)"
+    }
+
     # Every include the four quadrants need, exactly once each, and nothing from the
     # retired allied-support experiment.
-    foreach ($include in @($tplInclude, $defTplInclude, $wavesInclude, $defInclude, $dsInclude, $eaInclude)) {
+    $text = [System.IO.File]::ReadAllText($mapFile)
+    foreach ($include in @($varsInclude, $tplInclude, $defTplInclude, $wavesInclude, $defInclude, $dsInclude, $eaInclude)) {
         $n = ([regex]::Matches($text, [regex]::Escape($include))).Count
         if ($n -ne 1) {
             throw "Expected exactly one $include in: $mapFile (found $n)"
