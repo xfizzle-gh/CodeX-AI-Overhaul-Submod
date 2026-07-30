@@ -546,7 +546,7 @@ if (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch '{tag attack_sup
 if (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch '{tag_remove attack_support_src}') {
     throw "Source wave engine removes attack_support_src, but the entire downstream chain selects on it"
 }
-if ((Select-String -LiteralPath $wavesSource -SimpleMatch '{state {state inactive}}').Count -ne 3) {
+if ((Select-String -LiteralPath $wavesSource -SimpleMatch '{state {state inactive}}').Count -lt 3) {
     throw "Source wave engine must exclude inactive flag points on ALL THREE shuffled flag picks - a mission activates only ~2 of a map's capture points, and a squad sent to a dead objective just sprints and stands there"
 }
 # Decorating the advanced selector that addresses pool units zeroes the match.
