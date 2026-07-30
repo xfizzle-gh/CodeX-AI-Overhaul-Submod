@@ -50,3 +50,7 @@ msgctxt "mission/multi/support/airborne_inbound_prc"
 msgid "Mi-171 inbound - Army Aviation inserting friendlies."
 msgstr "Mi-171 inbound - Army Aviation inserting friendlies."
 
+msgctxt "mission/multi/support/motorized_inbound"
+msgid "Motorized team inbound - troop truck on the approach."
+msgstr "Motorized team inbound - troop truck on the approach."
+

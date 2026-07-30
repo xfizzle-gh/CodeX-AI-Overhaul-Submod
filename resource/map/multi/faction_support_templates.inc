@@ -2566,6 +2566,262 @@
 	{Link 0xb39a {0xb398 "gunner"}}
 	{Link 0xb39b {0xb398 "commander"}}
 
+;
+; ===== MOTORIZED INSERT PACKAGES (cmd 19) =====
+; One troop truck per faction, crew and eight dismounts {Link}-baked into the hull's
+; own placer slots so the whole squad rides in and nothing has to walk to the pad.
+; Seat names come straight from the entity defs: base-game properties/car_crew.ext
+; gives ("crew_2_human") the places driver + commander and ("passenger_N_human")
+; the places seat1..seatN, all in placer group "passenger" for the seats. That group
+; is exactly what {emit {mode passengers}} keys on, which is how the dismount works
+; without ejecting the driver.
+;   RUSA ural      crew_2_human + passenger_10_human  (8 of 10 seats used)
+;   UKR  ural_vsu  crew_2_human + passenger_10_human  (8 of 10 seats used)
+;   NATO fmtv      crew_2_human + passenger_12_human  (8 of 12 seats used)
+; PRC HAS NO ENTRY HERE ON PURPOSE. Code:X ships no PLA vehicle whose passengers sit
+; in placer group "passenger" - every PLA carrier (zbl08, zbl_191_30mm, zbd04_a) puts
+; its passengers in group "crew", so {emit {mode passengers}} would dismount nobody
+; and {emit {mode crew}} would dump the driver with them. PRC missions fall through
+; to the normal infantry wave; see the recon note in attack_support_waves.inc.
+; Ids 0xb3a0-0xb3c0, MIDs 9740-9772, y=-36600 - all fresh bands, swept against every
+; other pool in this stack (attack 9000-9083 / enemy_def 9100-9259 / flag_props
+; 9260-9274 / faction 9300-9731).
+; ----- ALLY RUSA MOTORIZED (ural) -----
+	{Entity "ural" 0xb3a0
+		{Position -9000 -36600}
+		{Player 0}
+		{MID 9740}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xb3a1
+		{Position -8995 -36600}
+		{Player 0}
+		{MID 9741}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xb3a2
+		{Position -8990 -36600}
+		{Player 0}
+		{MID 9742}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_squadlead" 0xb3a3
+		{Position -8985 -36600}
+		{Player 0}
+		{MID 9743}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xb3a4
+		{Position -8980 -36600}
+		{Player 0}
+		{MID 9744}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xb3a5
+		{Position -8975 -36600}
+		{Player 0}
+		{MID 9745}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_mg" 0xb3a6
+		{Position -8970 -36600}
+		{Player 0}
+		{MID 9746}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xb3a7
+		{Position -8965 -36600}
+		{Player 0}
+		{MID 9747}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xb3a8
+		{Position -8960 -36600}
+		{Player 0}
+		{MID 9748}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_mg" 0xb3a9
+		{Position -8955 -36600}
+		{Player 0}
+		{MID 9749}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_antitank" 0xb3aa
+		{Position -8950 -36600}
+		{Player 0}
+		{MID 9750}
+		{Able "-select"}
+	}
+
+; ----- ALLY UKR MOTORIZED (ural_vsu) -----
+	{Entity "ural_vsu" 0xb3ab
+		{Position -8800 -36600}
+		{Player 0}
+		{MID 9751}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xb3ac
+		{Position -8795 -36600}
+		{Player 0}
+		{MID 9752}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xb3ad
+		{Position -8790 -36600}
+		{Player 0}
+		{MID 9753}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_squadlead" 0xb3ae
+		{Position -8785 -36600}
+		{Player 0}
+		{MID 9754}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xb3af
+		{Position -8780 -36600}
+		{Player 0}
+		{MID 9755}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xb3b0
+		{Position -8775 -36600}
+		{Player 0}
+		{MID 9756}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_mg" 0xb3b1
+		{Position -8770 -36600}
+		{Player 0}
+		{MID 9757}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xb3b2
+		{Position -8765 -36600}
+		{Player 0}
+		{MID 9758}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xb3b3
+		{Position -8760 -36600}
+		{Player 0}
+		{MID 9759}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_mg" 0xb3b4
+		{Position -8755 -36600}
+		{Player 0}
+		{MID 9760}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_antitank" 0xb3b5
+		{Position -8750 -36600}
+		{Player 0}
+		{MID 9761}
+		{Able "-select"}
+	}
+
+; ----- ALLY NATO MOTORIZED (fmtv) -----
+	{Entity "fmtv" 0xb3b6
+		{Position -8600 -36600}
+		{Player 0}
+		{MID 9762}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/usarmy_crew" 0xb3b7
+		{Position -8595 -36600}
+		{Player 0}
+		{MID 9763}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/usarmy_crew" 0xb3b8
+		{Position -8590 -36600}
+		{Player 0}
+		{MID 9764}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_squadlead" 0xb3b9
+		{Position -8585 -36600}
+		{Player 0}
+		{MID 9765}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xb3ba
+		{Position -8580 -36600}
+		{Player 0}
+		{MID 9766}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xb3bb
+		{Position -8575 -36600}
+		{Player 0}
+		{MID 9767}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_mg" 0xb3bc
+		{Position -8570 -36600}
+		{Player 0}
+		{MID 9768}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xb3bd
+		{Position -8565 -36600}
+		{Player 0}
+		{MID 9769}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xb3be
+		{Position -8560 -36600}
+		{Player 0}
+		{MID 9770}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_mg" 0xb3bf
+		{Position -8555 -36600}
+		{Player 0}
+		{MID 9771}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_antitank" 0xb3c0
+		{Position -8550 -36600}
+		{Player 0}
+		{MID 9772}
+		{Able "-select"}
+	}
+
+; ----- MOTORIZED CREW + PASSENGER LINKS -----
+	{Link 0xb3a1 {0xb3a0 "driver"}}
+	{Link 0xb3a2 {0xb3a0 "commander"}}
+	{Link 0xb3a3 {0xb3a0 "seat1"}}
+	{Link 0xb3a4 {0xb3a0 "seat2"}}
+	{Link 0xb3a5 {0xb3a0 "seat3"}}
+	{Link 0xb3a6 {0xb3a0 "seat4"}}
+	{Link 0xb3a7 {0xb3a0 "seat5"}}
+	{Link 0xb3a8 {0xb3a0 "seat6"}}
+	{Link 0xb3a9 {0xb3a0 "seat7"}}
+	{Link 0xb3aa {0xb3a0 "seat8"}}
+	{Link 0xb3ac {0xb3ab "driver"}}
+	{Link 0xb3ad {0xb3ab "commander"}}
+	{Link 0xb3ae {0xb3ab "seat1"}}
+	{Link 0xb3af {0xb3ab "seat2"}}
+	{Link 0xb3b0 {0xb3ab "seat3"}}
+	{Link 0xb3b1 {0xb3ab "seat4"}}
+	{Link 0xb3b2 {0xb3ab "seat5"}}
+	{Link 0xb3b3 {0xb3ab "seat6"}}
+	{Link 0xb3b4 {0xb3ab "seat7"}}
+	{Link 0xb3b5 {0xb3ab "seat8"}}
+	{Link 0xb3b7 {0xb3b6 "driver"}}
+	{Link 0xb3b8 {0xb3b6 "commander"}}
+	{Link 0xb3b9 {0xb3b6 "seat1"}}
+	{Link 0xb3ba {0xb3b6 "seat2"}}
+	{Link 0xb3bb {0xb3b6 "seat3"}}
+	{Link 0xb3bc {0xb3b6 "seat4"}}
+	{Link 0xb3bd {0xb3b6 "seat5"}}
+	{Link 0xb3be {0xb3b6 "seat6"}}
+	{Link 0xb3bf {0xb3b6 "seat7"}}
+	{Link 0xb3c0 {0xb3b6 "seat8"}}
+
 ; ===== TAGS =====
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb200}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb201}
@@ -2978,3 +3234,36 @@
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv_inf" "hidden" 0xb39d}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv_inf" "hidden" 0xb39e}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv_inf" "hidden" 0xb39f}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_hull" "hidden" 0xb3a0}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "hidden" 0xb3a1}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "hidden" 0xb3a2}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xb3a3}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xb3a4}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xb3a5}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xb3a6}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xb3a7}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xb3a8}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xb3a9}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "hidden" 0xb3aa}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_hull" "hidden" 0xb3ab}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "hidden" 0xb3ac}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "hidden" 0xb3ad}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xb3ae}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xb3af}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xb3b0}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xb3b1}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xb3b2}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xb3b3}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xb3b4}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "hidden" 0xb3b5}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_hull" "hidden" 0xb3b6}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "hidden" 0xb3b7}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "hidden" 0xb3b8}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xb3b9}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xb3ba}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xb3bb}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xb3bc}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xb3bd}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xb3be}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xb3bf}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xb3c0}

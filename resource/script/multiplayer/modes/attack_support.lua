@@ -96,6 +96,12 @@ local function identity()
 	}
 end
 
+
+-- Motorized insert budget (cmd 19). MI-owned; mirrored for log diagnostics.
+local function mirrorMotor()
+	emit("motor_left", readVar("attack_support_motor_left"), "wave_cmd", readVar("attack_support_wave_cmd"))
+end
+
 local state = {
 	quant = 0,
 	ordered = {},
@@ -215,6 +221,7 @@ local function onQuant()
 		log("heartbeat", "q", state.quant)
 	end
 	if state.quant % MIRROR_QUANTS == 0 then
+		mirrorMotor()
 		mirrorEngineState()
 	end
 end

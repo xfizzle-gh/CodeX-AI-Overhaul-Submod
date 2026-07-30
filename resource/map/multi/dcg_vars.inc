@@ -30,6 +30,7 @@
 			{"attack_support_entry_rr"}
 			{"attack_support_flank_rr"}
 			{"attack_support_ifv_left"}
+			{"attack_support_motor_left"}
 			{"attack_support_use_air"}
 			{"attack_support_air_test"}
 			{"attack_support_air_left"}

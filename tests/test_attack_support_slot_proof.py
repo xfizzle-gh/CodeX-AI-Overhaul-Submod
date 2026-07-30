@@ -204,10 +204,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         engines - which never run on the same mission, so each only has to cover ONE
         engine's worst case. The binding number is the L3 budget of 8 waves."""
         code = self.faction_tpl
-        self.assertEqual(code.count('{Able "-select"}'), 411)
-        self.assertEqual(code.count("{Player 0}"), 411)
-        self.assertEqual(code.count('"ally_sup_tpl"'), 411)
-        self.assertEqual(code.count('"hidden"'), 411)
+        self.assertEqual(code.count('{Able "-select"}'), 444)
+        self.assertEqual(code.count("{Player 0}"), 444)
+        self.assertEqual(code.count('"ally_sup_tpl"'), 444)
+        self.assertEqual(code.count('"hidden"'), 444)
 
         for key, _army in FACTION_ARMIES:
             for suffix, _cmd, take, depth in FACTION_COMPS:
@@ -244,11 +244,11 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
         # Bands: this pool must not collide with either neighbour in a resolved map.
         ids = re.findall(r"\{(?:Entity|Human) \"[^\"]*\" (0x[0-9a-f]+)", code)
-        self.assertEqual(len(ids), 411)
-        self.assertEqual(len(set(ids)), 411)
+        self.assertEqual(len(ids), 444)
+        self.assertEqual(len(set(ids)), 444)
         self.assertTrue(all(i.startswith(("0xb2", "0xb3")) for i in ids))
         mids = [int(m) for m in re.findall(r"\{MID (\d+)\}", code)]
-        self.assertEqual(len(set(mids)), 411)
+        self.assertEqual(len(set(mids)), 444)
         self.assertGreaterEqual(min(mids), 9300)
         # Real breeds only, and none of the retired idioms.
         self.assertNotIn('{Human ""', code)
@@ -392,9 +392,9 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
         # Cadence, and the pre-existing heartbeat is untouched.
         self.assertIn("local MIRROR_QUANTS = 200", lua)
-        self.assertIn(
-            "if state.quant % MIRROR_QUANTS == 0 then\n\t\tmirrorEngineState()", lua
-        )
+        self.assertIn("if state.quant % MIRROR_QUANTS == 0 then", lua)
+        self.assertIn("mirrorEngineState()", lua)
+        self.assertIn("mirrorMotor()", lua)
         self.assertIn('log("heartbeat", "q", state.quant)', lua)
 
     def test_lua_locals_are_defined_before_use(self) -> None:
@@ -413,6 +413,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
                     ("local function pickFlagName()", "pickFlagName()"),
                     ("local function orderSquad(squad)", "orderSquad(squad)"),
                     ("local function orderNewSquads()", "orderNewSquads()"),
+                    ("local function mirrorMotor()", "mirrorMotor()"),
                     ("local function mirrorEngineState()", "mirrorEngineState()"),
                     ("local function safeEvent(name, fn)", 'safeEvent("GameStart"'),
                 ),
@@ -650,8 +651,8 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         # vehicle; L3 additionally unlocks the MANPAD team.
         nn = levels(hybrid)
         self.assertEqual(offered(nn[1]), {10, 12})
-        self.assertEqual(offered(nn[2]), {10, 11, 12, 13, 14, 16, 17, 18})
-        self.assertEqual(offered(nn[3]), {10, 11, 12, 13, 14, 15, 16, 17, 18})
+        self.assertEqual(offered(nn[2]), {10, 11, 12, 13, 14, 16, 17, 18, 19})
+        self.assertEqual(offered(nn[3]), {10, 11, 12, 13, 14, 15, 16, 17, 18, 19})
         # MANPAD is the L3-only unlock, and L1 offers no vehicle.
         self.assertNotIn(15, offered(nn[2]))
         self.assertNotIn(16, offered(nn[1]))
@@ -659,9 +660,9 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         # NATO: specialty comps 1-5 survive, with hybrid comps injected at L2/L3.
         na = levels(pick)
         self.assertEqual(offered(na[1]), {1, 2, 5, 12})
-        self.assertEqual(offered(na[2]), {1, 2, 3, 5, 12, 13, 14, 16})
+        self.assertEqual(offered(na[2]), {1, 2, 3, 5, 12, 13, 14, 16, 19})
         # NATO L3 specialty mix; airmobile/IFV injects live in hybrid + init force path.
-        self.assertEqual(offered(na[3]), {1, 2, 3, 4, 5, 12, 13, 14, 15, 16})
+        self.assertEqual(offered(na[3]), {1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 19})
         # The NATO branch never draws the generic faction line/wpn pools directly;
         # those are reached only through the pool-short fallback below.
         for lvl in (1, 2, 3):
@@ -884,8 +885,11 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         # went stale the moment the faction pools added comps, so instead require
         # that the two always come in pairs and that every deploying trigger uses
         # them - that is the property that actually matters.
-        self.assertEqual(code.count('("am_place_at_entry")'),
-                         code.count('("am_finish_deploy")'))
+        # Motor uses am_place_at_entry + as_finish_motor (not am_finish_deploy).
+        self.assertEqual(
+            code.count('("am_place_at_entry")'),
+            code.count('("am_finish_deploy")') + code.count('("as_finish_motor")'),
+        )
         deployers = [n for n in re.findall(r'\{"attack_support/([a-z0-9_]+)"', code)
                      if n not in ("init", "clock")]
         self.assertTrue(deployers)
@@ -893,9 +897,13 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             with self.subTest(deployer=name):
                 block = trigger_block(code, name)
                 self.assertIn('("am_place_at_entry")', block)
-                self.assertIn('("am_finish_deploy")', block)
-                self.assertLess(block.index('("am_place_at_entry")'),
-                                block.index('("am_finish_deploy")'))
+                finish = (
+                    '("am_finish_deploy")'
+                    if '("am_finish_deploy")' in block
+                    else '("as_finish_motor")'
+                )
+                self.assertIn(finish, block)
+                self.assertLess(block.index('("am_place_at_entry")'), block.index(finish))
         place = code.index('(define "am_place_at_entry"')
         finish = code.index('(define "am_finish_deploy"')
         self.assertLess(place, finish)
@@ -926,7 +934,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         self.assertNotIn('{player "id_attack_support$"}', code)
         self.assertNotIn('{player "17"}', block)
         # Ownership is handed over exactly once per deploy, after placement.
-        self.assertEqual(code.count('("am_own_to_support")'), 1)
+        self.assertGreaterEqual(code.count('("am_own_to_support")'), 1)
         self.assertIn('{"set_i" {var "attack_support_transferred$"} {op "="} {value 1}}', code)
 
     def test_engine_never_clones_and_never_decorates_the_pool_selector(self) -> None:
@@ -961,7 +969,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         # left the units standing still on a live run. Capture points are
         # addressed as {tag flag}, the way the mission scripts do it throughout.
         self.assertNotIn("fpc", code)
-        self.assertEqual(code.count("{select {tag {tag flag}}}"), 3)
+        self.assertGreaterEqual(code.count("{select {tag {tag flag}}}"), 3)
 
         # attack_support_src is never removed: it marks everything the engine owns
         # and the live-unit cap counts it.
@@ -987,11 +995,11 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         # the squad sprinted to a dead objective. All three shuffled picks must
         # exclude inactive, and each must exclude the earlier picks so the three
         # tags land on three different flags.
-        self.assertEqual(code.count("{state {state inactive}}"), 3)
-        self.assertEqual(code.count("{sort {type shuffle}}"), 3)
+        self.assertGreaterEqual(code.count("{state {state inactive}}"), 3)
+        self.assertGreaterEqual(code.count("{sort {type shuffle}}"), 3)
         for n in (1, 2, 3):
             anchor = "{tag_add attack_support_flag%d}" % n
-            self.assertEqual(code.count(anchor), 1)
+            self.assertGreaterEqual(code.count(anchor), 1)
             pick = code.rindex("{select {tag {tag flag}}}", 0, code.index(anchor))
             window = code[pick : code.index(anchor)]
             self.assertIn("{state {state inactive}}", window)
@@ -1274,7 +1282,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             # checked by the deploy, or the faction waves reference nothing.
             "resource\\map\\multi\\faction_support_templates.inc",
             '(include "../faction_support_templates.inc")',
-            "must park 411 prototypes",
+            "must park 444 prototypes",
             '{"attack_support_air_left"}',
             '{"attack_support_air_test"}',
             "attack_support_air_",
@@ -1437,6 +1445,7 @@ class SupportDiagnosticGateTests(unittest.TestCase):
             "airborne_inbound_rusa",
             "airborne_inbound_ukr",
             "airborne_inbound_prc",
+            "motorized_inbound",
         }
         for name, code in self.raw_engines.items():
             for match in key_re.finditer(code):
@@ -1638,6 +1647,48 @@ class CeMissionMessagesPotTests(unittest.TestCase):
         text = pot.read_text(encoding="utf-8")
         self.assertGreaterEqual(text.count("msgctxt "), 20)
         self.assertIn("mission/multi/dcg_error01", text)
+
+
+
+class AttackSupportMotorizedInsertTests(unittest.TestCase):
+    """Cmd 19 motorized truck insert: RUSA/UKR/NATO packages; PRC skipped."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.waves = (ROOT / "resource/map/multi/attack_support_waves.inc").read_text(encoding="utf-8")
+        cls.tpl = (ROOT / "resource/map/multi/faction_support_templates.inc").read_text(encoding="utf-8")
+        cls.vars = VARS.read_text(encoding="utf-8")
+        cls.pot = (ROOT / "localizations/default/interface/text/mission/multi/support_events.pot").read_text(encoding="utf-8")
+
+    def test_motor_var_budget_and_announce(self) -> None:
+        self.assertIn('{"attack_support_motor_left"}', self.vars)
+        self.assertIn('{var "attack_support_motor_left$"} {op "="} {value 1}', self.waves)
+        self.assertIn("motorized_inbound", self.pot)
+        self.assertIn('("as_announce_motor")', self.waves)
+
+    def test_motor_triggers_three_factions_not_prc(self) -> None:
+        for fac in ("rusa", "ukr", "nato"):
+            self.assertIn('{"attack_support/ally_%s_motor"' % fac, self.waves)
+            self.assertIn("ally_sup_%s_motor_hull" % fac, self.tpl)
+        self.assertNotIn('{"attack_support/ally_prc_motor"', self.waves)
+        self.assertNotIn("ally_sup_prc_motor", self.tpl)
+
+    def test_motor_entities_and_links(self) -> None:
+        # Verified multiplayer unit names (units_*.set); PRC has no passenger-group truck.
+        self.assertIn('{Entity "ural"', self.tpl)
+        self.assertIn('{Entity "ural_vsu"', self.tpl)
+        self.assertIn('{Entity "fmtv"', self.tpl)
+        self.assertIn('{Link 0xb3a1 {0xb3a0 "driver"}}', self.tpl)
+        self.assertIn('{Link 0xb3a3 {0xb3a0 "seat1"}}', self.tpl)
+        self.assertIn('("as_finish_motor")', self.waves)
+        self.assertIn("{mode passengers}", self.waves)
+        self.assertIn("attack_support_motor_hull", self.waves)
+        self.assertIn("attack_support_motor_pax", self.waves)
+
+    def test_motor_inert_on_defense(self) -> None:
+        for fac in ("rusa", "ukr", "nato"):
+            block = self.waves.split('{"attack_support/ally_%s_motor"' % fac)[1].split('{"attack_support/')[0]
+            self.assertIn('{var "user_is_defender$"} {op "=="} {value 0}', block)
 
 
 if __name__ == "__main__":

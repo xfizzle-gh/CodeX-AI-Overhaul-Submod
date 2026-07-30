@@ -358,7 +358,8 @@ foreach ($marker in @(
     # Round-robin cursor over the two attack-support flank pads (Phase 2).
     '{"attack_support_flank_rr"}',
     # Rare IFV wave budget (Phase 3). 1 per mission max.
-    '{"attack_support_ifv_left"}',
+    '{"attack_support_ifv_left"},
+    {"attack_support_motor_left"},
     # Airmobile insert budget (Phase 5 E1). Cap 2/mission. Narrative helo only.
     '{"attack_support_air_left"}',
     '{"defense_support_air_left"}',
@@ -1020,12 +1021,12 @@ if ($tplMidMax -ge 9100) {
     throw "Source template pool MID $tplMidMax runs into the enemy-defence band at 9100"
 }
 
-# Player-nation pools: 411 prototypes across four factions (incl. rare IFV packages). Depths are per faction and
+# Player-nation pools: 444 prototypes across four factions (incl. rare IFV packages). Depths are per faction and
 # each is shared by the attack and defence engines, which never run on the same mission,
 # so each only has to cover ONE engine's L3 budget of 8 waves.
 $factionAble = (Select-String -LiteralPath $factionTplSource -SimpleMatch '{Able "-select"}').Count
-if ($factionAble -ne 411) {
-    throw "Faction pool must park 411 prototypes with selection stripped; found $factionAble"
+if ($factionAble -ne 444) {
+    throw "Faction pool must park 444 prototypes with selection stripped; found $factionAble"
 }
 foreach ($faction in @('rusa', 'ukr', 'prc', 'nato')) {
     foreach ($pair in @(
@@ -1062,8 +1063,8 @@ if (Select-String -Quiet -LiteralPath $factionTplSource -Pattern '^\s*\{Human ""
 }
 $factionMids = [regex]::Matches((Get-Content -Raw -LiteralPath $factionTplSource), '\{MID (\d+)\}') |
     ForEach-Object { [int]$_.Groups[1].Value }
-if (($factionMids | Sort-Object -Unique).Count -ne 411) {
-    throw "Faction pool must carry 411 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"
+if (($factionMids | Sort-Object -Unique).Count -ne 444) {
+    throw "Faction pool must carry 444 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"
 }
 if (($factionMids | Measure-Object -Minimum).Minimum -lt 9300) {
     throw "Faction pool MIDs must start at 9300, clear of the other two pools"
@@ -1772,8 +1773,8 @@ $factionTarget = Join-Path $WorkshopRoot "resource\map\multi\faction_support_tem
 if (-not (Test-Path -LiteralPath $factionTarget)) {
     throw "Workshop is missing the player-nation pool: faction_support_templates.inc"
 }
-if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able "-select"}').Count -ne 411) {
-    throw "Workshop faction pool is not the 411-prototype player-nation pool"
+if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able "-select"}').Count -ne 444) {
+    throw "Workshop faction pool is not the 444-prototype player-nation pool"
 }
 if (Select-String -Quiet -LiteralPath $factionTarget -Pattern '^\s*\{Human ""') {
     throw "Workshop faction pool reverted to the breed-less empty-name Human form"

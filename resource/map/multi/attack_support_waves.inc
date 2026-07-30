@@ -145,6 +145,26 @@
 				}
 			)
 			
+			(define "as_announce_motor"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"talk"
+							{selector
+								{ignore_captured_by_user 0}
+								{amount 1}
+								{tag player}
+								{zone "gamezone"}
+								{type human}
+								{state "not dead"}
+							}
+							{text "mission/multi/support/motorized_inbound"}
+						}
+					}
+					{"default"}
+				}
+			)
+
 			(define "as_announce_airborne"
 				{"switch"
 					{"case"
@@ -849,6 +869,7 @@
 			)
 
 			; cmd 10 line 11 wpn 12 recon 13 assault 14 eng 15 manpad 16 light veh
+			; 17 IFV 18 airmobile 19 motorized truck (RUSA/UKR/NATO; PRC skips — no passenger-group truck)
 			; NATO specialty cmds 1-5 still used when faction_support_army$ == 3.
 			(define "as_poke_faction_line"
 				{"trigger" {name "attack_support/ally_rusa_line"}}
@@ -898,6 +919,13 @@
 				{"trigger" {name "attack_support/ally_prc_ifv"}}
 				{"trigger" {name "attack_support/ally_nato_ifv"}}
 			)
+			; PRC is absent by design: Code:X ships no PLA carrier whose passengers sit in
+			; placer group "passenger", so {emit {mode passengers}} could not dismount them.
+			(define "as_poke_faction_motor"
+				{"trigger" {name "attack_support/ally_rusa_motor"}}
+				{"trigger" {name "attack_support/ally_ukr_motor"}}
+				{"trigger" {name "attack_support/ally_nato_motor"}}
+			)
 			(define "as_poke_faction_veh"
 				{"trigger" {name "attack_support/ally_ukr_veh"}}
 				{"trigger" {name "attack_support/ally_nato_veh"}}
@@ -909,6 +937,20 @@
 					{"case"
 						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
 						{"switch"
+							{"case"
+								{condition {type rand} {value 0.20}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "attack_support_motor_left$"} {op ">"} {value 0}}
+										{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 19}}
+										("as_poke_faction_motor")
+									}
+									{"default"
+										{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 10}}
+										("as_poke_faction_line")
+									}
+								}
+							}
 							{"case"
 								{condition {type rand} {value 0.15}}
 								{"switch"
@@ -976,6 +1018,20 @@
 					{"case"
 						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
 						{"switch"
+							{"case"
+								{condition {type rand} {value 0.20}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "attack_support_motor_left$"} {op ">"} {value 0}}
+										{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 19}}
+										("as_poke_faction_motor")
+									}
+									{"default"
+										{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 10}}
+										("as_poke_faction_line")
+									}
+								}
+							}
 							{"case"
 								{condition {type rand} {value 0.15}}
 								{"switch"
@@ -1073,6 +1129,20 @@
 								{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
 								{"switch"
 									{"case"
+										{condition {type rand} {value 0.18}}
+										{"switch"
+											{"case"
+												{condition {type cmp_i} {var "attack_support_motor_left$"} {op ">"} {value 0}}
+												{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 19}}
+												("as_poke_faction_motor")
+											}
+											{"default"
+												{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 1}}
+												{"trigger" {name "attack_support/comp_usmc"}}
+											}
+										}
+									}
+									{"case"
 										{condition {type rand} {value 0.1}}
 										{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 16}}
 										("as_poke_faction_veh")
@@ -1126,6 +1196,20 @@
 							{"case"
 								{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
 								{"switch"
+									{"case"
+										{condition {type rand} {value 0.15}}
+										{"switch"
+											{"case"
+												{condition {type cmp_i} {var "attack_support_motor_left$"} {op ">"} {value 0}}
+												{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 19}}
+												("as_poke_faction_motor")
+											}
+											{"default"
+												{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 1}}
+												{"trigger" {name "attack_support/comp_usmc"}}
+											}
+										}
+									}
 									{"case"
 										{condition {type rand} {value 0.1}}
 										{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 16}}
@@ -1250,6 +1334,7 @@
 					{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_ifv_left$"} {op "="} {value 1}}
+					{"set_i" {var "attack_support_motor_left$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_air_left$"} {op "="} {value 2}}
 					; DAY-2 TEST default ON. Set value 0 to restore production airmobile schedule only.
 					{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}
@@ -3093,6 +3178,262 @@
 						}
 						{"default"}
 					}
+				}
+			}
+
+			; ===== MOTORIZED INSERT (cmd 19) =====
+			; Truck + linked crew/pax place at entry, drive toward flag, emit passengers,
+			; pax advance, truck holds. Cap attack_support_motor_left$=1. PRC has no package.
+			(define "as_finish_motor"
+				{"delay" {time 0.5}}
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group {select {tag {tag attack_support_deploy}}}}
+					}
+					{tag_add attack_support_src}
+					{tag_remove attack_support_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+				{"delay" {time 0.2}}
+				("am_own_to_support")
+				{"delay" {time 0.4}}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+					{control AI}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+					{remove select}
+				}
+				{"delay" {time 0.25}}
+				; Pick one active flag as the approach objective.
+				{"entity_state"
+					{selector {tag attack_support_flag1}}
+					{tag_remove attack_support_flag1}
+				}
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group
+							{select {tag {tag flag}}}
+							{exclude {state {state inactive}}}
+						}
+						{sort {type shuffle}}
+						{amount 1}
+					}
+					{tag_add attack_support_flag1}
+				}
+				{"delay" {time 0.1}}
+				; Truck drives toward the flag (standoff handled by emit after travel delay).
+				{"action"
+					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
+					{drop orders}
+					{action advance}
+					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
+				}
+				{"delay" {time 28}}
+				; Dismount passengers only (crew stays).
+				{"emit"
+					{selector
+						{ignore_captured_by_user 0}
+						{tag attack_support_motor_hull}
+						{type vehicle}
+						{state inhabited}
+					}
+					{drop orders}
+					{emit
+						{mode passengers}
+					}
+				}
+				{"delay" {time 3}}
+				; Pax advance on foot; truck holds.
+				{"action"
+					{selector {ignore_captured_by_user 0} {tag attack_support_motor_pax}}
+					{drop orders}
+					{action advance}
+					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
+				}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
+					{movement {speed stop}}
+				}
+				{"entity_state"
+					{selector {tag attack_support_deploy}}
+					{tag_remove attack_support_deploy}
+				}
+				{"entity_state"
+					{selector {tag attack_support_motor_hull}}
+					{tag_remove attack_support_motor_hull}
+				}
+				{"entity_state"
+					{selector {tag attack_support_motor_pax}}
+					{tag_remove attack_support_motor_pax}
+				}
+				{"entity_state"
+					{selector {tag attack_support_g1}}
+					{tag_remove attack_support_g1}
+				}
+				{"entity_state"
+					{selector {tag attack_support_g2}}
+					{tag_remove attack_support_g2}
+				}
+				{"entity_state"
+					{selector {tag attack_support_g3}}
+					{tag_remove attack_support_g3}
+				}
+				{"entity_state"
+					{selector {tag attack_support_g4}}
+					{tag_remove attack_support_g4}
+				}
+				{"set_i" {var "attack_support_transferred$"} {op "="} {value 1}}
+			)
+
+
+			{"attack_support/ally_rusa_motor"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 19}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "attack_support_motor_left$"} {op ">"} {value 0}}
+						{"6.entities" {selector {tag ally_sup_rusa_motor_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_motor")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ATTACK SUPPORT MOTORIZED INSERT"}}
+						}
+						{"default"}
+					}
+					; Claim whole package (hull + linked crew + pax).
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor}}}}}
+						{tag_add attack_support_deploy}
+						{tag_remove ally_sup_rusa_motor}
+						{tag_remove ally_sup_rusa_motor_crew}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_hull}}}}}
+						{tag_add attack_support_motor_hull}
+						{tag_remove ally_sup_rusa_motor_hull}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_pax}}}}}
+						{tag_add attack_support_motor_pax}
+						{tag_remove ally_sup_rusa_motor_pax}
+					}
+					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("am_place_at_entry")
+					("as_finish_motor")
+				}
+			}
+
+			{"attack_support/ally_ukr_motor"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 19}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "attack_support_motor_left$"} {op ">"} {value 0}}
+						{"6.entities" {selector {tag ally_sup_ukr_motor_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_motor")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ATTACK SUPPORT MOTORIZED INSERT"}}
+						}
+						{"default"}
+					}
+					; Claim whole package (hull + linked crew + pax).
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor}}}}}
+						{tag_add attack_support_deploy}
+						{tag_remove ally_sup_ukr_motor}
+						{tag_remove ally_sup_ukr_motor_crew}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_hull}}}}}
+						{tag_add attack_support_motor_hull}
+						{tag_remove ally_sup_ukr_motor_hull}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_pax}}}}}
+						{tag_add attack_support_motor_pax}
+						{tag_remove ally_sup_ukr_motor_pax}
+					}
+					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("am_place_at_entry")
+					("as_finish_motor")
+				}
+			}
+
+			{"attack_support/ally_nato_motor"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 19}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "attack_support_motor_left$"} {op ">"} {value 0}}
+						{"6.entities" {selector {tag ally_sup_nato_motor_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_motor")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ATTACK SUPPORT MOTORIZED INSERT"}}
+						}
+						{"default"}
+					}
+					; Claim whole package (hull + linked crew + pax).
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor}}}}}
+						{tag_add attack_support_deploy}
+						{tag_remove ally_sup_nato_motor}
+						{tag_remove ally_sup_nato_motor_crew}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_hull}}}}}
+						{tag_add attack_support_motor_hull}
+						{tag_remove ally_sup_nato_motor_hull}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_pax}}}}}
+						{tag_add attack_support_motor_pax}
+						{tag_remove ally_sup_nato_motor_pax}
+					}
+					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("am_place_at_entry")
+					("as_finish_motor")
 				}
 			}
 
