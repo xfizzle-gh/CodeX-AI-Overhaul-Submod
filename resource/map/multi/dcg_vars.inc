@@ -33,6 +33,9 @@
 			{"attack_support_use_air"}
 			{"attack_support_air_test"}
 			{"attack_support_air_left"}
+			{"defense_support_air_test_done"}
+			{"defense_support_use_air"}
+			{"defense_support_air_left"}
 			{"attack_support_use_flank"}
 			{"flag_props_done"}
 			{"enemy_defense_entry_rr"}

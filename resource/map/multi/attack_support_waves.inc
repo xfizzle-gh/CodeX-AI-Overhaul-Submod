@@ -458,50 +458,45 @@
 						{condition {type cmp_i} {var "attack_support_use_air$"} {op "=="} {value 1}}
 					}
 					{"default"
-				{"switch"
-					{"case"
-						{condition {type rand} {value 0.25}}
 						{"switch"
 							{"case"
-								{condition {type cmp_i} {var "attack_support_flank_rr$"} {op ">="} {value 2}}
-								{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
-					{"set_i" {var "attack_support_ifv_left$"} {op "="} {value 1}}
-					{"set_i" {var "attack_support_air_left$"} {op "="} {value 2}}
-					; DAY-2 TEST default ON. Set value 0 to restore production airmobile schedule only.
-					{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}
-					{"set_i" {var "attack_support_use_air$"} {op "="} {value 0}}
+								{condition {type rand} {value 0.25}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "attack_support_flank_rr$"} {op ">="} {value 2}}
+										{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
+									}
+									{"default"
+										{"set_i" {var "attack_support_flank_rr$"} {op "+"} {value 1}}
+									}
+								}
+								; Safety: if any live bot human is already within 120 of the chosen
+								; flank pad, stay on the main edge pads this wave.
+								{"switch"
+									{"case"
+										{condition
+											{type entities}
+											{selector
+												{ignore_captured_by_user 0}
+												{type human}
+												{state "not dead"}
+												{tag _bot}
+												{distance 120}
+											}
+											{count {op ">"} {value 0}}
+										}
+										{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
+									}
+									{"default"
+										{"set_i" {var "attack_support_use_flank$"} {op "="} {value 1}}
+										("as_announce_flank")
+									}
+								}
 							}
 							{"default"
-								{"set_i" {var "attack_support_flank_rr$"} {op "+"} {value 1}}
-							}
-						}
-						; Safety: if any live bot human is already within 120 of the chosen
-						; flank pad, stay on the main edge pads this wave.
-						{"switch"
-							{"case"
-								{condition
-									{type entities}
-									{selector
-										{ignore_captured_by_user 0}
-										{type human}
-										{state "not dead"}
-										{tag _bot}
-										{distance 120}
-									}
-									{count {op ">"} {value 0}}
-								}
 								{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
 							}
-							{"default"
-								{"set_i" {var "attack_support_use_flank$"} {op "="} {value 1}}
-								("as_announce_flank")
-							}
 						}
-					}
-					{"default"
-						{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
-					}
-				}
 					}
 				}
 			)
@@ -1254,6 +1249,11 @@
 					{"set_i" {var "attack_support_armed$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
+					{"set_i" {var "attack_support_ifv_left$"} {op "="} {value 1}}
+					{"set_i" {var "attack_support_air_left$"} {op "="} {value 2}}
+					; DAY-2 TEST default ON. Set value 0 to restore production airmobile schedule only.
+					{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}
+					{"set_i" {var "attack_support_use_air$"} {op "="} {value 0}}
 					{"set_i" {var "support_announce$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_busy$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_next_ok$"} {op "="} {value 0}}

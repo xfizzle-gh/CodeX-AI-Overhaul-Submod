@@ -201,6 +201,9 @@ foreach ($marker in @(
     '{"attack_support_ifv_left"}',
     # Airmobile insert budget (Phase 5 E1). Cap 2/mission. Narrative helo only.
     '{"attack_support_air_left"}',
+    '{"defense_support_air_left"}',
+    '{"defense_support_use_air"}',
+    '{"defense_support_air_test_done"}',
     # 1 = force first airmobile ~30s for Day-2 testing; set 0 to restore production schedule.
     '{"attack_support_air_test"}',
     # 1 when current placement batch uses an airmobile LZ pad.
@@ -1856,8 +1859,9 @@ foreach ($pair in @(
 
 
 # Phase 5: only friendly attack engine may address airmobile LZ pads.
+# Friendly attack + defense both use airmobile LZ pads (parity).
+# Enemy engines stay on edge delivery for now (no air pad refs).
 foreach ($pair in @(
-    @((Join-Path $WorkshopRoot "resource\map\multi\defense_support_waves.inc"), "defence support"),
     @((Join-Path $WorkshopRoot "resource\map\multi\enemy_defense_support.inc"), "enemy defence"),
     @((Join-Path $WorkshopRoot "resource\map\multi\enemy_attack_support.inc"), "enemy attack")
 )) {

@@ -1610,7 +1610,11 @@ class AttackSupportAirmobileTests(unittest.TestCase):
         self.assertIn("$AirDepth", self.deploy)
 
     def test_other_engines_never_reference_air_pads(self) -> None:
+        # Friendly defense shares airmobile LZ pads (parity). Enemy engines must not.
         for name, code in self.other.items():
+            if name == "defense_support_waves":
+                self.assertIn("attack_support_air_", code, name)
+                continue
             self.assertNotIn("attack_support_air_", code, name)
 
     def test_airborne_lines_localized(self) -> None:

@@ -197,15 +197,18 @@ class DefenceMissionSupportTests(unittest.TestCase):
         # per faction per comp, plus the one-shot flag garrison.
         self.assertEqual(
             set(ds),
-            {"init", "clock", "garrison_init", "hold_1", "hold_2", "hold_3",
+            {"init", "clock", "garrison_init", "air_test",
+             "hold_1", "hold_2", "hold_3",
              "comp_usmc", "comp_1ad", "comp_pzgd", "comp_arf"} | {
                 "ally_%s_%s" % (key, suffix)
                 for key, _army in FACTION_ARMIES
                 for suffix, _cmd, _take, _depth in FACTION_COMPS
+            } | {
+                "ally_%s_air" % key for key, _army in FACTION_ARMIES
             },
         )
-        self.assertEqual(len(ds), 10 + len(FACTION_ARMIES) * len(FACTION_COMPS))
-        self.assertEqual(len(ds), 34)
+        self.assertEqual(len(ds), 11 + len(FACTION_ARMIES) * len(FACTION_COMPS) + len(FACTION_ARMIES))
+        self.assertEqual(len(ds), 39)
         # Light vehicles are attack-only: the defence engine must not grow a veh
         # trigger, and must not reference the vehicle pools at all.
         self.assertFalse([n for n in ds if "veh" in n])
@@ -236,7 +239,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
     def test_mi_defines_are_declared_before_they_are_called(self) -> None:
         for code, names in (
             (self.ds, ("ds_entry_next", "ds_announce_wave", "ds_announce_defense",
-                       "ds_announce_exhausted",
+                       "ds_announce_exhausted", "ds_announce_airborne",
                        "ds_place_at_entry", "ds_place_one",
                        "ds_own_to_defenderbot",
                        "ds_report_owner", "ds_claim_anchors", "ds_assign_group",
@@ -245,6 +248,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
                        "ds_poke_faction_line", "ds_poke_faction_wpn",
                        "ds_poke_faction_recon", "ds_poke_faction_assault",
                        "ds_poke_faction_eng", "ds_poke_faction_manpad",
+                       "ds_poke_faction_air",
                        "ds_props_af1", "ds_props_af2", "ds_props_af3",
                        "ds_place_flag_props")),
             (self.ea, ("ea_entry_next",
@@ -323,6 +327,9 @@ class DefenceMissionSupportTests(unittest.TestCase):
             "defense_support_next_ok",
             "defense_support_group",
             "defense_support_owner_fail",
+            "defense_support_air_left",
+            "defense_support_use_air",
+            "defense_support_air_test_done",
             "enemy_attack_armed",
             "enemy_attack_army",
             "enemy_attack_stage",
@@ -557,19 +564,9 @@ class DefenceMissionSupportTests(unittest.TestCase):
             )
 
         # Q2 reinforces the player/defender, which is the side the attacker is NOT on,
-        # so side 1 (a) -> entry_b. Same reading as Q1.
+        # so side 1 (a) -> entry_b / air_b. Same reading as Q1 (including airmobile LZs).
         place = define_body(self.ds, "ds_place_one")
-        side_a = place.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
-        side_b = place.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
-        self.assertLess(side_a, side_b)
         for point in (1, 2, 3):
-            self.assertIn(
-                '{target_waypoint "attack_support_entry_b%d"}' % point,
-                place[side_a:side_b],
-            )
-            self.assertIn(
-                '{target_waypoint "attack_support_entry_a%d"}' % point, place[side_b:]
-            )
             self.assertEqual(
                 place.count('{target_waypoint "attack_support_entry_b%d"}' % point), 2
             )
@@ -580,14 +577,56 @@ class DefenceMissionSupportTests(unittest.TestCase):
             self.assertNotIn(
                 '{target_waypoint "attack_support_entry_%s"}' % side, place
             )
+        self.assertIn('{target_waypoint "attack_support_air_b1"}', place)
+        self.assertIn('{target_waypoint "attack_support_air_a1"}', place)
+        # Every spawnside==1 placement branch lands on b pads only; ==2 on a only.
+        for m in re.finditer(
+            r'\{var "enemy_spawnside\$"\} \{op "=="\} \{value 1\}(.*?)'
+            r'(?=\{var "enemy_spawnside\$"\} \{op "=="\} \{value 2\}|\Z)',
+            place,
+            re.S,
+        ):
+            chunk = m.group(1)
+            if "target_waypoint" not in chunk:
+                continue
+            self.assertNotIn("entry_a", chunk)
+            self.assertNotIn("air_a", chunk)
+            self.assertTrue(("entry_b" in chunk) or ("air_b" in chunk), chunk[:120])
+        for m in re.finditer(
+            r'\{var "enemy_spawnside\$"\} \{op "=="\} \{value 2\}(.*?)'
+            r'(?=\{var "enemy_spawnside\$"\} \{op "=="\} \{value 1\}|\{"default"|\Z)',
+            place,
+            re.S,
+        ):
+            chunk = m.group(1)
+            if "target_waypoint" not in chunk:
+                continue
+            cut = chunk.find('{"default"')
+            if cut > 0:
+                chunk = chunk[:cut]
+            if "target_waypoint" not in chunk:
+                continue
+            self.assertNotIn("entry_b", chunk)
+            self.assertNotIn("air_b", chunk)
+            self.assertTrue(("entry_a" in chunk) or ("air_a" in chunk), chunk[:120])
 
         # The two defence-mission engines therefore enter from OPPOSITE edges, and each
-        # matches the attack-mission engine that serves the same side.
+        # matches the attack-mission engine that serves the same side (edge pads only).
         for a, b in ((self.ds, self.q1), (self.ea, self.q4)):
-            for value, side in ((1, None), (2, None)):
+            for value in (1, 2):
                 pat = '{var "enemy_spawnside$"} {op "=="} {value %d}' % value
-                mine = a[a.index(pat) : a.index(pat) + 400]
-                theirs = b[b.index(pat) : b.index(pat) + 400]
+
+                def edge_slice(src: str, needle: str = pat) -> str:
+                    pos = 0
+                    while True:
+                        at = src.index(needle, pos)
+                        window = src[at : at + 500]
+                        if "attack_support_entry_" in window:
+                            return window
+                        pos = at + 1
+
+                mine = edge_slice(a)
+                theirs = edge_slice(b)
                 for wp in (
                     "attack_support_entry_a1",
                     "attack_support_entry_b1",
@@ -1148,21 +1187,26 @@ class DefenceMissionSupportTests(unittest.TestCase):
             out[1] = block_at(body, body.index('{"default"', after))
             return out
 
-        # Non-NATO: L1 line + recon, L2 adds wpn/assault/eng, L3 adds the MANPAD team.
+        # Non-NATO: L1 line + recon, L2 adds wpn/assault/eng + airmobile, L3 adds MANPAD.
         nn = levels(hybrid)
         self.assertEqual(offered(nn[1]), {10, 12})
-        self.assertEqual(offered(nn[2]), {10, 11, 12, 13, 14})
-        self.assertEqual(offered(nn[3]), {10, 11, 12, 13, 14, 15})
-        # NATO: specialty comps survive, hybrids injected from L2.
+        self.assertEqual(offered(nn[2]), {10, 11, 12, 13, 14, 18})
+        self.assertEqual(offered(nn[3]), {10, 11, 12, 13, 14, 15, 18})
+        # NATO: specialty comps survive, hybrids + airmobile injected from L2.
         na = levels(pick)
         self.assertEqual(offered(na[1]), {1, 2, 5, 12})
-        self.assertEqual(offered(na[2]), {1, 2, 3, 12, 13, 14})
-        self.assertEqual(offered(na[3]), {1, 2, 3, 12, 13, 14, 15})
+        self.assertEqual(offered(na[2]), {1, 2, 3, 12, 13, 14, 18})
+        self.assertEqual(offered(na[3]), {1, 2, 3, 12, 13, 14, 15, 18})
         # MANPAD is the L3-only unlock on both branches.
         for branch in (nn, na):
             self.assertNotIn(15, offered(branch[1]))
             self.assertNotIn(15, offered(branch[2]))
             self.assertIn(15, offered(branch[3]))
+        # Airmobile (cmd 18) is L2+ only.
+        for branch in (nn, na):
+            self.assertNotIn(18, offered(branch[1]))
+            self.assertIn(18, offered(branch[2]))
+            self.assertIn(18, offered(branch[3]))
         # THE attack-only pin: no level of either branch may offer the vehicle comp,
         # and the whole engine must never name a vehicle pool.
         for branch in (nn, na):
@@ -1706,6 +1750,34 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 body = define_body(code, name)
                 self.assertEqual(body.count("{"), body.count("}"), name)
                 self.assertEqual(body.count("("), body.count(")"), name)
+
+    def test_defense_airmobile_parity_and_day2_force(self) -> None:
+        """Friendly defense shares attack LZ pads; Day-2 forces insert ~30s, no prep wait."""
+        code = self.ds
+        air = trigger_block(code, "defense_support/air_test")
+        head = air[: air.index("{actions")]
+        # Identity only — must not wait on prep_inform$ (edge waves do).
+        self.assertNotIn("prep_inform", head)
+        self.assertIn('{var "user_is_defender$"} {op "=="} {value 1}', head)
+        self.assertIn('{var "attack_support_air_test$"} {op "=="} {value 1}', head)
+        self.assertIn('{"delay" {time 30}}', air)
+        self.assertIn('{var "defense_support_wave_cmd$"} {op "="} {value 18}', air)
+        self.assertIn('("ds_poke_faction_air")', air)
+        # garrison_init arms shared Day-2 toggle + air budget without prep.
+        garr = trigger_block(code, "defense_support/garrison_init")
+        self.assertIn('{var "attack_support_air_test$"} {op "="} {value 1}', garr)
+        self.assertIn('{var "defense_support_air_left$"} {op "="} {value 2}', garr)
+        place = define_body(code, "ds_place_one")
+        self.assertIn("attack_support_air_", place)
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            block = trigger_block(code, "defense_support/ally_%s_air" % fac)
+            self.assertIn('{var "defense_support_wave_cmd$"} {op "=="} {value 18}', block)
+            self.assertIn('("ds_announce_airborne")', block)
+            self.assertIn('{var "defense_support_use_air$"} {op "="} {value 1}', block)
+        self.assertIn("airborne_inbound_nato", code)
+        # Enemy engines still must not touch air pads.
+        self.assertNotIn("attack_support_air_", self.ea)
+        self.assertNotIn("attack_support_air_", self.q4)
 
 
 if __name__ == "__main__":
