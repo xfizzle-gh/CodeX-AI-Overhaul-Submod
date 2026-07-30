@@ -1711,6 +1711,79 @@ class AttackSupportMotorizedInsertTests(unittest.TestCase):
             block = self.waves.split('{"attack_support/ally_%s_motor"' % fac)[1].split('{"attack_support/')[0]
             self.assertIn('{var "user_is_defender$"} {op "=="} {value 0}', block)
 
+    def test_numbered_packages_match_the_parked_links(self) -> None:
+        """A package is one truck and only the bodies that belong to that truck.
+
+        The live bug this pins shut: two riders {Link}-baked into truck 1 were
+        tagged into package 2, so package 2's claim reached into a truck that was
+        already on the road. Package membership is therefore derived from the
+        {Link} table here, never from a hand-kept count.
+        """
+        parent = {}
+        for child, hull, _slot in re.findall(
+            r'\{Link (0x[0-9a-f]+) \{(0x[0-9a-f]+) "([^"]+)"\}\}', self.tpl
+        ):
+            parent[child] = hull
+        pkg = {}
+        for m in re.finditer(r'\{Tags ([^}]*?)(0x[0-9a-f]+)\}', self.tpl):
+            eid = m.group(2)
+            for tag in re.findall(r'"([^"]+)"', m.group(1)):
+                hit = re.fullmatch(r"ally_sup_(\w+?)_p(\d)_(hull|crew|pax)", tag)
+                if hit:
+                    pkg.setdefault(
+                        (hit.group(1), int(hit.group(2))), {"hull": [], "crew": [], "pax": []}
+                    )[hit.group(3)].append(eid)
+        self.assertEqual(len(pkg), 16, sorted(pkg))
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            pax_total = 0
+            for n in (1, 2, 3, 4):
+                with self.subTest(faction=fac, package=n):
+                    part = pkg[(fac, n)]
+                    self.assertEqual(len(part["hull"]), 1, part)
+                    self.assertEqual(len(part["crew"]), 2, part)
+                    self.assertGreaterEqual(len(part["pax"]), 4, part)
+                    hull = part["hull"][0]
+                    # Crew are always baked into their own hull.
+                    for crew in part["crew"]:
+                        self.assertEqual(parent.get(crew), hull, (fac, n, crew))
+                    # Riders are either baked into THIS hull or parked loose. A body
+                    # baked into a different hull may never appear in this package.
+                    for man in part["pax"]:
+                        self.assertIn(parent.get(man), (hull, None), (fac, n, man))
+                    pax_total += len(part["pax"])
+            # Every parked dismount belongs to exactly one package.
+            self.assertEqual(pax_total, 24, fac)
+            self.assertEqual(self.tpl.count('"ally_sup_%s_motor_pax"' % fac), 24, fac)
+
+    def test_package_cursor_walks_one_truck_at_a_time(self) -> None:
+        self.assertIn('{"attack_support_motor_pkg"}', self.vars)
+        self.assertIn('{var "attack_support_motor_pkg$"} {op "="} {value 1}', self.waves)
+        self.assertEqual(
+            self.waves.count('{var "attack_support_motor_pkg$"} {op "+"} {value 1}'), 4
+        )
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            block = self.waves.split('{"attack_support/ally_%s_motor"' % fac)[1].split('{"attack_support/')[0]
+            for n in (1, 2, 3, 4):
+                with self.subTest(faction=fac, package=n):
+                    self.assertIn(
+                        '{var "attack_support_motor_pkg$"} {op "=="} {value %d}' % n, block
+                    )
+                    for kind in ("hull", "crew", "pax"):
+                        # Bare single-tag select on the parked package tag only.
+                        self.assertIn(
+                            '{selector {source advanced} {group {select {tag {tag ally_sup_%s_p%d_%s}}}}}'
+                            % (fac, n, kind),
+                            block,
+                        )
+            # Crew ride through the ownership switch or the truck has no driver.
+            self.assertNotIn("{include", block)
+            self.assertNotIn("{state operatable}", block)
+
+    def test_entry_has_a_slot_for_every_body_in_the_widest_package(self) -> None:
+        """11 bodies is the widest batch (hull + 2 crew + 8 baked riders)."""
+        placer = define_body(self.waves, "am_place_at_entry")
+        self.assertGreaterEqual(placer.count('("am_place_one")'), 11)
+
 
 if __name__ == "__main__":
     unittest.main()

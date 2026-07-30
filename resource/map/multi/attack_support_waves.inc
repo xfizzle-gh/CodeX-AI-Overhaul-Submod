@@ -521,9 +521,20 @@
 				}
 			)
 
+			; Twelve single-body slots, not eight. A motorized package is the widest
+			; batch this engine places: hull + 2 crew + up to 8 {Link}-baked riders =
+			; 11 bodies. With only eight slots the leftovers stayed at their parked
+			; corner already un-hidden and owned - visible strays that also ate the
+			; live-unit cap. Slots past the batch cost one 0.05s tick each, because
+			; the placement branch (and its 0.2s spacing) only runs when a body was
+			; actually tagged.
 			(define "am_place_at_entry"
 				("as_choose_entry")
 				("am_entry_next")
+				("am_place_one")
+				("am_place_one")
+				("am_place_one")
+				("am_place_one")
 				("am_place_one")
 				("am_place_one")
 				("am_place_one")
@@ -1338,6 +1349,7 @@
 					{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_ifv_left$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_motor_left$"} {op "="} {value 4}}
+					{"set_i" {var "attack_support_motor_pkg$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_motor_first$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_air_left$"} {op "="} {value 2}}
 					; DAY-2 TEST default ON. Set value 0 to restore production airmobile schedule only.
@@ -4657,18 +4669,94 @@
 						{"default"}
 					}
 					; Claim whole package (hull + linked crew + pax).
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_hull}}}} {amount 1}}
-						{tag_add attack_support_motor_hull}
-						{tag_add attack_support_deploy}
-						{tag_remove ally_sup_rusa_motor_hull}
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 1}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p1_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p1_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_rusa_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p1_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_rusa_motor_pax}
+						}
 					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_pax}}}} {amount 6}}
-						{tag_add attack_support_motor_pax}
-						{tag_add attack_support_deploy}
-						{tag_remove ally_sup_rusa_motor_pax}
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 2}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p2_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p2_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_rusa_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p2_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_rusa_motor_pax}
+						}
 					}
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 3}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p3_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p3_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_rusa_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p3_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_rusa_motor_pax}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 4}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p4_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p4_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_rusa_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p4_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_rusa_motor_pax}
+						}
+					}
+					{"default"}
+				}
+				{"set_i" {var "attack_support_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
 					{"delay" {time 0.1}}
 					("am_place_at_entry")
@@ -4699,18 +4787,94 @@
 						{"default"}
 					}
 					; Claim whole package (hull + linked crew + pax).
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_hull}}}} {amount 1}}
-						{tag_add attack_support_motor_hull}
-						{tag_add attack_support_deploy}
-						{tag_remove ally_sup_ukr_motor_hull}
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 1}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p1_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p1_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_ukr_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p1_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_ukr_motor_pax}
+						}
 					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_pax}}}} {amount 6}}
-						{tag_add attack_support_motor_pax}
-						{tag_add attack_support_deploy}
-						{tag_remove ally_sup_ukr_motor_pax}
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 2}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p2_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p2_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_ukr_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p2_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_ukr_motor_pax}
+						}
 					}
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 3}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p3_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p3_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_ukr_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p3_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_ukr_motor_pax}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 4}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p4_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p4_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_ukr_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p4_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_ukr_motor_pax}
+						}
+					}
+					{"default"}
+				}
+				{"set_i" {var "attack_support_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
 					{"delay" {time 0.1}}
 					("am_place_at_entry")
@@ -4741,18 +4905,94 @@
 						}
 						{"default"}
 					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_hull}}}} {amount 1}}
-						{tag_add attack_support_motor_hull}
-						{tag_add attack_support_deploy}
-						{tag_remove ally_sup_prc_motor_hull}
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 1}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p1_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p1_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_prc_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p1_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_prc_motor_pax}
+						}
 					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_pax}}}} {amount 6}}
-						{tag_add attack_support_motor_pax}
-						{tag_add attack_support_deploy}
-						{tag_remove ally_sup_prc_motor_pax}
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 2}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p2_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p2_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_prc_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p2_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_prc_motor_pax}
+						}
 					}
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 3}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p3_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p3_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_prc_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p3_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_prc_motor_pax}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 4}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p4_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p4_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_prc_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p4_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_prc_motor_pax}
+						}
+					}
+					{"default"}
+				}
+				{"set_i" {var "attack_support_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
 					{"delay" {time 0.1}}
 					("am_place_at_entry")
@@ -4783,18 +5023,94 @@
 						{"default"}
 					}
 					; Claim whole package (hull + linked crew + pax).
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_hull}}}} {amount 1}}
-						{tag_add attack_support_motor_hull}
-						{tag_add attack_support_deploy}
-						{tag_remove ally_sup_nato_motor_hull}
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 1}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p1_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p1_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_nato_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p1_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_nato_motor_pax}
+						}
 					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_pax}}}} {amount 6}}
-						{tag_add attack_support_motor_pax}
-						{tag_add attack_support_deploy}
-						{tag_remove ally_sup_nato_motor_pax}
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 2}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p2_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p2_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_nato_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p2_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_nato_motor_pax}
+						}
 					}
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 3}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p3_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p3_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_nato_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p3_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_nato_motor_pax}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "attack_support_motor_pkg$"} {op "=="} {value 4}}
+						; Numbered package: hull + ITS linked crew + its six passengers. Bare
+						; single-tag selects only; the deploy tag routes crew through ownership.
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p4_crew}}}}}
+							{tag_add attack_support_deploy}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p4_hull}}}}}
+							{tag_add attack_support_motor_hull}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_nato_motor_hull}
+						}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p4_pax}}}}}
+							{tag_add attack_support_motor_pax}
+							{tag_add attack_support_deploy}
+							{tag_remove ally_sup_nato_motor_pax}
+						}
+					}
+					{"default"}
+				}
+				{"set_i" {var "attack_support_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
 					{"delay" {time 0.1}}
 					("am_place_at_entry")

@@ -101,3 +101,5 @@
 			{"support_e2_flag"}
 			{"enemy_attack_motor_first"}
 			{"attack_support_motor_first"}
+			{"attack_support_motor_pkg"}
+			{"enemy_attack_motor_pkg"}

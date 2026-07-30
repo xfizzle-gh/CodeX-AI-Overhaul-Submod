@@ -485,6 +485,12 @@ class DefenceMissionSupportTests(unittest.TestCase):
             "ally_sup_%s_motor%s" % (key, suf)
             for key, _army in EA_FACTIONS
             for suf in ("", "_hull", "_crew", "_pax")
+        } - {
+            # Numbered package tags: each truck claims its own hull + linked crew + pax.
+            "ally_sup_%s_p%d_%s" % (key, n, kind)
+            for key, _army in EA_FACTIONS
+            for n in (1, 2, 3, 4)
+            for kind in ("hull", "crew", "pax")
         } - {"ally_sup_%s" % key for key, _army in EA_FACTIONS}
         self.assertTrue(all(t.startswith("def_sup_") for t in ds_own), ds_own)
         self.assertTrue(all(t.startswith("ea_") for t in ea_own), ea_own)
@@ -1890,6 +1896,37 @@ class DefenceMissionSupportTests(unittest.TestCase):
         fac_tpl = (ROOT / "resource/map/multi/faction_support_templates.inc").read_text(encoding="utf-8")
         self.assertIn("ally_sup_rusa_motor_hull", fac_tpl)
         self.assertIn("shaanxi_sx2190_passenger", fac_tpl)
+
+    def test_enemy_attack_motor_claims_whole_numbered_packages(self) -> None:
+        """Mirror of the attack engine: one cursor step per truck, bare package tags.
+
+        The crew claim carries ea_deploy for one reason only - it is what routes the
+        driver through the ownership switch. Without it the truck arrives crewed but
+        unowned and never moves, which is exactly what the live run showed.
+        """
+        code = self.ea
+        self.assertIn('{"enemy_attack_motor_pkg"}', self.vars)
+        self.assertIn('{var "enemy_attack_motor_pkg$"} {op "="} {value 1}', code)
+        self.assertEqual(code.count('{var "enemy_attack_motor_pkg$"} {op "+"} {value 1}'), 4)
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            blk = trigger_block(code, "enemy_attack/%s_motor" % fac)
+            for n in (1, 2, 3, 4):
+                with self.subTest(faction=fac, package=n):
+                    self.assertIn('{var "enemy_attack_motor_pkg$"} {op "=="} {value %d}' % n, blk)
+                    for kind in ("hull", "crew", "pax"):
+                        self.assertIn(
+                            '{selector {source advanced} {group {select {tag {tag ally_sup_%s_p%d_%s}}}}}'
+                            % (fac, n, kind),
+                            blk,
+                        )
+            self.assertNotIn("{include", blk)
+            self.assertNotIn("{state operatable}", blk)
+            # Crew must be ea_deploy-tagged; that tag is the ownership switch's input.
+            crew_claim = blk.split("ally_sup_%s_p1_crew" % fac)[1][:200]
+            self.assertIn("{tag_add ea_deploy}", crew_claim)
+        self.assertGreaterEqual(
+            define_body(code, "ea_place_at_entry").count('("ea_place_one")'), 11
+        )
 
 
     def test_flag_emplacements_are_crewed_from_the_line_pool(self) -> None:
