@@ -29,3 +29,24 @@ msgstr "Reinforcements on the flag. Holding this ground."
 msgctxt "mission/multi/support/enemy_activity"
 msgid "Enemy movement on the line - stay sharp."
 msgstr "Enemy movement on the line - stay sharp."
+
+msgctxt "mission/multi/support/airborne_inbound"
+msgid "Birds inbound! Friendly air assault team hitting the LZ."
+msgstr "Birds inbound! Friendly air assault team hitting the LZ."
+
+msgctxt "mission/multi/support/airborne_inbound_nato"
+msgid "UH-60 inbound - friendlies fast-roping the LZ."
+msgstr "UH-60 inbound - friendlies fast-roping the LZ."
+
+msgctxt "mission/multi/support/airborne_inbound_rusa"
+msgid "Mi-8 on final - our assault team is on the LZ."
+msgstr "Mi-8 on final - our assault team is on the LZ."
+
+msgctxt "mission/multi/support/airborne_inbound_ukr"
+msgid "Mi-17 inbound - friendlies inserting on the LZ."
+msgstr "Mi-17 inbound - friendlies inserting on the LZ."
+
+msgctxt "mission/multi/support/airborne_inbound_prc"
+msgid "Mi-171 inbound - Army Aviation inserting friendlies."
+msgstr "Mi-171 inbound - Army Aviation inserting friendlies."
+

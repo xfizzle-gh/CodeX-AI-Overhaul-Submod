@@ -59,6 +59,10 @@
 ; from the repo maps by tools/deploy_attack_support_probe.ps1, idempotently.
 ; FLANK PADS / attack_support_flank_<side>1/2 at ~50% depth. as_choose_entry rolls 25%
 ; per batch; enemy-near-pad guard falls back to main edge pads. Q1 only.
+; AIRMOBILE (Phase 5 E1): narrative helo insert at attack_support_air_<side>1/2 (~65% depth).
+; Production: L2+ ~15% roll, cap attack_support_air_left$=2, cmd 18.
+; DAY-2 TEST: attack_support_air_test$=1 (default) forces first insert ~30s after arm.
+; Set attack_support_air_test$=0 in init to restore production-only schedule.
 ;
 ; am_entry_next bumps attack_support_entry_rr$ (1 -> 2 -> 3 -> 1) once per placement batch, at the top
 ; of am_place_at_entry, and the placement site is a three-case cascade on it. So consecutive
@@ -140,6 +144,73 @@
 					{"default"}
 				}
 			)
+			
+			(define "as_announce_airborne"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}}
+								{"talk"
+									{selector
+										{ignore_captured_by_user 0}
+										{amount 1}
+										{tag player}
+										{zone "gamezone"}
+										{type human}
+										{state "not dead"}
+									}
+									{text "mission/multi/support/airborne_inbound_rusa"}
+								}
+							}
+							{"case"
+								{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}}
+								{"talk"
+									{selector
+										{ignore_captured_by_user 0}
+										{amount 1}
+										{tag player}
+										{zone "gamezone"}
+										{type human}
+										{state "not dead"}
+									}
+									{text "mission/multi/support/airborne_inbound_ukr"}
+								}
+							}
+							{"case"
+								{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 4}}
+								{"talk"
+									{selector
+										{ignore_captured_by_user 0}
+										{amount 1}
+										{tag player}
+										{zone "gamezone"}
+										{type human}
+										{state "not dead"}
+									}
+									{text "mission/multi/support/airborne_inbound_prc"}
+								}
+							}
+							{"default"
+								{"talk"
+									{selector
+										{ignore_captured_by_user 0}
+										{amount 1}
+										{tag player}
+										{zone "gamezone"}
+										{type human}
+										{state "not dead"}
+									}
+									{text "mission/multi/support/airborne_inbound_nato"}
+								}
+							}
+						}
+					}
+					{"default"}
+				}
+			)
+
 			(define "as_announce_exhausted"
 				{"switch"
 					{"case"
@@ -178,6 +249,53 @@
 					{"case"
 						{condition {type entities} {selector {tag attack_support_place_one}}}
 						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "attack_support_use_air$"} {op "=="} {value 1}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+										{"switch"
+											{"case"
+												{condition {type cmp_i} {var "attack_support_flank_rr$"} {op "=="} {value 2}}
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_air_b2"}
+												}
+											}
+											{"default"
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_air_b1"}
+												}
+											}
+										}
+									}
+									{"case"
+										{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+										{"switch"
+											{"case"
+												{condition {type cmp_i} {var "attack_support_flank_rr$"} {op "=="} {value 2}}
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_air_a2"}
+												}
+											}
+											{"default"
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_air_a1"}
+												}
+											}
+										}
+									}
+									{"default"
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+											{target_waypoint "attack_support_air_b1"}
+										}
+									}
+								}
+							}
 							{"case"
 								{condition {type cmp_i} {var "attack_support_use_flank$"} {op "=="} {value 1}}
 								{"switch"
@@ -334,6 +452,12 @@
 			; 25% flank roll; round-robin flank_rr 1/2; fall back to main if enemies near pad.
 			(define "as_choose_entry"
 				{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
+				; Airmobile batch already chose LZ — do not also roll flank.
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "attack_support_use_air$"} {op "=="} {value 1}}
+					}
+					{"default"
 				{"switch"
 					{"case"
 						{condition {type rand} {value 0.25}}
@@ -342,6 +466,10 @@
 								{condition {type cmp_i} {var "attack_support_flank_rr$"} {op ">="} {value 2}}
 								{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_ifv_left$"} {op "="} {value 1}}
+					{"set_i" {var "attack_support_air_left$"} {op "="} {value 2}}
+					; DAY-2 TEST default ON. Set value 0 to restore production airmobile schedule only.
+					{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}
+					{"set_i" {var "attack_support_use_air$"} {op "="} {value 0}}
 							}
 							{"default"
 								{"set_i" {var "attack_support_flank_rr$"} {op "+"} {value 1}}
@@ -372,6 +500,8 @@
 					}
 					{"default"
 						{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
+					}
+				}
 					}
 				}
 			)
@@ -761,6 +891,12 @@
 				{"trigger" {name "attack_support/ally_prc_manpad"}}
 				{"trigger" {name "attack_support/ally_nato_manpad"}}
 			)
+			(define "as_poke_faction_air"
+				{"trigger" {name "attack_support/ally_rusa_air"}}
+				{"trigger" {name "attack_support/ally_ukr_air"}}
+				{"trigger" {name "attack_support/ally_prc_air"}}
+				{"trigger" {name "attack_support/ally_nato_air"}}
+			)
 			(define "as_poke_faction_ifv"
 				{"trigger" {name "attack_support/ally_rusa_ifv"}}
 				{"trigger" {name "attack_support/ally_ukr_ifv"}}
@@ -778,6 +914,20 @@
 					{"case"
 						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
 						{"switch"
+							{"case"
+								{condition {type rand} {value 0.15}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "attack_support_air_left$"} {op ">"} {value 0}}
+										{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 18}}
+										("as_poke_faction_air")
+									}
+									{"default"
+										{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 10}}
+										("as_poke_faction_line")
+									}
+								}
+							}
 							{"case"
 								{condition {type rand} {value 0.15}}
 								{"switch"
@@ -831,6 +981,20 @@
 					{"case"
 						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
 						{"switch"
+							{"case"
+								{condition {type rand} {value 0.15}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "attack_support_air_left$"} {op ">"} {value 0}}
+										{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 18}}
+										("as_poke_faction_air")
+									}
+									{"default"
+										{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 10}}
+										("as_poke_faction_line")
+									}
+								}
+							}
 							{"case"
 								{condition {type rand} {value 0.10}}
 								{"switch"
@@ -1136,24 +1300,30 @@
 							}
 						}
 					}
-					; Opening wave: one small USMC rifle team, 30-45s in.
-					{"switch"
-						{"case"
-							{condition {type rand} {value 0.34}}
-							{"delay" {time 30}}
-						}
-						{"case"
-							{condition {type rand} {value 0.5}}
-							{"delay" {time 38}}
-						}
-						{"default"
-							{"delay" {time 45}}
-						}
-					}
+					; Opening wave ~30s in. DAY-2 TEST (air_test$=1): force airmobile.
+					; Set attack_support_air_test$=0 in init to restore production pick only.
+					{"delay" {time 30}}
 					{"set_i" {var "attack_support_wave_num$"} {op "+"} {value 1}}
 					{"set_i" {var "attack_support_waves_left$"} {op "-"} {value 1}}
 					("as_resolve_army")
-					("am_pick_composition")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "attack_support_air_test$"} {op "=="} {value 1}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "attack_support_air_left$"} {op ">"} {value 0}}
+									{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 18}}
+									("as_poke_faction_air")
+								}
+								{"default"
+									("am_pick_composition")
+								}
+							}
+						}
+						{"default"
+							("am_pick_composition")
+						}
+					}
 					; Hand the cadence over only once the opening wave has finished landing.
 					{"delay" {time 20}}
 					{"set_i" {var "attack_support_next_ok$"} {op "="} {value 1}}
@@ -2518,6 +2688,411 @@
 					{"delay" {time 0.1}}
 					("am_place_at_entry")
 					("am_finish_deploy")
+				}
+			}
+			; ===== AIRMOBILE INSERT (cmd 18, Phase 5 E1) =====
+
+			{"attack_support/ally_rusa_air"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 18}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "attack_support_air_left$"} {op ">"} {value 0}}
+					}
+				}
+				{actions
+					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_airborne")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ATTACK SUPPORT AIRMOBILE INSERT"}}
+						}
+						{"default"}
+					}
+					{"delay" {time 4.5}}
+					; Prefer recon fireteam; fall back to line if recon pool short.
+					{"switch"
+						{"case"
+							{condition
+								{type entities}
+								{selector {tag ally_sup_rusa_recon}}
+								{count {op ">="} {value 4}}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_recon}}}} {amount 4}}
+								{tag_add attack_support_deploy}
+								{tag_remove ally_sup_rusa_recon}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector {tag ally_sup_rusa_line}}
+								{count {op ">="} {value 4}}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_line}}}} {amount 4}}
+								{tag_add attack_support_deploy}
+								{tag_remove ally_sup_rusa_line}
+							}
+						}
+						{"default"
+							{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 6} {title "ATTACK SUPPORT AIRMOBILE POOL SHORT"}}
+							}
+							{"default"}
+						}
+						}
+					}
+					{"switch"
+						{"case"
+							{condition {type entities} {selector {tag attack_support_deploy}}}
+							; Enemy near LZ guard — if bots already within 120, fall back to edge pads.
+							{"switch"
+								{"case"
+									{condition
+										{type entities}
+										{selector
+											{ignore_captured_by_user 0}
+											{type human}
+											{state "not dead"}
+											{tag _bot}
+											{distance 120}
+										}
+										{count {op ">"} {value 0}}
+									}
+									{"set_i" {var "attack_support_use_air$"} {op "="} {value 0}}
+								}
+								{"default"
+									{"set_i" {var "attack_support_use_air$"} {op "="} {value 1}}
+									{"switch"
+										{"case"
+											{condition {type cmp_i} {var "attack_support_flank_rr$"} {op ">="} {value 2}}
+											{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
+										}
+										{"default"
+											{"set_i" {var "attack_support_flank_rr$"} {op "+"} {value 1}}
+										}
+									}
+								}
+							}
+							{"set_i" {var "attack_support_air_left$"} {op "-"} {value 1}}
+							{"delay" {time 0.1}}
+							("am_place_at_entry")
+							("am_finish_deploy")
+							{"set_i" {var "attack_support_use_air$"} {op "="} {value 0}}
+						}
+						{"default"}
+					}
+				}
+			}
+
+			{"attack_support/ally_ukr_air"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 18}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "attack_support_air_left$"} {op ">"} {value 0}}
+					}
+				}
+				{actions
+					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_airborne")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ATTACK SUPPORT AIRMOBILE INSERT"}}
+						}
+						{"default"}
+					}
+					{"delay" {time 4.5}}
+					; Prefer recon fireteam; fall back to line if recon pool short.
+					{"switch"
+						{"case"
+							{condition
+								{type entities}
+								{selector {tag ally_sup_ukr_recon}}
+								{count {op ">="} {value 4}}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_recon}}}} {amount 4}}
+								{tag_add attack_support_deploy}
+								{tag_remove ally_sup_ukr_recon}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector {tag ally_sup_ukr_line}}
+								{count {op ">="} {value 4}}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_line}}}} {amount 4}}
+								{tag_add attack_support_deploy}
+								{tag_remove ally_sup_ukr_line}
+							}
+						}
+						{"default"
+							{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 6} {title "ATTACK SUPPORT AIRMOBILE POOL SHORT"}}
+							}
+							{"default"}
+						}
+						}
+					}
+					{"switch"
+						{"case"
+							{condition {type entities} {selector {tag attack_support_deploy}}}
+							; Enemy near LZ guard — if bots already within 120, fall back to edge pads.
+							{"switch"
+								{"case"
+									{condition
+										{type entities}
+										{selector
+											{ignore_captured_by_user 0}
+											{type human}
+											{state "not dead"}
+											{tag _bot}
+											{distance 120}
+										}
+										{count {op ">"} {value 0}}
+									}
+									{"set_i" {var "attack_support_use_air$"} {op "="} {value 0}}
+								}
+								{"default"
+									{"set_i" {var "attack_support_use_air$"} {op "="} {value 1}}
+									{"switch"
+										{"case"
+											{condition {type cmp_i} {var "attack_support_flank_rr$"} {op ">="} {value 2}}
+											{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
+										}
+										{"default"
+											{"set_i" {var "attack_support_flank_rr$"} {op "+"} {value 1}}
+										}
+									}
+								}
+							}
+							{"set_i" {var "attack_support_air_left$"} {op "-"} {value 1}}
+							{"delay" {time 0.1}}
+							("am_place_at_entry")
+							("am_finish_deploy")
+							{"set_i" {var "attack_support_use_air$"} {op "="} {value 0}}
+						}
+						{"default"}
+					}
+				}
+			}
+
+			{"attack_support/ally_prc_air"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 18}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "attack_support_air_left$"} {op ">"} {value 0}}
+					}
+				}
+				{actions
+					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_airborne")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ATTACK SUPPORT AIRMOBILE INSERT"}}
+						}
+						{"default"}
+					}
+					{"delay" {time 4.5}}
+					; Prefer recon fireteam; fall back to line if recon pool short.
+					{"switch"
+						{"case"
+							{condition
+								{type entities}
+								{selector {tag ally_sup_prc_recon}}
+								{count {op ">="} {value 4}}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_recon}}}} {amount 4}}
+								{tag_add attack_support_deploy}
+								{tag_remove ally_sup_prc_recon}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector {tag ally_sup_prc_line}}
+								{count {op ">="} {value 4}}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_line}}}} {amount 4}}
+								{tag_add attack_support_deploy}
+								{tag_remove ally_sup_prc_line}
+							}
+						}
+						{"default"
+							{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 6} {title "ATTACK SUPPORT AIRMOBILE POOL SHORT"}}
+							}
+							{"default"}
+						}
+						}
+					}
+					{"switch"
+						{"case"
+							{condition {type entities} {selector {tag attack_support_deploy}}}
+							; Enemy near LZ guard — if bots already within 120, fall back to edge pads.
+							{"switch"
+								{"case"
+									{condition
+										{type entities}
+										{selector
+											{ignore_captured_by_user 0}
+											{type human}
+											{state "not dead"}
+											{tag _bot}
+											{distance 120}
+										}
+										{count {op ">"} {value 0}}
+									}
+									{"set_i" {var "attack_support_use_air$"} {op "="} {value 0}}
+								}
+								{"default"
+									{"set_i" {var "attack_support_use_air$"} {op "="} {value 1}}
+									{"switch"
+										{"case"
+											{condition {type cmp_i} {var "attack_support_flank_rr$"} {op ">="} {value 2}}
+											{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
+										}
+										{"default"
+											{"set_i" {var "attack_support_flank_rr$"} {op "+"} {value 1}}
+										}
+									}
+								}
+							}
+							{"set_i" {var "attack_support_air_left$"} {op "-"} {value 1}}
+							{"delay" {time 0.1}}
+							("am_place_at_entry")
+							("am_finish_deploy")
+							{"set_i" {var "attack_support_use_air$"} {op "="} {value 0}}
+						}
+						{"default"}
+					}
+				}
+			}
+
+			{"attack_support/ally_nato_air"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 18}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "attack_support_air_left$"} {op ">"} {value 0}}
+					}
+				}
+				{actions
+					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_airborne")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ATTACK SUPPORT AIRMOBILE INSERT"}}
+						}
+						{"default"}
+					}
+					{"delay" {time 4.5}}
+					; Prefer recon fireteam; fall back to line if recon pool short.
+					{"switch"
+						{"case"
+							{condition
+								{type entities}
+								{selector {tag ally_sup_nato_recon}}
+								{count {op ">="} {value 4}}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_recon}}}} {amount 4}}
+								{tag_add attack_support_deploy}
+								{tag_remove ally_sup_nato_recon}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector {tag ally_sup_nato_line}}
+								{count {op ">="} {value 4}}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_line}}}} {amount 4}}
+								{tag_add attack_support_deploy}
+								{tag_remove ally_sup_nato_line}
+							}
+						}
+						{"default"
+							{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 6} {title "ATTACK SUPPORT AIRMOBILE POOL SHORT"}}
+							}
+							{"default"}
+						}
+						}
+					}
+					{"switch"
+						{"case"
+							{condition {type entities} {selector {tag attack_support_deploy}}}
+							; Enemy near LZ guard — if bots already within 120, fall back to edge pads.
+							{"switch"
+								{"case"
+									{condition
+										{type entities}
+										{selector
+											{ignore_captured_by_user 0}
+											{type human}
+											{state "not dead"}
+											{tag _bot}
+											{distance 120}
+										}
+										{count {op ">"} {value 0}}
+									}
+									{"set_i" {var "attack_support_use_air$"} {op "="} {value 0}}
+								}
+								{"default"
+									{"set_i" {var "attack_support_use_air$"} {op "="} {value 1}}
+									{"switch"
+										{"case"
+											{condition {type cmp_i} {var "attack_support_flank_rr$"} {op ">="} {value 2}}
+											{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
+										}
+										{"default"
+											{"set_i" {var "attack_support_flank_rr$"} {op "+"} {value 1}}
+										}
+									}
+								}
+							}
+							{"set_i" {var "attack_support_air_left$"} {op "-"} {value 1}}
+							{"delay" {time 0.1}}
+							("am_place_at_entry")
+							("am_finish_deploy")
+							{"set_i" {var "attack_support_use_air$"} {op "="} {value 0}}
+						}
+						{"default"}
+					}
 				}
 			}
 

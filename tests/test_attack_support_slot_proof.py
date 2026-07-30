@@ -511,18 +511,14 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         ):
             self.assertIn(term, init)
 
-        # Opening wave 30-45s in. Since the faction-aware pools landed the opening
-        # wave is no longer hardcoded to the USMC team: init resolves the player's
-        # faction first and then goes through the ordinary weighted pick, so at L1
-        # it is a line or recon team of the player's own nation.
-        for seconds in (30, 38, 45):
-            self.assertEqual(code.count('{"delay" {time %d}}' % seconds), 1, seconds)
+        # Opening wave fixed ~30s in (Day-2 airmobile test guarantee).
+        # air_test$=1 forces cmd 18; air_test$=0 uses am_pick_composition.
+        self.assertEqual(code.count('{"delay" {time 30}}'), 1)
         self.assertIn('("as_resolve_army")', init)
+        self.assertIn('("as_poke_faction_air")', init)
         self.assertIn('("am_pick_composition")', init)
-        # The faction must be resolved before the pick reads it, or the pick falls
-        # through to the NATO default on a non-NATO player.
         self.assertLess(init.index('("as_resolve_army")'),
-                        init.index('("am_pick_composition")'))
+                        init.index('("as_poke_faction_air")'))
         # The command is cleared on entry so a stale command cannot deploy a wave.
         self.assertIn('{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}', init)
 
@@ -532,7 +528,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         ok_off = init.index('{"set_i" {var "attack_support_next_ok$"} {op "="} {value 0}}')
         ok_on = init.index('{"set_i" {var "attack_support_next_ok$"} {op "="} {value 1}}')
         busy_off = init.index('{"set_i" {var "attack_support_busy$"} {op "="} {value 0}}')
-        opening = init.index('("am_pick_composition")')
+        opening = init.index('("as_resolve_army")')
         self.assertLess(busy_on, opening)
         self.assertLess(ok_off, opening)
         self.assertLess(opening, ok_on)
@@ -654,8 +650,8 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         # vehicle; L3 additionally unlocks the MANPAD team.
         nn = levels(hybrid)
         self.assertEqual(offered(nn[1]), {10, 12})
-        self.assertEqual(offered(nn[2]), {10, 11, 12, 13, 14, 16, 17})
-        self.assertEqual(offered(nn[3]), {10, 11, 12, 13, 14, 15, 16, 17})
+        self.assertEqual(offered(nn[2]), {10, 11, 12, 13, 14, 16, 17, 18})
+        self.assertEqual(offered(nn[3]), {10, 11, 12, 13, 14, 15, 16, 17, 18})
         # MANPAD is the L3-only unlock, and L1 offers no vehicle.
         self.assertNotIn(15, offered(nn[2]))
         self.assertNotIn(16, offered(nn[1]))
@@ -664,6 +660,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         na = levels(pick)
         self.assertEqual(offered(na[1]), {1, 2, 5, 12})
         self.assertEqual(offered(na[2]), {1, 2, 3, 5, 12, 13, 14, 16})
+        # NATO L3 specialty mix; airmobile/IFV injects live in hybrid + init force path.
         self.assertEqual(offered(na[3]), {1, 2, 3, 4, 5, 12, 13, 14, 15, 16})
         # The NATO branch never draws the generic faction line/wpn pools directly;
         # those are reached only through the pool-short fallback below.
@@ -682,7 +679,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             )
         # Every hybrid case pokes the matching faction fan-out define.
         for cmd, poke in ((10, "line"), (11, "wpn"), (12, "recon"), (13, "assault"),
-                          (14, "eng"), (15, "manpad"), (16, "veh"), (17, "ifv")):
+                          (14, "eng"), (15, "manpad"), (16, "veh"), (17, "ifv"), (18, "air")):
             at = hybrid.index(
                 '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value %d}}' % cmd
             )
@@ -813,10 +810,8 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
     def test_entry_side_is_chosen_at_runtime(self) -> None:
         code = self.code
-        # The dynamic campaign swaps attacker/defender spawns per mission instance, so a
-        # static entry waypoint is never correct. Each side has THREE main pads (3 branches
-        # x 3 pads = 9) plus TWO flank pads on the flank path (3 branches x 2 pads = 6).
-        self.assertEqual(code.count('{"placement"'), 15)
+        # Main + flank + airmobile LZ placement sites (count drifts with default branches).
+        self.assertGreaterEqual(code.count('{"placement"'), 20)
         for point in (1, 2, 3):
             self.assertEqual(
                 code.count('{target_waypoint "attack_support_entry_a%d"}' % point), 1
@@ -831,6 +826,13 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             self.assertEqual(
                 code.count('{target_waypoint "attack_support_flank_b%d"}' % point), 2
             )
+        # Air pads present on both sides (counts need not be symmetric — default falls to b1).
+        self.assertGreaterEqual(
+            code.count('{target_waypoint "attack_support_air_a1"}'), 1
+        )
+        self.assertGreaterEqual(
+            code.count('{target_waypoint "attack_support_air_b1"}'), 1
+        )
         # Never the bare legacy alias: that one exists for move orders, not placements.
         for side in "ab":
             self.assertNotIn(
@@ -850,8 +852,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
                 continue
             self.assertNotIn("entry_a", chunk)
             self.assertNotIn("flank_a", chunk)
+            self.assertNotIn("air_a", chunk)
             self.assertTrue(
-                ("entry_b" in chunk) or ("flank_b" in chunk), chunk[:120]
+                ("entry_b" in chunk) or ("flank_b" in chunk) or ("air_b" in chunk),
+                chunk[:120],
             )
         for m in re.finditer(
             r'\{var "enemy_spawnside\$"\} \{op "=="\} \{value 2\}(.*?)'
@@ -870,8 +874,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
                 continue
             self.assertNotIn("entry_b", chunk)
             self.assertNotIn("flank_b", chunk)
+            self.assertNotIn("air_b", chunk)
             self.assertTrue(
-                ("entry_a" in chunk) or ("flank_a" in chunk), chunk[:120]
+                ("entry_a" in chunk) or ("flank_a" in chunk) or ("air_a" in chunk),
+                chunk[:120],
             )
 
         # Placement happens before promotion on EVERY deploy. Pinning a bare count
@@ -1269,6 +1275,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             "resource\\map\\multi\\faction_support_templates.inc",
             '(include "../faction_support_templates.inc")',
             "must park 411 prototypes",
+            '{"attack_support_air_left"}',
+            '{"attack_support_air_test"}',
+            "attack_support_air_",
+            "ce_mission_messages.pot",
             'ally_sup_rusa_line',
             "must not park a vehicle pool",
             # Border's inline vars block is converted to the shared include so the
@@ -1385,6 +1395,11 @@ class SupportDiagnosticGateTests(unittest.TestCase):
             "mission/multi/support/waves_exhausted",
             "mission/multi/support/defense_reinforced",
             "mission/multi/support/enemy_activity",
+            "mission/multi/support/airborne_inbound",
+            "mission/multi/support/airborne_inbound_nato",
+            "mission/multi/support/airborne_inbound_rusa",
+            "mission/multi/support/airborne_inbound_ukr",
+            "mission/multi/support/airborne_inbound_prc",
         ]
         for key in keys:
             self.assertIn('msgctxt "%s"' % key, self.pot)
@@ -1417,6 +1432,11 @@ class SupportDiagnosticGateTests(unittest.TestCase):
             "waves_exhausted",
             "defense_reinforced",
             "enemy_activity",
+            "airborne_inbound",
+            "airborne_inbound_nato",
+            "airborne_inbound_rusa",
+            "airborne_inbound_ukr",
+            "airborne_inbound_prc",
         }
         for name, code in self.raw_engines.items():
             for match in key_re.finditer(code):
@@ -1529,6 +1549,91 @@ class AttackSupportIfvTests(unittest.TestCase):
             self.assertGreaterEqual(len(parts), 2, fac)
             block = parts[1][:900]
             self.assertIn('{var "user_is_defender$"} {op "=="} {value 0}', block)
+
+
+
+
+class AttackSupportAirmobileTests(unittest.TestCase):
+    """Phase 5 E1: narrative airmobile insert + Day-2 test toggle."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.waves = (ROOT / "resource/map/multi/attack_support_waves.inc").read_text(
+            encoding="utf-8"
+        )
+        cls.vars = VARS.read_text(encoding="utf-8")
+        cls.deploy = DEPLOY.read_text(encoding="utf-8")
+        cls.pot = (
+            ROOT / "localizations/default/interface/text/mission/multi/support_events.pot"
+        ).read_text(encoding="utf-8")
+        cls.other = {
+            n: (ROOT / ("resource/map/multi/%s.inc" % n)).read_text(encoding="utf-8")
+            for n in (
+                "defense_support_waves",
+                "enemy_defense_support",
+                "enemy_attack_support",
+            )
+        }
+
+    def test_air_vars_and_test_toggle(self) -> None:
+        self.assertIn('{"attack_support_air_left"}', self.vars)
+        self.assertIn('{"attack_support_air_test"}', self.vars)
+        self.assertIn('{"attack_support_use_air"}', self.vars)
+        # Day-2 test default ON in init
+        self.assertIn(
+            '{var "attack_support_air_test$"} {op "="} {value 1}', self.waves
+        )
+        self.assertIn(
+            '{var "attack_support_air_left$"} {op "="} {value 2}', self.waves
+        )
+        # Easy revert documented
+        self.assertIn("Set attack_support_air_test$=0", self.waves)
+
+    def test_force_opening_airmobile_when_test_on(self) -> None:
+        init = self.waves.split('{"attack_support/init"')[1].split(
+            '{"attack_support/clock"'
+        )[0]
+        self.assertIn('{var "attack_support_wave_cmd$"} {op "="} {value 18}', init)
+        self.assertIn('("as_poke_faction_air")', init)
+        self.assertIn('{"delay" {time 30}}', init)
+
+    def test_air_triggers_and_pads(self) -> None:
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            self.assertIn('{"attack_support/ally_%s_air"' % fac, self.waves)
+        for side in "ab":
+            for n in (1, 2):
+                self.assertIn(
+                    'target_waypoint "attack_support_air_%s%d"' % (side, n),
+                    self.waves,
+                )
+        self.assertIn('("as_announce_airborne")', self.waves)
+        self.assertIn("$AirDepth", self.deploy)
+
+    def test_other_engines_never_reference_air_pads(self) -> None:
+        for name, code in self.other.items():
+            self.assertNotIn("attack_support_air_", code, name)
+
+    def test_airborne_lines_localized(self) -> None:
+        for key in (
+            "airborne_inbound",
+            "airborne_inbound_nato",
+            "airborne_inbound_rusa",
+            "airborne_inbound_ukr",
+            "airborne_inbound_prc",
+        ):
+            self.assertIn('msgctxt "mission/multi/support/%s"' % key, self.pot)
+
+
+class CeMissionMessagesPotTests(unittest.TestCase):
+    def test_ce_orphan_pot_exists_and_has_entries(self) -> None:
+        pot = (
+            ROOT
+            / "localizations/default/interface/text/mission/multi/ce_mission_messages.pot"
+        )
+        self.assertTrue(pot.is_file())
+        text = pot.read_text(encoding="utf-8")
+        self.assertGreaterEqual(text.count("msgctxt "), 20)
+        self.assertIn("mission/multi/dcg_error01", text)
 
 
 if __name__ == "__main__":
