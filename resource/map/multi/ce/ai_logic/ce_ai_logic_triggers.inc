@@ -5214,6 +5214,9 @@
 											{state user_control}
 										}
 										{tag
+											{tag support_e2_para_pax}
+										}
+										{tag
 											{tag eject_null}
 										}
 										{tag

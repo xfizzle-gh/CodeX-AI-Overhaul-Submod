@@ -9,6 +9,8 @@ WAVES = ROOT / "resource/map/multi/attack_support_waves.inc"
 LUA = ROOT / "resource/script/multiplayer/modes/attack_support.lua"
 POT = ROOT / "localizations/default/interface/text/mission/multi/support_events.pot"
 DEPLOY = ROOT / "tools/deploy_attack_support_probe.ps1"
+CE_MAP = ROOT / "resource/map/multi/ce/ai_logic/ce_ai_logic_triggers.inc"
+CE_SCRIPT = ROOT / "resource/map_scripts/ai_logic/ce_ai_logic_triggers.inc"
 
 
 def block(text: str, start: str, end: str) -> str:
@@ -65,3 +67,16 @@ class E2PoolAndStateTests(unittest.TestCase):
             self.assertIn(f'msgctxt "mission/multi/support/{key}"', self.pot)
         for marker in ("must park 502 prototypes", "support_e2_test", "support_e2_para_pax", "ce_ai_logic_triggers.inc"):
             self.assertIn(marker, self.deploy)
+
+class E2CeIsolationTests(unittest.TestCase):
+    def test_ce_mirrors_are_byte_identical(self) -> None:
+        self.assertEqual(CE_MAP.read_bytes(), CE_SCRIPT.read_bytes())
+
+    def test_paratrooper_order_selector_excludes_e2_at_selection_time(self) -> None:
+        text = CE_MAP.read_text(encoding="utf-8")
+        order_block = block(text, '{"ai_logic/paratrooper_orders"', '{"ai_logic/')
+        selector = block(order_block, '{selector', '{sort')
+        exclude = selector.split('{exclude', 1)[1]
+        self.assertIn('{tag paratrooper_need_orders}', selector)
+        self.assertRegex(exclude, r"\{tag\s+\{tag support_e2_para_pax\}")
+        self.assertEqual(order_block.count("support_e2_para_pax"), 1)
