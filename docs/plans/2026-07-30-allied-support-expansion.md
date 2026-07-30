@@ -91,11 +91,25 @@
 
 **Steps:** prop placement block in `defense_support_waves.inc` garrison phase → tag exclusions swept across engines → pins (defense-only, 1/flag caps, entity names, exclusions) → suite → deploy ×2 → live-test gate → commit "Add unmanned supply and weapon props to defended flags" → push.
 
-### Phase 5 — PARKED (approval explicitly not requested now)
+### Phase 5 — Airmobile insert (E1) — APPROVED (2026-07-30) — LOW RISK
 
-- **E. Airmobile fake insert:** teleport an 82nd/45vdv team to an interior pad + para announcement. CE's `paratrooper_need_orders` lifecycle is real but its order path (waypoints 5004–5006 / grid effects) conflicts with our ordering — integration needs its own design pass. NATO/RUSA only.
-- **F. Real helo/para flight:** out of scope. If ever pursued: `il-76td_para` + `mi17_b8_*` are fully in-stack; Blackhawk/C-130 require declaring the West-81 dependency; note `drop_paratroopers` seat-coverage gap (`seat00`, `seat21+` never eject); PRC excluded.
-- The dead WW2 `drop_vehicle` block in `airborne_ce.inc` (~35 lines, unreachable faction gates) is the reserved insertion point for any future modern crate/emplacement drop.
+**Concept:** "helicopter-inserted" fireteams with zero actual aircraft: announcement + audio cue, then a 4-man team appears at a deep pad. The helicopter is narrative; the delivery is the proven teleport pipeline.
+
+**Files:** `attack_support_waves.inc` (airmobile roll + insert flow), `support_events.pot` (+`support/airborne_inbound` key, faction-flavored text mentioning UH-60M / Mi-8 / Mi-17 / Mi-171 per faction), deploy generator if a deeper pad tier is added (`attack_support_air_<side>` at ~65% depth, knob `AIR_DEPTH`), `dcg_vars.inc` (+`attack_support_air_left`), tests, deploy markers.
+
+**Behavior:** attack missions, L2+; ~15% of waves upgrade to airmobile (rand case before the normal comp pick); announcement fires, then after a 4–5s beat the team is placed at the air pad (enemy-proximity guard 120, fall back to normal delivery on failure — announcement suppressed in that case, or use a "wave inbound" fallback line). Cap `attack_support_air_left$ = 2` per mission. Composition: faction line or recon fireteam (existing verified pools — 82nd/45vdv flavor comes from the announcement text and, where pool depth allows, the 82nd/45vdv breeds already parked).
+
+**Factions: ALL FOUR (user decision).** Flavor mapping — NATO: UH-60M; RUSA: Mi-8/Mi-17; UKR: Mi-8/Mi-17; PRC: Mi-171/Mi-171Sh (Army Aviation). No aircraft entity is used in E1, so PRC needs no new asset for this phase.
+
+**Doctrine revision (user-directed, part of this phase):** amend the PRC restriction comment in `resource/set/multiplayer/units/2022s/doctrine_units_prc.set` from "no aircraft/helicopters" wording to: *"No offensive air or fixed-wing call-ins. Army Aviation troop transport (Mi-171 family) is allowed."* Comment-only change; no roster edits.
+
+**Do NOT hook CE's `paratrooper_need_orders` lifecycle** — its order path (waypoints 5004–5006 / grid effects) conflicts with our ordering. Our own order flow applies after insert.
+
+### Parked (approval recorded 2026-07-30)
+
+- **E2 — flyover theater (PARKED, time-boxed experiment AFTER Phases 1–5 ship):** a real transport entity crossing the map as set dressing during airmobile inserts. Assets: `uh-60m_blackhawk_mg` (West-81 — dependency already declared by the stack), `mi17_b8_rus`/`mi17_b8_ukr` (Code:X). **PRC deliverable for E2:** a PLA-owned Mi-171Sh adaptation cloned from the in-stack `mi17_b8` asset (in-repo `.def` clone; precedent: `resource/entity/construction/_military/fortifications/*.def`). Time-box: one session; success criterion = reliable scripted flight across two maps without crashes; failure = kill E2 permanently.
+- **F — real paradrop (PARKED INDEFINITELY):** revisit ONLY if E2 proves aircraft movement reliable. Assets if ever: `il-76td_para` (+`_ai`), `c130_para` (West-81); known trap: `drop_paratroopers` ejects only seats 1–20 (`seat00`, `seat21+` never jump).
+- The dead WW2 `drop_vehicle` block in `airborne_ce.inc` (~35 lines, unreachable faction gates) remains the reserved insertion point for any future modern crate/emplacement drop.
 
 ## Execution order & approval gates
 
@@ -105,9 +119,11 @@
 | 2 Flank pads | Low-Med | Yes — one attack mission |
 | 3 IFV (RUSA pilot → all four) | Med | Yes — L2+ attack mission |
 | 4 Flag props | Med | Yes — one defense mission |
+| 5 Airmobile insert (E1) | Low-Med | Yes — one L2+ attack mission |
 
 ## Approval record (2026-07-30, from user)
-1. ✅ Phases 1–4 approved in order, live-test gates respected. Phase 5 (airborne) to be discussed AFTER these ship — do not start it.
+1. ✅ Phases 1–4 approved in order, live-test gates respected.
+1b. ✅ Phase 5 = E1 airmobile insert, all four factions, PRC doctrine comment revised (Army Aviation transport allowed). E2 parked as a post-ship time-boxed experiment; F parked indefinitely, E2-conditional.
 2. ✅ Phase 1 bonus approved: fix the ~25 orphaned CE `mission/multi/*` localization keys (separate commit).
 3. ✅ Phase 3: ALL FOUR factions in one series (no single-faction pilot).
 4. ✅ Phase 4: defender-side ALWAYS, both mission types (see revised v1 scope above).
