@@ -190,6 +190,13 @@ foreach ($marker in @(
     # comes back at once. The Test-SupportTimerGate check below is what keeps that true:
     # an ungated timer fails the deploy rather than shipping HUD spam to players.
     '{"support_debug"}',
+    # Round-robin cursor per engine over that side's three entry pads. Bumped once per
+    # placement batch, so no two consecutive batches land on the same pad. Undeclared it
+    # would read a silent zero forever and every batch would pile onto pad 1 again.
+    '{"attack_support_entry_rr"}',
+    '{"enemy_defense_entry_rr"}',
+    '{"defense_support_entry_rr"}',
+    '{"enemy_attack_entry_rr"}',
     '{"attack_support_armed"}',
     '{"attack_support_transferred"}',
     '{"attack_support_stage"}',
@@ -269,8 +276,10 @@ foreach ($marker in @(
     '{var "user_is_defender$"}',
     '{var "attack_support_ready$"}',
     '{var "attack_support_use_mi$"}',
-    '{target_waypoint "attack_support_entry_a"}',
-    '{target_waypoint "attack_support_entry_b"}',
+    # The numbered pads, not the bare legacy name: placements round-robin across the
+    # triple and only the patrol / roam move orders still address the alias.
+    '{target_waypoint "attack_support_entry_a1"}',
+    '{target_waypoint "attack_support_entry_b1"}',
     '{var "enemy_spawnside$"}',
     '{player "3"}',
     # Command-gated compositions. Waves keyed on entity presence alone all fired at
@@ -412,8 +421,10 @@ foreach ($marker in @(
     '{target {ignore_captured_by_user 0} {tag enemy_def_af1}}',
     '{tag_add enemy_def_af1}',
     '{tag_add enemy_def_r1}',
-    '{target_waypoint "attack_support_entry_a"}',
-    '{target_waypoint "attack_support_entry_b"}',
+    # The numbered pads, not the bare legacy name: placements round-robin across the
+    # triple and only the patrol / roam move orders still address the alias.
+    '{target_waypoint "attack_support_entry_a1"}',
+    '{target_waypoint "attack_support_entry_b1"}',
     '{waypoint "0"}',
     # Live cap defers without consuming a wave, exactly as attack support does.
     '{tag enemy_def_src}',
@@ -575,8 +586,10 @@ foreach ($marker in @(
     '{"delay" {time 150}}',
     # Reinforcements enter at the DEFENDER's own edge, which is the side the enemy is
     # NOT on: for this engine enemy_spawnside$ 1 means side b.
-    '{target_waypoint "attack_support_entry_a"}',
-    '{target_waypoint "attack_support_entry_b"}',
+    # The numbered pads, not the bare legacy name: placements round-robin across the
+    # triple and only the patrol / roam move orders still address the alias.
+    '{target_waypoint "attack_support_entry_a1"}',
+    '{target_waypoint "attack_support_entry_b1"}',
     # They advance on the claimed ACTIVE flags and then dig in. This is a defence.
     '{tag_add def_sup_af1}',
     '{target {ignore_captured_by_user 0} {tag def_sup_af1}}',
@@ -646,8 +659,10 @@ foreach ($marker in @(
     '{"delay" {time 280}}',
     # Attacker pressure enters at the ATTACKER's own edge: enemy_spawnside$ 1 is
     # side a here, the same reading the enemy-defence engine uses.
-    '{target_waypoint "attack_support_entry_a"}',
-    '{target_waypoint "attack_support_entry_b"}',
+    # The numbered pads, not the bare legacy name: placements round-robin across the
+    # triple and only the patrol / roam move orders still address the alias.
+    '{target_waypoint "attack_support_entry_a1"}',
+    '{target_waypoint "attack_support_entry_b1"}',
     '{tag_add ea_flag1}',
     '{target {ignore_captured_by_user 0} {tag ea_flag1}}',
     '{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}',
@@ -1020,6 +1035,13 @@ $eaInclude = '(include "../enemy_attack_support.inc")'
 $varsInclude = '(include "../dcg_vars.inc")'
 $waypointsAnchor = "`t`t{waypoints"
 $entryName = '{"attack_support_entry_'
+# Side of the entry triangle, in map units. Map coordinates are decimetres on this
+# family: a pair of sandbag heaps ~5m apart sits ~52 units apart, the entry pads carry
+# {radius 150} (15m), and the maps span ~19000 units (~1.9km). So 270 is ~27m - wider
+# than a pad radius, so two consecutive batches cannot overlap, and a rounding error
+# against a 1.9km map. Change it here and every deployed map is regenerated on the next
+# run; the repo maps keep only the single centroid the triple is derived from.
+$EntrySpacing = 270.0
 # Name kept from the probe era on purpose: it holds the genuinely pristine
 # pre-patch maps, and the "already backed up" check below is what stops a rerun
 # from overwriting them with maps this script has already patched.
@@ -1166,11 +1188,13 @@ foreach ($mapFile in $mapFiles) {
         }
     }
 
-    # Attack-side entry waypoints, one per spawn side. The dynamic campaign swaps
-    # attacker/defender spawns per mission instance, so the engine picks between
-    # them at runtime from enemy_spawnside$ - a single static entry is never right.
-    # The per-map coordinates live in the repo copy of the map; copy those exact
-    # blocks across rather than recomputing anything here.
+    # Attack-side entry waypoints, THREE per spawn side. The dynamic campaign swaps
+    # attacker/defender spawns per mission instance, so the engine picks the side at
+    # runtime from enemy_spawnside$ - a single static entry is never right - and then
+    # round-robins across that side's three pads, because consecutive batches landing on
+    # one pad were dropping bodies on top of each other and killing them on arrival.
+    # The per-map centroid lives in the repo copy of the map; the triple is derived from
+    # it here, and nothing else about the geometry is recomputed.
     #
     # Each entry sits on its own side's spawn centroid - the map-edge spawn area -
     # derived from that map's spawn_a / spawn_b markers. The centroid multiplier is
@@ -1185,25 +1209,73 @@ foreach ($mapFile in $mapFiles) {
     $repoText = [System.IO.File]::ReadAllText($repoMap)
 
     # Self-healing and idempotent: strip every entry block first - the superseded
-    # side-agnostic one written by earlier deploys, and the pre-rename
-    # attack_mate_entry* blocks - then rebuild both sides from the repo. Rewriting
-    # beats trying to reconcile whatever an interrupted earlier run left behind.
+    # side-agnostic one written by earlier deploys, the pre-rename attack_mate_entry*
+    # blocks, and the numbered triple this run is about to rebuild - then rebuild both
+    # sides from the repo. Rewriting beats trying to reconcile whatever an interrupted
+    # earlier run left behind. The name class has to admit digits or the triple written
+    # by the previous run survives the strip and the rebuild doubles it.
     $text = [System.IO.File]::ReadAllText($mapFile)
     $text = [regex]::Replace(
         $text,
-        '\s*\{"attack_(?:support|mate)_entry[a-z_]*"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}',
+        '\s*\{"attack_(?:support|mate)_entry[a-z0-9_]*"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}',
         ''
     )
+    if (-not $text.Contains($waypointsAnchor)) {
+        throw "Map is missing the waypoints anchor: $mapFile"
+    }
+    # Sides in reverse, and points in reverse within a side: every block is inserted
+    # directly after the anchor, so emitting backwards leaves a/a1/a2/a3/b/b1/b2/b3 in
+    # reading order in the file.
     foreach ($side in @("b", "a")) {
-        $wpMatch = [regex]::Match($repoText, '\{"attack_support_entry_' + $side + '"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}')
+        $wpMatch = [regex]::Match($repoText, '\{"attack_support_entry_' + $side + '"\s*\r?\n\s*\{position ([^}]*)\}\s*\r?\n\s*\{radius (\d+)\}\s*\r?\n\s*\}')
         if (-not $wpMatch.Success) {
             throw "Repo map is missing the attack_support_entry_$side waypoint block: $repoMap"
         }
-        if (-not $text.Contains($waypointsAnchor)) {
-            throw "Map is missing the waypoints anchor: $mapFile"
+        $coords = @($wpMatch.Groups[1].Value.Trim() -split '\s+')
+        if ($coords.Count -lt 2) {
+            throw "Unreadable position on attack_support_entry_$side in: $repoMap"
         }
-        # The repo block already carries the right indentation; only normalise its
-        # line endings to CRLF to match the workshop map.
+        $cx = [double]$coords[0]
+        $cy = [double]$coords[1]
+        $cz = if ($coords.Count -ge 3) { [double]$coords[2] } else { 0.0 }
+        $radius = [int]$wpMatch.Groups[2].Value
+
+        # Unit vector from this entry toward the map centre (0,0 IS the centre), and the
+        # lateral one along the map edge. A degenerate centroid falls back to a fixed
+        # frame so the triple is still three distinct points.
+        $len = [math]::Sqrt(($cx * $cx) + ($cy * $cy))
+        if ($len -lt 1.0) {
+            $vx = 0.0; $vy = 1.0
+        } else {
+            $vx = -$cx / $len; $vy = -$cy / $len
+        }
+        $ux = -$vy
+        $uy = $vx
+
+        # Point 1 is the centroid itself - the exact coordinate the legacy
+        # attack_support_entry_<side> keeps - and points 2 and 3 complete an equilateral
+        # triangle of side $EntrySpacing: one step along the edge, one step inward. All
+        # three pairwise gaps are therefore $EntrySpacing, so no two consecutive wave
+        # batches can be dropped close enough to crush each other on arrival.
+        $tri = @(
+            @(0.0, 0.0),
+            @(($EntrySpacing * $ux), ($EntrySpacing * $uy)),
+            @(($EntrySpacing * ((0.5 * $ux) + (0.8660254 * $vx))),
+              ($EntrySpacing * ((0.5 * $uy) + (0.8660254 * $vy))))
+        )
+        foreach ($point in @(3, 2, 1)) {
+            $offset = $tri[$point - 1]
+            $px = $cx + $offset[0]
+            $py = $cy + $offset[1]
+            $name = 'attack_support_entry_' + $side + $point
+            $block = "`r`n`t`t`t{`"$name`"`r`n`t`t`t`t{position " +
+                ("{0:F2} {1:F2} {2:F2}" -f $px, $py, $cz) +
+                "}`r`n`t`t`t`t{radius $radius}`r`n`t`t`t}"
+            $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $block)
+        }
+        # The legacy single-pad name, kept as an alias of point 1 rather than migrated
+        # away: the enemy-defence patrol and roam {action move} orders still address it,
+        # and those are orders rather than placements, so they want one stable point.
         $block = "`r`n`t`t`t" + ($wpMatch.Value -replace '\r?\n', "`r`n")
         $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $block)
     }
@@ -1211,9 +1283,21 @@ foreach ($mapFile in $mapFiles) {
 
     $text = [System.IO.File]::ReadAllText($mapFile)
     foreach ($side in @("a", "b")) {
+        # The legacy alias, exactly once.
         $n = ([regex]::Matches($text, [regex]::Escape('{"attack_support_entry_' + $side + '"'))).Count
         if ($n -ne 1) {
             throw "Expected exactly one attack_support_entry_$side waypoint in: $mapFile (found $n)"
+        }
+        # And the triple, exactly three per side, one block each.
+        foreach ($point in @(1, 2, 3)) {
+            $n = ([regex]::Matches($text, [regex]::Escape('{"attack_support_entry_' + $side + $point + '"'))).Count
+            if ($n -ne 1) {
+                throw "Expected exactly one attack_support_entry_$side$point waypoint in: $mapFile (found $n)"
+            }
+        }
+        $triple = ([regex]::Matches($text, '\{"attack_support_entry_' + $side + '[123]"')).Count
+        if ($triple -ne 3) {
+            throw "Expected exactly three entry pads on side $side in: $mapFile (found $triple)"
         }
     }
     if ([regex]::IsMatch($text, '\{"attack_support_entry"')) {
@@ -1570,6 +1654,68 @@ foreach ($pair in @(
     @($ea, 'workshop enemy attack engine')
 )) {
     Test-SupportTimerGate $pair[0] $pair[1]
+}
+
+# THE ENTRY ROUND ROBIN. Every deployed engine addresses the numbered pads and none of
+# them still places on the bare legacy name: that one is kept as an alias only for the
+# patrol / roam {action move} orders. Each engine bumps its own cursor once per batch -
+# a shared cursor would let two engines running on the same mission cancel each other's
+# rotation - and each placement site is a three-case cascade on it.
+foreach ($quad in @(
+    @($waves, 'workshop attack support engine', 'attack_support', 'am_entry_next', 'am_place_at_entry'),
+    @($def, 'workshop enemy defence engine', 'enemy_defense', 'ed_entry_next', 'ed_place'),
+    @($ds, 'workshop defence support engine', 'defense_support', 'ds_entry_next', 'ds_place_at_entry'),
+    @($ea, 'workshop enemy attack engine', 'enemy_attack', 'ea_entry_next', 'ea_place_at_entry')
+)) {
+    $path = $quad[0]
+    $label = $quad[1]
+    $var = $quad[2]
+    $rotate = $quad[3]
+    $batch = $quad[4]
+    $code = Get-MiCode $path
+    foreach ($side in @('a', 'b')) {
+        foreach ($point in @(1, 2, 3)) {
+            if (-not $code.Contains('{target_waypoint "attack_support_entry_' + $side + $point + '"}')) {
+                throw "$label never places on entry pad $side$point, so arrivals still stack: $path"
+            }
+        }
+    }
+    foreach ($side in @('a', 'b')) {
+        if ($code.Contains('{target_waypoint "attack_support_entry_' + $side + '"}')) {
+            throw "$label still places on the legacy single pad attack_support_entry_$side : $path"
+        }
+    }
+    if (-not $code.Contains('(define "' + $rotate + '"')) {
+        throw "$label is missing its entry-pad rotation define $rotate : $path"
+    }
+    $cursor = "$($var)_entry_rr"
+    if (-not $code.Contains('{"set_i" {var "' + $cursor + '$"} {op "+"} {value 1}}')) {
+        throw "$label never advances $cursor, so every batch lands on pad 1: $path"
+    }
+    if (-not $code.Contains('{"set_i" {var "' + $cursor + '$"} {op "="} {value 1}}')) {
+        throw "$label never wraps $cursor back to 1, so it runs off the end: $path"
+    }
+    # Bumped once per BATCH, at the top of the batch define - not per body, which would
+    # scatter one fireteam across all three pads, and not per wave, which would leave
+    # G1 and G2 of the same wave on the same pad.
+    $batchAt = $code.IndexOf('(define "' + $batch + '"')
+    if ($batchAt -lt 0) {
+        throw "$label is missing its placement batch define $batch : $path"
+    }
+    $batchBody = $code.Substring($batchAt)
+    $rotAt = $batchBody.IndexOf('("' + $rotate + '")')
+    $placeAt = $batchBody.IndexOf('_place_one")')
+    if ($rotAt -lt 0 -or $placeAt -lt 0 -or $rotAt -gt $placeAt) {
+        throw "$label does not bump the entry cursor before the first body of $batch : $path"
+    }
+    # Two explicit cases per cascade (pads 2 and 3, pad 1 is the default) across the
+    # three branches of the spawn-side switch: side a, side b, and the unpublished
+    # fallback. Six is the whole placement surface of the engine.
+    $cascades = ([regex]::Matches($code, '\{var "' + $cursor + '\$"\} \{op "=="\}')).Count
+    if ($cascades -ne 6) {
+        throw "$label has $cascades round-robin cascade cases, expected 6: $path"
+    }
+    Write-Host "OK rr $label 6 pads addressed, cursor bumped once per $batch"
 }
 
 Write-Host "`nVerification markers:"

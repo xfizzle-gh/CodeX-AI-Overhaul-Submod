@@ -463,14 +463,31 @@ class EnemyDefenseSupportTests(unittest.TestCase):
         # side a, so its reinforcements enter at attack_support_entry_a. This is the
         # opposite of the attack-support engine, which deliberately enters from the
         # side the enemy is NOT on.
+        # Each side now has three pads and every branch of the side switch round-robins
+        # across its own three, so a side is asserted pad by pad. The bare legacy name
+        # is never a placement target: it survives only for the patrol / roam orders.
         side_a = place.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
         side_b = place.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
         self.assertLess(side_a, side_b)
-        self.assertIn('{target_waypoint "attack_support_entry_a"}', place[side_a:side_b])
-        self.assertIn('{target_waypoint "attack_support_entry_b"}', place[side_b:])
-        # An unpublished side falls back to a rather than stalling.
-        self.assertEqual(place.count('{target_waypoint "attack_support_entry_a"}'), 2)
-        self.assertEqual(place.count('{target_waypoint "attack_support_entry_b"}'), 1)
+        for point in (1, 2, 3):
+            self.assertIn(
+                '{target_waypoint "attack_support_entry_a%d"}' % point,
+                place[side_a:side_b],
+            )
+            self.assertIn(
+                '{target_waypoint "attack_support_entry_b%d"}' % point, place[side_b:]
+            )
+            # An unpublished side falls back to a rather than stalling.
+            self.assertEqual(
+                place.count('{target_waypoint "attack_support_entry_a%d"}' % point), 2
+            )
+            self.assertEqual(
+                place.count('{target_waypoint "attack_support_entry_b%d"}' % point), 1
+            )
+        for side in "ab":
+            self.assertNotIn(
+                '{target_waypoint "attack_support_entry_%s"}' % side, place
+            )
 
         # Placement happens before promotion on every one of the twelve draws.
         self.assertEqual(code.count('("ed_place")'), 12)
@@ -853,9 +870,15 @@ class EnemyDefenseSupportTests(unittest.TestCase):
         ))
         for name in ("am_place_at_entry", "am_own_to_support", "am_finish_deploy"):
             self.assertNotIn(name, code)
-        # The one deliberate overlap is the two entry waypoints, which are shared
-        # per-map geometry rather than state.
-        self.assertIn('{target_waypoint "attack_support_entry_a"}', code)
+        # The one deliberate overlap is the entry waypoints - three pads per side now -
+        # which are shared per-map geometry rather than state.
+        for point in (1, 2, 3):
+            self.assertIn(
+                '{target_waypoint "attack_support_entry_a%d"}' % point, code
+            )
+            self.assertIn(
+                '{target_waypoint "attack_support_entry_b%d"}' % point, code
+            )
 
         # Separate off-map parking band, entity ids and MIDs, so the two pools cannot
         # overwrite or shadow each other in a map that includes both.

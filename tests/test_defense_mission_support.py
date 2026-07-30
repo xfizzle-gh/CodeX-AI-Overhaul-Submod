@@ -235,14 +235,16 @@ class DefenceMissionSupportTests(unittest.TestCase):
 
     def test_mi_defines_are_declared_before_they_are_called(self) -> None:
         for code, names in (
-            (self.ds, ("ds_place_at_entry", "ds_place_one", "ds_own_to_defenderbot",
+            (self.ds, ("ds_entry_next", "ds_place_at_entry", "ds_place_one",
+                       "ds_own_to_defenderbot",
                        "ds_report_owner", "ds_claim_anchors", "ds_assign_group",
                        "ds_finish", "ds_pick_composition", "ds_pick_garrison",
                        "ds_resolve_army", "ds_pick_hybrid_non_nato",
                        "ds_poke_faction_line", "ds_poke_faction_wpn",
                        "ds_poke_faction_recon", "ds_poke_faction_assault",
                        "ds_poke_faction_eng", "ds_poke_faction_manpad")),
-            (self.ea, ("ea_place_at_entry", "ea_place_one", "ea_own_to_enemy",
+            (self.ea, ("ea_entry_next", "ea_place_at_entry", "ea_place_one",
+                       "ea_own_to_enemy",
                        "ea_resolve_army", "ea_finish", "ea_poke_line", "ea_poke_wpn",
                        "ea_pick_wave")),
         ):
@@ -520,15 +522,32 @@ class DefenceMissionSupportTests(unittest.TestCase):
         # which delivers to the enemy defender's own edge on an attack mission.
         # Both engines stagger arrivals one body at a time now, so the side switch
         # lives in the single-body step that the wrapper repeats.
+        # Each side now has three pads and every branch round-robins across its own
+        # three, so a side is asserted pad by pad. The bare legacy name is never a
+        # placement target: it survives only for the patrol / roam move orders.
         place = define_body(self.ea, "ea_place_one")
         side_a = place.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
         side_b = place.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
         self.assertLess(side_a, side_b)
-        self.assertIn('{target_waypoint "attack_support_entry_a"}', place[side_a:side_b])
-        self.assertIn('{target_waypoint "attack_support_entry_b"}', place[side_b:])
-        # Unpublished side falls back to a rather than stalling.
-        self.assertEqual(place.count('{target_waypoint "attack_support_entry_a"}'), 2)
-        self.assertEqual(place.count('{target_waypoint "attack_support_entry_b"}'), 1)
+        for point in (1, 2, 3):
+            self.assertIn(
+                '{target_waypoint "attack_support_entry_a%d"}' % point,
+                place[side_a:side_b],
+            )
+            self.assertIn(
+                '{target_waypoint "attack_support_entry_b%d"}' % point, place[side_b:]
+            )
+            # Unpublished side falls back to a rather than stalling.
+            self.assertEqual(
+                place.count('{target_waypoint "attack_support_entry_a%d"}' % point), 2
+            )
+            self.assertEqual(
+                place.count('{target_waypoint "attack_support_entry_b%d"}' % point), 1
+            )
+        for side in "ab":
+            self.assertNotIn(
+                '{target_waypoint "attack_support_entry_%s"}' % side, place
+            )
 
         # Q2 reinforces the player/defender, which is the side the attacker is NOT on,
         # so side 1 (a) -> entry_b. Same reading as Q1.
@@ -536,10 +555,24 @@ class DefenceMissionSupportTests(unittest.TestCase):
         side_a = place.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
         side_b = place.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
         self.assertLess(side_a, side_b)
-        self.assertIn('{target_waypoint "attack_support_entry_b"}', place[side_a:side_b])
-        self.assertIn('{target_waypoint "attack_support_entry_a"}', place[side_b:])
-        self.assertEqual(place.count('{target_waypoint "attack_support_entry_b"}'), 2)
-        self.assertEqual(place.count('{target_waypoint "attack_support_entry_a"}'), 1)
+        for point in (1, 2, 3):
+            self.assertIn(
+                '{target_waypoint "attack_support_entry_b%d"}' % point,
+                place[side_a:side_b],
+            )
+            self.assertIn(
+                '{target_waypoint "attack_support_entry_a%d"}' % point, place[side_b:]
+            )
+            self.assertEqual(
+                place.count('{target_waypoint "attack_support_entry_b%d"}' % point), 2
+            )
+            self.assertEqual(
+                place.count('{target_waypoint "attack_support_entry_a%d"}' % point), 1
+            )
+        for side in "ab":
+            self.assertNotIn(
+                '{target_waypoint "attack_support_entry_%s"}' % side, place
+            )
 
         # The two defence-mission engines therefore enter from OPPOSITE edges, and each
         # matches the attack-mission engine that serves the same side.
@@ -548,7 +581,10 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 pat = '{var "enemy_spawnside$"} {op "=="} {value %d}' % value
                 mine = a[a.index(pat) : a.index(pat) + 400]
                 theirs = b[b.index(pat) : b.index(pat) + 400]
-                for wp in ("attack_support_entry_a", "attack_support_entry_b"):
+                for wp in (
+                    "attack_support_entry_a1",
+                    "attack_support_entry_b1",
+                ):
                     self.assertEqual(
                         '{target_waypoint "%s"}' % wp in mine,
                         '{target_waypoint "%s"}' % wp in theirs,

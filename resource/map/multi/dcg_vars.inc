@@ -26,6 +26,10 @@
 			{"weatherid"}
 			{"prep_spawn_snap"}
 			{"support_debug"}
+			{"attack_support_entry_rr"}
+			{"enemy_defense_entry_rr"}
+			{"defense_support_entry_rr"}
+			{"enemy_attack_entry_rr"}
 			{"attack_support_armed"}
 			{"attack_support_transferred"}
 			{"attack_support_stage"}

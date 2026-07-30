@@ -813,18 +813,36 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
     def test_entry_side_is_chosen_at_runtime(self) -> None:
         code = self.code
-        # The dynamic campaign swaps attacker/defender spawns per mission
-        # instance, so a static entry waypoint is never correct.
-        self.assertEqual(code.count('{"placement"'), 3)
-        self.assertEqual(code.count('{target_waypoint "attack_support_entry_a"}'), 1)
-        self.assertEqual(code.count('{target_waypoint "attack_support_entry_b"}'), 2)
+        # The dynamic campaign swaps attacker/defender spawns per mission instance, so a
+        # static entry waypoint is never correct. Each side now has THREE pads and every
+        # branch of the side switch round-robins across its own three, so the placement
+        # count is 3 branches x 3 pads.
+        self.assertEqual(code.count('{"placement"'), 9)
+        for point in (1, 2, 3):
+            self.assertEqual(
+                code.count('{target_waypoint "attack_support_entry_a%d"}' % point), 1
+            )
+            self.assertEqual(
+                code.count('{target_waypoint "attack_support_entry_b%d"}' % point), 2
+            )
+        # Never the bare legacy alias: that one exists for move orders, not placements.
+        for side in "ab":
+            self.assertNotIn(
+                '{target_waypoint "attack_support_entry_%s"}' % side, code
+            )
 
         # Enemy on side a means we enter from b, and vice versa - never the same.
         side_a = code.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
         side_b = code.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
         self.assertLess(side_a, side_b)
-        self.assertIn('{target_waypoint "attack_support_entry_b"}', code[side_a:side_b])
-        self.assertIn('{target_waypoint "attack_support_entry_a"}', code[side_b:])
+        for point in (1, 2, 3):
+            self.assertIn(
+                '{target_waypoint "attack_support_entry_b%d"}' % point,
+                code[side_a:side_b],
+            )
+            self.assertIn(
+                '{target_waypoint "attack_support_entry_a%d"}' % point, code[side_b:]
+            )
 
         # Placement happens before promotion on EVERY deploy. Pinning a bare count
         # went stale the moment the faction pools added comps, so instead require

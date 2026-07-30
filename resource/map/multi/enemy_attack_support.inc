@@ -85,7 +85,33 @@
 ; anywhere that runs, or sc:SetVar("support_debug", 1) from Lua - restores every diagnostic
 ; in all four engines at once. Never add an ungated timer: tools/deploy_attack_support_probe.ps1
 ; and the test suite both fail the build the moment one appears.
+;
+; ENTRY POINTS / triple pads. Each side's map-edge arrival is THREE waypoints, not one:
+; attack_support_entry_a1/a2/a3 and b1/b2/b3, an equilateral triangle of side ~27m whose
+; first point sits exactly on that side's spawn centroid. Point 1 is the same coordinate
+; the legacy attack_support_entry_a / _b still carry, so those names survive as aliases
+; and the patrol / roam move orders that use them are unchanged. All six are (re)built
+; from the repo maps by tools/deploy_attack_support_probe.ps1, idempotently.
+;
+; ea_entry_next bumps enemy_attack_entry_rr$ (1 -> 2 -> 3 -> 1) once per placement batch, at the top
+; of ea_place_at_entry, and the placement site is a three-case cascade on it. So consecutive
+; batches never land on the same pad - including G1 and G2 of one wave, which is what was
+; dropping bodies on top of each other and killing them on arrival.
 
+			; Rotating entry point, bumped once per placement batch so no two
+			; consecutive batches land on the same pad - including G1 and G2 of a
+			; single wave, which is what was stacking bodies on top of each other.
+			(define "ea_entry_next"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op ">="} {value 3}}
+						{"set_i" {var "enemy_attack_entry_rr$"} {op "="} {value 1}}
+					}
+					{"default"
+						{"set_i" {var "enemy_attack_entry_rr$"} {op "+"} {value 1}}
+					}
+				}
+			)
 			; Delivery point: the ATTACKER's own map edge. enemy_spawnside$ is published
 			; from conquest.lua's mission-authority branch and on a defence mission the
 			; mission authority is the enemy bot, i.e. the ATTACKER - so side 1 (a) means
@@ -113,22 +139,76 @@
 						{"switch"
 							{"case"
 								{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
-								{"placement"
-									{selector {ignore_captured_by_user 0} {tag ea_place_one}}
-									{target_waypoint "attack_support_entry_a"}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op "=="} {value 2}}
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{target_waypoint "attack_support_entry_a2"}
+										}
+									}
+									{"case"
+										{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op "=="} {value 3}}
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{target_waypoint "attack_support_entry_a3"}
+										}
+									}
+									{"default"
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{target_waypoint "attack_support_entry_a1"}
+										}
+									}
 								}
 							}
 							{"case"
 								{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
-								{"placement"
-									{selector {ignore_captured_by_user 0} {tag ea_place_one}}
-									{target_waypoint "attack_support_entry_b"}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op "=="} {value 2}}
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{target_waypoint "attack_support_entry_b2"}
+										}
+									}
+									{"case"
+										{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op "=="} {value 3}}
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{target_waypoint "attack_support_entry_b3"}
+										}
+									}
+									{"default"
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{target_waypoint "attack_support_entry_b1"}
+										}
+									}
 								}
 							}
 							{"default"
-								{"placement"
-									{selector {ignore_captured_by_user 0} {tag ea_place_one}}
-									{target_waypoint "attack_support_entry_a"}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op "=="} {value 2}}
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{target_waypoint "attack_support_entry_a2"}
+										}
+									}
+									{"case"
+										{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op "=="} {value 3}}
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{target_waypoint "attack_support_entry_a3"}
+										}
+									}
+									{"default"
+										{"placement"
+											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{target_waypoint "attack_support_entry_a1"}
+										}
+									}
 								}
 							}
 						}
@@ -144,6 +224,7 @@
 			)
 
 			(define "ea_place_at_entry"
+				("ea_entry_next")
 				("ea_place_one")
 				("ea_place_one")
 				("ea_place_one")
