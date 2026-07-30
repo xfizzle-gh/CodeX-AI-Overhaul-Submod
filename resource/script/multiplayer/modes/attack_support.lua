@@ -99,7 +99,16 @@ end
 
 -- Motorized insert budget (cmd 19). MI-owned; mirrored for log diagnostics.
 local function mirrorMotor()
-	emit("motor_left", readVar("attack_support_motor_left"), "wave_cmd", readVar("attack_support_wave_cmd"))
+	-- Both sides: the friendly vars stay 0 on defence missions and vice versa, so a
+	-- one-sided mirror is blind on half the campaign. Report both plus the test gates.
+	emit("motor_left", readVar("attack_support_motor_left"),
+		"wave_cmd", readVar("attack_support_wave_cmd"),
+		"test", readVar("attack_support_motor_test"),
+		"test_done", readVar("attack_support_motor_test_done"))
+	emit("motor_enemy_left", readVar("enemy_attack_motor_left"),
+		"wave_cmd", readVar("enemy_attack_wave_cmd"),
+		"test", readVar("enemy_attack_motor_test"),
+		"test_done", readVar("enemy_attack_motor_test_done"))
 end
 
 local state = {
