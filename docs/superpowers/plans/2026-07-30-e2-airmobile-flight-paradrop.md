@@ -568,11 +568,12 @@ Expected: FAIL because the paradrop section does not exist.
 
 For each supported faction trigger:
 
-1. Claim exactly one plane package; retain `support_e2_para_pax` on all passengers while replacing pool-specific tags with `support_e2_claim`, `support_e2_aircraft`, and `support_e2_plane`.
-2. Set stage `10`, call `e2_choose_flag`, and call the literal ownership helper. Ownership transfer of the linked hull transfers its crew/pax; nevertheless the claim selector must include hull and linked people so cleanup/failure is complete.
-3. Place at `attack_support_entry_<side>1` with the same side resolution as Task 3.
-4. Apply, in order, `air_state` altitude `65`, `actor_state {drop sensor} {control AI} {movement {speed fast}}`, then `action move` targeting `{tag support_e2_flag_target}`. Set stage `30`.
-5. Announce `mission/multi/support/e2_para_inbound` only behind `support_announce$`.
+1. Require `support_e2_stage$ == 10`: the shared dispatcher atomically reserves stage `10` before explicitly firing exactly one faction child. The para child must not also be eligible at stage `0`.
+2. Claim exactly one plane package; retain `support_e2_para_pax` on all passengers while replacing pool-specific tags with `support_e2_claim`, `support_e2_aircraft`, and `support_e2_plane`.
+3. Call `e2_choose_flag`; only after a target is selected, advance stage `10 -> 20` and call the literal ownership helper. Ownership transfer of the linked hull transfers its crew/pax; nevertheless the claim selector must include hull and linked people so cleanup/failure is complete. Advancing to `20` also proves to the dispatcher's one-second check that the reserved child successfully claimed its package.
+4. Place at `attack_support_entry_<side>1` with the same side resolution as Task 3.
+5. Apply, in order, `air_state` altitude `65`, `actor_state {drop sensor} {control AI} {movement {speed fast}}`, then `action move` targeting `{tag support_e2_flag_target}`. Set stage `30`.
+6. Announce `mission/multi/support/e2_para_inbound` only behind `support_announce$`.
 
 - [ ] **Step 4: Implement the one-shot release and exit**
 
