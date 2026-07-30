@@ -1,0 +1,364 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: CodeX CE Mission Messages\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "mission/multi/ai_sabotage_notify"
+msgid "Ai sabotage notify."
+msgstr "Ai sabotage notify."
+
+msgctxt "mission/multi/artillery_destroyed_1"
+msgid "Enemy artillery piece destroyed."
+msgstr "Enemy artillery piece destroyed."
+
+msgctxt "mission/multi/artillery_destroyed_2"
+msgid "Enemy artillery piece destroyed."
+msgstr "Enemy artillery piece destroyed."
+
+msgctxt "mission/multi/artillery_destroyed_3"
+msgid "Enemy artillery piece destroyed."
+msgstr "Enemy artillery piece destroyed."
+
+msgctxt "mission/multi/calling_heavy_artillery_barrage"
+msgid "Firing mission inbound. Take cover!"
+msgstr "Firing mission inbound. Take cover!"
+
+msgctxt "mission/multi/calling_heavy_rocket_barrage"
+msgid "Firing mission inbound. Take cover!"
+msgstr "Firing mission inbound. Take cover!"
+
+msgctxt "mission/multi/calling_light_artillery_barrage"
+msgid "Firing mission inbound. Take cover!"
+msgstr "Firing mission inbound. Take cover!"
+
+msgctxt "mission/multi/calling_light_rocket_barrage"
+msgid "Firing mission inbound. Take cover!"
+msgstr "Firing mission inbound. Take cover!"
+
+msgctxt "mission/multi/calling_medium_artillery_barrage"
+msgid "Firing mission inbound. Take cover!"
+msgstr "Firing mission inbound. Take cover!"
+
+msgctxt "mission/multi/calling_smoke_barrage"
+msgid "Firing mission inbound. Take cover!"
+msgstr "Firing mission inbound. Take cover!"
+
+msgctxt "mission/multi/calling_super_heavy_artillery_barrage"
+msgid "Firing mission inbound. Take cover!"
+msgstr "Firing mission inbound. Take cover!"
+
+msgctxt "mission/multi/dcg_error01"
+msgid "Dcg error01."
+msgstr "Dcg error01."
+
+msgctxt "mission/multi/dcg_error03"
+msgid "Dcg error03."
+msgstr "Dcg error03."
+
+msgctxt "mission/multi/defense_start_early_option"
+msgid "Defense start early option."
+msgstr "Defense start early option."
+
+msgctxt "mission/multi/defense_started_timer"
+msgid "Defense started timer."
+msgstr "Defense started timer."
+
+msgctxt "mission/multi/disable_radio"
+msgid "Disable radio."
+msgstr "Disable radio."
+
+msgctxt "mission/multi/display_defense_eng"
+msgid "Display defense eng."
+msgstr "Display defense eng."
+
+msgctxt "mission/multi/enable_radio"
+msgid "Enable radio."
+msgstr "Enable radio."
+
+msgctxt "mission/multi/enemy_artillery_signaler_on_field_1"
+msgid "Enemy artillery spotter on the field!"
+msgstr "Enemy artillery spotter on the field!"
+
+msgctxt "mission/multi/enemy_artillery_signaler_on_field_2"
+msgid "Enemy artillery spotter on the field!"
+msgstr "Enemy artillery spotter on the field!"
+
+msgctxt "mission/multi/enemy_artillery_signaler_on_field_3"
+msgid "Enemy artillery spotter on the field!"
+msgstr "Enemy artillery spotter on the field!"
+
+msgctxt "mission/multi/generic_taunt_1"
+msgid "Keep the pressure on!"
+msgstr "Keep the pressure on!"
+
+msgctxt "mission/multi/generic_taunt_2"
+msgid "Keep the pressure on!"
+msgstr "Keep the pressure on!"
+
+msgctxt "mission/multi/generic_taunt_3"
+msgid "Keep the pressure on!"
+msgstr "Keep the pressure on!"
+
+msgctxt "mission/multi/heavy_tank_destroyed_1"
+msgid "Enemy heavy tank destroyed!"
+msgstr "Enemy heavy tank destroyed!"
+
+msgctxt "mission/multi/heavy_tank_destroyed_2"
+msgid "Enemy heavy tank destroyed!"
+msgstr "Enemy heavy tank destroyed!"
+
+msgctxt "mission/multi/heavy_tank_destroyed_3"
+msgid "Enemy heavy tank destroyed!"
+msgstr "Enemy heavy tank destroyed!"
+
+msgctxt "mission/multi/officer_killed_1"
+msgid "Enemy officer down."
+msgstr "Enemy officer down."
+
+msgctxt "mission/multi/officer_killed_2"
+msgid "Enemy officer down."
+msgstr "Enemy officer down."
+
+msgctxt "mission/multi/officer_killed_3"
+msgid "Enemy officer down."
+msgstr "Enemy officer down."
+
+msgctxt "mission/multi/officer_killed_4"
+msgid "Enemy officer down."
+msgstr "Enemy officer down."
+
+msgctxt "mission/multi/player_ac_000warning"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_001"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_002"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_003"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_004"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_005"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_006"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_007"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_008"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_009"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_010"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_011"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_012"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_013"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_ac_014"
+msgid "Air contact warning."
+msgstr "Air contact warning."
+
+msgctxt "mission/multi/player_enemy_division_notification_airborne_01"
+msgid "Intel: enemy airborne forces committed."
+msgstr "Intel: enemy airborne forces committed."
+
+msgctxt "mission/multi/player_enemy_division_notification_airborne_02"
+msgid "Intel: enemy airborne forces committed."
+msgstr "Intel: enemy airborne forces committed."
+
+msgctxt "mission/multi/player_enemy_division_notification_airborne_03"
+msgid "Intel: enemy airborne forces committed."
+msgstr "Intel: enemy airborne forces committed."
+
+msgctxt "mission/multi/player_enemy_division_notification_airborne_04"
+msgid "Intel: enemy airborne forces committed."
+msgstr "Intel: enemy airborne forces committed."
+
+msgctxt "mission/multi/player_enemy_division_notification_airborne_05"
+msgid "Intel: enemy airborne forces committed."
+msgstr "Intel: enemy airborne forces committed."
+
+msgctxt "mission/multi/player_enemy_division_notification_airborne_06"
+msgid "Intel: enemy airborne forces committed."
+msgstr "Intel: enemy airborne forces committed."
+
+msgctxt "mission/multi/player_enemy_division_notification_armored_01"
+msgid "Intel: enemy armored formation inbound."
+msgstr "Intel: enemy armored formation inbound."
+
+msgctxt "mission/multi/player_enemy_division_notification_armored_02"
+msgid "Intel: enemy armored formation inbound."
+msgstr "Intel: enemy armored formation inbound."
+
+msgctxt "mission/multi/player_enemy_division_notification_armored_03"
+msgid "Intel: enemy armored formation inbound."
+msgstr "Intel: enemy armored formation inbound."
+
+msgctxt "mission/multi/player_enemy_division_notification_artillery_01"
+msgid "Intel: enemy artillery group active."
+msgstr "Intel: enemy artillery group active."
+
+msgctxt "mission/multi/player_enemy_division_notification_artillery_02"
+msgid "Intel: enemy artillery group active."
+msgstr "Intel: enemy artillery group active."
+
+msgctxt "mission/multi/player_enemy_division_notification_elite_01"
+msgid "Intel: enemy elite unit identified."
+msgstr "Intel: enemy elite unit identified."
+
+msgctxt "mission/multi/player_enemy_division_notification_elite_02"
+msgid "Intel: enemy elite unit identified."
+msgstr "Intel: enemy elite unit identified."
+
+msgctxt "mission/multi/player_enemy_division_notification_heavy_01"
+msgid "Intel: enemy heavy forces committed."
+msgstr "Intel: enemy heavy forces committed."
+
+msgctxt "mission/multi/player_enemy_division_notification_heavy_02"
+msgid "Intel: enemy heavy forces committed."
+msgstr "Intel: enemy heavy forces committed."
+
+msgctxt "mission/multi/player_enemy_division_notification_heavy_03"
+msgid "Intel: enemy heavy forces committed."
+msgstr "Intel: enemy heavy forces committed."
+
+msgctxt "mission/multi/player_enemy_division_notification_massinf_01"
+msgid "Intel: large enemy infantry force approaching."
+msgstr "Intel: large enemy infantry force approaching."
+
+msgctxt "mission/multi/player_enemy_division_notification_massinf_02"
+msgid "Intel: large enemy infantry force approaching."
+msgstr "Intel: large enemy infantry force approaching."
+
+msgctxt "mission/multi/player_enemy_division_notification_massinf_03"
+msgid "Intel: large enemy infantry force approaching."
+msgstr "Intel: large enemy infantry force approaching."
+
+msgctxt "mission/multi/player_enemy_division_notification_massinf_04"
+msgid "Intel: large enemy infantry force approaching."
+msgstr "Intel: large enemy infantry force approaching."
+
+msgctxt "mission/multi/player_paratrooper_jump"
+msgid "Player paratrooper jump."
+msgstr "Player paratrooper jump."
+
+msgctxt "mission/multi/player_paratrooper_jump_02"
+msgid "Player paratrooper jump 02."
+msgstr "Player paratrooper jump 02."
+
+msgctxt "mission/multi/player_paratrooper_jump_03"
+msgid "Player paratrooper jump 03."
+msgstr "Player paratrooper jump 03."
+
+msgctxt "mission/multi/player_paratrooper_prepare_to_jump"
+msgid "Player paratrooper prepare to jump."
+msgstr "Player paratrooper prepare to jump."
+
+msgctxt "mission/multi/player_paratrooper_prepare_to_jump_02"
+msgid "Player paratrooper prepare to jump 02."
+msgstr "Player paratrooper prepare to jump 02."
+
+msgctxt "mission/multi/player_paratrooper_prepare_to_jump_03"
+msgid "Player paratrooper prepare to jump 03."
+msgstr "Player paratrooper prepare to jump 03."
+
+msgctxt "mission/multi/player_pickup_flare_gun"
+msgid "Player pickup flare gun."
+msgstr "Player pickup flare gun."
+
+msgctxt "mission/multi/player_sabotage_notify"
+msgid "Player sabotage notify."
+msgstr "Player sabotage notify."
+
+msgctxt "mission/multi/pointmessage"
+msgid "Pointmessage."
+msgstr "Pointmessage."
+
+msgctxt "mission/multi/radio_car_destroyed_1"
+msgid "Radio car destroyed 1."
+msgstr "Radio car destroyed 1."
+
+msgctxt "mission/multi/radio_event"
+msgid "Radio event."
+msgstr "Radio event."
+
+msgctxt "mission/multi/radio_vehicle_unmanned"
+msgid "Radio vehicle unmanned."
+msgstr "Radio vehicle unmanned."
+
+msgctxt "mission/multi/rear_attack_1"
+msgid "Rear attack 1."
+msgstr "Rear attack 1."
+
+msgctxt "mission/multi/rear_attack_2"
+msgid "Rear attack 2."
+msgstr "Rear attack 2."
+
+msgctxt "mission/multi/rear_attack_3"
+msgid "Rear attack 3."
+msgstr "Rear attack 3."
+
+msgctxt "mission/multi/request_supply_drop_1"
+msgid "Request supply drop 1."
+msgstr "Request supply drop 1."
+
+msgctxt "mission/multi/request_supply_drop_2"
+msgid "Request supply drop 2."
+msgstr "Request supply drop 2."
+
+msgctxt "mission/multi/request_supply_drop_3"
+msgid "Request supply drop 3."
+msgstr "Request supply drop 3."
+
+msgctxt "mission/multi/start_player_defense_ask"
+msgid "Start player defense ask."
+msgstr "Start player defense ask."
+
+msgctxt "mission/multi/start_player_defense_confirm"
+msgid "Start player defense confirm."
+msgstr "Start player defense confirm."
+
+msgctxt "mission/multi/super_heavy_artillery_incoming_1"
+msgid "Super heavy artillery incoming 1."
+msgstr "Super heavy artillery incoming 1."
+
+msgctxt "mission/multi/super_heavy_artillery_incoming_2"
+msgid "Super heavy artillery incoming 2."
+msgstr "Super heavy artillery incoming 2."
+
+msgctxt "mission/multi/teleporting_player_defense_units"
+msgid "Teleporting player defense units."
+msgstr "Teleporting player defense units."
+

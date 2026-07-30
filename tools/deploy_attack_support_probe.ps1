@@ -56,7 +56,8 @@ $files = @(
     # every later index at the wrong file.
     "resource\map\multi\faction_support_templates.inc",
     # Player-facing support announcement strings (Phase 1). APPENDED only.
-    "localizations\default\interface\text\mission\multi\support_events.pot"
+    "localizations\default\interface\text\mission\multi\support_events.pot",
+    "localizations\default\interface\text\mission\multi\ce_mission_messages.pot"
 )
 
 $gameSetSource = Join-Path $RepoRoot $files[0]
@@ -198,6 +199,12 @@ foreach ($marker in @(
     '{"attack_support_flank_rr"}',
     # Rare IFV wave budget (Phase 3). 1 per mission max.
     '{"attack_support_ifv_left"}',
+    # Airmobile insert budget (Phase 5 E1). Cap 2/mission. Narrative helo only.
+    '{"attack_support_air_left"}',
+    # 1 = force first airmobile ~30s for Day-2 testing; set 0 to restore production schedule.
+    '{"attack_support_air_test"}',
+    # 1 when current placement batch uses an airmobile LZ pad.
+    '{"attack_support_use_air"}',
     # 1 when the current attack wave elected a flank pad (announce + place path).
     '{"attack_support_use_flank"}',
     # One-shot flag-prop placement per mission (Phase 4).
@@ -1058,6 +1065,8 @@ $EntrySpacing = 270.0
 # as a fraction of the perpendicular spawn-line extent (approx via centroid length).
 $FlankDepth = 0.50
 $FlankSpread = 0.35
+# Airmobile LZ pads (Phase 5 E1): deeper toward centre than flanks.
+$AirDepth = 0.65
 # Name kept from the probe era on purpose: it holds the genuinely pristine
 # pre-patch maps, and the "already backed up" check below is what stops a rerun
 # from overwriting them with maps this script has already patched.
@@ -1233,7 +1242,7 @@ foreach ($mapFile in $mapFiles) {
     $text = [System.IO.File]::ReadAllText($mapFile)
     $text = [regex]::Replace(
         $text,
-        '\s*\{"attack_(?:support|mate)_(?:entry|flank)[a-z0-9_]*"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}',
+        '\s*\{"attack_(?:support|mate)_(?:entry|flank|air)[a-z0-9_]*"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}',
         ''
     )
     if (-not $text.Contains($waypointsAnchor)) {
@@ -1308,6 +1317,24 @@ foreach ($mapFile in $mapFiles) {
             $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $block)
         }
 
+
+        # Airmobile LZ pads: deeper insert points (Phase 5 E1, narrative helo only).
+        $ax = $cx * (1.0 - $AirDepth)
+        $ay = $cy * (1.0 - $AirDepth)
+        $aspread = [math]::Max(350.0, $len * 0.25)
+        $airs = @(
+            @(($ax + $aspread * $ux), ($ay + $aspread * $uy)),
+            @(($ax - $aspread * $ux), ($ay - $aspread * $uy))
+        )
+        foreach ($ap in @(2, 1)) {
+            $off = $airs[$ap - 1]
+            $name = 'attack_support_air_' + $side + $ap
+            $block = "`r`n`t`t`t{`"$name`"`r`n`t`t`t`t{position " +
+                ("{0:F2} {1:F2} {2:F2}" -f $off[0], $off[1], $cz) +
+                "}`r`n`t`t`t`t{radius $radius}`r`n`t`t`t}"
+            $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $block)
+        }
+
         # The legacy single-pad name, kept as an alias of point 1 rather than migrated
         # away: the enemy-defence patrol and roam {action move} orders still address it,
         # and those are orders rather than placements, so they want one stable point.
@@ -1341,6 +1368,14 @@ foreach ($mapFile in $mapFiles) {
             $n = ([regex]::Matches($text, [regex]::Escape('{"attack_support_flank_' + $side + $fp + '"'))).Count
             if ($n -ne 1) {
                 throw "Expected exactly one attack_support_flank_$side$fp waypoint in: $mapFile (found $n)"
+            }
+        }
+    }
+    foreach ($side in @("a", "b")) {
+        foreach ($ap in @(1, 2)) {
+            $n = ([regex]::Matches($text, [regex]::Escape('{"attack_support_air_' + $side + $ap + '"'))).Count
+            if ($n -ne 1) {
+                throw "Expected exactly one attack_support_air_$side$ap waypoint in: $mapFile (found $n)"
             }
         }
     }
@@ -1696,8 +1731,12 @@ if (-not (Select-String -Quiet -LiteralPath $vars -SimpleMatch '{"support_announ
     throw "Workshop dcg_vars.inc does not declare the support_announce toggle"
 }
 $pot = Join-Path $WorkshopRoot "localizations\default\interface\text\mission\multi\support_events.pot"
+$cePot = Join-Path $WorkshopRoot "localizations\default\interface\text\mission\multi\ce_mission_messages.pot"
 if (-not (Test-Path -LiteralPath $pot)) {
     throw "Workshop is missing support_events.pot"
+}
+if (-not (Test-Path -LiteralPath $cePot)) {
+    throw "Workshop is missing ce_mission_messages.pot"
 }
 foreach ($key in @(
     'mission/multi/support/wave_inbound',
@@ -1705,11 +1744,15 @@ foreach ($key in @(
     'mission/multi/support/flank_inbound',
     'mission/multi/support/waves_exhausted',
     'mission/multi/support/defense_reinforced',
-    'mission/multi/support/enemy_activity'
+    'mission/multi/support/enemy_activity',
+    'mission/multi/support/airborne_inbound_nato'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $pot -SimpleMatch "msgctxt `"$key`"")) {
         throw "support_events.pot is missing msgctxt $key"
     }
+}
+if (-not (Select-String -Quiet -LiteralPath $cePot -SimpleMatch 'msgctxt "mission/multi/dcg_error01"')) {
+    throw "ce_mission_messages.pot is missing dcg_error01"
 }
 foreach ($pair in @(
     @($waves, 'workshop attack support engine'),
@@ -1806,5 +1849,17 @@ foreach ($pair in @(
 )) {
     if (Select-String -Quiet -LiteralPath $pair[0] -SimpleMatch "attack_support_flank_") {
         throw ("Workshop {0} engine must not reference flank pads" -f $pair[1])
+    }
+}
+
+
+# Phase 5: only friendly attack engine may address airmobile LZ pads.
+foreach ($pair in @(
+    @((Join-Path $WorkshopRoot "resource\map\multi\defense_support_waves.inc"), "defence support"),
+    @((Join-Path $WorkshopRoot "resource\map\multi\enemy_defense_support.inc"), "enemy defence"),
+    @((Join-Path $WorkshopRoot "resource\map\multi\enemy_attack_support.inc"), "enemy attack")
+)) {
+    if (Select-String -Quiet -LiteralPath $pair[0] -SimpleMatch "attack_support_air_") {
+        throw ("Workshop {0} engine must not reference air pads" -f $pair[1])
     }
 }
