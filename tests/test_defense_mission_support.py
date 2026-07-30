@@ -249,7 +249,6 @@ class DefenceMissionSupportTests(unittest.TestCase):
                        "ds_poke_faction_recon", "ds_poke_faction_assault",
                        "ds_poke_faction_eng", "ds_poke_faction_manpad",
                        "ds_poke_faction_air",
-                       "ds_drop_prop",
                        "ds_props_af1", "ds_props_af2", "ds_props_af3",
                        "ds_place_flag_props")),
             (self.ea, ("ea_entry_next",
