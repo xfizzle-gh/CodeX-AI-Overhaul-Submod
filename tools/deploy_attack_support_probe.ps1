@@ -137,6 +137,8 @@ $E2ParaWaveMarkers = @(
     '{"attack_support/e2_para_release_nato"',
     '{"attack_support/e2_para_landed"',
     '{effect drop_paratrooper}',
+    '{tag_add paratrooper}',
+    '{tag_add ignore_spawn_logic}',
     '{distance 1500}',
     '{distance 2500}',
     'support_e2_released',

@@ -4075,25 +4075,33 @@
 						{tag_remove ai_spawn}
 					}
 					{"entity_state" {selector {tag support_e2_landed_candidate}} {tag_remove support_e2_landed_candidate}}
-					{"actor_state"
-						{selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}
-						{control AI}
-						{ai_move {mode enable}}
-						{weapon_prepare on}
-						{fire_mode open}
-						{move_mode free}
-						{movement {speed normal} {kind normal} {type normal}}
-						{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+					; Filtering can reject every initial candidate (for example, while still
+					; linked). Only a confirmed surviving landed human may advance the lifecycle.
+					{"switch"
+						{"case"
+							{condition {type entities} {selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}}
+							{"actor_state"
+								{selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}
+								{control AI}
+								{ai_move {mode enable}}
+								{weapon_prepare on}
+								{fire_mode open}
+								{move_mode free}
+								{movement {speed normal} {kind normal} {type normal}}
+								{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+							}
+							{"action"
+								{selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}
+								{drop orders}
+								{action advance}
+								{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
+							}
+							{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+							{"delay" {time 0.25}}
+							{"trigger" {name "attack_support/e2_para_landed"}}
+						}
+						{"default"}
 					}
-					{"action"
-						{selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}
-						{drop orders}
-						{action advance}
-						{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
-					}
-					{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
-					{"delay" {time 0.25}}
-					{"trigger" {name "attack_support/e2_para_landed"}}
 				}
 			}			{"attack_support/e2_para_rusa"
 				{condition
@@ -4277,6 +4285,13 @@
 				}
 				{actions
 					{"entity_state" {selector {tag support_e2_plane} {tag support_e2_claim}} {tag_add support_e2_released}}
+					; The singular West-81 effect opens cargo and unlinks seats, but does not
+					; assign CE's ground-hit routing tags. Scope them to this claimed payload.
+					{"entity_state"
+						{selector {ignore_captured_by_user 0} {tag support_e2_para_pax} {tag support_e2_claim} {type human} {state operatable}}
+						{tag_add paratrooper}
+						{tag_add ignore_spawn_logic}
+					}
 					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_plane}}}}} {effect drop_paratrooper}}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
 					("e2_order_para_exit")
@@ -4299,6 +4314,13 @@
 				}
 				{actions
 					{"entity_state" {selector {tag support_e2_plane} {tag support_e2_claim}} {tag_add support_e2_released}}
+					; The singular West-81 effect opens cargo and unlinks seats, but does not
+					; assign CE's ground-hit routing tags. Scope them to this claimed payload.
+					{"entity_state"
+						{selector {ignore_captured_by_user 0} {tag support_e2_para_pax} {tag support_e2_claim} {type human} {state operatable}}
+						{tag_add paratrooper}
+						{tag_add ignore_spawn_logic}
+					}
 					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_plane}}}}} {effect drop_paratrooper}}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
 					("e2_order_para_exit")
@@ -4321,6 +4343,13 @@
 				}
 				{actions
 					{"entity_state" {selector {tag support_e2_plane} {tag support_e2_claim}} {tag_add support_e2_released}}
+					; The singular West-81 effect opens cargo and unlinks seats, but does not
+					; assign CE's ground-hit routing tags. Scope them to this claimed payload.
+					{"entity_state"
+						{selector {ignore_captured_by_user 0} {tag support_e2_para_pax} {tag support_e2_claim} {type human} {state operatable}}
+						{tag_add paratrooper}
+						{tag_add ignore_spawn_logic}
+					}
 					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_plane}}}}} {effect drop_paratrooper}}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
 					("e2_order_para_exit")

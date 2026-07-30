@@ -403,6 +403,14 @@ class E2ParadropLifecycleTests(unittest.TestCase):
             tagged = actions.index('{tag_add support_e2_released}')
             effect = actions.index('{effect drop_paratrooper}')
             stage40 = actions.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}')
+            pax_route = actions[tagged:effect]
+            self.assertIn(
+                '{selector {ignore_captured_by_user 0} {tag support_e2_para_pax} '
+                '{tag support_e2_claim} {type human} {state operatable}}',
+                pax_route,
+            )
+            self.assertIn('{tag_add paratrooper}', pax_route)
+            self.assertIn('{tag_add ignore_spawn_logic}', pax_route)
             self.assertLess(tagged, effect)
             self.assertLess(effect, stage40)
         self.assertEqual(self.e2.count('{effect drop_paratrooper}'), 3)
@@ -442,6 +450,30 @@ class E2ParadropLifecycleTests(unittest.TestCase):
         for wp in (5004, 5005, 5006):
             self.assertNotIn(f'waypoint "{wp}"', self.e2)
 
+    def test_stage50_requires_a_post_filter_operatable_survivor(self) -> None:
+        landed = mi_block(self.waves, '{"attack_support/e2_para_landed"')
+        actions = landed.split("{actions", 1)[1]
+        self.assertIn('{"switch"', actions)
+        survivor_switch = mi_block(actions, '{"switch"')
+        survivor_case = mi_block(survivor_switch, '{"case"')
+        survivor_default = mi_block(survivor_switch, '{"default"')
+        self.assertIn(
+            '{condition {type entities} {selector {ignore_captured_by_user 0} '
+            '{tag support_e2_landed} {tag support_e2_claim} {type human} '
+            '{state operatable}}}',
+            survivor_case,
+        )
+        stage50 = '{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}'
+        self.assertEqual(actions.count(stage50), 1)
+        self.assertIn(stage50, survivor_case)
+        self.assertIn('{"actor_state"', survivor_case)
+        self.assertIn('{"action"', survivor_case)
+        self.assertIn('{"trigger" {name "attack_support/e2_para_landed"}}', survivor_case)
+        self.assertNotIn(stage50, survivor_default)
+        self.assertNotIn('{"actor_state"', survivor_default)
+        self.assertNotIn('{"action"', survivor_default)
+        self.assertNotIn('{"trigger" {name "attack_support/e2_para_landed"}}', survivor_default)
+
     def test_plane_delete_and_survivor_deadline_preserve_honest_failure(self) -> None:
         settle = mi_define(self.waves, "e2_para_settle")
         self.assertIn('{"delay" {time 90}}', settle)
@@ -465,6 +497,8 @@ class E2ParadropLifecycleTests(unittest.TestCase):
             '{"attack_support/e2_para_nato"',
             '{"attack_support/e2_para_landed"',
             '{effect drop_paratrooper}',
+            '{tag_add paratrooper}',
+            '{tag_add ignore_spawn_logic}',
             '{distance 1500}',
             '{distance 2500}',
             'support_e2_released',
