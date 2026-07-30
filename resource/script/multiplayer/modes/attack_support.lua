@@ -121,6 +121,11 @@ local function mirrorMotor()
 		"wave_cmd", readVar("enemy_attack_wave_cmd"),
 		"test", readVar("enemy_attack_motor_test"),
 		"test_done", readVar("enemy_attack_motor_test_done"))
+	emit("e2", "e2_test", readVar("support_e2_test"),
+		"e2_stage", readVar("support_e2_stage"),
+		"e2_fail", readVar("support_e2_fail"),
+		"e2_lz", readVar("support_e2_lz"),
+		"e2_flag", readVar("support_e2_flag"))
 end
 
 local state = {

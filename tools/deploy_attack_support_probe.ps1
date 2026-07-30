@@ -66,7 +66,10 @@ $files = @(
     # actually resolve to. Same virtual path as the pak entry, so the .mdl and the
     # supply_zone decal still come from the pak and are not shipped here.
     # APPENDED only - the $files[n] lookups above are positional.
-    "resource\entity\service\-multiplayer\flag_point\flagpoint_ammo\flagpoint_ammo.def"
+    "resource\entity\service\-multiplayer\flag_point\flagpoint_ammo\flagpoint_ammo.def",
+    # E2 CE routing mirrors: source/deployed copies must remain byte-identical.
+    "resource\map\multi\ce\ai_logic\ce_ai_logic_triggers.inc",
+    "resource\map_scripts\ai_logic\ce_ai_logic_triggers.inc"
 )
 
 $gameSetSource = Join-Path $RepoRoot $files[0]
@@ -84,11 +87,24 @@ $eaSource = Join-Path $RepoRoot $files[11]
 $factionTplSource = Join-Path $RepoRoot $files[12]
 $flagPropsTplSource = Join-Path $RepoRoot $files[15]
 $flagAmmoDefSource = Join-Path $RepoRoot $files[16]
+$ceMapSource = Join-Path $RepoRoot $files[17]
+$ceScriptSource = Join-Path $RepoRoot $files[18]
 
-foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSource, $wavesSource, $tplSource, $defSource, $defTplSource, $conquestSource, $utilitySource, $dsSource, $eaSource, $factionTplSource, $flagPropsTplSource, $flagAmmoDefSource)) {
+foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSource, $wavesSource, $tplSource, $defSource, $defTplSource, $conquestSource, $utilitySource, $dsSource, $eaSource, $factionTplSource, $flagPropsTplSource, $flagAmmoDefSource, $ceMapSource, $ceScriptSource)) {
     if (-not (Test-Path -LiteralPath $source)) {
         throw "Missing source file: $source"
     }
+}
+$ceSourceHashes = @($ceMapSource, $ceScriptSource) | ForEach-Object { (Get-FileHash -LiteralPath $_ -Algorithm SHA256).Hash }
+if ($ceSourceHashes[0] -ne $ceSourceHashes[1]) { throw "Source CE ai_logic mirrors are not byte-identical" }
+foreach ($marker in @('{"support_e2_test"}', '{"support_e2_stage"}', '{"support_e2_fail"}', '{"support_e2_lz"}', '{"support_e2_flag"}')) {
+    if (-not (Select-String -Quiet -LiteralPath $varsSource -SimpleMatch $marker)) { throw "Source dcg_vars.inc is missing E2 state: $marker" }
+}
+foreach ($marker in @('{Entity "mi17_b8_rus"', '{Entity "mi17_b8_ukr"', '{Entity "uh-60m_blackhawk_mg"', '{Entity "il-76td_para"', '{Entity "c130_para"', 'support_e2_para_pax', '{Chassis "helicopter"')) {
+    if (-not (Select-String -Quiet -LiteralPath $factionTplSource -SimpleMatch $marker)) { throw "Source faction pool is missing E2 marker: $marker" }
+}
+foreach ($key in @('mission/multi/support/e2_helo_inbound', 'mission/multi/support/e2_para_inbound', 'mission/multi/support/e2_insert_failed')) {
+    if (-not (Select-String -Quiet -LiteralPath (Join-Path $RepoRoot $files[13]) -SimpleMatch "msgctxt `"$key`"")) { throw "Source support_events.pot is missing msgctxt $key" }
 }
 # string.sub on a nil spawnPointName faulted natively on slots the engine gives no
 # spawn point, so the read must stay type-guarded before the substring.
@@ -154,7 +170,12 @@ $MirrorMarkers = @(
     'emit("mirror", "enemy_attack",',
     'if state.quant % MIRROR_QUANTS == 0 then',
     # The heartbeat predates the mirror and stays.
-    'log("heartbeat", "q", state.quant)'
+    'log("heartbeat", "q", state.quant)',
+    'readVar("support_e2_test")',
+    'readVar("support_e2_stage")',
+    'readVar("support_e2_fail")',
+    'readVar("support_e2_lz")',
+    'readVar("support_e2_flag")'
 )
 foreach ($marker in $MirrorMarkers) {
     if (-not (Select-String -Quiet -LiteralPath $supportSource -SimpleMatch $marker)) {
@@ -1023,12 +1044,12 @@ if ($tplMidMax -ge 9100) {
     throw "Source template pool MID $tplMidMax runs into the enemy-defence band at 9100"
 }
 
-# Player-nation pools: 455 prototypes across four factions (incl. rare IFV packages). Depths are per faction and
+# Player-nation pools: 502 prototypes across four factions (incl. rare IFV packages). Depths are per faction and
 # each is shared by the attack and defence engines, which never run on the same mission,
 # so each only has to cover ONE engine's L3 budget of 8 waves.
 $factionAble = (Select-String -LiteralPath $factionTplSource -SimpleMatch '{Able "-select"}').Count
-if ($factionAble -ne 455) {
-    throw "Faction pool must park 455 prototypes with selection stripped; found $factionAble"
+if ($factionAble -ne 502) {
+    throw "Faction pool must park 502 prototypes with selection stripped; found $factionAble"
 }
 foreach ($faction in @('rusa', 'ukr', 'prc', 'nato')) {
     foreach ($pair in @(
@@ -1065,8 +1086,8 @@ if (Select-String -Quiet -LiteralPath $factionTplSource -Pattern '^\s*\{Human ""
 }
 $factionMids = [regex]::Matches((Get-Content -Raw -LiteralPath $factionTplSource), '\{MID (\d+)\}') |
     ForEach-Object { [int]$_.Groups[1].Value }
-if (($factionMids | Sort-Object -Unique).Count -ne 455) {
-    throw "Faction pool must carry 455 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"
+if (($factionMids | Sort-Object -Unique).Count -ne 502) {
+    throw "Faction pool must carry 502 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"
 }
 if (($factionMids | Measure-Object -Minimum).Minimum -lt 9300) {
     throw "Faction pool MIDs must start at 9300, clear of the other two pools"
@@ -1697,7 +1718,8 @@ foreach ($marker in @(
     '{"attack_support_waves_left"}',
     '{"attack_support_next_ok"}',
     '{"attack_support_hmmwv_left"}',
-    '{"attack_support_use_mi"}'
+    '{"attack_support_use_mi"}',
+    '{"support_e2_test"}', '{"support_e2_stage"}', '{"support_e2_fail"}', '{"support_e2_lz"}', '{"support_e2_flag"}'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $vars -SimpleMatch $marker)) {
         throw "Workshop dcg_vars.inc is missing the attack support wave state: $marker"
@@ -1775,8 +1797,8 @@ $factionTarget = Join-Path $WorkshopRoot "resource\map\multi\faction_support_tem
 if (-not (Test-Path -LiteralPath $factionTarget)) {
     throw "Workshop is missing the player-nation pool: faction_support_templates.inc"
 }
-if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able "-select"}').Count -ne 455) {
-    throw "Workshop faction pool is not the 455-prototype player-nation pool"
+if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able "-select"}').Count -ne 502) {
+    throw "Workshop faction pool is not the 502-prototype player-nation pool"
 }
 if (Select-String -Quiet -LiteralPath $factionTarget -Pattern '^\s*\{Human ""') {
     throw "Workshop faction pool reverted to the breed-less empty-name Human form"
@@ -1789,7 +1811,9 @@ foreach ($marker in @(
     '"ally_sup_prc_manpad"',
     '"ally_sup_nato_assault"',
     '{Entity "fennek"',
-    '{Entity "humvee_m2hb_ukr"'
+    '{Entity "humvee_m2hb_ukr"',
+    '{Entity "mi17_b8_rus"', '{Entity "mi17_b8_ukr"', '{Entity "uh-60m_blackhawk_mg"',
+    '{Entity "il-76td_para"', '{Entity "c130_para"', 'support_e2_para_pax', '{Chassis "helicopter"'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $factionTarget -SimpleMatch $marker)) {
         throw "Workshop faction pool is missing marker: $marker"
@@ -1930,6 +1954,10 @@ if (-not (Select-String -Quiet -LiteralPath $vars -SimpleMatch '{"support_announ
 }
 $pot = Join-Path $WorkshopRoot "localizations\default\interface\text\mission\multi\support_events.pot"
 $cePot = Join-Path $WorkshopRoot "localizations\default\interface\text\mission\multi\ce_mission_messages.pot"
+$ceMapTarget = Join-Path $WorkshopRoot $files[17]
+$ceScriptTarget = Join-Path $WorkshopRoot $files[18]
+$ceTargetHashes = @($ceMapTarget, $ceScriptTarget) | ForEach-Object { (Get-FileHash -LiteralPath $_ -Algorithm SHA256).Hash }
+if ($ceTargetHashes[0] -ne $ceTargetHashes[1]) { throw "Workshop CE ai_logic mirrors are not byte-identical" }
 if (-not (Test-Path -LiteralPath $pot)) {
     throw "Workshop is missing support_events.pot"
 }
@@ -1943,7 +1971,9 @@ foreach ($key in @(
     'mission/multi/support/waves_exhausted',
     'mission/multi/support/defense_reinforced',
     'mission/multi/support/enemy_activity',
-    'mission/multi/support/airborne_inbound_nato'
+    'mission/multi/support/airborne_inbound_nato',
+    'mission/multi/support/e2_helo_inbound', 'mission/multi/support/e2_para_inbound',
+    'mission/multi/support/e2_insert_failed'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $pot -SimpleMatch "msgctxt `"$key`"")) {
         throw "support_events.pot is missing msgctxt $key"

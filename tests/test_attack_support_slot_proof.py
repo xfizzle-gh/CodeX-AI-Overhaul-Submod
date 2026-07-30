@@ -204,10 +204,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         engines - which never run on the same mission, so each only has to cover ONE
         engine's worst case. The binding number is the L3 budget of 8 waves."""
         code = self.faction_tpl
-        self.assertEqual(code.count('{Able "-select"}'), 455)
-        self.assertEqual(code.count("{Player 0}"), 455)
-        self.assertEqual(code.count('"ally_sup_tpl"'), 455)
-        self.assertEqual(code.count('"hidden"'), 455)
+        self.assertEqual(code.count('{Able "-select"}'), 502)
+        self.assertEqual(code.count("{Player 0}"), 502)
+        self.assertEqual(code.count('"ally_sup_tpl"'), 502)
+        self.assertEqual(code.count('"hidden"'), 502)
 
         for key, _army in FACTION_ARMIES:
             for suffix, _cmd, take, depth in FACTION_COMPS:
@@ -244,11 +244,11 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
         # Bands: this pool must not collide with either neighbour in a resolved map.
         ids = re.findall(r"\{(?:Entity|Human) \"[^\"]*\" (0x[0-9a-f]+)", code)
-        self.assertEqual(len(ids), 455)
-        self.assertEqual(len(set(ids)), 455)
-        self.assertTrue(all(i.startswith(("0xb2", "0xb3")) for i in ids))
+        self.assertEqual(len(ids), 502)
+        self.assertEqual(len(set(ids)), 502)
+        self.assertTrue(all(i.startswith(("0xb2", "0xb3", "0xb4")) for i in ids))
         mids = [int(m) for m in re.findall(r"\{MID (\d+)\}", code)]
-        self.assertEqual(len(set(mids)), 455)
+        self.assertEqual(len(set(mids)), 502)
         self.assertGreaterEqual(min(mids), 9300)
         # Real breeds only, and none of the retired idioms.
         self.assertNotIn('{Human ""', code)
@@ -1283,7 +1283,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             # checked by the deploy, or the faction waves reference nothing.
             "resource\\map\\multi\\faction_support_templates.inc",
             '(include "../faction_support_templates.inc")',
-            "must park 455 prototypes",
+            "must park 502 prototypes",
             '{"attack_support_air_left"}',
             '{"attack_support_air_test"}',
             "attack_support_air_",

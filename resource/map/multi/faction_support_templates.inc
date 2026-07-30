@@ -2896,6 +2896,337 @@
 	{Link 0xb3ca {0xb3c1 "seat7"}}
 	{Link 0xb3cb {0xb3c1 "seat8"}}
 
+; ===== E2 AIR PACKAGE POOLS (default-off; West-81 supplies UH-60/C-130) =====
+; IDs 0xb401-0xb42f, MIDs 9800-9846, y=-36800.
+	{Entity "mi17_b8_rus" 0xb401
+		{Position -9000 -36800}
+		{Player 0}
+		{MID 9800}
+		{Able "-select"}
+		{Chassis "helicopter"
+			{Airborne}
+			{EngineStarted}
+			{Altitude 22}
+		}
+	}
+	{Human "mp/rusa/2022s/rus_pliot" 0xb402
+		{Position -8995 -36800}
+		{Player 0}
+		{MID 9801}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_pliot" 0xb403
+		{Position -8990 -36800}
+		{Player 0}
+		{MID 9802}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/106vdv_squadlead" 0xb404
+		{Position -8985 -36800}
+		{Player 0}
+		{MID 9803}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/106vdv_mg" 0xb405
+		{Position -8980 -36800}
+		{Player 0}
+		{MID 9804}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/106vdv_rifleman" 0xb406
+		{Position -8975 -36800}
+		{Player 0}
+		{MID 9805}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/106vdv_rifleman" 0xb407
+		{Position -8970 -36800}
+		{Player 0}
+		{MID 9806}
+		{Able "-select"}
+	}
+	{Entity "mi17_b8_ukr" 0xb408
+		{Position -8965 -36800}
+		{Player 0}
+		{MID 9807}
+		{Able "-select"}
+		{Chassis "helicopter"
+			{Airborne}
+			{EngineStarted}
+			{Altitude 22}
+		}
+	}
+	{Human "mp/ukr/2022s/ukr_pilot" 0xb409
+		{Position -8960 -36800}
+		{Player 0}
+		{MID 9808}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_pilot" 0xb40a
+		{Position -8955 -36800}
+		{Player 0}
+		{MID 9809}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr13_squadlead" 0xb40b
+		{Position -8950 -36800}
+		{Player 0}
+		{MID 9810}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr13_lmg" 0xb40c
+		{Position -8945 -36800}
+		{Player 0}
+		{MID 9811}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr13_rifleman" 0xb40d
+		{Position -8940 -36800}
+		{Player 0}
+		{MID 9812}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr13_rifleman" 0xb40e
+		{Position -8935 -36800}
+		{Player 0}
+		{MID 9813}
+		{Able "-select"}
+	}
+	{Entity "uh-60m_blackhawk_mg" 0xb40f
+		{Position -8930 -36800}
+		{Player 0}
+		{MID 9814}
+		{Able "-select"}
+		{Chassis "helicopter"
+			{Airborne}
+			{EngineStarted}
+			{Altitude 22}
+		}
+	}
+	{Human "mp/nato/2022s/nato_pilot" 0xb410
+		{Position -8925 -36800}
+		{Player 0}
+		{MID 9815}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_pilot" 0xb411
+		{Position -8920 -36800}
+		{Player 0}
+		{MID 9816}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/82nd_squadlead" 0xb412
+		{Position -8915 -36800}
+		{Player 0}
+		{MID 9817}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/82nd_mg" 0xb413
+		{Position -8910 -36800}
+		{Player 0}
+		{MID 9818}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/82nd_rifleman" 0xb414
+		{Position -8905 -36800}
+		{Player 0}
+		{MID 9819}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/82nd_rifleman" 0xb415
+		{Position -8900 -36800}
+		{Player 0}
+		{MID 9820}
+		{Able "-select"}
+	}
+	{Entity "il-76td_para" 0xb416
+		{Position -8895 -36800}
+		{Player 0}
+		{MID 9821}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_pliot" 0xb417
+		{Position -8890 -36800}
+		{Player 0}
+		{MID 9822}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_pliot" 0xb418
+		{Position -8885 -36800}
+		{Player 0}
+		{MID 9823}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_pliot" 0xb419
+		{Position -8880 -36800}
+		{Player 0}
+		{MID 9824}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_pliot" 0xb41a
+		{Position -8875 -36800}
+		{Player 0}
+		{MID 9825}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_pliot" 0xb41b
+		{Position -8870 -36800}
+		{Player 0}
+		{MID 9826}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/106vdv_squadlead" 0xb41c
+		{Position -8865 -36800}
+		{Player 0}
+		{MID 9827}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/106vdv_mg" 0xb41d
+		{Position -8860 -36800}
+		{Player 0}
+		{MID 9828}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/106vdv_rifleman" 0xb41e
+		{Position -8855 -36800}
+		{Player 0}
+		{MID 9829}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/106vdv_rifleman" 0xb41f
+		{Position -8850 -36800}
+		{Player 0}
+		{MID 9830}
+		{Able "-select"}
+	}
+	{Entity "c130_para" 0xb420
+		{Position -8845 -36800}
+		{Player 0}
+		{MID 9831}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_pilot" 0xb421
+		{Position -8840 -36800}
+		{Player 0}
+		{MID 9832}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_pilot" 0xb422
+		{Position -8835 -36800}
+		{Player 0}
+		{MID 9833}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_pilot" 0xb423
+		{Position -8830 -36800}
+		{Player 0}
+		{MID 9834}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr13_squadlead" 0xb424
+		{Position -8825 -36800}
+		{Player 0}
+		{MID 9835}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr13_lmg" 0xb425
+		{Position -8820 -36800}
+		{Player 0}
+		{MID 9836}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr13_rifleman" 0xb426
+		{Position -8815 -36800}
+		{Player 0}
+		{MID 9837}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr13_rifleman" 0xb427
+		{Position -8810 -36800}
+		{Player 0}
+		{MID 9838}
+		{Able "-select"}
+	}
+	{Entity "c130_para" 0xb428
+		{Position -8805 -36800}
+		{Player 0}
+		{MID 9839}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_pilot" 0xb429
+		{Position -8800 -36800}
+		{Player 0}
+		{MID 9840}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_pilot" 0xb42a
+		{Position -8795 -36800}
+		{Player 0}
+		{MID 9841}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_pilot" 0xb42b
+		{Position -8790 -36800}
+		{Player 0}
+		{MID 9842}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/82nd_squadlead" 0xb42c
+		{Position -8785 -36800}
+		{Player 0}
+		{MID 9843}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/82nd_mg" 0xb42d
+		{Position -8780 -36800}
+		{Player 0}
+		{MID 9844}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/82nd_rifleman" 0xb42e
+		{Position -8775 -36800}
+		{Player 0}
+		{MID 9845}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/82nd_rifleman" 0xb42f
+		{Position -8770 -36800}
+		{Player 0}
+		{MID 9846}
+		{Able "-select"}
+	}
+
+; ----- E2 CREW + PARATROOPER LINKS -----
+	{Link 0xb402 {0xb401 "driver"}}
+	{Link 0xb403 {0xb401 "commander"}}
+	{Link 0xb409 {0xb408 "driver"}}
+	{Link 0xb40a {0xb408 "commander"}}
+	{Link 0xb410 {0xb40f "driver"}}
+	{Link 0xb411 {0xb40f "commander"}}
+	{Link 0xb417 {0xb416 "driver"}}
+	{Link 0xb418 {0xb416 "driver1"}}
+	{Link 0xb419 {0xb416 "driver2"}}
+	{Link 0xb41a {0xb416 "commander"}}
+	{Link 0xb41b {0xb416 "commander1"}}
+	{Link 0xb41c {0xb416 "seat01"}}
+	{Link 0xb41d {0xb416 "seat02"}}
+	{Link 0xb41e {0xb416 "seat03"}}
+	{Link 0xb41f {0xb416 "seat04"}}
+	{Link 0xb421 {0xb420 "driver"}}
+	{Link 0xb422 {0xb420 "driver2"}}
+	{Link 0xb423 {0xb420 "commander"}}
+	{Link 0xb424 {0xb420 "seat02"}}
+	{Link 0xb425 {0xb420 "seat03"}}
+	{Link 0xb426 {0xb420 "seat04"}}
+	{Link 0xb427 {0xb420 "seat05"}}
+	{Link 0xb429 {0xb428 "driver"}}
+	{Link 0xb42a {0xb428 "driver2"}}
+	{Link 0xb42b {0xb428 "commander"}}
+	{Link 0xb42c {0xb428 "seat02"}}
+	{Link 0xb42d {0xb428 "seat03"}}
+	{Link 0xb42e {0xb428 "seat04"}}
+	{Link 0xb42f {0xb428 "seat05"}}
+
 ; ===== TAGS =====
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb200}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb201}
@@ -3354,3 +3685,50 @@
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xb3ca}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xb3cb}
 
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo" "support_e2_aircraft" "hidden" 0xb401}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_crew" "hidden" 0xb402}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_crew" "hidden" 0xb403}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "hidden" 0xb404}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "hidden" 0xb405}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "hidden" 0xb406}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "hidden" 0xb407}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo" "support_e2_aircraft" "hidden" 0xb408}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_crew" "hidden" 0xb409}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_crew" "hidden" 0xb40a}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "hidden" 0xb40b}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "hidden" 0xb40c}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "hidden" 0xb40d}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "hidden" 0xb40e}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo" "support_e2_aircraft" "hidden" 0xb40f}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_crew" "hidden" 0xb410}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_crew" "hidden" 0xb411}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "hidden" 0xb412}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "hidden" 0xb413}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "hidden" 0xb414}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "hidden" 0xb415}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para" "support_e2_aircraft" "hidden" 0xb416}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "hidden" 0xb417}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "hidden" 0xb418}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "hidden" 0xb419}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "hidden" 0xb41a}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "hidden" 0xb41b}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_pax" "support_e2_para_pax" "hidden" 0xb41c}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_pax" "support_e2_para_pax" "hidden" 0xb41d}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_pax" "support_e2_para_pax" "hidden" 0xb41e}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_pax" "support_e2_para_pax" "hidden" 0xb41f}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para" "support_e2_aircraft" "hidden" 0xb420}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_crew" "hidden" 0xb421}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_crew" "hidden" 0xb422}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_crew" "hidden" 0xb423}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_pax" "support_e2_para_pax" "hidden" 0xb424}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_pax" "support_e2_para_pax" "hidden" 0xb425}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_pax" "support_e2_para_pax" "hidden" 0xb426}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_pax" "support_e2_para_pax" "hidden" 0xb427}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para" "support_e2_aircraft" "hidden" 0xb428}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_crew" "hidden" 0xb429}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_crew" "hidden" 0xb42a}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_crew" "hidden" 0xb42b}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "hidden" 0xb42c}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "hidden" 0xb42d}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "hidden" 0xb42e}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "hidden" 0xb42f}

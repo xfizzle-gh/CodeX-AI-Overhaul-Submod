@@ -97,3 +97,8 @@
 			{"attack_support_motor_test_done"}
 			{"enemy_attack_motor_test"}
 			{"enemy_attack_motor_test_done"}
+			{"support_e2_test"}
+			{"support_e2_stage"}
+			{"support_e2_fail"}
+			{"support_e2_lz"}
+			{"support_e2_flag"}

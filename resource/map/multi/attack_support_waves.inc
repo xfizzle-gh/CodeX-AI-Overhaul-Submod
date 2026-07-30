@@ -1342,6 +1342,11 @@
 					{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_use_air$"} {op "="} {value 0}}
 					{"set_i" {var "support_announce$"} {op "="} {value 1}}
+					{"set_i" {var "support_e2_test$"} {op "="} {value 0}}
+					{"set_i" {var "support_e2_stage$"} {op "="} {value 0}}
+					{"set_i" {var "support_e2_fail$"} {op "="} {value 0}}
+					{"set_i" {var "support_e2_lz$"} {op "="} {value 0}}
+					{"set_i" {var "support_e2_flag$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_busy$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_next_ok$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
