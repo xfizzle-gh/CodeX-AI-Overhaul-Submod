@@ -755,7 +755,9 @@ foreach ($pair in @(@($dsSource, 'defence support'), @($eaSource, 'enemy attack'
     }
     # These two engines park no prototypes of their own; they claim from the pools the
     # attack-mission engines own. A template include here would double-park them.
-    if (Select-String -Quiet -LiteralPath $path -Pattern '^\s*\{(Human|Entity|Vehicle) ') {
+    # Case-sensitive: Phase-4 flag props use lowercase {entity "…"} inside {"spawn"},
+    # which is runtime spawn — not parked {Human}/{Entity} template blocks.
+    if (Select-String -Quiet -LiteralPath $path -CaseSensitive -Pattern '^\s*\{(Human|Entity|Vehicle) ') {
         throw "Source $label engine declares entities. It must claim from the existing parked pools, not park its own"
     }
 }
