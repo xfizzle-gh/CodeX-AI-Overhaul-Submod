@@ -427,7 +427,8 @@ foreach ($marker in @(
     '{"enemy_attack_waves_left"}',
     '{"enemy_attack_busy"}',
     '{"enemy_attack_next_ok"}',
-    '{"enemy_attack_owner_fail"}'
+    '{"enemy_attack_owner_fail"},
+    {"enemy_attack_motor_left"}'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $varsSource -SimpleMatch $marker)) {
         throw "Source dcg_vars.inc is missing marker: $marker"

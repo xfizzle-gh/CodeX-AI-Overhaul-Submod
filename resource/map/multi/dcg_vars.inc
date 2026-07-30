@@ -92,3 +92,4 @@
 			{"enemy_attack_busy"}
 			{"enemy_attack_next_ok"}
 			{"enemy_attack_owner_fail"}
+			{"enemy_attack_motor_left"}

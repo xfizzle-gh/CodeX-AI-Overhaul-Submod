@@ -64,8 +64,9 @@
 ; COMPOSITION POOL, one drawn at random per wave, widening with the level:
 ;   1 line     4 bodies from the faction line pool   L1 L2 L3  (also the pool-short fallback)
 ;   2 weapons  4 bodies from the faction wpn pool       L2 L3  (AT + marksman flavour)
-; Infantry only, on purpose: the attacker bot already buys its own armour through the
-; purchase economy and a second armour source unbalances it.
+; Infantry line/wpn baseline, plus L2+ motorized truck insert (cmd 19) for parity with
+; friendly attack_support. Claims ally_sup_*_motor packages (shared park; attack_support
+; is inert on defence missions so no pool contention). Silent — no player talk lines.
 ;
 ; WHAT THEY DO. This is Q1's order flow aimed the other way. Every wave re-shuffles up to
 ; three ACTIVE flag points, splits into staggered fireteams and advances - one straight
@@ -544,6 +545,13 @@
 				{"trigger" {name "enemy_attack/prc_wpn"}}
 				{"trigger" {name "enemy_attack/nato_wpn"}}
 			)
+			; Command 19 - motorized truck. Claims shared ally_sup_*_motor packages by army.
+			(define "ea_poke_motor"
+				{"trigger" {name "enemy_attack/rusa_motor"}}
+				{"trigger" {name "enemy_attack/ukr_motor"}}
+				{"trigger" {name "enemy_attack/prc_motor"}}
+				{"trigger" {name "enemy_attack/nato_motor"}}
+			)
 
 			; The wave draw, widening with the campaign level: L1 fields plain line
 			; fireteams, L2 mixes in the AT/marksman weapons team a third of the time, L3
@@ -555,6 +563,27 @@
 					{"case"
 						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
 						{"switch"
+							{"case"
+								{condition {type rand} {value 0.22}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "enemy_attack_motor_left$"} {op ">"} {value 0}}
+										{"switch"
+											{"case"
+												{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+												{"timer" {time 8} {title "ENEMY ATTACK WAVE - MOTORIZED"}}
+											}
+											{"default"}
+										}
+										{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 19}}
+										("ea_poke_motor")
+									}
+									{"default"
+										{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 1}}
+										("ea_poke_line")
+									}
+								}
+							}
 							{"case"
 								{condition {type rand} {value 0.6}}
 								{"switch"
@@ -583,6 +612,27 @@
 					{"case"
 						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
 						{"switch"
+							{"case"
+								{condition {type rand} {value 0.20}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "enemy_attack_motor_left$"} {op ">"} {value 0}}
+										{"switch"
+											{"case"
+												{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+												{"timer" {time 8} {title "ENEMY ATTACK WAVE - MOTORIZED"}}
+											}
+											{"default"}
+										}
+										{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 19}}
+										("ea_poke_motor")
+									}
+									{"default"
+										{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 1}}
+										("ea_poke_line")
+									}
+								}
+							}
 							{"case"
 								{condition {type rand} {value 0.34}}
 								{"switch"
@@ -625,7 +675,7 @@
 				{"delay" {time 4}}
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_wave_cmd$"} {op ">"} {value 1}}
+						{condition {type cmp_i} {var "enemy_attack_wave_cmd$"} {op "=="} {value 2}}
 						{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 1}}
 						("ea_poke_line")
 						{"switch"
@@ -674,6 +724,7 @@
 				}
 				{actions
 					{"set_i" {var "enemy_attack_armed$"} {op "="} {value 1}}
+					{"set_i" {var "enemy_attack_motor_left$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_attack_busy$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_attack_next_ok$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
@@ -1163,3 +1214,285 @@
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 22}}
 				}
 			}
+
+			; ===== MOTORIZED INSERT (cmd 19) — parity with attack_support =====
+			; Claims ally_sup_*_motor packages (parked always; attack_support inert here).
+			(define "ea_finish_motor"
+				{"delay" {time 0.5}}
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group {select {tag {tag ea_deploy}}}}
+					}
+					{tag_add ea_src}
+					{tag_remove ally_sup_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+				{"delay" {time 0.2}}
+				("ea_own_to_enemy")
+				{"delay" {time 0.4}}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+					{control AI}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+					{remove select}
+				}
+				{"delay" {time 0.25}}
+				{"entity_state"
+					{selector {tag ea_flag1}}
+					{tag_remove ea_flag1}
+				}
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group
+							{select {tag {tag flag}}}
+							{exclude {state {state inactive}}}
+						}
+						{sort {type shuffle}}
+						{amount 1}
+					}
+					{tag_add ea_flag1}
+				}
+				{"delay" {time 0.1}}
+				{"action"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+					{drop orders}
+					{action advance}
+					{target {ignore_captured_by_user 0} {tag ea_flag1}}
+				}
+				{"delay" {time 28}}
+				{"emit"
+					{selector
+						{ignore_captured_by_user 0}
+						{tag ea_motor_hull}
+						{type vehicle}
+						{state inhabited}
+					}
+					{drop orders}
+					{emit
+						{mode passengers}
+					}
+				}
+				{"delay" {time 3}}
+				{"action"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
+					{drop orders}
+					{action advance}
+					{target {ignore_captured_by_user 0} {tag ea_flag1}}
+				}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+					{movement {speed stop}}
+				}
+				{"entity_state"
+					{selector {tag ea_deploy}}
+					{tag_remove ea_deploy}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_hull}}
+					{tag_remove ea_motor_hull}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_pax}}
+					{tag_remove ea_motor_pax}
+				}
+				{"set_i" {var "enemy_attack_transferred$"} {op "="} {value 1}}
+			)
+
+
+			{"enemy_attack/rusa_motor"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} {value 19}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 1}}
+						{"5.cmp_i" {var "enemy_attack_motor_left$"} {op ">"} {value 0}}
+						{"6.entities" {selector {tag ally_sup_rusa_motor_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 91}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY ATTACK MOTORIZED INSERT"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor}}}}}
+						{tag_add ea_deploy}
+						{tag_remove ally_sup_rusa_motor}
+						{tag_remove ally_sup_rusa_motor_crew}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_hull}}}}}
+						{tag_add ea_motor_hull}
+						{tag_remove ally_sup_rusa_motor_hull}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_motor_pax}}}}}
+						{tag_add ea_motor_pax}
+						{tag_remove ally_sup_rusa_motor_pax}
+					}
+					{"set_i" {var "enemy_attack_motor_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ea_place_at_entry")
+					("ea_finish_motor")
+					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 92}}
+				}
+			}
+
+			{"enemy_attack/ukr_motor"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} {value 19}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 2}}
+						{"5.cmp_i" {var "enemy_attack_motor_left$"} {op ">"} {value 0}}
+						{"6.entities" {selector {tag ally_sup_ukr_motor_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 91}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY ATTACK MOTORIZED INSERT"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor}}}}}
+						{tag_add ea_deploy}
+						{tag_remove ally_sup_ukr_motor}
+						{tag_remove ally_sup_ukr_motor_crew}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_hull}}}}}
+						{tag_add ea_motor_hull}
+						{tag_remove ally_sup_ukr_motor_hull}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_pax}}}}}
+						{tag_add ea_motor_pax}
+						{tag_remove ally_sup_ukr_motor_pax}
+					}
+					{"set_i" {var "enemy_attack_motor_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ea_place_at_entry")
+					("ea_finish_motor")
+					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 92}}
+				}
+			}
+
+			{"enemy_attack/prc_motor"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} {value 19}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 4}}
+						{"5.cmp_i" {var "enemy_attack_motor_left$"} {op ">"} {value 0}}
+						{"6.entities" {selector {tag ally_sup_prc_motor_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 91}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY ATTACK MOTORIZED INSERT"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor}}}}}
+						{tag_add ea_deploy}
+						{tag_remove ally_sup_prc_motor}
+						{tag_remove ally_sup_prc_motor_crew}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_hull}}}}}
+						{tag_add ea_motor_hull}
+						{tag_remove ally_sup_prc_motor_hull}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_pax}}}}}
+						{tag_add ea_motor_pax}
+						{tag_remove ally_sup_prc_motor_pax}
+					}
+					{"set_i" {var "enemy_attack_motor_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ea_place_at_entry")
+					("ea_finish_motor")
+					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 92}}
+				}
+			}
+
+			{"enemy_attack/nato_motor"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} {value 19}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 3}}
+						{"5.cmp_i" {var "enemy_attack_motor_left$"} {op ">"} {value 0}}
+						{"6.entities" {selector {tag ally_sup_nato_motor_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
+					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 91}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY ATTACK MOTORIZED INSERT"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor}}}}}
+						{tag_add ea_deploy}
+						{tag_remove ally_sup_nato_motor}
+						{tag_remove ally_sup_nato_motor_crew}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_hull}}}}}
+						{tag_add ea_motor_hull}
+						{tag_remove ally_sup_nato_motor_hull}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_motor_pax}}}}}
+						{tag_add ea_motor_pax}
+						{tag_remove ally_sup_nato_motor_pax}
+					}
+					{"set_i" {var "enemy_attack_motor_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ea_place_at_entry")
+					("ea_finish_motor")
+					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 92}}
+				}
+			}
+

@@ -224,9 +224,9 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 "%s_%s" % (key, suffix)
                 for key, _army in EA_FACTIONS
                 for suffix, _cmd, _role, _take, _stage in EA_DRAWS
-            },
+            } | {"%s_motor" % key for key, _army in EA_FACTIONS},
         )
-        self.assertEqual(len(ea), 10)
+        self.assertEqual(len(ea), 14)
 
         # Trigger namespaces are disjoint from each other and from the two
         # attack-mission engines, so no {"trigger"} poke can cross systems.
@@ -255,7 +255,8 @@ class DefenceMissionSupportTests(unittest.TestCase):
             (self.ea, ("ea_entry_next",
                        "ea_place_at_entry", "ea_place_one",
                        "ea_own_to_enemy",
-                       "ea_resolve_army", "ea_finish", "ea_poke_line", "ea_poke_wpn",
+                       "ea_resolve_army", "ea_finish", "ea_finish_motor",
+                       "ea_poke_line", "ea_poke_wpn", "ea_poke_motor",
                        "ea_pick_wave")),
         ):
             for name in names:
@@ -342,6 +343,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
             "enemy_attack_busy",
             "enemy_attack_next_ok",
             "enemy_attack_owner_fail",
+            "enemy_attack_motor_left",
         ):
             self.assertIn('{"%s"}' % name, self.vars)
 
@@ -453,10 +455,15 @@ class DefenceMissionSupportTests(unittest.TestCase):
         # here: if the defence engine ever names one this test fails.
         ds_shared = set(DS_POOL_DEPTH) | {"attack_support_tpl"} | faction_pools
         ds_own = tags(self.ds) - shared - ds_shared
-        ea_own = tags(self.ea) - shared - {"enemy_def_tpl"} - {
+        ea_own = tags(self.ea) - shared - {"enemy_def_tpl", "ally_sup_tpl"} - {
             "enemy_def_%s_%s" % (key, role)
             for key, _army in EA_FACTIONS for role in EA_POOL_DEPTH
-        }
+        } - {
+            # Shared motor packages (faction_support_templates); attack_support inert on defence.
+            "ally_sup_%s_motor%s" % (key, suf)
+            for key, _army in EA_FACTIONS
+            for suf in ("", "_hull", "_crew", "_pax")
+        } - {"ally_sup_%s" % key for key, _army in EA_FACTIONS}
         self.assertTrue(all(t.startswith("def_sup_") for t in ds_own), ds_own)
         self.assertTrue(all(t.startswith("ea_") for t in ea_own), ea_own)
         # Every faction pool the defence engine claims must be one of the allowed
@@ -750,7 +757,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
             "%s_%s" % (key, suffix)
             for key, _army in EA_FACTIONS
             for suffix, _c, _r, _t, _s in EA_DRAWS
-        ):
+        ) + tuple("%s_motor" % key for key, _army in EA_FACTIONS):
             block = trigger_block(self.ea, "enemy_attack/%s" % name)
             self.assertIn(
                 '{var "id_1st_enemy$"} {op ">"} {value 0}',
@@ -763,16 +770,17 @@ class DefenceMissionSupportTests(unittest.TestCase):
             self.conquest,
         )
 
-        # Ownership is handed over exactly once per deploy, after placement.
+        # Ownership is handed over on every deploy finish path (infantry + motor).
         for code, own_name, place, finish in (
             (self.ds, "ds_own_to_defenderbot", "ds_place_at_entry", "ds_finish"),
             (self.ea, "ea_own_to_enemy", "ea_place_at_entry", "ea_finish"),
         ):
-            self.assertEqual(code.count('("%s")' % own_name), 1)
+            self.assertGreaterEqual(code.count('("%s")' % own_name), 1)
             self.assertIn('("%s")' % own_name, define_body(code, finish))
             self.assertLess(
                 code.index('(define "%s"' % place), code.index('(define "%s"' % finish)
             )
+        self.assertIn('("ea_own_to_enemy")', define_body(self.ea, "ea_finish_motor"))
 
     # ------------------------------------------------------------- pool sharing
 
@@ -1249,9 +1257,9 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 finish.index("{tag_remove ea_flag%d}" % n),
                 finish.index("{tag_add ea_flag%d}" % n),
             )
-        self.assertEqual(finish.count("{state {state inactive}}"), 3)
-        self.assertEqual(finish.count("{sort {type shuffle}}"), 3)
-        self.assertEqual(code.count("{select {tag {tag flag}}}"), 3)
+        self.assertGreaterEqual(finish.count("{state {state inactive}}"), 3)
+        self.assertGreaterEqual(finish.count("{sort {type shuffle}}"), 3)
+        self.assertGreaterEqual(code.count("{select {tag {tag flag}}}"), 3)
 
         # Two staggered fireteams. Every draw is four bodies, so two pairs is the whole
         # wave and a third group would only ever order an empty selector.
@@ -1348,7 +1356,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 int(m)
                 for m in re.findall(
                     r'\{"set_i" \{var "enemy_attack_wave_cmd\$"\} \{op "="\} '
-                    r"\{value (\d)\}\}",
+                    r"\{value (\d+)\}\}",
                     block,
                 )
             )
@@ -1360,8 +1368,8 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 % level
             )
             level_case[level] = block_at(pick, pick.rindex('{"case"', 0, at))
-        self.assertEqual(offered(level_case[3]), {1, 2})
-        self.assertEqual(offered(level_case[2]), {1, 2})
+        self.assertEqual(offered(level_case[3]), {1, 2, 19})
+        self.assertEqual(offered(level_case[2]), {1, 2, 19})
         after_l2 = pick.index(level_case[2]) + len(level_case[2])
         level1 = block_at(pick, pick.index('{"default"', after_l2))
         self.assertEqual(offered(level1), {1})
@@ -1374,7 +1382,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
         gaveup = pick.index("ENEMY ATTACK POOL EXHAUSTED")
         self.assertLess(short, gaveup)
         self.assertIn(
-            '{condition {type cmp_i} {var "enemy_attack_wave_cmd$"} {op ">"} {value 1}}',
+            '{condition {type cmp_i} {var "enemy_attack_wave_cmd$"} {op "=="} {value 2}}',
             pick[:short],
         )
         self.assertIn(
@@ -1830,6 +1838,26 @@ class DefenceMissionSupportTests(unittest.TestCase):
             self.assertIn("def_sup_r1", block)
             self.assertIn("def_sup_r2", block)
 
+
+
+    def test_enemy_attack_motorized_parity_on_player_defense(self) -> None:
+        """When player defends, enemy attacker gets cmd 19 motor trucks (shared ally_sup motor pools)."""
+        code = self.ea
+        self.assertIn("enemy_attack_motor_left", self.vars)
+        self.assertIn('{var "enemy_attack_motor_left$"} {op "="} {value 1}', code)
+        self.assertIn('("ea_poke_motor")', code)
+        self.assertIn('("ea_finish_motor")', code)
+        self.assertIn("{mode passengers}", code)
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            self.assertIn('{"enemy_attack/%s_motor"' % fac, code)
+            blk = trigger_block(code, "enemy_attack/%s_motor" % fac)
+            head = blk[: blk.index("{actions")]
+            self.assertIn('{var "user_is_defender$"} {op "=="} {value 1}', head)
+            self.assertIn('{var "enemy_attack_wave_cmd$"} {op "=="} {value 19}', head)
+            self.assertIn("ally_sup_%s_motor_hull" % fac, blk)
+        fac_tpl = (ROOT / "resource/map/multi/faction_support_templates.inc").read_text(encoding="utf-8")
+        self.assertIn("ally_sup_rusa_motor_hull", fac_tpl)
+        self.assertIn("shaanxi_sx2190_passenger", fac_tpl)
 
 
 if __name__ == "__main__":
