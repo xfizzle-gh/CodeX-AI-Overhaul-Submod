@@ -245,7 +245,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
                        "ds_poke_faction_line", "ds_poke_faction_wpn",
                        "ds_poke_faction_recon", "ds_poke_faction_assault",
                        "ds_poke_faction_eng", "ds_poke_faction_manpad")),
-            (self.ea, ("ea_entry_next", "ea_announce_enemy", "ea_announce_exhausted",
+            (self.ea, ("ea_entry_next",
                        "ea_place_at_entry", "ea_place_one",
                        "ea_own_to_enemy",
                        "ea_resolve_army", "ea_finish", "ea_poke_line", "ea_poke_wpn",

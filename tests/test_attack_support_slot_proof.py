@@ -1354,11 +1354,19 @@ class SupportDiagnosticGateTests(unittest.TestCase):
 
     def test_announce_toggle_is_declared_and_enabled_at_init(self) -> None:
         self.assertIn('{"support_announce"}', self.vars)
-        for name, code in self.engines.items():
+        # Friendly engines only — enemy engines stay silent (no HUD spam on spawns).
+        for name in ("attack_support_waves", "defense_support_waves"):
+            code = self.engines[name]
             self.assertIn(
                 '{var "support_announce$"} {op "="} {value 1}',
                 code,
                 "%s never enables announcements" % name,
+            )
+        for name in ("enemy_attack_support", "enemy_defense_support"):
+            self.assertNotIn(
+                "mission/multi/support/",
+                self.raw_engines[name],
+                "%s still has player announce keys" % name,
             )
 
     def test_announce_keys_are_localized(self) -> None:
@@ -1398,7 +1406,8 @@ class SupportDiagnosticGateTests(unittest.TestCase):
                 line for line in header.splitlines() if line.startswith(";")
             )
             self.assertIn("support_debug$", head, "%s header undocumented" % name)
-            self.assertIn("support_announce$", head, "%s announce undocumented" % name)
+            if name in ("attack_support_waves", "defense_support_waves"):
+                self.assertIn("support_announce$", head, "%s announce undocumented" % name)
         self.assertIn("Test-SupportTimerGate", self.deploy)
         self.assertEqual(self.deploy.count("Test-SupportTimerGate $pair[0]"), 2)
         self.assertIn("support_announce", self.deploy)
