@@ -59,10 +59,15 @@ class E2PoolAndStateTests(unittest.TestCase):
         cls.deploy = DEPLOY.read_text(encoding="utf-8")
 
     def test_exact_e2_id_mid_and_parking_bands(self) -> None:
-        ids = re.findall(r'\{(?:Entity|Human) "[^"]+" (0xb4[0-9a-f]{2})', self.tpl)
-        mids = [int(v) for v in re.findall(r"\{MID (98\d\d)\}", self.tpl)]
-        self.assertEqual(ids, [f"0x{n:x}" for n in range(0xB401, 0xB430)])
-        self.assertEqual(mids, list(range(9800, 9847)))
+        expected_ids = [f"0x{n:x}" for n in range(0xB401, 0xB430)]
+        expected_mids = list(range(9800, 9847))
+        e2 = block(self.tpl, "; ===== E2 AIR PACKAGE POOLS", "; ===== TAGS =====")
+        ids = re.findall(r'\{(?:Entity|Human) "[^"]+" (0xb4[0-9a-f]{2})', e2)
+        mids = [int(v) for v in re.findall(r"\{MID (98\d\d)\}", e2)]
+        self.assertEqual(ids, expected_ids)
+        self.assertEqual(mids, expected_mids)
+        for entity_id in expected_ids:
+            self.assertRegex(self.tpl, rf'\{{Tags "ally_sup_tpl" "support_e2_tpl"[^\n]* {entity_id}\}}')
         self.assertEqual(self.tpl.count(" -36800}"), 47)
         self.assertNotIn("0xb400", self.tpl)
 
@@ -96,7 +101,7 @@ class E2PoolAndStateTests(unittest.TestCase):
         self.assertIn("West-81", self.tpl)
         for key in ("e2_helo_inbound", "e2_para_inbound", "e2_insert_failed"):
             self.assertIn(f'msgctxt "mission/multi/support/{key}"', self.pot)
-        for marker in ("must park 502 prototypes", "support_e2_test", "support_e2_para_pax", "ce_ai_logic_triggers.inc"):
+        for marker in ("must park 526 prototypes", "support_e2_test", "support_e2_para_pax", "ce_ai_logic_triggers.inc"):
             self.assertIn(marker, self.deploy)
 
 class E2CeIsolationTests(unittest.TestCase):
