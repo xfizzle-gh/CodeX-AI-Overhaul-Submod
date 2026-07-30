@@ -754,15 +754,369 @@
 			; mission-authority call, so a positive spawn side proves the defence-side
 			; perspective vars have actually been published rather than merely defaulting
 			; to 0 - which is what makes this engine provably inert on a defence mission.
-			; Phase 4: L2+ crewless weapon on defended flags.
+			; Phase 4: one faction-matched weapon emplacement on every defended flag,
+			; CREWED at placement (user decision 2026-07-30 - the earlier "unmanned,
+			; mannable by anyone" design is superseded). A gun nobody mans is scenery;
+			; these have to fight from the first minute, so each one gets a two-man crew
+			; claimed from the DEFENDING faction's own parked line pool, owned by the
+			; defender bot and boarded into that flag's gun.
 			; Parked prototypes in flag_props_templates.inc - claim by static tag,
 			; placement MOVE to flag anchor (same pipeline as every other pool).
 			; No runtime spawn verb. No entity-name selectors. Tag flag_prop on claimed props.
+			;
+			; WHY TWO. The rusa/ukr/prc emplacements are mg_stand_* whose Weaponry names
+			; "gunner" as both gunner and charger, so one body fires them; the nato
+			; emplacement is bgm71_tow_ai, whose {place "gun"} names "gunner" as gunner
+			; and "commander" as charger. A one-man TOW fires its loaded missile and can
+			; never reload. Two is therefore the minimum that makes all four factions
+			; work, and the second body has a real seat on the MGs too (the "commander"
+			; boarder anm). The six extra line-pool draws per mission are funded by a
+			; matching six-per-faction top-up at the end of enemy_defense_templates.inc,
+			; so the reinforcement budget is untouched.
+			;
+			; PER-ANCHOR TAGS. flag_prop alone cannot tell the three guns apart, so the
+			; claim also stamps flag_prop_af1/2/3 and the board pairs each crew with
+			; THAT anchor's weapon. flag_prop_own is the transient ownership batch tag:
+			; the weapon and its two crewmen carry it across the {player} switch and it
+			; is stripped again before the next anchor runs.
+			;
 			; The supply half of Phase 4 is RETIRED and deliberately absent here: every
 			; flag now carries a real flagpoint_ammo supply point linked into its own
 			; built-in "ammo" placer slot by the deploy script, which is the vanilla
 			; mechanism, follows the flag when it changes hands and needs no engine at
 			; all. A prop crate on top of it would be a second, worse supply source.
+
+			; Ownership for the emplacement and its crew. ed_own_to_enemy is hard scoped
+			; to enemy_def_deploy, the wave-body tag, and the props step claims its
+			; bodies straight out of the pool without ever entering the wave path - so
+			; the switch is spelled out a second time against flag_prop_own. Sixteen
+			; literal slots; the default here is FAIL-CLOSED rather than ed_own_to_enemy's
+			; player-2 fallback, because a manned gun handed to a guessed slot on an
+			; unresolved perspective could end up shooting at its own side.
+			(define "ed_own_prop_crew"
+				{"switch"
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 1}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "1"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 2}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "2"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 3}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "3"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 4}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 5}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 6}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 7}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 8}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 9}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 10}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 11}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 12}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 13}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 14}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 15}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag flag_prop_own}} {operation set} {player "16"}}}
+					{"default"
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 10} {title "FLAG WEAPON CREW OWNER UNRESOLVED - NO TRANSFER"}}
+							}
+							{"default"}
+						}
+					}
+				}
+			)
+
+			; One crewman out of the defender faction's line pool, promoted in place and
+			; parked on enemy_def_prop_move for the caller to place. Claimed one at a
+			; time on purpose: two bodies teleported onto one flag in the same instant
+			; crush each other, which is the same spawn-crush rule ed_place_one obeys.
+			(define "ed_crew_claim_one"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 1}}
+						{"entity_state"
+							{selector
+								{source advanced}
+								{group {select {tag {tag enemy_def_rusa_line}}}}
+								{amount 1}
+							}
+							{tag_add enemy_def_prop_move}
+							{tag_add flag_prop_crew}
+							{tag_add flag_prop_own}
+							{tag_remove enemy_def_rusa_line}
+							{tag_remove hidden}
+							{inactive off}
+							{impregnability disabled}
+							{discovered on}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 2}}
+						{"entity_state"
+							{selector
+								{source advanced}
+								{group {select {tag {tag enemy_def_ukr_line}}}}
+								{amount 1}
+							}
+							{tag_add enemy_def_prop_move}
+							{tag_add flag_prop_crew}
+							{tag_add flag_prop_own}
+							{tag_remove enemy_def_ukr_line}
+							{tag_remove hidden}
+							{inactive off}
+							{impregnability disabled}
+							{discovered on}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 4}}
+						{"entity_state"
+							{selector
+								{source advanced}
+								{group {select {tag {tag enemy_def_prc_line}}}}
+								{amount 1}
+							}
+							{tag_add enemy_def_prop_move}
+							{tag_add flag_prop_crew}
+							{tag_add flag_prop_own}
+							{tag_remove enemy_def_prc_line}
+							{tag_remove hidden}
+							{inactive off}
+							{impregnability disabled}
+							{discovered on}
+						}
+					}
+					{"default"
+						{"entity_state"
+							{selector
+								{source advanced}
+								{group {select {tag {tag enemy_def_nato_line}}}}
+								{amount 1}
+							}
+							{tag_add enemy_def_prop_move}
+							{tag_add flag_prop_crew}
+							{tag_add flag_prop_own}
+							{tag_remove enemy_def_nato_line}
+							{tag_remove hidden}
+							{inactive off}
+							{impregnability disabled}
+							{discovered on}
+						}
+					}
+				}
+				{"delay" {time 0.05}}
+			)
+
+			; Crew flag 1's emplacement: claim, drip-place, own the whole batch through
+			; the literal switch, then board that anchor's weapon only. The ownership
+			; call comes AFTER both crewmen are down and carries the weapon with them,
+			; so gun and crew end the step on the same player - {player set} on a unit
+			; that already belongs to that slot is a no-op, so the ordering is safe
+			; either way. flag_prop_own is stripped at the end: the next anchor's batch
+			; must not re-own this one's.
+			(define "ed_crew_af1"
+				("ed_crew_claim_one")
+				{"placement"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_prop_move}}
+					{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
+				}
+				{"entity_state"
+					{selector {tag enemy_def_prop_move}}
+					{tag_add enemy_def_crew_af1}
+					{tag_remove enemy_def_prop_move}
+				}
+				{"delay" {time 0.5}}
+				("ed_crew_claim_one")
+				{"placement"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_prop_move}}
+					{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
+				}
+				{"entity_state"
+					{selector {tag enemy_def_prop_move}}
+					{tag_add enemy_def_crew_af1}
+					{tag_remove enemy_def_prop_move}
+				}
+				{"delay" {time 0.5}}
+				("ed_own_prop_crew")
+				{"delay" {time 0.4}}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_crew_af1}}
+					{control AI}
+					{drop orders}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_crew_af1}}
+					{remove select}
+				}
+				{"delay" {time 0.3}}
+				{"board"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_crew_af1}}
+					{vehicle
+						{source advanced}
+						{group
+							{select {tag {tag flag_prop_af1}}}
+							{exclude
+								{tag {tag destroyed}}
+								{state {state inhabited}}
+								{state {state linked}}
+							}
+						}
+					}
+				}
+				{"delay" {time 0.5}}
+				{"entity_state"
+					{selector {tag flag_prop_own}}
+					{tag_remove flag_prop_own}
+				}
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+						{"timer" {time 6} {title "ENEMY FLAG 1 WEAPON CREWED"}}
+					}
+					{"default"}
+				}
+			)
+
+			(define "ed_crew_af2"
+				("ed_crew_claim_one")
+				{"placement"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_prop_move}}
+					{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
+				}
+				{"entity_state"
+					{selector {tag enemy_def_prop_move}}
+					{tag_add enemy_def_crew_af2}
+					{tag_remove enemy_def_prop_move}
+				}
+				{"delay" {time 0.5}}
+				("ed_crew_claim_one")
+				{"placement"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_prop_move}}
+					{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
+				}
+				{"entity_state"
+					{selector {tag enemy_def_prop_move}}
+					{tag_add enemy_def_crew_af2}
+					{tag_remove enemy_def_prop_move}
+				}
+				{"delay" {time 0.5}}
+				("ed_own_prop_crew")
+				{"delay" {time 0.4}}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_crew_af2}}
+					{control AI}
+					{drop orders}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_crew_af2}}
+					{remove select}
+				}
+				{"delay" {time 0.3}}
+				{"board"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_crew_af2}}
+					{vehicle
+						{source advanced}
+						{group
+							{select {tag {tag flag_prop_af2}}}
+							{exclude
+								{tag {tag destroyed}}
+								{state {state inhabited}}
+								{state {state linked}}
+							}
+						}
+					}
+				}
+				{"delay" {time 0.5}}
+				{"entity_state"
+					{selector {tag flag_prop_own}}
+					{tag_remove flag_prop_own}
+				}
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+						{"timer" {time 6} {title "ENEMY FLAG 2 WEAPON CREWED"}}
+					}
+					{"default"}
+				}
+			)
+
+			(define "ed_crew_af3"
+				("ed_crew_claim_one")
+				{"placement"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_prop_move}}
+					{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
+				}
+				{"entity_state"
+					{selector {tag enemy_def_prop_move}}
+					{tag_add enemy_def_crew_af3}
+					{tag_remove enemy_def_prop_move}
+				}
+				{"delay" {time 0.5}}
+				("ed_crew_claim_one")
+				{"placement"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_prop_move}}
+					{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
+				}
+				{"entity_state"
+					{selector {tag enemy_def_prop_move}}
+					{tag_add enemy_def_crew_af3}
+					{tag_remove enemy_def_prop_move}
+				}
+				{"delay" {time 0.5}}
+				("ed_own_prop_crew")
+				{"delay" {time 0.4}}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_crew_af3}}
+					{control AI}
+					{drop orders}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_crew_af3}}
+					{remove select}
+				}
+				{"delay" {time 0.3}}
+				{"board"
+					{selector {ignore_captured_by_user 0} {tag enemy_def_crew_af3}}
+					{vehicle
+						{source advanced}
+						{group
+							{select {tag {tag flag_prop_af3}}}
+							{exclude
+								{tag {tag destroyed}}
+								{state {state inhabited}}
+								{state {state linked}}
+							}
+						}
+					}
+				}
+				{"delay" {time 0.5}}
+				{"entity_state"
+					{selector {tag flag_prop_own}}
+					{tag_remove flag_prop_own}
+				}
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+						{"timer" {time 6} {title "ENEMY FLAG 3 WEAPON CREWED"}}
+					}
+					{"default"}
+				}
+			)
 
 			(define "ed_props_af1"
 				{"if"
@@ -784,6 +1138,8 @@
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_add flag_prop_af1}
+										{tag_add flag_prop_own}
 										{tag_remove flag_prop_wpn_rusa}
 									}
 									{"delay" {time 0.05}}
@@ -809,6 +1165,8 @@
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_add flag_prop_af1}
+										{tag_add flag_prop_own}
 										{tag_remove flag_prop_wpn_ukr}
 									}
 									{"delay" {time 0.05}}
@@ -834,6 +1192,8 @@
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_add flag_prop_af1}
+										{tag_add flag_prop_own}
 										{tag_remove flag_prop_wpn_prc}
 									}
 									{"delay" {time 0.05}}
@@ -858,6 +1218,8 @@
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_add flag_prop_af1}
+										{tag_add flag_prop_own}
 										{tag_remove flag_prop_wpn_nato}
 									}
 									{"delay" {time 0.05}}
@@ -871,6 +1233,22 @@
 									}
 								}
 							}
+								; The gun is scenery until it is activated and selectable: the pool
+								; parks it hidden with {Able "-select"}, exactly as it parks a body,
+								; and the wave path only ever cleared that for infantry.
+								{"entity_state"
+									{selector {tag flag_prop_af1}}
+									{tag_remove hidden}
+									{inactive off}
+									{impregnability disabled}
+									{discovered on}
+								}
+								{"ables"
+									{selector {ignore_captured_by_user 0} {tag flag_prop_af1}}
+									{remove select}
+								}
+								{"delay" {time 0.2}}
+								("ed_crew_af1")
 						}
 						{"default"}
 					}
@@ -897,6 +1275,8 @@
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_add flag_prop_af2}
+										{tag_add flag_prop_own}
 										{tag_remove flag_prop_wpn_rusa}
 									}
 									{"delay" {time 0.05}}
@@ -922,6 +1302,8 @@
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_add flag_prop_af2}
+										{tag_add flag_prop_own}
 										{tag_remove flag_prop_wpn_ukr}
 									}
 									{"delay" {time 0.05}}
@@ -947,6 +1329,8 @@
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_add flag_prop_af2}
+										{tag_add flag_prop_own}
 										{tag_remove flag_prop_wpn_prc}
 									}
 									{"delay" {time 0.05}}
@@ -971,6 +1355,8 @@
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_add flag_prop_af2}
+										{tag_add flag_prop_own}
 										{tag_remove flag_prop_wpn_nato}
 									}
 									{"delay" {time 0.05}}
@@ -984,6 +1370,22 @@
 									}
 								}
 							}
+								; The gun is scenery until it is activated and selectable: the pool
+								; parks it hidden with {Able "-select"}, exactly as it parks a body,
+								; and the wave path only ever cleared that for infantry.
+								{"entity_state"
+									{selector {tag flag_prop_af2}}
+									{tag_remove hidden}
+									{inactive off}
+									{impregnability disabled}
+									{discovered on}
+								}
+								{"ables"
+									{selector {ignore_captured_by_user 0} {tag flag_prop_af2}}
+									{remove select}
+								}
+								{"delay" {time 0.2}}
+								("ed_crew_af2")
 						}
 						{"default"}
 					}
@@ -1010,6 +1412,8 @@
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_add flag_prop_af3}
+										{tag_add flag_prop_own}
 										{tag_remove flag_prop_wpn_rusa}
 									}
 									{"delay" {time 0.05}}
@@ -1035,6 +1439,8 @@
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_add flag_prop_af3}
+										{tag_add flag_prop_own}
 										{tag_remove flag_prop_wpn_ukr}
 									}
 									{"delay" {time 0.05}}
@@ -1060,6 +1466,8 @@
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_add flag_prop_af3}
+										{tag_add flag_prop_own}
 										{tag_remove flag_prop_wpn_prc}
 									}
 									{"delay" {time 0.05}}
@@ -1084,6 +1492,8 @@
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_add flag_prop_af3}
+										{tag_add flag_prop_own}
 										{tag_remove flag_prop_wpn_nato}
 									}
 									{"delay" {time 0.05}}
@@ -1097,6 +1507,22 @@
 									}
 								}
 							}
+								; The gun is scenery until it is activated and selectable: the pool
+								; parks it hidden with {Able "-select"}, exactly as it parks a body,
+								; and the wave path only ever cleared that for infantry.
+								{"entity_state"
+									{selector {tag flag_prop_af3}}
+									{tag_remove hidden}
+									{inactive off}
+									{impregnability disabled}
+									{discovered on}
+								}
+								{"ables"
+									{selector {ignore_captured_by_user 0} {tag flag_prop_af3}}
+									{remove select}
+								}
+								{"delay" {time 0.2}}
+								("ed_crew_af3")
 						}
 						{"default"}
 					}

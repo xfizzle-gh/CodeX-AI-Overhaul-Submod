@@ -760,17 +760,21 @@ $defGates = [regex]::Matches($defText, [regex]::Escape('{var "user_is_defender$"
 if ($defGates.Count -lt 19) {
     throw "Only $($defGates.Count) of the 19 enemy_defense triggers carry the user_is_defender$ == 0 gate"
 }
-# 160 prototypes: 4 faction pools x (24 line + 16 weapons). A claim MOVES bodies
-# out and never returns them, so each pool carries the whole L3 budget alone.
+# 184 prototypes: 4 faction pools x (30 line + 16 weapons). A claim MOVES bodies
+# out and never returns them, so each pool carries the whole L3 budget alone. The
+# line pool is 30 rather than the original 24 because the three flag emplacements
+# this engine plants are CREWED from it: 3 anchors x 2 crew = 6 extra draws per
+# mission, funded one for one so the garrison plus 8-wave reinforcement budget is
+# unchanged.
 $defTplAble = (Select-String -LiteralPath $defTplSource -SimpleMatch '{Able "-select"}').Count
-if ($defTplAble -ne 160) {
-    throw "Source enemy defence pool must park 160 prototypes with selection stripped (4 factions x 40); found $defTplAble"
+if ($defTplAble -ne 184) {
+    throw "Source enemy defence pool must park 184 prototypes with selection stripped (4 factions x 46, line deepened to fund the flag-weapon crews); found $defTplAble"
 }
 foreach ($pair in @(
-    @('enemy_def_rusa_line', 24), @('enemy_def_rusa_wpn', 16),
-    @('enemy_def_ukr_line', 24), @('enemy_def_ukr_wpn', 16),
-    @('enemy_def_prc_line', 24), @('enemy_def_prc_wpn', 16),
-    @('enemy_def_nato_line', 24), @('enemy_def_nato_wpn', 16)
+    @('enemy_def_rusa_line', 30), @('enemy_def_rusa_wpn', 16),
+    @('enemy_def_ukr_line', 30), @('enemy_def_ukr_wpn', 16),
+    @('enemy_def_prc_line', 30), @('enemy_def_prc_wpn', 16),
+    @('enemy_def_nato_line', 30), @('enemy_def_nato_wpn', 16)
 )) {
     $n = (Select-String -LiteralPath $defTplSource -SimpleMatch ('"' + $pair[0] + '"')).Count
     if ($n -ne $pair[1]) {
@@ -787,7 +791,7 @@ if (Select-String -Quiet -LiteralPath $defTplSource -Pattern '^\s*\{Inventory') 
 if (Select-String -Quiet -LiteralPath $defTplSource -Pattern '^\s*\{(Entity|Vehicle) ') {
     throw "Enemy defence templates must be infantry only - enemy armour comes from the purchase economy"
 }
-# Paths that do not exist in Code:X and would silently park 160 absent entities.
+# Paths that do not exist in Code:X and would silently park 184 absent entities.
 foreach ($banned in @('era1960', "$([char]0x65B0)$([char]0x5EFA)$([char]0x6587)$([char]0x4EF6)$([char]0x5939)")) {
     if (Select-String -Quiet -LiteralPath $defTplSource -SimpleMatch $banned) {
         throw "Enemy defence templates reference a non-existent breed path: $banned"
@@ -1104,16 +1108,19 @@ if ($tplMidMax -ge 9100) {
     throw "Source template pool MID $tplMidMax runs into the enemy-defence band at 9100"
 }
 
-# Player-nation pools: 502 prototypes across four factions (incl. rare IFV packages). Depths are per faction and
+# Player-nation pools: 526 prototypes across four factions (incl. rare IFV packages). Depths are per faction and
 # each is shared by the attack and defence engines, which never run on the same mission,
-# so each only has to cover ONE engine's L3 budget of 8 waves.
+# so each only has to cover ONE engine's L3 budget of 8 waves. The line pool is 30
+# rather than the original 24 because the three flag emplacements the defence engine
+# plants are CREWED from it: 3 anchors x 2 crew = 6 extra draws per mission, funded
+# one for one so the wave budget is unchanged.
 $factionAble = (Select-String -LiteralPath $factionTplSource -SimpleMatch '{Able "-select"}').Count
-if ($factionAble -ne 502) {
-    throw "Faction pool must park 502 prototypes with selection stripped; found $factionAble"
+if ($factionAble -ne 526) {
+    throw "Faction pool must park 526 prototypes with selection stripped; found $factionAble"
 }
 foreach ($faction in @('rusa', 'ukr', 'prc', 'nato')) {
     foreach ($pair in @(
-        @('line', 24), @('wpn', 16), @('recon', 15),
+        @('line', 30), @('wpn', 16), @('recon', 15),
         @('assault', 16), @('eng', 12), @('manpad', 8)
     )) {
         $tag = 'ally_sup_' + $faction + '_' + $pair[0]
@@ -1146,8 +1153,8 @@ if (Select-String -Quiet -LiteralPath $factionTplSource -Pattern '^\s*\{Human ""
 }
 $factionMids = [regex]::Matches((Get-Content -Raw -LiteralPath $factionTplSource), '\{MID (\d+)\}') |
     ForEach-Object { [int]$_.Groups[1].Value }
-if (($factionMids | Sort-Object -Unique).Count -ne 502) {
-    throw "Faction pool must carry 502 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"
+if (($factionMids | Sort-Object -Unique).Count -ne 526) {
+    throw "Faction pool must carry 526 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"
 }
 if (($factionMids | Measure-Object -Minimum).Minimum -lt 9300) {
     throw "Faction pool MIDs must start at 9300, clear of the other two pools"
@@ -1894,8 +1901,8 @@ if (-not (Test-Path -LiteralPath $factionTarget)) {
 foreach ($marker in $E2HeloTemplateMarkers) {
     if (-not (Select-String -Quiet -LiteralPath $factionTarget -SimpleMatch $marker)) { throw "Workshop E2 helicopter template is missing marker: $marker" }
 }
-if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able "-select"}').Count -ne 502) {
-    throw "Workshop faction pool is not the 502-prototype player-nation pool"
+if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able "-select"}').Count -ne 526) {
+    throw "Workshop faction pool is not the 526-prototype player-nation pool"
 }
 if (Select-String -Quiet -LiteralPath $factionTarget -Pattern '^\s*\{Human ""') {
     throw "Workshop faction pool reverted to the breed-less empty-name Human form"
@@ -1967,8 +1974,8 @@ foreach ($banned in @('{clone}', '{include {prop human}}', '{state {state operat
 if (Select-String -Quiet -LiteralPath $def -Pattern '^[^;]*\bfpc') {
     throw "Workshop enemy defence engine still targets fpc* capture points"
 }
-if ((Select-String -LiteralPath $defTpl -SimpleMatch '{Able "-select"}').Count -ne 160) {
-    throw "Workshop enemy defence pool is not the 160-prototype four-faction pool"
+if ((Select-String -LiteralPath $defTpl -SimpleMatch '{Able "-select"}').Count -ne 184) {
+    throw "Workshop enemy defence pool is not the 184-prototype four-faction pool"
 }
 foreach ($breedRef in @(
     '{Human "mp/rusa/2022s/rus90_rifleman"',
@@ -2212,8 +2219,9 @@ if (-not (Test-Path -LiteralPath $flagPropsTarget)) {
 # Twelve, not the original fifteen: the three ammo crates are retired. Flags get
 # their supply from a real flagpoint_ammo linked into the flag's own "ammo" placer
 # slot (see Set-FlagAmmoSupply), which is the vanilla mechanism and follows the flag
-# when it changes hands, so a crate prop on top of it is dead weight. Only the L2+
-# crewless weapon half of Phase 4 still comes out of this pool.
+# when it changes hands, so a crate prop on top of it is dead weight. Only the
+# weapon half of Phase 4 still comes out of this pool, and those weapons are now
+# CREWED at placement rather than left unmanned.
 if ((Select-String -LiteralPath $flagPropsTarget -SimpleMatch '{Able "-select"}').Count -ne 12) {
     throw "Workshop flag-prop pool is not the 12-prototype weapons-only pool"
 }
@@ -2256,10 +2264,29 @@ foreach ($pair in @(
     # The weapon half of Phase 4 stays; the crate half is retired and must not
     # reappear in either garrison path.
     if ($codeOnly -notmatch 'flag_prop_wpn_nato') {
-        throw ("Workshop {0} missing the L2+ crewless weapon claim" -f $pair[1])
+        throw ("Workshop {0} missing the flag weapon claim" -f $pair[1])
     }
     if ($codeOnly -match 'flag_prop_ammo') {
         throw ("Workshop {0} still claims the retired ammo crate" -f $pair[1])
+    }
+    # CREWED EMPLACEMENTS (user decision 2026-07-30). A gun nobody mans is scenery,
+    # so every anchor's weapon has to be discriminable (flag_prop_afN), owned by the
+    # defending bot through a literal {player} switch scoped to flag_prop_own, and
+    # boarded by two bodies claimed from that faction's line pool.
+    foreach ($needed in @('flag_prop_af1', 'flag_prop_af2', 'flag_prop_af3',
+                          'flag_prop_own', 'flag_prop_crew', '{"board"')) {
+        if ($codeOnly -notmatch [regex]::Escape($needed)) {
+            throw ("Workshop {0} flag emplacements are not crewed; missing marker" -f $pair[1])
+        }
+    }
+    # The board must pair a crew with its OWN anchor's gun, never the shared tag.
+    if ($codeOnly -match [regex]::Escape('{select {tag {tag flag_prop}}}')) {
+        throw ("Workshop {0} boards against the shared flag_prop tag, which cannot tell the three guns apart" -f $pair[1])
+    }
+    # The parked prototypes ship hidden and {Able "-select"}; a gun left that way
+    # never fights, so both have to be cleared once it is on the flag.
+    if ($codeOnly -notmatch [regex]::Escape('{"ables"')) {
+        throw ("Workshop {0} never restores selectability on the placed emplacement" -f $pair[1])
     }
 }
 

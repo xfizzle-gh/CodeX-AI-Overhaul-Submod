@@ -63,8 +63,13 @@ MAP_INCLUDES = (
 # faction_support_army$ folds user_nation$: sov/pol join rusa, csa/frg join nato.
 FACTION_ARMIES = (("rusa", 1), ("ukr", 2), ("nato", 3), ("prc", 4))
 # comp suffix -> (wave command, bodies drawn per wave, pool depth per faction)
+# The line depth is 30, not the 24 the other pools scale from: the three flag
+# emplacements the defence garrison plants are CREWED out of this pool (2 bodies
+# per gun x 3 anchors = 6 draws per mission), and the top-up at the end of
+# faction_support_templates.inc funds those six one for one so the wave budget is
+# untouched. See test_flag_emplacements_are_crewed_from_the_line_pool.
 FACTION_COMPS = (
-    ("line", 10, 4, 24),
+    ("line", 10, 4, 30),
     ("wpn", 11, 4, 16),
     ("recon", 12, 3, 15),
     ("assault", 13, 4, 16),
@@ -91,7 +96,9 @@ DS_POOL_DEPTH = {"attack_support_inf_usmc": 20, "attack_support_inf_1ad": 20,
 EA_FACTIONS = (("rusa", 1), ("ukr", 2), ("prc", 4), ("nato", 3))
 # Q3 draws: trigger suffix -> (wave_cmd, shared enemy-defence pool role, bodies, stage)
 EA_DRAWS = (("line", 1, "line", 4, 10), ("wpn", 2, "wpn", 4, 20))
-EA_POOL_DEPTH = {"line": 24, "wpn": 16}
+# 30, not 24: six of the line pool fund the two-man crews on the three flag
+# emplacements enemy_defense_support.inc plants at garrison time.
+EA_POOL_DEPTH = {"line": 30, "wpn": 16}
 
 # Budgets. Both mirror the attack-mission pair: L1 4 / L2 6 / L3 8, level 0 -> L1.
 WAVE_BUDGET = ((3, 8), (2, 6))
@@ -253,6 +260,8 @@ class DefenceMissionSupportTests(unittest.TestCase):
                        "ds_poke_faction_eng", "ds_poke_faction_manpad",
                        "ds_poke_faction_air",
                        "ds_props_af1", "ds_props_af2", "ds_props_af3",
+                       "ds_own_prop_crew", "ds_crew_claim_one",
+                       "ds_crew_af1", "ds_crew_af2", "ds_crew_af3",
                        "ds_place_flag_props")),
             (self.ea, ("ea_entry_next",
                        "ea_place_at_entry", "ea_place_one",
@@ -434,13 +443,24 @@ class DefenceMissionSupportTests(unittest.TestCase):
             return set(re.findall(r"\{tag(?:_add|_remove)? ([a-z0-9_]+)\}", code))
 
         # "player" is the stock radio {"talk"} portrait selector, not engine state.
-        # "flag_prop" / "flag_prop_move" mark the unmanned Phase-4 crewless MG props.
+        # "flag_prop" / "flag_prop_move" mark the Phase-4 flag emplacements, which
+        # are CREWED at placement: flag_prop_afN discriminates the three guns so a
+        # crew boards its own, flag_prop_own is the transient ownership batch tag the
+        # gun and its two crewmen share across the literal {player} switch, and
+        # flag_prop_crew is the permanent marker on a claimed crewman. All five are
+        # deliberately identical in both defender engines - the two never run on the
+        # same mission, so the shared vocabulary cannot race.
         # There is no flag_prop_ammo any more: flag supply is a linked flagpoint_ammo
         # entity in the flag's own placer slot, not a claimed prop.
         shared = {"flag", "hidden", "player", "flag_prop", "flag_prop_move",
                   "flag_prop_tpl",
                   "flag_prop_wpn_rusa", "flag_prop_wpn_ukr",
                   "flag_prop_wpn_prc", "flag_prop_wpn_nato",
+                  "flag_prop_af1", "flag_prop_af2", "flag_prop_af3",
+                  "flag_prop_own", "flag_prop_crew",
+                  # "destroyed" is the engine's own wreck marker, not our state: the
+                  # board excludes it so a crew never climbs into a dead gun.
+                  "destroyed",
                   "_bot"}
         # Pool tags the defence engine is ALLOWED to claim from: the original NATO
         # comps plus the player-nation faction pools it now shares with Q1. These are
@@ -1773,6 +1793,9 @@ class DefenceMissionSupportTests(unittest.TestCase):
         self.assertIn("flag_prop_wpn_nato", code)
         self.assertIn('{tag_add flag_prop_move}', code)
         self.assertIn('{tag_remove flag_prop_move}', code)
+        # Crewed, not unmanned: the gun is boarded by bodies from the line pool.
+        self.assertIn('{"board"', code)
+        self.assertIn('{"board"', self.q4)
         tpl = (ROOT / "resource/map/multi/flag_props_templates.inc").read_text(encoding="utf-8")
         self.assertEqual(tpl.count('{Able "-select"}'), 12)
         self.assertIn('{Entity "bgm71_tow_ai"', tpl)
@@ -1798,6 +1821,8 @@ class DefenceMissionSupportTests(unittest.TestCase):
             self.assertNotIn("flag_prop_ammo", code_only, label)
             self.assertNotIn("para_ammo", code_only, label)
         # ... and the weapon half is untouched: one claim per faction per anchor.
+        # (Untouched in count; those weapons are now crewed - see
+        # test_flag_emplacements_are_crewed_from_the_line_pool.)
         for text, label in ((self.ds, "Q2"), (self.q4, "Q4")):
             for army in ("rusa", "ukr", "prc", "nato"):
                 self.assertEqual(
@@ -1865,6 +1890,198 @@ class DefenceMissionSupportTests(unittest.TestCase):
         fac_tpl = (ROOT / "resource/map/multi/faction_support_templates.inc").read_text(encoding="utf-8")
         self.assertIn("ally_sup_rusa_motor_hull", fac_tpl)
         self.assertIn("shaanxi_sx2190_passenger", fac_tpl)
+
+
+    def test_flag_emplacements_are_crewed_from_the_line_pool(self) -> None:
+        """The flag guns are CREWED at placement, not left as unmanned scenery.
+
+        User decision 2026-07-30: the Phase-4 v1 design parked a faction-matched
+        weapon on every defended flag at player 0 and hoped somebody would walk into
+        it. Nobody did, so the guns were scenery. Both defender engines now claim two
+        bodies from the DEFENDING faction's own line pool per anchor, place them one
+        at a time, transfer gun and crew together through a literal 1-16 {player}
+        switch, and board that crew into THAT anchor's gun.
+
+        Everything below is a live-run constraint, not taste:
+          * per-anchor weapon tags, because the shared flag_prop tag cannot tell the
+            three guns apart and a board against it would stuff all six crewmen into
+            whichever gun the selector happened to return first;
+          * one claim + one placement per crewman with a drip between them, because
+            two bodies teleported onto one point in the same instant crush each other;
+          * a fail-closed ownership default, because an unresolved defender bot on a
+            defence mission could be the attacker;
+          * hidden/inactive cleared and {"ables"} {remove select} run on the gun,
+            because the pool parks emplacements exactly as it parks bodies and the
+            wave path only ever cleared that for infantry.
+        """
+        engines = (
+            (self.ds, "ds", "def_sup", "id_defenderbot$", "faction_support_army$",
+             "ally_sup_%s_line"),
+            (self.q4, "ed", "enemy_def", "id_1st_enemy$", "enemy_defense_army$",
+             "enemy_def_%s_line"),
+        )
+        for code, pre, ns, owner, army_var, pool in engines:
+            with self.subTest(engine=pre):
+                # Per-anchor discrimination: each gun claim stamps its own anchor tag
+                # and the shared ownership batch tag, three anchors x four factions.
+                for n in (1, 2, 3):
+                    self.assertEqual(code.count("{tag_add flag_prop_af%d}" % n), 4)
+                self.assertEqual(code.count("{tag_add flag_prop_own}"), 12 + 4)
+
+                # The gun is woken up before anyone tries to man it.
+                for n in (1, 2, 3):
+                    self.assertIn(
+                        '{"ables"\n'
+                        "\t\t\t\t\t\t\t\t\t{selector {ignore_captured_by_user 0} "
+                        "{tag flag_prop_af%d}}\n"
+                        "\t\t\t\t\t\t\t\t\t{remove select}\n" % n,
+                        code,
+                    )
+                self.assertEqual(code.count("{tag_remove hidden}\n"
+                                            "\t\t\t\t\t\t\t\t\t{inactive off}"), 3)
+
+                claim = define_body(code, "%s_crew_claim_one" % pre)
+                # One body at a time out of the line pool, and only the line pool.
+                self.assertEqual(claim.count("{amount 1}"), 4)
+                self.assertNotIn("{amount 2}", claim)
+                for key in ("rusa", "ukr", "prc", "nato"):
+                    tag = pool % key
+                    self.assertIn("{select {tag {tag %s}}}" % tag, claim)
+                    self.assertIn("{tag_remove %s}" % tag, claim)
+                # Bare pool selector: decorating it zeroes the match on parked bodies.
+                self.assertNotIn("{include", claim)
+                self.assertNotIn("{state {state operatable}}", claim)
+                # Faction fold is a var switch with a NATO default, same as every
+                # other draw in the engine.
+                for value in (1, 2, 4):
+                    self.assertIn(
+                        '{condition {type cmp_i} {var "%s"} {op "=="} {value %d}}'
+                        % (army_var, value), claim,
+                    )
+                self.assertIn('{"default"', claim)
+                # Promoted in place: a body still flagged hidden/inactive cannot board.
+                self.assertEqual(claim.count("{tag_remove hidden}"), 4)
+                self.assertEqual(claim.count("{inactive off}"), 4)
+                self.assertEqual(claim.count("{tag_add flag_prop_crew}"), 4)
+
+                own = define_body(code, "%s_own_prop_crew" % pre)
+                for slot in range(1, 17):
+                    self.assertIn(
+                        '{condition {type cmp_i} {var "%s"} {op "=="} {value %d}} '
+                        '{"player" {selector {ignore_captured_by_user 0} '
+                        '{tag flag_prop_own}} {operation set} {player "%d"}}'
+                        % (owner, slot, slot), own,
+                    )
+                self.assertNotIn('{player "17"}', own)
+                self.assertNotIn('{player "0"}', own)
+                # FAIL-CLOSED: the default branch must not transfer to a guessed slot.
+                default = own[own.rindex('{"default"'):]
+                self.assertNotIn('{"player"', default)
+
+                for n in (1, 2, 3):
+                    crew = define_body(code, "%s_crew_af%d" % (pre, n))
+                    # Two crewmen, claimed and placed one at a time, 0.5s apart.
+                    self.assertEqual(crew.count('("%s_crew_claim_one")' % pre), 2)
+                    self.assertEqual(
+                        crew.count("{tag {ignore_captured_by_user 0} {tag %s_prop_move}}"
+                                   % ns), 0)
+                    self.assertEqual(crew.count('{"placement"'), 2)
+                    self.assertEqual(
+                        crew.count("{target {ignore_captured_by_user 0} "
+                                   "{tag %s_af%d}}" % (ns, n)), 2)
+                    self.assertEqual(crew.count("{tag_add %s_crew_af%d}" % (ns, n)), 2)
+                    self.assertGreaterEqual(crew.count('{"delay" {time 0.5}}'), 2)
+                    # Ownership runs after both bodies are down, then the board.
+                    at_own = crew.index('("%s_own_prop_crew")' % pre)
+                    self.assertLess(crew.rindex('{"placement"'), at_own)
+                    self.assertLess(at_own, crew.index('{"board"'))
+                    # ... and the batch tag is stripped so the next anchor cannot
+                    # re-own this anchor's gun and crew.
+                    self.assertLess(at_own, crew.rindex("{tag_remove flag_prop_own}"))
+
+                    # THE BOARD. Bare select by tag against this anchor's gun only;
+                    # the CE reference form's {include {prop vehicle}} decoration is
+                    # deliberately dropped (see the pipeline regression test), the
+                    # excludes are kept.
+                    board = block_at(crew, crew.index('{"board"'))
+                    self.assertIn("{selector {ignore_captured_by_user 0} "
+                                  "{tag %s_crew_af%d}}" % (ns, n), board)
+                    self.assertIn("{select {tag {tag flag_prop_af%d}}}" % n, board)
+                    self.assertNotIn("{include", board)
+                    self.assertNotIn("{select {tag {tag flag_prop}}}", board)
+                    self.assertIn("{exclude", board)
+                    for state in ("inhabited", "linked"):
+                        self.assertIn("{state {state %s}}" % state, board)
+                    self.assertIn("{tag {tag destroyed}}", board)
+                    self.assertIn("{source advanced}", board)
+
+                # Called from the props step, never from a wave path.
+                for n in (1, 2, 3):
+                    props = define_body(code, "%s_props_af%d" % (pre, n))
+                    self.assertIn('("%s_crew_af%d")' % (pre, n), props)
+                self.assertEqual(code.count('("%s_crew_af1")' % pre), 1)
+
+                # A garrison crew arriving is not an event worth a headline: the only
+                # on-screen text here is a support_debug$-gated diagnostic.
+                self.assertNotIn("support_announce", define_body(code, "%s_crew_af1" % pre))
+
+    def test_flag_emplacement_crews_are_funded_by_the_pool_top_up(self) -> None:
+        """Six extra line-pool draws per mission, funded one for one.
+
+        A claim MOVES a prototype out of the pool and never returns it, so crewing
+        the three guns is a permanent 6-body charge against the line pool of whichever
+        faction is defending. Before the top-up the arithmetic did not close:
+
+            Q4 line pool 24 = 3 garrison fireteams (12) + 8 L3 reinforcement waves
+                              of at most 3 bodies (24) -> already 36 wanted from 40
+                              across line+wpn, and +6 crew pushed it to 42 > 40.
+
+        The fix is prototypes, not a smaller crew - two is the minimum that makes the
+        NATO bgm71_tow_ai work at all, because its charger is the "commander" seat.
+        Both line pools therefore carry 30 rather than 24 per faction.
+        """
+        fac_tpl = (ROOT / "resource/map/multi/faction_support_templates.inc").read_text(
+            encoding="utf-8")
+        q4_tpl = (ROOT / "resource/map/multi/enemy_defense_templates.inc").read_text(
+            encoding="utf-8")
+
+        anchors, crew_per_gun = 3, 2
+        crew_draws = anchors * crew_per_gun
+        self.assertEqual(crew_draws, 6)
+
+        for label, tpl, tag in (("Q2", fac_tpl, "ally_sup_%s_line"),
+                                ("Q4", q4_tpl, "enemy_def_%s_line")):
+            for key in ("rusa", "ukr", "prc", "nato"):
+                with self.subTest(pool=label + "/" + key):
+                    depth = tpl.count('"%s"' % (tag % key))
+                    self.assertEqual(depth, 30)
+                    # The top-up is exactly the crew charge - no slack was smuggled in.
+                    self.assertEqual(depth - 24, crew_draws)
+
+        # Q4 is the binding case: garrison + crew + the whole L3 reinforcement budget
+        # has to fit inside what the faction parks, or the trickle stream dies in the
+        # first three minutes.
+        garrison = 3 * 4
+        l3_waves, trickle_bodies = 8, 3
+        per_faction = 30 + 16
+        self.assertGreaterEqual(
+            per_faction, garrison + crew_draws + l3_waves * trickle_bodies)
+
+        # And the crew bodies are gun crews by breed: a gunner and a loader.
+        for tpl, side_stem in ((fac_tpl, (("rusa", "rus90"), ("ukr", "ter"),
+                                          ("prc", "pla"), ("nato", "nato"))),
+                               (q4_tpl, (("rusa", "rus90"), ("ukr", "ter"),
+                                         ("prc", "pla"), ("nato", "nato")))):
+            for side, stem in side_stem:
+                self.assertIn('{Human "mp/%s/2022s/%s_mg"' % (side, stem), tpl)
+                self.assertIn('{Human "mp/%s/2022s/%s_rifleman"' % (side, stem), tpl)
+        # Fresh, collision-swept bands for both top-ups.
+        self.assertIn("{MID 9275}", q4_tpl)
+        self.assertIn("{MID 9298}", q4_tpl)
+        self.assertIn("{MID 9847}", fac_tpl)
+        self.assertIn("{MID 9870}", fac_tpl)
+        self.assertIn("-35500}", q4_tpl)
+        self.assertIn("-36900}", fac_tpl)
 
 
 if __name__ == "__main__":

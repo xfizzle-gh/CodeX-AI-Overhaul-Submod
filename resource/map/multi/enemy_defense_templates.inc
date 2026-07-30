@@ -1193,3 +1193,212 @@
 	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb19d}
 	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb19e}
 	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb19f}
+
+; ===== FLAG-WEAPON CREW TOP-UP (Phase 4 crewed rewrite, 2026-07-30) =====
+; The three flag emplacements this engine plants are CREWED at placement: two
+; bodies per gun, claimed from this faction's own line pool. That is six extra
+; line-pool draws per mission on top of the three garrison fireteams, so the line
+; pool is deepened by exactly six per faction to fund them - the reinforcement
+; budget below is unchanged by the crewing. 24 -> 30 per faction, 40 -> 46 overall.
+; Ids 0xb1a0-0xb1b7, MIDs 9275-9298, parked y=-35500: all three bands swept clear
+; against every .inc and .mi in resource/map/multi.
+; Pairs are gunner + loader by breed (mg + rifleman) because the NATO emplacement
+; is bgm71_tow_ai, whose Weaponry names "gunner" as gunner and "commander" as
+; charger - a one-man TOW fires its loaded round and can never reload.
+; ===== RUSA FLAG-WEAPON CREW TOP-UP (6 = 3 x 2) =====
+	{Human "mp/rusa/2022s/rus90_mg" 0xb1a0
+		{Position -9000 -35500}
+		{Player 0}
+		{MID 9275}
+		{Able "-select"}
+	}
+
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xb1a1
+		{Position -8980 -35500}
+		{Player 0}
+		{MID 9276}
+		{Able "-select"}
+	}
+
+	{Human "mp/rusa/2022s/rus90_mg" 0xb1a2
+		{Position -8960 -35500}
+		{Player 0}
+		{MID 9277}
+		{Able "-select"}
+	}
+
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xb1a3
+		{Position -8940 -35500}
+		{Player 0}
+		{MID 9278}
+		{Able "-select"}
+	}
+
+	{Human "mp/rusa/2022s/rus90_mg" 0xb1a4
+		{Position -8920 -35500}
+		{Player 0}
+		{MID 9279}
+		{Able "-select"}
+	}
+
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xb1a5
+		{Position -8900 -35500}
+		{Player 0}
+		{MID 9280}
+		{Able "-select"}
+	}
+
+; ===== UKR FLAG-WEAPON CREW TOP-UP (6 = 3 x 2) =====
+	{Human "mp/ukr/2022s/ter_mg" 0xb1a6
+		{Position -8880 -35500}
+		{Player 0}
+		{MID 9281}
+		{Able "-select"}
+	}
+
+	{Human "mp/ukr/2022s/ter_rifleman" 0xb1a7
+		{Position -8860 -35500}
+		{Player 0}
+		{MID 9282}
+		{Able "-select"}
+	}
+
+	{Human "mp/ukr/2022s/ter_mg" 0xb1a8
+		{Position -8840 -35500}
+		{Player 0}
+		{MID 9283}
+		{Able "-select"}
+	}
+
+	{Human "mp/ukr/2022s/ter_rifleman" 0xb1a9
+		{Position -8820 -35500}
+		{Player 0}
+		{MID 9284}
+		{Able "-select"}
+	}
+
+	{Human "mp/ukr/2022s/ter_mg" 0xb1aa
+		{Position -8800 -35500}
+		{Player 0}
+		{MID 9285}
+		{Able "-select"}
+	}
+
+	{Human "mp/ukr/2022s/ter_rifleman" 0xb1ab
+		{Position -8780 -35500}
+		{Player 0}
+		{MID 9286}
+		{Able "-select"}
+	}
+
+; ===== PRC FLAG-WEAPON CREW TOP-UP (6 = 3 x 2) =====
+	{Human "mp/prc/2022s/pla_mg" 0xb1ac
+		{Position -8760 -35500}
+		{Player 0}
+		{MID 9287}
+		{Able "-select"}
+	}
+
+	{Human "mp/prc/2022s/pla_rifleman" 0xb1ad
+		{Position -8740 -35500}
+		{Player 0}
+		{MID 9288}
+		{Able "-select"}
+	}
+
+	{Human "mp/prc/2022s/pla_mg" 0xb1ae
+		{Position -8720 -35500}
+		{Player 0}
+		{MID 9289}
+		{Able "-select"}
+	}
+
+	{Human "mp/prc/2022s/pla_rifleman" 0xb1af
+		{Position -8700 -35500}
+		{Player 0}
+		{MID 9290}
+		{Able "-select"}
+	}
+
+	{Human "mp/prc/2022s/pla_mg" 0xb1b0
+		{Position -8680 -35500}
+		{Player 0}
+		{MID 9291}
+		{Able "-select"}
+	}
+
+	{Human "mp/prc/2022s/pla_rifleman" 0xb1b1
+		{Position -8660 -35500}
+		{Player 0}
+		{MID 9292}
+		{Able "-select"}
+	}
+
+; ===== NATO FLAG-WEAPON CREW TOP-UP (6 = 3 x 2) =====
+	{Human "mp/nato/2022s/nato_mg" 0xb1b2
+		{Position -8640 -35500}
+		{Player 0}
+		{MID 9293}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_rifleman" 0xb1b3
+		{Position -8620 -35500}
+		{Player 0}
+		{MID 9294}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_mg" 0xb1b4
+		{Position -8600 -35500}
+		{Player 0}
+		{MID 9295}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_rifleman" 0xb1b5
+		{Position -8580 -35500}
+		{Player 0}
+		{MID 9296}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_mg" 0xb1b6
+		{Position -8560 -35500}
+		{Player 0}
+		{MID 9297}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_rifleman" 0xb1b7
+		{Position -8540 -35500}
+		{Player 0}
+		{MID 9298}
+		{Able "-select"}
+	}
+
+; ===== FLAG-WEAPON CREW TOP-UP TAGS =====
+	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb1a0}
+	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb1a1}
+	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb1a2}
+	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb1a3}
+	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb1a4}
+	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb1a5}
+	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb1a6}
+	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb1a7}
+	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb1a8}
+	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb1a9}
+	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb1aa}
+	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb1ab}
+	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb1ac}
+	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb1ad}
+	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb1ae}
+	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb1af}
+	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb1b0}
+	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb1b1}
+	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb1b2}
+	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb1b3}
+	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb1b4}
+	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb1b5}
+	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb1b6}
+	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb1b7}

@@ -45,8 +45,15 @@ DRAWS = (
 # fireteams) plus eight reinforcement waves. Running dry is a graceful path - the
 # surge steps down to the line pool and then skips the cycle - but it should be the
 # exception, not the schedule.
-POOL_DEPTH = (("line", 24), ("wpn", 16))
-PROTOTYPES = len(FACTIONS) * sum(n for _, n in POOL_DEPTH)  # 160
+# The line pool is 30, not 24: six of it funds the two-man crews on the three flag
+# emplacements the garrison step plants (2 per gun x 3 anchors). A claim never
+# returns a body, so the crewing had to be paid for in prototypes rather than taken
+# out of the reinforcement budget - and two is the minimum crew, because the NATO
+# bgm71_tow_ai names its "commander" seat as the charger and a one-man TOW can never
+# reload. See test_flag_emplacements_are_crewed_from_the_line_pool in
+# tests/test_defense_mission_support.py for the full arithmetic.
+POOL_DEPTH = (("line", 30), ("wpn", 16))
+PROTOTYPES = len(FACTIONS) * sum(n for _, n in POOL_DEPTH)  # 184
 
 # The wave budget, shared by both spawners so two ladders do not double the total.
 WAVE_BUDGET = ((3, 8), (2, 6))
@@ -157,6 +164,11 @@ class EnemyDefenseSupportTests(unittest.TestCase):
             "ed_props_af1",
             "ed_props_af2",
             "ed_props_af3",
+            "ed_own_prop_crew",
+            "ed_crew_claim_one",
+            "ed_crew_af1",
+            "ed_crew_af2",
+            "ed_crew_af3",
             "ed_place_flag_props",
         ):
             definition = '(define "%s"' % name
@@ -924,10 +936,16 @@ class EnemyDefenseSupportTests(unittest.TestCase):
                 tpl.count('"enemy_def_%s_line"' % key), tpl.count('"enemy_def_%s_wpn"' % key)
             )
 
-        # Deep enough for the worst realistic L3 run: three garrison fireteams plus
-        # eight reinforcement waves of at most four bodies each.
+        # Deep enough for the worst realistic L3 run: three garrison fireteams, the
+        # six bodies that crew the three flag emplacements, and eight reinforcement
+        # waves of at most three bodies each. The crew term is what forced the line
+        # pool from 24 to 30 - without it this guard reads 42 > 40 and fails.
         per_faction = sum(n for _, n in POOL_DEPTH)
-        self.assertGreaterEqual(per_faction, 3 * 4 + max(WAVE_BUDGET, key=lambda p: p[1])[1] * 3)
+        flag_crew = 3 * 2
+        self.assertGreaterEqual(
+            per_faction,
+            3 * 4 + flag_crew + max(WAVE_BUDGET, key=lambda p: p[1])[1] * 3,
+        )
 
         # Real breeds only, no baked loadouts, and no vehicles: the defender bot
         # already buys its own armour through the purchase economy.
@@ -1014,7 +1032,7 @@ class EnemyDefenseSupportTests(unittest.TestCase):
             "Expected exactly one enemy-defence templates include in",
             "Expected 19 enemy_defense triggers",
             "enemy_defense triggers carry the user_is_defender",
-            "must park 160 prototypes",
+            "must park 184 prototypes",
             '{"enemy_defense/init"',
             '{"enemy_defense/patrol_1"',
             '{"enemy_defense/trickle"',
@@ -1055,6 +1073,14 @@ class EnemyDefenseSupportTests(unittest.TestCase):
         self.assertNotIn('{"spawn"', code_only)
         self.assertIn("flag_prop_wpn_nato", code)
         self.assertIn('{tag_add flag_prop_move}', code)
+        # Crewed at placement: the gun is transferred to the defender bot and boarded
+        # by two bodies claimed from its own line pool, never left as scenery.
+        self.assertIn('{"board"', code_only)
+        self.assertIn("flag_prop_own", code_only)
+        self.assertIn("flag_prop_crew", code_only)
+        for n in (1, 2, 3):
+            self.assertIn("{select {tag {tag flag_prop_af%d}}}" % n, code_only)
+            self.assertIn("{tag_add enemy_def_crew_af%d}" % n, code_only)
         # The crate half of Phase 4 is retired - flags carry a real linked
         # flagpoint_ammo supply point instead - so this engine must not claim one.
         self.assertNotIn("flag_prop_ammo", code_only)

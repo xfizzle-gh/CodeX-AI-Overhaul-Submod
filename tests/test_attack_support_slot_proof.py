@@ -59,8 +59,12 @@ COMPOSITIONS = (
 # defence engine, which never run on the same mission.
 FACTION_ARMIES = (("rusa", 1), ("ukr", 2), ("nato", 3), ("prc", 4))
 # comp suffix -> (wave command, bodies drawn per wave, pool depth per faction)
+# The line depth is 30, not 24: the defence engine that shares this pool crews the
+# three flag emplacements out of it, two bodies per gun, and the top-up at the end of
+# faction_support_templates.inc funds those six draws one for one. The attack engine
+# is unaffected - it never places flag props - so its worst case is unchanged.
 FACTION_COMPS = (
-    ("line", 10, 4, 24),
+    ("line", 10, 4, 30),
     ("wpn", 11, 4, 16),
     ("recon", 12, 3, 15),
     ("assault", 13, 4, 16),
@@ -204,10 +208,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         engines - which never run on the same mission, so each only has to cover ONE
         engine's worst case. The binding number is the L3 budget of 8 waves."""
         code = self.faction_tpl
-        self.assertEqual(code.count('{Able "-select"}'), 502)
-        self.assertEqual(code.count("{Player 0}"), 502)
-        self.assertEqual(code.count('"ally_sup_tpl"'), 502)
-        self.assertEqual(code.count('"hidden"'), 502)
+        self.assertEqual(code.count('{Able "-select"}'), 526)
+        self.assertEqual(code.count("{Player 0}"), 526)
+        self.assertEqual(code.count('"ally_sup_tpl"'), 526)
+        self.assertEqual(code.count('"hidden"'), 526)
 
         for key, _army in FACTION_ARMIES:
             for suffix, _cmd, take, depth in FACTION_COMPS:
@@ -226,7 +230,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
                 for suffix, _c, _t, _d in FACTION_COMPS
             )
             self.assertGreaterEqual(total, 8 * 4, key)
-            self.assertEqual(total, 91)
+            self.assertEqual(total, 97)
 
         # Vehicles: Ukraine three, NATO two, nobody else any. Counter-gated rather
         # than pool-counted, so the counter is what must match the parked instances.
@@ -244,11 +248,11 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
         # Bands: this pool must not collide with either neighbour in a resolved map.
         ids = re.findall(r"\{(?:Entity|Human) \"[^\"]*\" (0x[0-9a-f]+)", code)
-        self.assertEqual(len(ids), 502)
-        self.assertEqual(len(set(ids)), 502)
+        self.assertEqual(len(ids), 526)
+        self.assertEqual(len(set(ids)), 526)
         self.assertTrue(all(i.startswith(("0xb2", "0xb3", "0xb4")) for i in ids))
         mids = [int(m) for m in re.findall(r"\{MID (\d+)\}", code)]
-        self.assertEqual(len(set(mids)), 502)
+        self.assertEqual(len(set(mids)), 526)
         self.assertGreaterEqual(min(mids), 9300)
         # Real breeds only, and none of the retired idioms.
         self.assertNotIn('{Human ""', code)
@@ -1290,7 +1294,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             # checked by the deploy, or the faction waves reference nothing.
             "resource\\map\\multi\\faction_support_templates.inc",
             '(include "../faction_support_templates.inc")',
-            "must park 502 prototypes",
+            "must park 526 prototypes",
             '{"attack_support_air_left"}',
             '{"attack_support_air_test"}',
             "attack_support_air_",

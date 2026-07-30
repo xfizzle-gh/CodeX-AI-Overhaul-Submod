@@ -2,8 +2,17 @@
 ; Parked off-map at player 0; claimed by static tag and MOVEd to flag anchors.
 ; No runtime spawn. Shared by defense_support + enemy_defense (mutual exclusion).
 ; MID band 9263-9274. Tags: flag_prop_tpl + pool role + hidden.
-;   flag_prop_wpn_rusa/ukr/prc/nato x3 each  crewless weapons (L2+)
+;   flag_prop_wpn_rusa/ukr/prc/nato x3 each  flag emplacements (every level)
 ; y=-35200, x band -3940..-3720.
+;
+; CREWED, not crewless (user decision 2026-07-30). The entities here are still the
+; _ai emplacement variants and they are still parked unowned at player 0, but the
+; two garrison engines no longer leave them that way: each one is claimed, MOVEd to
+; its flag, stamped flag_prop_afN, activated, transferred to the defending bot and
+; then boarded by two bodies from that faction's line pool. Three per faction is
+; still the right depth - a mission activates at most three flag points, and the
+; two engines are mutually exclusive, so one mission can consume at most three of
+; the twelve.
 ;
 ; RETIRED: the three ammo-crate prototypes that used to open this pool (MIDs
 ; 9260-9262, ids 0xb040-0xb042) are gone and must not come back. Ammo supply on a

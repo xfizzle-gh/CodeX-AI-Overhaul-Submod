@@ -3732,3 +3732,211 @@
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "hidden" 0xb42d}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "hidden" 0xb42e}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "hidden" 0xb42f}
+
+; ===== FLAG-WEAPON CREW TOP-UP (Phase 4 crewed rewrite, 2026-07-30) =====
+; defense_support_waves.inc crews each flag emplacement with two bodies from this
+; faction's line pool at garrison time. Six extra draws per mission, so the line
+; pool is deepened by exactly six per faction to fund them: the wave budget below
+; is unchanged. 24 -> 30 per faction, 91 -> 97 overall.
+; Ids 0xb430-0xb447, MIDs 9847-9870, parked y=-36900: all three bands swept clear
+; against every .inc and .mi in resource/map/multi.
+; Pairs are gunner + loader by breed (mg + rifleman) because the NATO emplacement
+; is bgm71_tow_ai, whose Weaponry names "gunner" as gunner and "commander" as
+; charger - a one-man TOW fires its loaded round and can never reload.
+; ===== RUSA FLAG-WEAPON CREW TOP-UP (6 = 3 x 2) =====
+	{Human "mp/rusa/2022s/rus90_mg" 0xb430
+		{Position -9000 -36900}
+		{Player 0}
+		{MID 9847}
+		{Able "-select"}
+	}
+
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xb431
+		{Position -8980 -36900}
+		{Player 0}
+		{MID 9848}
+		{Able "-select"}
+	}
+
+	{Human "mp/rusa/2022s/rus90_mg" 0xb432
+		{Position -8960 -36900}
+		{Player 0}
+		{MID 9849}
+		{Able "-select"}
+	}
+
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xb433
+		{Position -8940 -36900}
+		{Player 0}
+		{MID 9850}
+		{Able "-select"}
+	}
+
+	{Human "mp/rusa/2022s/rus90_mg" 0xb434
+		{Position -8920 -36900}
+		{Player 0}
+		{MID 9851}
+		{Able "-select"}
+	}
+
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xb435
+		{Position -8900 -36900}
+		{Player 0}
+		{MID 9852}
+		{Able "-select"}
+	}
+
+; ===== UKR FLAG-WEAPON CREW TOP-UP (6 = 3 x 2) =====
+	{Human "mp/ukr/2022s/ter_mg" 0xb436
+		{Position -8880 -36900}
+		{Player 0}
+		{MID 9853}
+		{Able "-select"}
+	}
+
+	{Human "mp/ukr/2022s/ter_rifleman" 0xb437
+		{Position -8860 -36900}
+		{Player 0}
+		{MID 9854}
+		{Able "-select"}
+	}
+
+	{Human "mp/ukr/2022s/ter_mg" 0xb438
+		{Position -8840 -36900}
+		{Player 0}
+		{MID 9855}
+		{Able "-select"}
+	}
+
+	{Human "mp/ukr/2022s/ter_rifleman" 0xb439
+		{Position -8820 -36900}
+		{Player 0}
+		{MID 9856}
+		{Able "-select"}
+	}
+
+	{Human "mp/ukr/2022s/ter_mg" 0xb43a
+		{Position -8800 -36900}
+		{Player 0}
+		{MID 9857}
+		{Able "-select"}
+	}
+
+	{Human "mp/ukr/2022s/ter_rifleman" 0xb43b
+		{Position -8780 -36900}
+		{Player 0}
+		{MID 9858}
+		{Able "-select"}
+	}
+
+; ===== PRC FLAG-WEAPON CREW TOP-UP (6 = 3 x 2) =====
+	{Human "mp/prc/2022s/pla_mg" 0xb43c
+		{Position -8760 -36900}
+		{Player 0}
+		{MID 9859}
+		{Able "-select"}
+	}
+
+	{Human "mp/prc/2022s/pla_rifleman" 0xb43d
+		{Position -8740 -36900}
+		{Player 0}
+		{MID 9860}
+		{Able "-select"}
+	}
+
+	{Human "mp/prc/2022s/pla_mg" 0xb43e
+		{Position -8720 -36900}
+		{Player 0}
+		{MID 9861}
+		{Able "-select"}
+	}
+
+	{Human "mp/prc/2022s/pla_rifleman" 0xb43f
+		{Position -8700 -36900}
+		{Player 0}
+		{MID 9862}
+		{Able "-select"}
+	}
+
+	{Human "mp/prc/2022s/pla_mg" 0xb440
+		{Position -8680 -36900}
+		{Player 0}
+		{MID 9863}
+		{Able "-select"}
+	}
+
+	{Human "mp/prc/2022s/pla_rifleman" 0xb441
+		{Position -8660 -36900}
+		{Player 0}
+		{MID 9864}
+		{Able "-select"}
+	}
+
+; ===== NATO FLAG-WEAPON CREW TOP-UP (6 = 3 x 2) =====
+	{Human "mp/nato/2022s/nato_mg" 0xb442
+		{Position -8640 -36900}
+		{Player 0}
+		{MID 9865}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_rifleman" 0xb443
+		{Position -8620 -36900}
+		{Player 0}
+		{MID 9866}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_mg" 0xb444
+		{Position -8600 -36900}
+		{Player 0}
+		{MID 9867}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_rifleman" 0xb445
+		{Position -8580 -36900}
+		{Player 0}
+		{MID 9868}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_mg" 0xb446
+		{Position -8560 -36900}
+		{Player 0}
+		{MID 9869}
+		{Able "-select"}
+	}
+
+	{Human "mp/nato/2022s/nato_rifleman" 0xb447
+		{Position -8540 -36900}
+		{Player 0}
+		{MID 9870}
+		{Able "-select"}
+	}
+
+; ===== FLAG-WEAPON CREW TOP-UP TAGS =====
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb430}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb431}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb432}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb433}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb434}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb435}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_line" "hidden" 0xb436}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_line" "hidden" 0xb437}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_line" "hidden" 0xb438}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_line" "hidden" 0xb439}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_line" "hidden" 0xb43a}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_line" "hidden" 0xb43b}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_line" "hidden" 0xb43c}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_line" "hidden" 0xb43d}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_line" "hidden" 0xb43e}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_line" "hidden" 0xb43f}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_line" "hidden" 0xb440}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_line" "hidden" 0xb441}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_line" "hidden" 0xb442}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_line" "hidden" 0xb443}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_line" "hidden" 0xb444}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_line" "hidden" 0xb445}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_line" "hidden" 0xb446}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_line" "hidden" 0xb447}
