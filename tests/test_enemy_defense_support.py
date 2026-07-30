@@ -322,7 +322,10 @@ class EnemyDefenseSupportTests(unittest.TestCase):
             guard = init.index(
                 '{condition {type entities} {selector {tag enemy_def_af%d}}}' % n
             )
-            body = init[guard : guard + 400]
+            # The enclosing {"if"} block, not a fixed window: each diagnostic now
+            # carries a support_debug$ gate switch that pushes the rest of the
+            # branch past where a fixed slice would end.
+            body = block_at(init, init.rindex('{"if"', 0, guard))
             self.assertIn('{"set_i" {var "enemy_defense_place$"} {op "="} {value %d}}' % n, body)
             self.assertIn('{"set_i" {var "enemy_defense_group$"} {op "="} {value %d}}' % n, body)
             self.assertIn('("ed_pick_garrison")', body)
@@ -599,9 +602,13 @@ class EnemyDefenseSupportTests(unittest.TestCase):
                 )
                 self.assertIn('{count {op ">"} {value %d}}' % LIVE_CAP, block)
 
+                # Anchored on the live-count condition, not on the timer title: the
+                # nearest {"case"} above a title is now that diagnostic's own gate.
                 defer = block_at(
                     block,
-                    block.rindex('{"case"', 0, block.index("ENEMY DEFENSE NEAR CAP DEFER")),
+                    block.rindex(
+                        '{"case"', 0, block.index('{count {op ">"} {value %d}}' % LIVE_CAP)
+                    ),
                 )
                 self.assertIn("ENEMY DEFENSE NEAR CAP DEFER", defer)
                 # A defer costs nothing: no wave consumed, no draw dispatched.
@@ -610,7 +617,7 @@ class EnemyDefenseSupportTests(unittest.TestCase):
                 self.assertNotIn("ed_pick_", defer)
 
                 dispatch = block_at(
-                    block, block.index('{"default"', block.index("ENEMY DEFENSE NEAR CAP DEFER"))
+                    block, block.index('{"default"', block.index(defer) + len(defer))
                 )
                 self.assertIn(
                     '{"set_i" {var "enemy_defense_wave_num$"} {op "+"} {value 1}}', dispatch
@@ -740,7 +747,9 @@ class EnemyDefenseSupportTests(unittest.TestCase):
                 '{condition {type cmp_i} {var "bot_army$"} {op "=="} {value %d}}' % absent,
                 resolve,
             )
-        default = block_at(resolve, resolve.index('{"default"'))
+        # Every support_debug$ gate closes with a bare {"default"}, so the switch's own
+        # default is identified by having a body: {"default"} followed by a newline.
+        default = block_at(resolve, resolve.rindex('{"default"\n'))
         self.assertIn('{"set_i" {var "enemy_defense_army$"} {op "="} {value 1}}', default)
 
         # Exactly one faction can answer a poke, so poking all four is safe.

@@ -71,6 +71,20 @@
 ; in, one peeling to the second flag, one taking a cover beat before it pushes - so a
 ; wave does not walk the map as one line. no_retreat is ON: these are an assault, and the
 ; friendly defensive-support engine is the one that gives ground.
+;
+; DIAGNOSTICS / support_debug$ - the ship toggle. Every on-screen {"timer" ...} line in
+; this file is a developer diagnostic, never player-facing text, and every one of them is
+; wrapped in the same gate:
+;   {"switch"
+;     {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} <timer> }
+;     {"default"}
+;   }
+; support_debug$ is declared in dcg_vars.inc and nothing ever writes it, so it reads 0 and
+; the shipped default is OFF: a player sees zero support timers on any of the fourteen maps.
+; Flipping that one var to 1 - a single {"set_i" {var "support_debug$"} {op "="} {value 1}}
+; anywhere that runs, or sc:SetVar("support_debug", 1) from Lua - restores every diagnostic
+; in all four engines at once. Never add an ungated timer: tools/deploy_attack_support_probe.ps1
+; and the test suite both fail the build the moment one appears.
 
 			; Delivery point: the ATTACKER's own map edge. enemy_spawnside$ is published
 			; from conquest.lua's mission-authority branch and on a defence mission the
@@ -171,7 +185,13 @@
 					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "16"}}}
 					{"default"
 						{"set_i" {var "enemy_attack_owner_fail$"} {op "="} {value 1}}
-						{"timer" {time 10} {title "ENEMY ATTACK OWNER UNRESOLVED - NO TRANSFER"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 10} {title "ENEMY ATTACK OWNER UNRESOLVED - NO TRANSFER"}}
+							}
+							{"default"}
+						}
 					}
 				}
 			)
@@ -189,31 +209,67 @@
 					{"case"
 						{condition {type cmp_i} {var "bot_army$"} {op "=="} {value 2}}
 						{"set_i" {var "enemy_attack_army$"} {op "="} {value 2}}
-						{"timer" {time 8} {title "ENEMY ATTACK ARMY - UKR"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 8} {title "ENEMY ATTACK ARMY - UKR"}}
+							}
+							{"default"}
+						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "bot_army$"} {op "=="} {value 3}}
 						{"set_i" {var "enemy_attack_army$"} {op "="} {value 3}}
-						{"timer" {time 8} {title "ENEMY ATTACK ARMY - NATO"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 8} {title "ENEMY ATTACK ARMY - NATO"}}
+							}
+							{"default"}
+						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "bot_army$"} {op "=="} {value 4}}
 						{"set_i" {var "enemy_attack_army$"} {op "="} {value 3}}
-						{"timer" {time 8} {title "ENEMY ATTACK ARMY - NATO (csa)"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 8} {title "ENEMY ATTACK ARMY - NATO (csa)"}}
+							}
+							{"default"}
+						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "bot_army$"} {op "=="} {value 6}}
 						{"set_i" {var "enemy_attack_army$"} {op "="} {value 4}}
-						{"timer" {time 8} {title "ENEMY ATTACK ARMY - PRC"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 8} {title "ENEMY ATTACK ARMY - PRC"}}
+							}
+							{"default"}
+						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "bot_army$"} {op "=="} {value 7}}
 						{"set_i" {var "enemy_attack_army$"} {op "="} {value 3}}
-						{"timer" {time 8} {title "ENEMY ATTACK ARMY - NATO (frg)"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 8} {title "ENEMY ATTACK ARMY - NATO (frg)"}}
+							}
+							{"default"}
+						}
 					}
 					{"default"
 						{"set_i" {var "enemy_attack_army$"} {op "="} {value 1}}
-						{"timer" {time 8} {title "ENEMY ATTACK ARMY - RUSA"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 8} {title "ENEMY ATTACK ARMY - RUSA"}}
+							}
+							{"default"}
+						}
 					}
 				}
 			)
@@ -417,12 +473,24 @@
 						{"switch"
 							{"case"
 								{condition {type rand} {value 0.6}}
-								{"timer" {time 8} {title "ENEMY ATTACK WAVE - WEAPONS FIRETEAM"}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+										{"timer" {time 8} {title "ENEMY ATTACK WAVE - WEAPONS FIRETEAM"}}
+									}
+									{"default"}
+								}
 								{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 2}}
 								("ea_poke_wpn")
 							}
 							{"default"
-								{"timer" {time 8} {title "ENEMY ATTACK WAVE - LINE FIRETEAM"}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+										{"timer" {time 8} {title "ENEMY ATTACK WAVE - LINE FIRETEAM"}}
+									}
+									{"default"}
+								}
 								{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 1}}
 								("ea_poke_line")
 							}
@@ -433,19 +501,37 @@
 						{"switch"
 							{"case"
 								{condition {type rand} {value 0.34}}
-								{"timer" {time 8} {title "ENEMY ATTACK WAVE - WEAPONS FIRETEAM"}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+										{"timer" {time 8} {title "ENEMY ATTACK WAVE - WEAPONS FIRETEAM"}}
+									}
+									{"default"}
+								}
 								{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 2}}
 								("ea_poke_wpn")
 							}
 							{"default"
-								{"timer" {time 8} {title "ENEMY ATTACK WAVE - LINE FIRETEAM"}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+										{"timer" {time 8} {title "ENEMY ATTACK WAVE - LINE FIRETEAM"}}
+									}
+									{"default"}
+								}
 								{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 1}}
 								("ea_poke_line")
 							}
 						}
 					}
 					{"default"
-						{"timer" {time 8} {title "ENEMY ATTACK WAVE - LINE FIRETEAM"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 8} {title "ENEMY ATTACK WAVE - LINE FIRETEAM"}}
+							}
+							{"default"}
+						}
 						{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 1}}
 						("ea_poke_line")
 					}
@@ -458,7 +544,13 @@
 						{condition {type cmp_i} {var "enemy_attack_wave_cmd$"} {op ">"} {value 1}}
 						{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 1}}
 						("ea_poke_line")
-						{"timer" {time 6} {title "ENEMY ATTACK POOL SHORT - LINE TEAM INSTEAD"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 6} {title "ENEMY ATTACK POOL SHORT - LINE TEAM INSTEAD"}}
+							}
+							{"default"}
+						}
 					}
 					{"default"}
 				}
@@ -467,7 +559,13 @@
 					{"case"
 						{condition {type cmp_i} {var "enemy_attack_wave_cmd$"} {op ">"} {value 0}}
 						{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
-						{"timer" {time 6} {title "ENEMY ATTACK POOL EXHAUSTED"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 6} {title "ENEMY ATTACK POOL EXHAUSTED"}}
+							}
+							{"default"}
+						}
 					}
 					{"default"}
 				}
@@ -507,16 +605,34 @@
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
 							{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 8}}
-							{"timer" {time 10} {title "ENEMY ATTACK ARMED - L3, 8 WAVES"}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 10} {title "ENEMY ATTACK ARMED - L3, 8 WAVES"}}
+								}
+								{"default"}
+							}
 						}
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
 							{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 6}}
-							{"timer" {time 10} {title "ENEMY ATTACK ARMED - L2, 6 WAVES"}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 10} {title "ENEMY ATTACK ARMED - L2, 6 WAVES"}}
+								}
+								{"default"}
+							}
 						}
 						{"default"
 							{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 4}}
-							{"timer" {time 10} {title "ENEMY ATTACK ARMED - L1, 4 WAVES"}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 10} {title "ENEMY ATTACK ARMED - L1, 4 WAVES"}}
+								}
+								{"default"}
+							}
 						}
 					}
 					; Opening wave, deliberately behind the friendly defensive-support
@@ -604,7 +720,13 @@
 								}
 								{count {op ">"} {value 16}}
 							}
-							{"timer" {time 8} {title "ENEMY ATTACK NEAR CAP DEFER"}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 8} {title "ENEMY ATTACK NEAR CAP DEFER"}}
+								}
+								{"default"}
+							}
 						}
 						{"default"
 							{"set_i" {var "enemy_attack_wave_num$"} {op "+"} {value 1}}
@@ -618,7 +740,13 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "enemy_attack_waves_left$"} {op "=="} {value 0}}
-							{"timer" {time 10} {title "ENEMY ATTACK WAVES EXHAUSTED"}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 10} {title "ENEMY ATTACK WAVES EXHAUSTED"}}
+								}
+								{"default"}
+							}
 						}
 						{"default"}
 					}
@@ -649,7 +777,13 @@
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 11}}
-					{"timer" {time 8} {title "ENEMY ATTACK RUSA LINE FIRETEAM"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY ATTACK RUSA LINE FIRETEAM"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -683,7 +817,13 @@
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 21}}
-					{"timer" {time 8} {title "ENEMY ATTACK RUSA WEAPONS FIRETEAM"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY ATTACK RUSA WEAPONS FIRETEAM"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -717,7 +857,13 @@
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 11}}
-					{"timer" {time 8} {title "ENEMY ATTACK UKR LINE FIRETEAM"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY ATTACK UKR LINE FIRETEAM"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -751,7 +897,13 @@
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 21}}
-					{"timer" {time 8} {title "ENEMY ATTACK UKR WEAPONS FIRETEAM"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY ATTACK UKR WEAPONS FIRETEAM"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -785,7 +937,13 @@
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 11}}
-					{"timer" {time 8} {title "ENEMY ATTACK PRC LINE FIRETEAM"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY ATTACK PRC LINE FIRETEAM"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -819,7 +977,13 @@
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 21}}
-					{"timer" {time 8} {title "ENEMY ATTACK PRC WEAPONS FIRETEAM"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY ATTACK PRC WEAPONS FIRETEAM"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -853,7 +1017,13 @@
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 11}}
-					{"timer" {time 8} {title "ENEMY ATTACK NATO LINE FIRETEAM"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY ATTACK NATO LINE FIRETEAM"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -887,7 +1057,13 @@
 				{actions
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 21}}
-					{"timer" {time 8} {title "ENEMY ATTACK NATO WEAPONS FIRETEAM"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY ATTACK NATO WEAPONS FIRETEAM"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}

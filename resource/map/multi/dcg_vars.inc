@@ -25,6 +25,7 @@
 			{"bots_divisions"}
 			{"weatherid"}
 			{"prep_spawn_snap"}
+			{"support_debug"}
 			{"attack_support_armed"}
 			{"attack_support_transferred"}
 			{"attack_support_stage"}

@@ -16,6 +16,16 @@ FACTION_TEMPLATES = ROOT / "resource/map/multi/faction_support_templates.inc"
 DCG_SCRIPT = ROOT / "resource/map/multi/dcg_script.inc"
 DEPLOY = ROOT / "tools/deploy_attack_support_probe.ps1"
 
+# The four wave engines, one per quadrant of the support parity. Anything that has to
+# hold across all of them - the support_debug$ diagnostic gate, the triple-entry
+# round robin - is pinned against this list rather than one file at a time.
+ENGINES = (
+    "attack_support_waves",
+    "enemy_defense_support",
+    "defense_support_waves",
+    "enemy_attack_support",
+)
+
 # Files retired with the productionised wave engine. The Lua brain went with them:
 # Scene.Squads is empty for MI-delivered units, so it could never see a squad to
 # order, and the inert allied_attack_waves.inc skeleton was never wired to a map.
@@ -531,14 +541,17 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         )
         self.assertIn('{count {op ">"} {value 14}}', clock)
 
-        defer = block_at(clock, clock.rindex('{"case"', 0, clock.index("ATTACK SUPPORT NEAR CAP DEFER")))
+        # Anchored on the live-count condition rather than on the timer title: every
+        # diagnostic now sits inside its own support_debug$ switch, so the nearest
+        # {"case"} above a title is that gate's case, not the defer branch's.
+        defer = block_at(clock, clock.rindex('{"case"', 0, clock.index('{count {op ">"} {value 14}}')))
         self.assertIn("ATTACK SUPPORT NEAR CAP DEFER", defer)
         # A defer costs nothing: no wave consumed, no composition dispatched.
         self.assertNotIn('{"set_i" {var "attack_support_waves_left$"}', defer)
         self.assertNotIn('{"set_i" {var "attack_support_wave_num$"}', defer)
         self.assertNotIn("am_pick_composition", defer)
 
-        dispatch = block_at(clock, clock.index('{"default"', clock.index("ATTACK SUPPORT NEAR CAP DEFER")))
+        dispatch = block_at(clock, clock.index('{"default"', clock.index(defer) + len(defer)))
         self.assertIn('{"set_i" {var "attack_support_wave_num$"} {op "+"} {value 1}}', dispatch)
         self.assertIn('{"set_i" {var "attack_support_waves_left$"} {op "-"} {value 1}}', dispatch)
         self.assertIn('("am_pick_composition")', dispatch)
@@ -1170,6 +1183,68 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             code = strip_comments(text)
             self.assertEqual(code.count("{"), code.count("}"))
             self.assertEqual(code.count("("), code.count(")"))
+
+
+class SupportDiagnosticGateTests(unittest.TestCase):
+    """Ship requirement: a player must see ZERO support timers.
+
+    Every on-screen {"timer" ...} in the four wave engines is a developer diagnostic,
+    and each one is wrapped in a single-shape gate on support_debug$ == 1. Nothing
+    writes that var, an unwritten MI var reads 0, so the shipped default is OFF and
+    one flip brings all four engines' diagnostics back at once."""
+
+    GATE = '{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}'
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.engines = {
+            name: strip_comments(
+                (ROOT / ("resource/map/multi/%s.inc" % name)).read_text(encoding="utf-8")
+            )
+            for name in ENGINES
+        }
+        cls.vars = VARS.read_text(encoding="utf-8")
+        cls.deploy = DEPLOY.read_text(encoding="utf-8")
+
+    def test_no_engine_ships_an_ungated_on_screen_timer(self) -> None:
+        gate = re.escape(self.GATE) + r'\s*\{"timer"'
+        for name, code in self.engines.items():
+            timers = code.count('{"timer"')
+            gated = len(re.findall(gate, code))
+            self.assertGreater(timers, 0, "%s lost its diagnostics entirely" % name)
+            self.assertEqual(
+                timers - gated, 0, "%s has %d ungated timer(s)" % (name, timers - gated)
+            )
+
+    def test_gate_uses_one_consistent_minimal_shape(self) -> None:
+        """Every gate is {"switch" {"case" <cond> <timer>} {"default"}}, so the number
+        of gates and of on-screen timers agree and each gate has an empty default."""
+        for name, code in self.engines.items():
+            gates = code.count(self.GATE)
+            self.assertEqual(code.count('{"timer"'), gates, name)
+            self.assertGreaterEqual(code.count('{"default"}'), gates, name)
+
+    def test_toggle_is_declared_and_never_forced_on(self) -> None:
+        self.assertIn('{"support_debug"}', self.vars)
+        for name, code in self.engines.items():
+            self.assertNotIn(
+                '{var "support_debug$"} {op "="}', code, "%s writes the toggle" % name
+            )
+
+    def test_toggle_is_documented_in_every_engine_header_and_the_deploy(self) -> None:
+        for name in ENGINES:
+            header = (ROOT / ("resource/map/multi/%s.inc" % name)).read_text(
+                encoding="utf-8"
+            )
+            head = "\n".join(
+                line for line in header.splitlines() if line.startswith(";")
+            )
+            self.assertIn("support_debug$", head, "%s header undocumented" % name)
+            self.assertIn("dcg_vars.inc", head, name)
+        self.assertIn("THE SHIP TOGGLE", self.deploy)
+        self.assertIn("Test-SupportTimerGate", self.deploy)
+        # The deploy checks both the repo sources and the deployed copies.
+        self.assertEqual(self.deploy.count("Test-SupportTimerGate $pair[0]"), 2)
 
 
 if __name__ == "__main__":

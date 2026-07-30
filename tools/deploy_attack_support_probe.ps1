@@ -120,6 +120,33 @@ function Get-LuaCode([string]$path) {
 function Get-MiCode([string]$path) {
     return ((Get-Content -LiteralPath $path) | ForEach-Object { ($_ -split ';', 2)[0] }) -join "`n"
 }
+# THE SUPPORT DIAGNOSTIC GATE (ship requirement). The four wave engines carry a lot of
+# {"timer"} lines; every one of them is a developer diagnostic and none of them is
+# player-facing text. Each is wrapped in exactly one shape:
+#   {"switch"
+#     {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} <timer>}
+#     {"default"}
+#   }
+# so an ungated timer is a timer that would appear on a player's HUD. This runs on the
+# comment-stripped view because the engine headers quote the gate itself in prose.
+$SupportDebugGate = '\{condition \{type cmp_i\} \{var "support_debug\$"\} \{op "=="\} \{value 1\}\}\s*\{"timer"'
+function Test-SupportTimerGate([string]$path, [string]$label) {
+    $code = Get-MiCode $path
+    $timers = ([regex]::Matches($code, '\{"timer"')).Count
+    $gated = ([regex]::Matches($code, $SupportDebugGate)).Count
+    if ($timers -eq 0) {
+        throw "$label has no diagnostics left at all, which means the gate rewrite lost them: $path"
+    }
+    if ($gated -ne $timers) {
+        throw "$label ships $($timers - $gated) UNGATED on-screen timer(s) of $timers - players would see support diagnostics: $path"
+    }
+    # Checked on the comment-stripped view as well: the file header quotes the enable
+    # line verbatim as documentation, and that must not read as the engine doing it.
+    if ($code.Contains('{var "support_debug$"} {op "="}')) {
+        throw "$label writes support_debug`$, so the shipped default is not OFF: $path"
+    }
+    Write-Host "OK gate $label $gated/$timers timers behind support_debug`$"
+}
 $SlotUnsafe = @('spawnPointName', 'PlayerSpawnPoint', 'require(')
 $supportCode = Get-LuaCode $supportSource
 foreach ($banned in $SlotUnsafe) {
@@ -128,6 +155,15 @@ foreach ($banned in $SlotUnsafe) {
     }
 }
 foreach ($marker in @(
+    # THE SHIP TOGGLE. Every on-screen {"timer" ...} diagnostic in all four wave engines
+    # is wrapped in {"switch" {"case" {condition {type cmp_i} {var "support_debug$"}
+    # {op "=="} {value 1}} <timer>} {"default"}}. Nothing ever writes this var, and an
+    # unwritten MI var reads 0, so the shipped default is OFF and a player sees zero
+    # support timers. Flip this one var to 1 - a single set_i anywhere that runs, or
+    # sc:SetVar("support_debug", 1) from Lua - and every diagnostic in all four engines
+    # comes back at once. The Test-SupportTimerGate check below is what keeps that true:
+    # an ungated timer fails the deploy rather than shipping HUD spam to players.
+    '{"support_debug"}',
     '{"attack_support_armed"}',
     '{"attack_support_transferred"}',
     '{"attack_support_stage"}',
@@ -179,6 +215,15 @@ foreach ($marker in @(
     if (-not (Select-String -Quiet -LiteralPath $varsSource -SimpleMatch $marker)) {
         throw "Source dcg_vars.inc is missing marker: $marker"
     }
+}
+# Source side of the diagnostic gate, checked before anything is copied anywhere.
+foreach ($pair in @(
+    @($wavesSource, 'source attack support engine'),
+    @($defSource, 'source enemy defence engine'),
+    @($dsSource, 'source defence support engine'),
+    @($eaSource, 'source enemy attack engine')
+)) {
+    Test-SupportTimerGate $pair[0] $pair[1]
 }
 # The retired allied-support experiment owned these. Its files are gone; a stale
 # declaration invites someone to re-gate a production engine behind one.
@@ -1478,6 +1523,21 @@ foreach ($pair in @(@($ds, 'defence support'), @($ea, 'enemy attack'))) {
     if (-not (Select-String -Quiet -LiteralPath $path -SimpleMatch '{var "prep_inform$"} {op "=="} {value 1}')) {
         throw "Workshop $label engine does not gate on prep_inform$ == 1, so it deploys during the defence preparation phase"
     }
+}
+
+# Workshop side of the diagnostic gate. This is the copy the game actually reads, so it
+# is the one that decides whether a player sees support timers. dcg_vars.inc must also
+# declare the toggle: an undeclared var reads 0 too, but then the flip has nothing to set.
+if (-not (Select-String -Quiet -LiteralPath $vars -SimpleMatch '{"support_debug"}')) {
+    throw "Workshop dcg_vars.inc does not declare the support_debug toggle"
+}
+foreach ($pair in @(
+    @($waves, 'workshop attack support engine'),
+    @($def, 'workshop enemy defence engine'),
+    @($ds, 'workshop defence support engine'),
+    @($ea, 'workshop enemy attack engine')
+)) {
+    Test-SupportTimerGate $pair[0] $pair[1]
 }
 
 Write-Host "`nVerification markers:"

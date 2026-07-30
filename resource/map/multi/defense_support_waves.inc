@@ -73,6 +73,20 @@
 ; own modest 90-150s ladders, redistributing across the active flags so a wiped flag gets
 ; re-covered and the whole force does not sit on one objective. no_retreat is OFF - these
 ; are defenders that may give ground, not a suicide push.
+;
+; DIAGNOSTICS / support_debug$ - the ship toggle. Every on-screen {"timer" ...} line in
+; this file is a developer diagnostic, never player-facing text, and every one of them is
+; wrapped in the same gate:
+;   {"switch"
+;     {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} <timer> }
+;     {"default"}
+;   }
+; support_debug$ is declared in dcg_vars.inc and nothing ever writes it, so it reads 0 and
+; the shipped default is OFF: a player sees zero support timers on any of the fourteen maps.
+; Flipping that one var to 1 - a single {"set_i" {var "support_debug$"} {op "="} {value 1}}
+; anywhere that runs, or sc:SetVar("support_debug", 1) from Lua - restores every diagnostic
+; in all four engines at once. Never add an ungated timer: tools/deploy_attack_support_probe.ps1
+; and the test suite both fail the build the moment one appears.
 
 			; Delivery point: the DEFENDER's own map edge, which is the side the enemy
 			; is NOT on. enemy_spawnside$ is published from conquest.lua's
@@ -197,7 +211,13 @@
 					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag def_sup_deploy}} {operation set} {player "16"}}}
 					{"default"
 						{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
-						{"timer" {time 10} {title "DEFENSE SUPPORT OWNER UNRESOLVED - NO TRANSFER"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 10} {title "DEFENSE SUPPORT OWNER UNRESOLVED - NO TRANSFER"}}
+							}
+							{"default"}
+						}
 					}
 				}
 			)
@@ -207,23 +227,23 @@
 			; sixteen possibilities. A live run reads the real number off this line.
 			(define "ds_report_owner"
 				{"switch"
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 1"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 2}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 2"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 3}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 3"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 4}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 4"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 5}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 5"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 6}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 6"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 7}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 7"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 8}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 8"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 9}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 9"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 10}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 10"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 11}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 11"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 12}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 12"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 13}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 13"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 14}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 14"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 15}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 15"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 16}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 16"}}}
-					{"default" {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - UNRESOLVED"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 1}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 1"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 2}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 2"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 3}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 3"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 4}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 4"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 5}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 5"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 6}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 6"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 7}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 7"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 8}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 8"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 9}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 9"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 10}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 10"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 11}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 11"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 12}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 12"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 13}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 13"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 14}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 14"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 15}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 15"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 16}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 16"}}} {"default"}}}
+					{"default" {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - UNRESOLVED"}}} {"default"}}}
 				}
 			)
 
@@ -404,7 +424,13 @@
 					{"case"
 						{condition {type cmp_i} {var "defense_support_wave_cmd$"} {op ">"} {value 0}}
 						{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-						{"timer" {time 6} {title "DEFENSE GARRISON POOL SHORT - SKIP FLAG"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 6} {title "DEFENSE GARRISON POOL SHORT - SKIP FLAG"}}
+							}
+							{"default"}
+						}
 					}
 					{"default"}
 				}
@@ -764,7 +790,13 @@
 						{condition {type cmp_i} {var "defense_support_wave_cmd$"} {op ">"} {value 0}}
 						{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
 						("ds_poke_faction_line")
-						{"timer" {time 6} {title "DEFENSE SUPPORT POOL SHORT - FACTION LINE"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 6} {title "DEFENSE SUPPORT POOL SHORT - FACTION LINE"}}
+							}
+							{"default"}
+						}
 					}
 					{"default"}
 				}
@@ -773,7 +805,13 @@
 					{"case"
 						{condition {type cmp_i} {var "defense_support_wave_cmd$"} {op ">"} {value 0}}
 						{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-						{"timer" {time 6} {title "DEFENSE SUPPORT POOL EXHAUSTED"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 6} {title "DEFENSE SUPPORT POOL EXHAUSTED"}}
+							}
+							{"default"}
+						}
 					}
 					{"default"}
 				}
@@ -796,14 +834,26 @@
 					{"set_i" {var "defense_support_place$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 0}}
-					{"timer" {time 10} {title "DEFENSE GARRISON + PATROL ARMING"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 10} {title "DEFENSE GARRISON + PATROL ARMING"}}
+						}
+						{"default"}
+					}
 					("ds_report_owner")
 					{"delay" {time 2}}
 					("ds_claim_anchors")
 					{"delay" {time 4}}
 					{"if"
 						{condition {type entities} {selector {tag def_sup_af1}}}
-						{"timer" {time 8} {title "DEFENSE GARRISON AT FLAG 1"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 8} {title "DEFENSE GARRISON AT FLAG 1"}}
+							}
+							{"default"}
+						}
 						{"set_i" {var "defense_support_place$"} {op "="} {value 1}}
 						{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
 						("ds_pick_garrison")
@@ -811,7 +861,13 @@
 					{"delay" {time 5}}
 					{"if"
 						{condition {type entities} {selector {tag def_sup_af2}}}
-						{"timer" {time 8} {title "DEFENSE GARRISON AT FLAG 2"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 8} {title "DEFENSE GARRISON AT FLAG 2"}}
+							}
+							{"default"}
+						}
 						{"set_i" {var "defense_support_place$"} {op "="} {value 2}}
 						{"set_i" {var "defense_support_group$"} {op "="} {value 2}}
 						("ds_pick_garrison")
@@ -819,7 +875,13 @@
 					{"delay" {time 5}}
 					{"if"
 						{condition {type entities} {selector {tag def_sup_af3}}}
-						{"timer" {time 8} {title "DEFENSE GARRISON AT FLAG 3"}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 8} {title "DEFENSE GARRISON AT FLAG 3"}}
+							}
+							{"default"}
+						}
 						{"set_i" {var "defense_support_place$"} {op "="} {value 3}}
 						{"set_i" {var "defense_support_group$"} {op "="} {value 3}}
 						("ds_pick_garrison")
@@ -828,7 +890,13 @@
 					{"set_i" {var "defense_support_place$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_stage$"} {op "="} {value 1}}
-					{"timer" {time 8} {title "DEFENSE GARRISON LIVE - PATROLS ACTIVE"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE GARRISON LIVE - PATROLS ACTIVE"}}
+						}
+						{"default"}
+					}
 				}
 			}
 
@@ -855,16 +923,34 @@
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
 							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 8}}
-							{"timer" {time 10} {title "DEFENSE EDGE WAVES - L3, 8 WAVES"}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L3, 8 WAVES"}}
+								}
+								{"default"}
+							}
 						}
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
 							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 6}}
-							{"timer" {time 10} {title "DEFENSE EDGE WAVES - L2, 6 WAVES"}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L2, 6 WAVES"}}
+								}
+								{"default"}
+							}
 						}
 						{"default"
 							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 4}}
-							{"timer" {time 10} {title "DEFENSE EDGE WAVES - L1, 4 WAVES"}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L1, 4 WAVES"}}
+								}
+								{"default"}
+							}
 						}
 					}
 					; If garrison lagged (identity late), claim anchors now.
@@ -959,7 +1045,13 @@
 								}
 								{count {op ">"} {value 14}}
 							}
-							{"timer" {time 8} {title "DEFENSE SUPPORT NEAR CAP DEFER"}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 8} {title "DEFENSE SUPPORT NEAR CAP DEFER"}}
+								}
+								{"default"}
+							}
 						}
 						{"default"
 							{"set_i" {var "defense_support_wave_num$"} {op "+"} {value 1}}
@@ -987,7 +1079,13 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "defense_support_waves_left$"} {op "=="} {value 0}}
-							{"timer" {time 10} {title "DEFENSE SUPPORT WAVES EXHAUSTED"}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 10} {title "DEFENSE SUPPORT WAVES EXHAUSTED"}}
+								}
+								{"default"}
+							}
 						}
 						{"default"}
 					}
@@ -1306,7 +1404,13 @@
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_stage$"} {op "="} {value 11}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT WAVE - USMC RIFLE TEAM"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT WAVE - USMC RIFLE TEAM"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -1340,7 +1444,13 @@
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_stage$"} {op "="} {value 21}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT WAVE - 1AD RIFLE TEAM"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT WAVE - 1AD RIFLE TEAM"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -1374,7 +1484,13 @@
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_stage$"} {op "="} {value 51}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT WAVE - ARF RIFLE TEAM"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT WAVE - ARF RIFLE TEAM"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -1410,7 +1526,13 @@
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_stage$"} {op "="} {value 31}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT WAVE - PZGREN HOLD TEAM"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT WAVE - PZGREN HOLD TEAM"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -1441,7 +1563,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA LINE"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA LINE"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_line}}}} {amount 4}}
 						{tag_add def_sup_deploy}
@@ -1465,7 +1593,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - UKR LINE"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - UKR LINE"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_line}}}} {amount 4}}
 						{tag_add def_sup_deploy}
@@ -1489,7 +1623,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - PRC LINE"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - PRC LINE"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_prc_line}}}} {amount 4}}
 						{tag_add def_sup_deploy}
@@ -1513,7 +1653,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - NATO LINE"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - NATO LINE"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_nato_line}}}} {amount 4}}
 						{tag_add def_sup_deploy}
@@ -1537,7 +1683,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA WEAPONS"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA WEAPONS"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_wpn}}}} {amount 4}}
 						{tag_add def_sup_deploy}
@@ -1561,7 +1713,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - UKR WEAPONS"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - UKR WEAPONS"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_wpn}}}} {amount 4}}
 						{tag_add def_sup_deploy}
@@ -1585,7 +1743,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - PRC WEAPONS"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - PRC WEAPONS"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_prc_wpn}}}} {amount 4}}
 						{tag_add def_sup_deploy}
@@ -1609,7 +1773,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - NATO WEAPONS"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - NATO WEAPONS"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_nato_wpn}}}} {amount 4}}
 						{tag_add def_sup_deploy}
@@ -1635,7 +1805,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA RECON"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA RECON"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_recon}}}} {amount 3}}
 						{tag_add def_sup_deploy}
@@ -1659,7 +1835,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - UKR RECON"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - UKR RECON"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_recon}}}} {amount 3}}
 						{tag_add def_sup_deploy}
@@ -1683,7 +1865,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - PRC RECON"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - PRC RECON"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_prc_recon}}}} {amount 3}}
 						{tag_add def_sup_deploy}
@@ -1707,7 +1895,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - NATO RECON"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - NATO RECON"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_nato_recon}}}} {amount 3}}
 						{tag_add def_sup_deploy}
@@ -1731,7 +1925,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA ASSAULT"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA ASSAULT"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_assault}}}} {amount 4}}
 						{tag_add def_sup_deploy}
@@ -1755,7 +1955,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - UKR ASSAULT"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - UKR ASSAULT"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_assault}}}} {amount 4}}
 						{tag_add def_sup_deploy}
@@ -1779,7 +1985,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - PRC ASSAULT"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - PRC ASSAULT"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_prc_assault}}}} {amount 4}}
 						{tag_add def_sup_deploy}
@@ -1803,7 +2015,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - NATO ASSAULT"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - NATO ASSAULT"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_nato_assault}}}} {amount 4}}
 						{tag_add def_sup_deploy}
@@ -1827,7 +2045,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA ENGINEERS"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA ENGINEERS"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_eng}}}} {amount 3}}
 						{tag_add def_sup_deploy}
@@ -1851,7 +2075,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - UKR ENGINEERS"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - UKR ENGINEERS"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_eng}}}} {amount 3}}
 						{tag_add def_sup_deploy}
@@ -1875,7 +2105,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - PRC ENGINEERS"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - PRC ENGINEERS"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_prc_eng}}}} {amount 3}}
 						{tag_add def_sup_deploy}
@@ -1899,7 +2135,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - NATO ENGINEERS"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - NATO ENGINEERS"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_nato_eng}}}} {amount 3}}
 						{tag_add def_sup_deploy}
@@ -1923,7 +2165,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA MANPAD"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA MANPAD"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_manpad}}}} {amount 2}}
 						{tag_add def_sup_deploy}
@@ -1947,7 +2195,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - UKR MANPAD"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - UKR MANPAD"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_manpad}}}} {amount 2}}
 						{tag_add def_sup_deploy}
@@ -1971,7 +2225,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - PRC MANPAD"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - PRC MANPAD"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_prc_manpad}}}} {amount 2}}
 						{tag_add def_sup_deploy}
@@ -1995,7 +2255,13 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"timer" {time 8} {title "DEFENSE SUPPORT - NATO MANPAD"}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT - NATO MANPAD"}}
+						}
+						{"default"}
+					}
 					{"entity_state"
 						{selector {source advanced} {group {select {tag {tag ally_sup_nato_manpad}}}} {amount 2}}
 						{tag_add def_sup_deploy}

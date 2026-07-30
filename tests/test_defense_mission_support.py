@@ -582,7 +582,9 @@ class DefenceMissionSupportTests(unittest.TestCase):
         # THE non-guess. Unlike the other three engines, the default branch transfers
         # nothing: on a defence mission a guessed slot could be the attacker's. It
         # records the failure and leaves the wave at player 0, where it can do no harm.
-        default = block_at(own, own.rindex('{"default"'))
+        # Every support_debug$ gate closes with a bare {"default"}, so a branch default
+        # is identified by having a body: {"default"} followed by a newline.
+        default = block_at(own, own.rindex('{"default"\n'))
         self.assertNotIn('{"player"', default)
         self.assertIn(
             '{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}', default
@@ -646,7 +648,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
             self.assertIn('{player "%d"}' % n, own)
         self.assertNotIn('{player "0"}', self.ea)
         self.assertNotIn('{player "id_1st_enemy$"}', self.ea)
-        default = block_at(own, own.rindex('{"default"'))
+        default = block_at(own, own.rindex('{"default"\n'))
         self.assertNotIn('{"player"', default)
         self.assertIn(
             '{"set_i" {var "enemy_attack_owner_fail$"} {op "="} {value 1}}', default
@@ -812,8 +814,13 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 self.assertIn(live_selector(tag, 9), block)
                 self.assertIn('{count {op ">"} {value %d}}' % cap, block)
 
+                # Anchored on the live-count condition, not on the timer title: the
+                # nearest {"case"} above a title is now that diagnostic's own gate.
                 defer = block_at(
-                    block, block.rindex('{"case"', 0, block.index(marker))
+                    block,
+                    block.rindex(
+                        '{"case"', 0, block.index('{count {op ">"} {value %d}}' % cap)
+                    ),
                 )
                 self.assertIn(marker, defer)
                 self.assertNotIn('{"set_i" {var "%s_waves_left$"}' % prefix, defer)
@@ -821,7 +828,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 self.assertNotIn('_pick_', defer)
 
                 dispatch = block_at(
-                    block, block.index('{"default"', block.index(marker))
+                    block, block.index('{"default"', block.index(defer) + len(defer))
                 )
                 self.assertIn(
                     '{"set_i" {var "%s_wave_num$"} {op "+"} {value 1}}' % prefix, dispatch
@@ -1259,7 +1266,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 '{condition {type cmp_i} {var "bot_army$"} {op "=="} {value %d}}' % absent,
                 resolve,
             )
-        default = block_at(resolve, resolve.index('{"default"'))
+        default = block_at(resolve, resolve.rindex('{"default"\n'))
         self.assertIn('{"set_i" {var "enemy_attack_army$"} {op "="} {value 1}}', default)
 
         # Its own var, resolved from the same source as enemy_defense_army$ but never
