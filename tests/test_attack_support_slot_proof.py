@@ -210,10 +210,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         code = self.faction_tpl
         # 526 + 100 motor top-up (4 factions x [3 hulls + 6 crew + 16 pax]) so each
         # faction can field four trucks a mission: 1 hull + 2 crew + 6 pax per truck.
-        self.assertEqual(code.count('{Able "-select"}'), 626)
-        self.assertEqual(code.count("{Player 0}"), 626)
-        self.assertEqual(code.count('"ally_sup_tpl"'), 626)
-        self.assertEqual(code.count('"hidden"'), 626)
+        self.assertEqual(code.count('{Able "-select"}'), 633)
+        self.assertEqual(code.count("{Player 0}"), 633)
+        self.assertEqual(code.count('"ally_sup_tpl"'), 633)
+        self.assertEqual(code.count('"hidden"'), 633)
         for fac in ("rusa", "ukr", "nato", "prc"):
             self.assertEqual(code.count('"ally_sup_%s_motor_hull"' % fac), 4)
             self.assertEqual(code.count('"ally_sup_%s_motor_crew"' % fac), 8)
@@ -254,12 +254,12 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
         # Bands: this pool must not collide with either neighbour in a resolved map.
         ids = re.findall(r"\{(?:Entity|Human) \"[^\"]*\" (0x[0-9a-f]+)", code)
-        self.assertEqual(len(ids), 626)
-        self.assertEqual(len(set(ids)), 626)
+        self.assertEqual(len(ids), 633)
+        self.assertEqual(len(set(ids)), 633)
         # 0xc1 is the motor top-up band, swept against every pool and base map.
-        self.assertTrue(all(i.startswith(("0xb2", "0xb3", "0xb4", "0xc1")) for i in ids))
+        self.assertTrue(all(i.startswith(("0xb2", "0xb3", "0xb4", "0xc1", "0xc2")) for i in ids))
         mids = [int(m) for m in re.findall(r"\{MID (\d+)\}", code)]
-        self.assertEqual(len(set(mids)), 626)
+        self.assertEqual(len(set(mids)), 633)
         self.assertGreaterEqual(min(mids), 9300)
         # Real breeds only, and none of the retired idioms.
         self.assertNotIn('{Human ""', code)
@@ -1301,7 +1301,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             # checked by the deploy, or the faction waves reference nothing.
             "resource\\map\\multi\\faction_support_templates.inc",
             '(include "../faction_support_templates.inc")',
-            "must park 626 prototypes",
+            "must park 633 prototypes",
             '{"attack_support_air_left"}',
             '{"attack_support_air_test"}',
             "attack_support_air_",

@@ -115,7 +115,7 @@ foreach ($marker in @('{Entity "mi17_b8_rus"', '{Entity "mi17_b8_ukr"', '{Entity
 foreach ($key in @('mission/multi/support/e2_helo_inbound', 'mission/multi/support/e2_para_inbound', 'mission/multi/support/e2_insert_failed')) {
     if (-not (Select-String -Quiet -LiteralPath (Join-Path $RepoRoot $files[13]) -SimpleMatch "msgctxt `"$key`"")) { throw "Source support_events.pot is missing msgctxt $key" }
 }
-$E2HeloWaveMarkers = @(
+$E2HeloWaveMarkers = @('attack_support/e2_helo_prc', 
     '; ===== E2 REAL AIR INSERT PROBES =====',
     '{"attack_support/e2_dispatch"',
     '{"attack_support/e2_helo_rusa"',
@@ -125,8 +125,10 @@ $E2HeloWaveMarkers = @(
     'support_e2_lz',
     '{"delete"'
 )
-$E2HeloTemplateMarkers = @('{Altitude 22}')
-$E2HeloForbiddenMarkers = @('attack_support/e2_helo_prc', '{clone}', 'support_e2_lz_fpc')
+$E2HeloTemplateMarkers = @('support_e2_prc_helo', '{Altitude 22}')
+# PRC flies the Mi-171 adaptation (Army Aviation transport), so its helo probe is
+# required, not forbidden. The fixed-wing paradrop stays out per the PRC doctrine note.
+$E2HeloForbiddenMarkers = @('attack_support/e2_para_prc', '{clone}', 'support_e2_lz_fpc')
 foreach ($marker in $E2HeloWaveMarkers) {
     if (-not (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch $marker)) { throw "Source wave engine is missing E2 helicopter marker: $marker" }
 }
@@ -1119,15 +1121,15 @@ if ($tplMidMax -ge 9100) {
     throw "Source template pool MID $tplMidMax runs into the enemy-defence band at 9100"
 }
 
-# Player-nation pools: 626 prototypes across four factions (incl. rare IFV packages). Depths are per faction and
+# Player-nation pools: 633 prototypes across four factions (incl. rare IFV packages). Depths are per faction and
 # each is shared by the attack and defence engines, which never run on the same mission,
 # so each only has to cover ONE engine's L3 budget of 8 waves. The line pool is 30
 # rather than the original 24 because the three flag emplacements the defence engine
 # plants are CREWED from it: 3 anchors x 2 crew = 6 extra draws per mission, funded
 # one for one so the wave budget is unchanged.
 $factionAble = (Select-String -LiteralPath $factionTplSource -SimpleMatch '{Able "-select"}').Count
-if ($factionAble -ne 626) {
-    throw "Faction pool must park 626 prototypes with selection stripped; found $factionAble"
+if ($factionAble -ne 633) {
+    throw "Faction pool must park 633 prototypes with selection stripped; found $factionAble"
 }
 foreach ($faction in @('rusa', 'ukr', 'prc', 'nato')) {
     foreach ($pair in @(
@@ -1164,8 +1166,8 @@ if (Select-String -Quiet -LiteralPath $factionTplSource -Pattern '^\s*\{Human ""
 }
 $factionMids = [regex]::Matches((Get-Content -Raw -LiteralPath $factionTplSource), '\{MID (\d+)\}') |
     ForEach-Object { [int]$_.Groups[1].Value }
-if (($factionMids | Sort-Object -Unique).Count -ne 626) {
-    throw "Faction pool must carry 626 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"
+if (($factionMids | Sort-Object -Unique).Count -ne 633) {
+    throw "Faction pool must carry 633 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"
 }
 if (($factionMids | Measure-Object -Minimum).Minimum -lt 9300) {
     throw "Faction pool MIDs must start at 9300, clear of the other two pools"
@@ -1939,7 +1941,7 @@ if (-not (Test-Path -LiteralPath $factionTarget)) {
 foreach ($marker in $E2HeloTemplateMarkers) {
     if (-not (Select-String -Quiet -LiteralPath $factionTarget -SimpleMatch $marker)) { throw "Workshop E2 helicopter template is missing marker: $marker" }
 }
-if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able "-select"}').Count -ne 626) {
+if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able "-select"}').Count -ne 633) {
     throw "Workshop faction pool is not the 526-prototype player-nation pool"
 }
 if (Select-String -Quiet -LiteralPath $factionTarget -Pattern '^\s*\{Human ""') {

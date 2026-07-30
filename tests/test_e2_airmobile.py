@@ -76,7 +76,7 @@ class E2PoolAndStateTests(unittest.TestCase):
             self.assertIn(f'{{Entity "{asset}"', self.tpl)
         for breed in ("mp/rusa/2022s/rus_pliot", "mp/ukr/2022s/ukr_pilot", "mp/nato/2022s/nato_pilot"):
             self.assertIn(f'{{Human "{breed}"', self.tpl)
-        self.assertEqual(self.tpl.count('{Chassis "helicopter"\n\t\t\t{Airborne}\n\t\t\t{EngineStarted}\n\t\t\t{Altitude 22}\n\t\t}'), 3)
+        self.assertEqual(self.tpl.count('{Chassis "helicopter"\n\t\t\t{Airborne}\n\t\t\t{EngineStarted}\n\t\t\t{Altitude 22}\n\t\t}'), 4)
 
     def test_payloads_and_ejectable_links_are_pinned(self) -> None:
         for breed in ("106vdv_squadlead", "106vdv_mg", "106vdv_rifleman", "ukr13_squadlead", "ukr13_lmg", "ukr13_rifleman", "82nd_squadlead", "82nd_mg", "82nd_rifleman"):
@@ -101,7 +101,7 @@ class E2PoolAndStateTests(unittest.TestCase):
         self.assertIn("West-81", self.tpl)
         for key in ("e2_helo_inbound", "e2_para_inbound", "e2_insert_failed"):
             self.assertIn(f'msgctxt "mission/multi/support/{key}"', self.pot)
-        for marker in ("must park 626 prototypes", "support_e2_test", "support_e2_para_pax", "ce_ai_logic_triggers.inc"):
+        for marker in ("must park 633 prototypes", "support_e2_test", "support_e2_para_pax", "ce_ai_logic_triggers.inc"):
             self.assertIn(marker, self.deploy)
 
 class E2CeIsolationTests(unittest.TestCase):
@@ -161,11 +161,11 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
 
     def test_helicopter_uses_attested_flight_sequence_and_existing_pads(self) -> None:
         e2 = block(self.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== E2 PARADROP")
-        self.assertEqual(e2.count('{"air_state"'), 3)
-        self.assertEqual(e2.count('{altitude 30}'), 3)
-        self.assertEqual(e2.count('{drop sensor}'), 3)
-        self.assertGreaterEqual(e2.count('{control AI}'), 3)
-        self.assertGreaterEqual(e2.count('{action move}'), 6)
+        self.assertEqual(e2.count('{"air_state"'), 4)
+        self.assertEqual(e2.count('{altitude 30}'), 4)
+        self.assertEqual(e2.count('{drop sensor}'), 4)
+        self.assertGreaterEqual(e2.count('{control AI}'), 4)
+        self.assertGreaterEqual(e2.count('{action move}'), 8)
         for side in "ab":
             self.assertIn(f'{{waypoint "attack_support_entry_{side}1"}}', e2)
             for n in (1, 2):
@@ -184,9 +184,10 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
 
     def test_helicopter_has_fail_closed_faction_and_bounded_delete(self) -> None:
         e2 = block(self.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== E2 PARADROP")
-        for faction in ("rusa", "ukr", "nato"):
+        for faction in ("rusa", "ukr", "nato", "prc"):
             self.assertIn(f'{{"attack_support/e2_helo_{faction}"', e2)
-        self.assertNotIn("attack_support/e2_helo_prc", e2)
+        # PRC flies the Mi-171 adaptation; only the fixed-wing paradrop stays excluded.
+        self.assertNotIn("attack_support/e2_para_prc", e2)
         self.assertIn('{value 1}', e2)
         self.assertIn('(define "e2_delete_aircraft"', e2)
         self.assertIn('{"delete"', e2)
@@ -207,7 +208,7 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
 
     def test_supported_pools_are_exact_and_task4_is_not_implemented_here(self) -> None:
         e2 = block(self.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== E2 PARADROP")
-        for faction in ("rusa", "ukr", "nato"):
+        for faction in ("rusa", "ukr", "nato", "prc"):
             self.assertIn(f'support_e2_{faction}_helo', e2)
             self.assertIn(f'support_e2_{faction}_helo_crew', e2)
             self.assertIn(f'support_e2_{faction}_helo_team', e2)
@@ -222,7 +223,7 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
         timeout = dispatch.split('{"delay" {time 1}}', 1)[1]
         self.assertIn('{var "support_e2_stage$"} {op "=="} {value 10}', timeout)
         self.assertIn('{var "support_e2_fail$"} {op "="} {value 2}', timeout)
-        for faction in ("rusa", "ukr", "nato"):
+        for faction in ("rusa", "ukr", "nato", "prc"):
             helo = mi_block(self.waves, f'{{"attack_support/e2_helo_{faction}"')
             condition = helo.split('{actions', 1)[0]
             self.assertIn('{var "support_e2_stage$"} {op "=="} {value 10}', condition)
@@ -261,7 +262,7 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
         self.assertNotIn('{source advanced}', choose)
 
     def test_arrival_is_pad_anchored_before_any_troop_promotion(self) -> None:
-        for faction in ("rusa", "ukr", "nato"):
+        for faction in ("rusa", "ukr", "nato", "prc"):
             helo = mi_block(self.waves, f'{{"attack_support/e2_helo_{faction}"')
             arrival = helo.split('{"delay" {time 40}}', 1)[1]
             near = arrival.index('{type near}')
@@ -298,7 +299,7 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
         self.assertNotIn('{tag spawn_b}', entry)
         self.assertIn('{"delay" {time 0.5}}', entry)
 
-        for faction in ("rusa", "ukr", "nato"):
+        for faction in ("rusa", "ukr", "nato", "prc"):
             helo = mi_block(self.waves, f'{{"attack_support/e2_helo_{faction}"')
             fail4_at = helo.index('{var "support_e2_fail$"} {op "=="} {value 4}')
             fail4 = helo[fail4_at : helo.index('{"default"', fail4_at)]
@@ -383,7 +384,7 @@ class E2SequentialComboTests(unittest.TestCase):
         self.assertNotIn('("e2_trigger_para_by_army")', mode3)
 
     def test_helicopter_children_accept_exactly_modes_one_and_three(self) -> None:
-        for faction in ("rusa", "ukr", "nato"):
+        for faction in ("rusa", "ukr", "nato", "prc"):
             child = mi_block(self.e2, f'{{"attack_support/e2_helo_{faction}"')
             condition = child.split("{actions", 1)[0]
             self.assertIn('{var "support_e2_test$"} {op "=="} {value 1}', condition)

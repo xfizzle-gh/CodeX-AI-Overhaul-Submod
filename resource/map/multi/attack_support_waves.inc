@@ -3668,6 +3668,124 @@
 					}
 				}
 			}
+			{"attack_support/e2_helo_prc"
+				{condition
+					{expression "1 & 2 & 3 & 4 & (5 | 11) & 6 & 7 & 8 & 9 & 10"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "support_e2_test$"} {op "=="} {value 1}}
+						{"11.cmp_i" {var "support_e2_test$"} {op "=="} {value 3}}
+						{"6.cmp_i" {var "support_e2_stage$"} {op "=="} {value 10}}
+						{"7.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
+						{"8.entities" {selector {tag support_e2_prc_helo}} {count {op ">="} {value 1}}}
+						{"9.entities" {selector {tag support_e2_prc_helo_crew}} {count {op ">="} {value 2}}}
+						{"10.entities" {selector {tag support_e2_prc_helo_team}} {count {op ">="} {value 4}}}
+					}
+				}
+				{actions
+					; Consume one parked hull, both linked pilots, and four independent troops.
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag support_e2_prc_helo}}}} {amount 1}}
+						{tag_add support_e2_claim}
+						{tag_add support_e2_helo}
+						{tag_remove support_e2_prc_helo}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag support_e2_prc_helo_crew}}}} {amount 2}}
+						{tag_add support_e2_claim}
+						{tag_add support_e2_helo}
+						{tag_remove support_e2_prc_helo_crew}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag support_e2_prc_helo_team}}}} {amount 4}}
+						{tag_add support_e2_claim}
+						{tag_add support_e2_team}
+						{tag_remove support_e2_prc_helo_team}
+					}
+					("e2_choose_flag")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+							{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+							("e2_own_current")
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+									("e2_choose_lz")
+									{"switch"
+										{"case"
+											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
+											; Both deep pads unsafe: delete the unused helo and deliver the
+											; four claimed troops at the entry standoff. Failure remains honest.
+											("e2_announce_failed")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+											("e2_place_one_entry")
+											("e2_place_one_entry")
+											("e2_place_one_entry")
+											("e2_place_one_entry")
+											("e2_order_team")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+											("e2_complete_cleanup")
+										}
+										{"default"
+											("e2_promote_helo")
+											("e2_place_aircraft_entry")
+											; Attested order: establish altitude, give AI control, then move.
+											{"air_state"
+												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
+												{altitude 30}
+											}
+											{"actor_state"
+												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
+												{drop sensor}
+												{control AI}
+												{movement {speed fast}}
+											}
+											("e2_order_aircraft_lz")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+											; Time-based primary arrival window for the flight proof.
+											{"delay" {time 40}}
+											{"switch"
+												{"case"
+													{condition
+														{type near}
+														{units {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft} {state operatable}}
+														{near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}}
+														{distance 120}
+													}
+													("e2_announce_helo")
+													{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+													("e2_place_one")
+													("e2_place_one")
+													("e2_place_one")
+													("e2_place_one")
+													("e2_order_team")
+													{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+													("e2_order_aircraft_exit")
+													{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
+													{"delay" {time 60}}
+													("e2_complete_cleanup")
+												}
+												{"default"
+													{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+													("e2_order_aircraft_exit")
+													{"delay" {time 10}}
+													("e2_fail_and_cleanup")
+												}
+											}
+										}
+									}
+								}
+								{"default" ("e2_fail_and_cleanup")}
+							}
+						}
+						{"default" ("e2_fail_and_cleanup")}
+					}
+				}
+			}
 
 
 			{"attack_support/e2_helo_ukr"
@@ -3915,6 +4033,9 @@
 					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}} {"trigger" {name "attack_support/e2_helo_rusa"}}}
 					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}} {"trigger" {name "attack_support/e2_helo_ukr"}}}
 					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 3}} {"trigger" {name "attack_support/e2_helo_nato"}}}
+					; PLA Army Aviation transport (Mi-171 adaptation). PRC has no fixed-wing
+					; call-in per its doctrine note, so it routes here but not in the para switch.
+					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 4}} {"trigger" {name "attack_support/e2_helo_prc"}}}
 					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 1}} ("e2_fail_and_cleanup")}
 				}
 			)

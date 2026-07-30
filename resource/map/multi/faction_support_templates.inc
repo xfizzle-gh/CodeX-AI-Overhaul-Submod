@@ -4668,3 +4668,64 @@
 	{Link 0xc150 {0xc14e "commander"}}
 	{Link 0xc152 {0xc151 "driver"}}
 	{Link 0xc153 {0xc151 "commander"}}
+
+; ----- E2 PRC AIR ASSAULT (Mi-171 adaptation) -----
+; PLA Army Aviation transport per the PRC doctrine note: the verified in-stack
+; Mi-17 airframe with PLA crew and troops. Fixed-wing paradrop stays excluded.
+; IDs 0xc200-0xc206, MIDs 10009-10015, y=-37400.
+	{Entity "mi17_b8_rus" 0xc200
+		{Position -9000 -37400}
+		{Player 0}
+		{MID 10009}
+		{Able "-select"}
+		{Chassis "helicopter"
+			{Airborne}
+			{EngineStarted}
+			{Altitude 22}
+		}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xc201
+		{Position -8995 -37400}
+		{Player 0}
+		{MID 10010}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xc202
+		{Position -8990 -37400}
+		{Player 0}
+		{MID 10011}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_squadlead" 0xc203
+		{Position -8985 -37400}
+		{Player 0}
+		{MID 10012}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xc204
+		{Position -8980 -37400}
+		{Player 0}
+		{MID 10013}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_mg" 0xc205
+		{Position -8975 -37400}
+		{Player 0}
+		{MID 10014}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_antitank_pf98" 0xc206
+		{Position -8970 -37400}
+		{Player 0}
+		{MID 10015}
+		{Able "-select"}
+	}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo" "support_e2_aircraft" "hidden" 0xc200}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_crew" "hidden" 0xc201}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_crew" "hidden" 0xc202}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "hidden" 0xc203}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "hidden" 0xc204}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "hidden" 0xc205}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "hidden" 0xc206}
+	{Link 0xc201 {0xc200 "driver"}}
+	{Link 0xc202 {0xc200 "commander"}}
