@@ -814,16 +814,22 @@ class AttackSupportSlotProofTests(unittest.TestCase):
     def test_entry_side_is_chosen_at_runtime(self) -> None:
         code = self.code
         # The dynamic campaign swaps attacker/defender spawns per mission instance, so a
-        # static entry waypoint is never correct. Each side now has THREE pads and every
-        # branch of the side switch round-robins across its own three, so the placement
-        # count is 3 branches x 3 pads.
-        self.assertEqual(code.count('{"placement"'), 9)
+        # static entry waypoint is never correct. Each side has THREE main pads (3 branches
+        # x 3 pads = 9) plus TWO flank pads on the flank path (3 branches x 2 pads = 6).
+        self.assertEqual(code.count('{"placement"'), 15)
         for point in (1, 2, 3):
             self.assertEqual(
                 code.count('{target_waypoint "attack_support_entry_a%d"}' % point), 1
             )
             self.assertEqual(
                 code.count('{target_waypoint "attack_support_entry_b%d"}' % point), 2
+            )
+        for point in (1, 2):
+            self.assertEqual(
+                code.count('{target_waypoint "attack_support_flank_a%d"}' % point), 1
+            )
+            self.assertEqual(
+                code.count('{target_waypoint "attack_support_flank_b%d"}' % point), 2
             )
         # Never the bare legacy alias: that one exists for move orders, not placements.
         for side in "ab":
@@ -832,16 +838,40 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             )
 
         # Enemy on side a means we enter from b, and vice versa - never the same.
-        side_a = code.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
-        side_b = code.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
-        self.assertLess(side_a, side_b)
-        for point in (1, 2, 3):
-            self.assertIn(
-                '{target_waypoint "attack_support_entry_b%d"}' % point,
-                code[side_a:side_b],
+        # Each spawnside==1 case block must only place on b pads; spawnside==2 on a pads.
+        for m in re.finditer(
+            r'\{var "enemy_spawnside\$"\} \{op "=="\} \{value 1\}(.*?)'
+            r'(?=\{var "enemy_spawnside\$"\} \{op "=="\} \{value 2\}|\Z)',
+            code,
+            re.S,
+        ):
+            chunk = m.group(1)
+            if "target_waypoint" not in chunk:
+                continue
+            self.assertNotIn("entry_a", chunk)
+            self.assertNotIn("flank_a", chunk)
+            self.assertTrue(
+                ("entry_b" in chunk) or ("flank_b" in chunk), chunk[:120]
             )
-            self.assertIn(
-                '{target_waypoint "attack_support_entry_a%d"}' % point, code[side_b:]
+        for m in re.finditer(
+            r'\{var "enemy_spawnside\$"\} \{op "=="\} \{value 2\}(.*?)'
+            r'(?=\{var "enemy_spawnside\$"\} \{op "=="\} \{value 1\}|\{"default"|\Z)',
+            code,
+            re.S,
+        ):
+            chunk = m.group(1)
+            if "target_waypoint" not in chunk:
+                continue
+            # Stop at the branch's own default that still places on b (fallback side).
+            cut = chunk.find('{"default"')
+            if cut > 0:
+                chunk = chunk[:cut]
+            if "target_waypoint" not in chunk:
+                continue
+            self.assertNotIn("entry_b", chunk)
+            self.assertNotIn("flank_b", chunk)
+            self.assertTrue(
+                ("entry_a" in chunk) or ("flank_a" in chunk), chunk[:120]
             )
 
         # Placement happens before promotion on EVERY deploy. Pinning a bare count
@@ -1374,5 +1404,51 @@ class SupportDiagnosticGateTests(unittest.TestCase):
         self.assertIn("support_announce", self.deploy)
 
 
+
+class AttackSupportFlankTests(unittest.TestCase):
+    """Phase 2: flanking arrival pads for friendly attack support only."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.waves = (ROOT / "resource/map/multi/attack_support_waves.inc").read_text(
+            encoding="utf-8"
+        )
+        cls.deploy = DEPLOY.read_text(encoding="utf-8")
+        cls.other = {
+            name: (ROOT / ("resource/map/multi/%s.inc" % name)).read_text(encoding="utf-8")
+            for name in (
+                "defense_support_waves",
+                "enemy_defense_support",
+                "enemy_attack_support",
+            )
+        }
+
+    def test_choose_entry_rolls_and_guards(self) -> None:
+        self.assertIn('(define "as_choose_entry"', self.waves)
+        self.assertIn('{type rand} {value 0.25}', self.waves)
+        self.assertIn('{distance 120}', self.waves)
+        self.assertIn('attack_support_use_flank$', self.waves)
+        self.assertIn('attack_support_flank_rr$', self.waves)
+        self.assertIn('("as_announce_flank")', self.waves)
+
+    def test_place_one_addresses_flank_pads(self) -> None:
+        for side in ("a", "b"):
+            for n in (1, 2):
+                self.assertIn(
+                    'target_waypoint "attack_support_flank_%s%d"' % (side, n),
+                    self.waves,
+                )
+
+    def test_other_engines_never_reference_flank_pads(self) -> None:
+        for name, code in self.other.items():
+            self.assertNotIn("attack_support_flank_", code, name)
+
+    def test_deploy_generates_flank_geometry(self) -> None:
+        self.assertIn("$FlankDepth", self.deploy)
+        self.assertIn("$FlankSpread", self.deploy)
+        self.assertIn("attack_support_flank_", self.deploy)
+
+
 if __name__ == "__main__":
     unittest.main()
+

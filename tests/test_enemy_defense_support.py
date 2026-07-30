@@ -668,8 +668,13 @@ class EnemyDefenseSupportTests(unittest.TestCase):
                 friendly,
                 "enemy budget for L%d is not matched by the friendly system" % level,
             )
+        # Anchor on the live-roster tag so a flank-guard count {value 0} cannot win the match.
         friendly_cap = int(
-            re.search(r'\{count \{op ">"\} \{value (\d+)\}\}', friendly).group(1)
+            re.search(
+                r'attack_support_src.*?\{count \{op ">"\} \{value (\d+)\}\}',
+                friendly,
+                re.S,
+            ).group(1)
         )
         self.assertLessEqual(LIVE_CAP - friendly_cap, 2, "enemy live cap outgrew the friendly one")
 

@@ -57,6 +57,8 @@
 ; the legacy attack_support_entry_a / _b still carry, so those names survive as aliases
 ; and the patrol / roam move orders that use them are unchanged. All six are (re)built
 ; from the repo maps by tools/deploy_attack_support_probe.ps1, idempotently.
+; FLANK PADS / attack_support_flank_<side>1/2 at ~50% depth. as_choose_entry rolls 25%
+; per batch; enemy-near-pad guard falls back to main edge pads. Q1 only.
 ;
 ; am_entry_next bumps attack_support_entry_rr$ (1 -> 2 -> 3 -> 1) once per placement batch, at the top
 ; of am_place_at_entry, and the placement site is a three-case cascade on it. So consecutive
@@ -140,51 +142,59 @@
 						{condition {type entities} {selector {tag attack_support_place_one}}}
 						{"switch"
 							{"case"
-								{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+								{condition {type cmp_i} {var "attack_support_use_flank$"} {op "=="} {value 1}}
 								{"switch"
 									{"case"
-										{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 2}}
-										{"placement"
-											{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
-											{target_waypoint "attack_support_entry_b2"}
+										{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+										{"switch"
+											{"case"
+												{condition {type cmp_i} {var "attack_support_flank_rr$"} {op "=="} {value 2}}
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_flank_b2"}
+												}
+											}
+											{"default"
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_flank_b1"}
+												}
+											}
 										}
 									}
 									{"case"
-										{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 3}}
-										{"placement"
-											{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
-											{target_waypoint "attack_support_entry_b3"}
+										{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+										{"switch"
+											{"case"
+												{condition {type cmp_i} {var "attack_support_flank_rr$"} {op "=="} {value 2}}
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_flank_a2"}
+												}
+											}
+											{"default"
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_flank_a1"}
+												}
+											}
 										}
 									}
 									{"default"
-										{"placement"
-											{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
-											{target_waypoint "attack_support_entry_b1"}
-										}
-									}
-								}
-							}
-							{"case"
-								{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
-								{"switch"
-									{"case"
-										{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 2}}
-										{"placement"
-											{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
-											{target_waypoint "attack_support_entry_a2"}
-										}
-									}
-									{"case"
-										{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 3}}
-										{"placement"
-											{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
-											{target_waypoint "attack_support_entry_a3"}
-										}
-									}
-									{"default"
-										{"placement"
-											{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
-											{target_waypoint "attack_support_entry_a1"}
+										{"switch"
+											{"case"
+												{condition {type cmp_i} {var "attack_support_flank_rr$"} {op "=="} {value 2}}
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_flank_b2"}
+												}
+											}
+											{"default"
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_flank_b1"}
+												}
+											}
 										}
 									}
 								}
@@ -192,23 +202,77 @@
 							{"default"
 								{"switch"
 									{"case"
-										{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 2}}
-										{"placement"
-											{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
-											{target_waypoint "attack_support_entry_b2"}
+										{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+										{"switch"
+											{"case"
+												{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 2}}
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_entry_b2"}
+												}
+											}
+											{"case"
+												{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 3}}
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_entry_b3"}
+												}
+											}
+											{"default"
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_entry_b1"}
+												}
+											}
 										}
 									}
 									{"case"
-										{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 3}}
-										{"placement"
-											{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
-											{target_waypoint "attack_support_entry_b3"}
+										{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+										{"switch"
+											{"case"
+												{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 2}}
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_entry_a2"}
+												}
+											}
+											{"case"
+												{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 3}}
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_entry_a3"}
+												}
+											}
+											{"default"
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_entry_a1"}
+												}
+											}
 										}
 									}
 									{"default"
-										{"placement"
-											{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
-											{target_waypoint "attack_support_entry_b1"}
+										{"switch"
+											{"case"
+												{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 2}}
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_entry_b2"}
+												}
+											}
+											{"case"
+												{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 3}}
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_entry_b3"}
+												}
+											}
+											{"default"
+												{"placement"
+													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{target_waypoint "attack_support_entry_b1"}
+												}
+											}
 										}
 									}
 								}
@@ -225,9 +289,57 @@
 				}
 			)
 
+
 			; Stagger up to 8 bodies onto the entry (same waypoint, spaced in time so
 			; physics does not crush a full fireteam into one pile).
+			
+			; Pick main triple pads vs flank pads for this placement batch (attack only).
+			; 25% flank roll; round-robin flank_rr 1/2; fall back to main if enemies near pad.
+			(define "as_choose_entry"
+				{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
+				{"switch"
+					{"case"
+						{condition {type rand} {value 0.25}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "attack_support_flank_rr$"} {op ">="} {value 2}}
+								{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "attack_support_flank_rr$"} {op "+"} {value 1}}
+							}
+						}
+						; Safety: if any live bot human is already within 120 of the chosen
+						; flank pad, stay on the main edge pads this wave.
+						{"switch"
+							{"case"
+								{condition
+									{type entities}
+									{selector
+										{ignore_captured_by_user 0}
+										{type human}
+										{state "not dead"}
+										{tag _bot}
+										{distance 120}
+									}
+									{count {op ">"} {value 0}}
+								}
+								{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
+							}
+							{"default"
+								{"set_i" {var "attack_support_use_flank$"} {op "="} {value 1}}
+								("as_announce_flank")
+							}
+						}
+					}
+					{"default"
+						{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
+					}
+				}
+			)
+
 			(define "am_place_at_entry"
+				("as_choose_entry")
 				("am_entry_next")
 				("am_place_one")
 				("am_place_one")
@@ -904,6 +1016,8 @@
 				}
 				{actions
 					{"set_i" {var "attack_support_armed$"} {op "="} {value 1}}
+					{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
+					{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
 					{"set_i" {var "support_announce$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_busy$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_next_ok$"} {op "="} {value 0}}

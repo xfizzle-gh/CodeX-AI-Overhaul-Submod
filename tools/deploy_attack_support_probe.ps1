@@ -1054,6 +1054,10 @@ $entryName = '{"attack_support_entry_'
 # against a 1.9km map. Change it here and every deployed map is regenerated on the next
 # run; the repo maps keep only the single centroid the triple is derived from.
 $EntrySpacing = 270.0
+# Flank pads (Phase 2): depth toward map centre from side centroid, lateral spread
+# as a fraction of the perpendicular spawn-line extent (approx via centroid length).
+$FlankDepth = 0.50
+$FlankSpread = 0.35
 # Name kept from the probe era on purpose: it holds the genuinely pristine
 # pre-patch maps, and the "already backed up" check below is what stops a rerun
 # from overwriting them with maps this script has already patched.
@@ -1229,7 +1233,7 @@ foreach ($mapFile in $mapFiles) {
     $text = [System.IO.File]::ReadAllText($mapFile)
     $text = [regex]::Replace(
         $text,
-        '\s*\{"attack_(?:support|mate)_entry[a-z0-9_]*"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}',
+        '\s*\{"attack_(?:support|mate)_(?:entry|flank)[a-z0-9_]*"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}',
         ''
     )
     if (-not $text.Contains($waypointsAnchor)) {
@@ -1285,6 +1289,25 @@ foreach ($mapFile in $mapFiles) {
                 "}`r`n`t`t`t`t{radius $radius}`r`n`t`t`t}"
             $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $block)
         }
+
+        # Flank pads: midway toward map centre, offset left/right along the edge.
+        # attack_support_flank_<side>1/2. Attack-support Q1 only.
+        $fx = $cx * (1.0 - $FlankDepth)
+        $fy = $cy * (1.0 - $FlankDepth)
+        $spread = [math]::Max(400.0, $len * $FlankSpread)
+        $flanks = @(
+            @(($fx + $spread * $ux), ($fy + $spread * $uy)),
+            @(($fx - $spread * $ux), ($fy - $spread * $uy))
+        )
+        foreach ($fp in @(2, 1)) {
+            $off = $flanks[$fp - 1]
+            $name = 'attack_support_flank_' + $side + $fp
+            $block = "`r`n`t`t`t{`"$name`"`r`n`t`t`t`t{position " +
+                ("{0:F2} {1:F2} {2:F2}" -f $off[0], $off[1], $cz) +
+                "}`r`n`t`t`t`t{radius $radius}`r`n`t`t`t}"
+            $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $block)
+        }
+
         # The legacy single-pad name, kept as an alias of point 1 rather than migrated
         # away: the enemy-defence patrol and roam {action move} orders still address it,
         # and those are orders rather than placements, so they want one stable point.
@@ -1312,6 +1335,16 @@ foreach ($mapFile in $mapFiles) {
             throw "Expected exactly three entry pads on side $side in: $mapFile (found $triple)"
         }
     }
+    
+    foreach ($side in @("a", "b")) {
+        foreach ($fp in @(1, 2)) {
+            $n = ([regex]::Matches($text, [regex]::Escape('{"attack_support_flank_' + $side + $fp + '"'))).Count
+            if ($n -ne 1) {
+                throw "Expected exactly one attack_support_flank_$side$fp waypoint in: $mapFile (found $n)"
+            }
+        }
+    }
+
     if ([regex]::IsMatch($text, '\{"attack_support_entry"')) {
         throw "Map still carries the superseded single-sided attack_support_entry: $mapFile"
     }
@@ -1763,3 +1796,15 @@ Select-String -LiteralPath $ea -Pattern '\{"enemy_attack/|ENEMY ATTACK (ARMED|WA
 Write-Host "Patched maps: $($mapFiles.Count)"
 
 Write-Host "`nDeployment complete. Fully restart Gates of Hell before testing."
+
+
+# Phase 2: only the friendly attack engine may address flank pads.
+foreach ($pair in @(
+    @((Join-Path $WorkshopRoot "resource\map\multi\defense_support_waves.inc"), "defence support"),
+    @((Join-Path $WorkshopRoot "resource\map\multi\enemy_defense_support.inc"), "enemy defence"),
+    @((Join-Path $WorkshopRoot "resource\map\multi\enemy_attack_support.inc"), "enemy attack")
+)) {
+    if (Select-String -Quiet -LiteralPath $pair[0] -SimpleMatch "attack_support_flank_") {
+        throw ("Workshop {0} engine must not reference flank pads" -f $pair[1])
+    }
+}
