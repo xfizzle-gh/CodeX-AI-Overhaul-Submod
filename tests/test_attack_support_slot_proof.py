@@ -1261,7 +1261,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             # checked by the deploy, or the faction waves reference nothing.
             "resource\\map\\multi\\faction_support_templates.inc",
             '(include "../faction_support_templates.inc")',
-            "must park 379 prototypes",
+            "must park 411 prototypes",
             'ally_sup_rusa_line',
             "must not park a vehicle pool",
             # Border's inline vars block is converted to the shared include so the
