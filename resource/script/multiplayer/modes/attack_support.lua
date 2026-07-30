@@ -105,6 +105,18 @@ local function mirrorMotor()
 		"wave_cmd", readVar("attack_support_wave_cmd"),
 		"test", readVar("attack_support_motor_test"),
 		"test_done", readVar("attack_support_motor_test_done"))
+	-- WHERE a batch went, not just that a wave fired. place$: 0 = map-edge entry pad,
+	-- 1/2/3 = active flag (garrison). entry_rr$ names the pad used for edge batches.
+	emit("place_defense", readVar("defense_support_place"),
+		"pad", readVar("defense_support_entry_rr"),
+		"stage", readVar("defense_support_stage"))
+	emit("place_enemy_defense", readVar("enemy_defense_place"),
+		"pad", readVar("enemy_defense_entry_rr"),
+		"stage", readVar("enemy_defense_stage"))
+	emit("place_attack", "pad", readVar("attack_support_entry_rr"),
+		"stage", readVar("attack_support_stage"))
+	emit("place_enemy_attack", "pad", readVar("enemy_attack_entry_rr"),
+		"stage", readVar("enemy_attack_stage"))
 	emit("motor_enemy_left", readVar("enemy_attack_motor_left"),
 		"wave_cmd", readVar("enemy_attack_wave_cmd"),
 		"test", readVar("enemy_attack_motor_test"),
