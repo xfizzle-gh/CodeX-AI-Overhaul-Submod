@@ -5353,6 +5353,9 @@
 											{tag
 												{tag ai_signaller}
 											}
+											{tag
+												{tag support_e2_para_pax}
+											}
 										}
 									}
 									{sort
@@ -5502,6 +5505,9 @@
 											}
 											{tag
 												{tag eject_null}
+											}
+											{tag
+												{tag support_e2_para_pax}
 											}
 										}
 									}

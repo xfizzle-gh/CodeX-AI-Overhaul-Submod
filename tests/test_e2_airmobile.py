@@ -108,14 +108,27 @@ class E2CeIsolationTests(unittest.TestCase):
     def test_ce_mirrors_are_byte_identical(self) -> None:
         self.assertEqual(CE_MAP.read_bytes(), CE_SCRIPT.read_bytes())
 
-    def test_paratrooper_order_selector_excludes_e2_at_selection_time(self) -> None:
+    def test_every_paratrooper_order_selector_excludes_e2(self) -> None:
         text = CE_MAP.read_text(encoding="utf-8")
         order_block = block(text, '{"ai_logic/paratrooper_orders"', '{"ai_logic/')
-        selector = block(order_block, '{selector', '{sort')
-        exclude = selector.split('{exclude', 1)[1]
-        self.assertIn('{tag paratrooper_need_orders}', selector)
-        self.assertRegex(exclude, r"\{tag\s+\{tag support_e2_para_pax\}")
-        self.assertEqual(order_block.count("support_e2_para_pax"), 1)
+        selectors = []
+        cursor = 0
+        while True:
+            start = order_block.find('{selector', cursor)
+            if start < 0:
+                break
+            selector = mi_block(order_block[start:], '{selector')
+            if '{tag paratrooper_need_orders}' in selector:
+                selectors.append(selector)
+            cursor = start + len(selector)
+
+        self.assertEqual(len(selectors), 3)
+        for selector in selectors:
+            exclude = mi_block(selector, '{exclude')
+            self.assertIn('{tag paratrooper_need_orders}', selector)
+            self.assertRegex(exclude, r"\{tag\s+\{tag support_e2_para_pax\}")
+            self.assertEqual(selector.count("support_e2_para_pax"), 1)
+        self.assertEqual(order_block.count("support_e2_para_pax"), 3)
 
 
 class E2HelicopterLifecycleTests(unittest.TestCase):
