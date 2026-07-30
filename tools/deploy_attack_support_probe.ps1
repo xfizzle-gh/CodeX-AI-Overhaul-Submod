@@ -794,8 +794,8 @@ foreach ($marker in @(
     # NOT on: for this engine enemy_spawnside$ 1 means side b.
     # The numbered pads, not the bare legacy name: placements round-robin across the
     # triple and only the patrol / roam move orders still address the alias.
-    '{target_waypoint "attack_support_entry_a1"}',
-    '{target_waypoint "attack_support_entry_b1"}',
+    '{target_waypoint "attack_support_rear_a1"}',
+    '{target_waypoint "attack_support_rear_b1"}',
     # They advance on the claimed ACTIVE flags and then dig in. This is a defence.
     '{tag_add def_sup_af1}',
     '{target {ignore_captured_by_user 0} {tag def_sup_af1}}',
@@ -1253,6 +1253,10 @@ $entryName = '{"attack_support_entry_'
 $EntrySpacing = 270.0
 # Flank pads (Phase 2): depth toward map centre from side centroid, lateral spread
 # as a fraction of the perpendicular spawn-line extent (approx via centroid length).
+# Defence reinforcements form up BEHIND the defender's own spawn line rather than
+# on it: rear pads sit RearFactor x the spawn centroid, further from the objectives
+# than the troops already holding them. 1.00 would collapse them onto the entry pads.
+$RearFactor = 1.35
 $FlankDepth = 0.50
 $FlankSpread = 0.35
 # Airmobile LZ pads (Phase 5 E1): deeper toward centre than flanks.
@@ -1450,7 +1454,7 @@ foreach ($mapFile in $mapFiles) {
     $text = [System.IO.File]::ReadAllText($mapFile)
     $text = [regex]::Replace(
         $text,
-        '\s*\{"attack_(?:support|mate)_(?:entry|flank|air)[a-z0-9_]*"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}',
+        '\s*\{"attack_(?:support|mate)_(?:entry|rear|flank|air)[a-z0-9_]*"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}',
         ''
     )
     if (-not $text.Contains($waypointsAnchor)) {
@@ -1505,6 +1509,16 @@ foreach ($mapFile in $mapFiles) {
                 ("{0:F2} {1:F2} {2:F2}" -f $px, $py, $cz) +
                 "}`r`n`t`t`t`t{radius $radius}`r`n`t`t`t}"
             $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $block)
+
+            # Rear tier: the same triangle pushed out past the spawn line, used by the
+            # defence engine so its reinforcements walk in from behind the line.
+            $rx = ($cx * $RearFactor) + $offset[0]
+            $ry = ($cy * $RearFactor) + $offset[1]
+            $rname = 'attack_support_rear_' + $side + $point
+            $rblock = "`r`n`t`t`t{`"$rname`"`r`n`t`t`t`t{position " +
+                ("{0:F2} {1:F2} {2:F2}" -f $rx, $ry, $cz) +
+                "}`r`n`t`t`t`t{radius $radius}`r`n`t`t`t}"
+            $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $rblock)
         }
 
         # Flank pads: midway toward map centre, offset left/right along the edge.
@@ -1997,21 +2011,24 @@ foreach ($pair in @(
 # a shared cursor would let two engines running on the same mission cancel each other's
 # rotation - and each placement site is a three-case cascade on it.
 foreach ($quad in @(
-    @($waves, 'workshop attack support engine', 'attack_support', 'am_entry_next', 'am_place_at_entry'),
-    @($def, 'workshop enemy defence engine', 'enemy_defense', 'ed_entry_next', 'ed_place'),
-    @($ds, 'workshop defence support engine', 'defense_support', 'ds_entry_next', 'ds_place_at_entry'),
-    @($ea, 'workshop enemy attack engine', 'enemy_attack', 'ea_entry_next', 'ea_place_at_entry')
+    @($waves, 'workshop attack support engine', 'attack_support', 'am_entry_next', 'am_place_at_entry', 'attack_support_entry_'),
+    @($def, 'workshop enemy defence engine', 'enemy_defense', 'ed_entry_next', 'ed_place', 'attack_support_entry_'),
+    @($ds, 'workshop defence support engine', 'defense_support', 'ds_entry_next', 'ds_place_at_entry', 'attack_support_rear_'),
+    @($ea, 'workshop enemy attack engine', 'enemy_attack', 'ea_entry_next', 'ea_place_at_entry', 'attack_support_entry_')
 )) {
     $path = $quad[0]
     $label = $quad[1]
     $var = $quad[2]
     $rotate = $quad[3]
     $batch = $quad[4]
+    # Pad family: the defence engine forms up on the rear tier, everyone else on the
+    # entry tier. The rule is unchanged - three distinct pads per side, or arrivals stack.
+    $family = $quad[5]
     $code = Get-MiCode $path
     foreach ($side in @('a', 'b')) {
         foreach ($point in @(1, 2, 3)) {
-            if (-not $code.Contains('{target_waypoint "attack_support_entry_' + $side + $point + '"}')) {
-                throw "$label never places on entry pad $side$point, so arrivals still stack: $path"
+            if (-not $code.Contains('{target_waypoint "' + $family + $side + $point + '"}')) {
+                throw "$label never places on pad $family$side$point, so arrivals still stack: $path"
             }
         }
     }

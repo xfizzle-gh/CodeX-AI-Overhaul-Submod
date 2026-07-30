@@ -582,17 +582,20 @@ class DefenceMissionSupportTests(unittest.TestCase):
 
         # Q2 reinforces the player/defender, which is the side the attacker is NOT on,
         # so side 1 (a) -> entry_b / air_b. Same reading as Q1 (including airmobile LZs).
+        # Q2 forms up on the REAR pad tier (RearFactor x spawn centroid) so its
+        # reinforcements walk in from behind the defender's own line. Side mapping
+        # is unchanged: spawnside 1 (a) -> rear_b, 2 -> rear_a.
         place = define_body(self.ds, "ds_place_one")
         for point in (1, 2, 3):
             self.assertEqual(
-                place.count('{target_waypoint "attack_support_entry_b%d"}' % point), 2
+                place.count('{target_waypoint "attack_support_rear_b%d"}' % point), 2
             )
             self.assertEqual(
-                place.count('{target_waypoint "attack_support_entry_a%d"}' % point), 1
+                place.count('{target_waypoint "attack_support_rear_a%d"}' % point), 1
             )
         for side in "ab":
             self.assertNotIn(
-                '{target_waypoint "attack_support_entry_%s"}' % side, place
+                '{target_waypoint "attack_support_rear_%s"}' % side, place
             )
         self.assertIn('{target_waypoint "attack_support_air_b1"}', place)
         self.assertIn('{target_waypoint "attack_support_air_a1"}', place)
@@ -606,9 +609,9 @@ class DefenceMissionSupportTests(unittest.TestCase):
             chunk = m.group(1)
             if "target_waypoint" not in chunk:
                 continue
-            self.assertNotIn("entry_a", chunk)
+            self.assertNotIn("rear_a", chunk)
             self.assertNotIn("air_a", chunk)
-            self.assertTrue(("entry_b" in chunk) or ("air_b" in chunk), chunk[:120])
+            self.assertTrue(("rear_b" in chunk) or ("air_b" in chunk), chunk[:120])
         for m in re.finditer(
             r'\{var "enemy_spawnside\$"\} \{op "=="\} \{value 2\}(.*?)'
             r'(?=\{var "enemy_spawnside\$"\} \{op "=="\} \{value 1\}|\{"default"|\Z)',
@@ -623,35 +626,37 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 chunk = chunk[:cut]
             if "target_waypoint" not in chunk:
                 continue
-            self.assertNotIn("entry_b", chunk)
+            self.assertNotIn("rear_b", chunk)
             self.assertNotIn("air_b", chunk)
-            self.assertTrue(("entry_a" in chunk) or ("air_a" in chunk), chunk[:120])
+            self.assertTrue(("rear_a" in chunk) or ("air_a" in chunk), chunk[:120])
 
         # The two defence-mission engines therefore enter from OPPOSITE edges, and each
-        # matches the attack-mission engine that serves the same side (edge pads only).
-        for a, b in ((self.ds, self.q1), (self.ea, self.q4)):
+        # matches the attack-mission engine that serves the same side. Q2 forms up on the
+        # rear tier while Q1 uses the entry tier, so the pads are compared family-aware:
+        # the equivalence asserted is the SIDE each engine picks, not the tier name.
+        for a, b, fam_a, fam_b in (
+            (self.ds, self.q1, "attack_support_rear_", "attack_support_entry_"),
+            (self.ea, self.q4, "attack_support_entry_", "attack_support_entry_"),
+        ):
             for value in (1, 2):
                 pat = '{var "enemy_spawnside$"} {op "=="} {value %d}' % value
 
-                def edge_slice(src: str, needle: str = pat) -> str:
+                def edge_slice(src: str, family: str, needle: str = pat) -> str:
                     pos = 0
                     while True:
                         at = src.index(needle, pos)
                         window = src[at : at + 500]
-                        if "attack_support_entry_" in window:
+                        if family in window:
                             return window
                         pos = at + 1
 
-                mine = edge_slice(a)
-                theirs = edge_slice(b)
-                for wp in (
-                    "attack_support_entry_a1",
-                    "attack_support_entry_b1",
-                ):
+                mine = edge_slice(a, fam_a)
+                theirs = edge_slice(b, fam_b)
+                for side in "ab":
                     self.assertEqual(
-                        '{target_waypoint "%s"}' % wp in mine,
-                        '{target_waypoint "%s"}' % wp in theirs,
-                        (value, wp),
+                        '{target_waypoint "%s%s1"}' % (fam_a, side) in mine,
+                        '{target_waypoint "%s%s1"}' % (fam_b, side) in theirs,
+                        (value, side),
                     )
 
         # Both engines also depend on enemy_spawnside$ > 0 as their readiness proof:

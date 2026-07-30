@@ -329,20 +329,20 @@
 												{condition {type cmp_i} {var "defense_support_entry_rr$"} {op "=="} {value 2}}
 												{"placement"
 													{selector {ignore_captured_by_user 0} {tag def_sup_place_one}}
-													{target_waypoint "attack_support_entry_b2"}
+													{target_waypoint "attack_support_rear_b2"}
 												}
 											}
 											{"case"
 												{condition {type cmp_i} {var "defense_support_entry_rr$"} {op "=="} {value 3}}
 												{"placement"
 													{selector {ignore_captured_by_user 0} {tag def_sup_place_one}}
-													{target_waypoint "attack_support_entry_b3"}
+													{target_waypoint "attack_support_rear_b3"}
 												}
 											}
 											{"default"
 												{"placement"
 													{selector {ignore_captured_by_user 0} {tag def_sup_place_one}}
-													{target_waypoint "attack_support_entry_b1"}
+													{target_waypoint "attack_support_rear_b1"}
 												}
 											}
 										}
@@ -354,20 +354,20 @@
 												{condition {type cmp_i} {var "defense_support_entry_rr$"} {op "=="} {value 2}}
 												{"placement"
 													{selector {ignore_captured_by_user 0} {tag def_sup_place_one}}
-													{target_waypoint "attack_support_entry_a2"}
+													{target_waypoint "attack_support_rear_a2"}
 												}
 											}
 											{"case"
 												{condition {type cmp_i} {var "defense_support_entry_rr$"} {op "=="} {value 3}}
 												{"placement"
 													{selector {ignore_captured_by_user 0} {tag def_sup_place_one}}
-													{target_waypoint "attack_support_entry_a3"}
+													{target_waypoint "attack_support_rear_a3"}
 												}
 											}
 											{"default"
 												{"placement"
 													{selector {ignore_captured_by_user 0} {tag def_sup_place_one}}
-													{target_waypoint "attack_support_entry_a1"}
+													{target_waypoint "attack_support_rear_a1"}
 												}
 											}
 										}
@@ -378,20 +378,20 @@
 												{condition {type cmp_i} {var "defense_support_entry_rr$"} {op "=="} {value 2}}
 												{"placement"
 													{selector {ignore_captured_by_user 0} {tag def_sup_place_one}}
-													{target_waypoint "attack_support_entry_b2"}
+													{target_waypoint "attack_support_rear_b2"}
 												}
 											}
 											{"case"
 												{condition {type cmp_i} {var "defense_support_entry_rr$"} {op "=="} {value 3}}
 												{"placement"
 													{selector {ignore_captured_by_user 0} {tag def_sup_place_one}}
-													{target_waypoint "attack_support_entry_b3"}
+													{target_waypoint "attack_support_rear_b3"}
 												}
 											}
 											{"default"
 												{"placement"
 													{selector {ignore_captured_by_user 0} {tag def_sup_place_one}}
-													{target_waypoint "attack_support_entry_b1"}
+													{target_waypoint "attack_support_rear_b1"}
 												}
 											}
 										}
