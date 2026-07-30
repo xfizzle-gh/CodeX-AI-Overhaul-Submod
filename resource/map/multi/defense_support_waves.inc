@@ -974,6 +974,334 @@
 
 			; GARRISON + PATROL — arms as soon as defender identity is known (no prep wait).
 			; Makes the map feel alive while the player places during prep.
+			; Phase 4: unmanned para_ammo + L2+ crewless weapon on defended flags.
+			; Unowned (player 0), tag flag_prop — not claimed by support engines.
+			(define "ds_props_af1"
+				{"if"
+					{condition {type entities} {selector {tag def_sup_af1}}}
+					{"spawn"
+						{entity "para_ammo"}
+						{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+					}
+					{"delay" {time 0.1}}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {entity "para_ammo"}}
+								{exclude {tag {tag flag_prop}}}
+							}
+							{amount 1}
+						}
+						{tag_add flag_prop}
+					}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}}
+									{"spawn"
+										{entity "mg_stand_nsvt_rus_ai"}
+										{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_nsvt_rus_ai"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}}
+									{"spawn"
+										{entity "mg_stand_nsvt_ukr_ai"}
+										{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_nsvt_ukr_ai"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 4}}
+									{"spawn"
+										{entity "mg_stand_qjz171"}
+										{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_qjz171"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"default"
+									{"spawn"
+										{entity "bgm71_tow"}
+										{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "bgm71_tow"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+							}
+						}
+						{"default"}
+					}
+				}
+			)
+			(define "ds_props_af2"
+				{"if"
+					{condition {type entities} {selector {tag def_sup_af2}}}
+					{"spawn"
+						{entity "para_ammo"}
+						{target {ignore_captured_by_user 0} {tag def_sup_af2}}
+					}
+					{"delay" {time 0.1}}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {entity "para_ammo"}}
+								{exclude {tag {tag flag_prop}}}
+							}
+							{amount 1}
+						}
+						{tag_add flag_prop}
+					}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}}
+									{"spawn"
+										{entity "mg_stand_nsvt_rus_ai"}
+										{target {ignore_captured_by_user 0} {tag def_sup_af2}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_nsvt_rus_ai"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}}
+									{"spawn"
+										{entity "mg_stand_nsvt_ukr_ai"}
+										{target {ignore_captured_by_user 0} {tag def_sup_af2}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_nsvt_ukr_ai"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 4}}
+									{"spawn"
+										{entity "mg_stand_qjz171"}
+										{target {ignore_captured_by_user 0} {tag def_sup_af2}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_qjz171"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"default"
+									{"spawn"
+										{entity "bgm71_tow"}
+										{target {ignore_captured_by_user 0} {tag def_sup_af2}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "bgm71_tow"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+							}
+						}
+						{"default"}
+					}
+				}
+			)
+			(define "ds_props_af3"
+				{"if"
+					{condition {type entities} {selector {tag def_sup_af3}}}
+					{"spawn"
+						{entity "para_ammo"}
+						{target {ignore_captured_by_user 0} {tag def_sup_af3}}
+					}
+					{"delay" {time 0.1}}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {entity "para_ammo"}}
+								{exclude {tag {tag flag_prop}}}
+							}
+							{amount 1}
+						}
+						{tag_add flag_prop}
+					}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}}
+									{"spawn"
+										{entity "mg_stand_nsvt_rus_ai"}
+										{target {ignore_captured_by_user 0} {tag def_sup_af3}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_nsvt_rus_ai"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}}
+									{"spawn"
+										{entity "mg_stand_nsvt_ukr_ai"}
+										{target {ignore_captured_by_user 0} {tag def_sup_af3}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_nsvt_ukr_ai"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 4}}
+									{"spawn"
+										{entity "mg_stand_qjz171"}
+										{target {ignore_captured_by_user 0} {tag def_sup_af3}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_qjz171"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"default"
+									{"spawn"
+										{entity "bgm71_tow"}
+										{target {ignore_captured_by_user 0} {tag def_sup_af3}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "bgm71_tow"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+							}
+						}
+						{"default"}
+					}
+				}
+			)
+			(define "ds_place_flag_props"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "flag_props_done$"} {op "=="} {value 0}}
+						{"set_i" {var "flag_props_done$"} {op "="} {value 1}}
+						("ds_resolve_army")
+						("ds_props_af1")
+						("ds_props_af2")
+						("ds_props_af3")
+					}
+					{"default"}
+				}
+			)
+
 			{"defense_support/garrison_init"
 				{condition
 					{expression "1 & 2 & 3 & 4"}
@@ -1043,6 +1371,7 @@
 						("ds_pick_garrison")
 					}
 					{"delay" {time 2}}
+					("ds_place_flag_props")
 					{"set_i" {var "defense_support_place$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_stage$"} {op "="} {value 1}}

@@ -244,7 +244,9 @@ class DefenceMissionSupportTests(unittest.TestCase):
                        "ds_resolve_army", "ds_pick_hybrid_non_nato",
                        "ds_poke_faction_line", "ds_poke_faction_wpn",
                        "ds_poke_faction_recon", "ds_poke_faction_assault",
-                       "ds_poke_faction_eng", "ds_poke_faction_manpad")),
+                       "ds_poke_faction_eng", "ds_poke_faction_manpad",
+                       "ds_props_af1", "ds_props_af2", "ds_props_af3",
+                       "ds_place_flag_props")),
             (self.ea, ("ea_entry_next",
                        "ea_place_at_entry", "ea_place_one",
                        "ea_own_to_enemy",
@@ -419,7 +421,8 @@ class DefenceMissionSupportTests(unittest.TestCase):
             return set(re.findall(r"\{tag(?:_add|_remove)? ([a-z0-9_]+)\}", code))
 
         # "player" is the stock radio {"talk"} portrait selector, not engine state.
-        shared = {"flag", "hidden", "player"}
+        # "flag_prop" marks unmanned Phase-4 supply/MG props (not support roster).
+        shared = {"flag", "hidden", "player", "flag_prop"}
         # Pool tags the defence engine is ALLOWED to claim from: the original NATO
         # comps plus the player-nation faction pools it now shares with Q1. These are
         # claims against parked prototypes, not another engine's runtime state - and

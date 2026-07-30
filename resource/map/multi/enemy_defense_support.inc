@@ -754,6 +754,333 @@
 			; mission-authority call, so a positive spawn side proves the defence-side
 			; perspective vars have actually been published rather than merely defaulting
 			; to 0 - which is what makes this engine provably inert on a defence mission.
+			; Phase 4: unmanned para_ammo + L2+ crewless weapon on defended flags.
+			; Unowned (player 0), tag flag_prop — not claimed by support engines.
+			(define "ed_props_af1"
+				{"if"
+					{condition {type entities} {selector {tag enemy_def_af1}}}
+					{"spawn"
+						{entity "para_ammo"}
+						{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
+					}
+					{"delay" {time 0.1}}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {entity "para_ammo"}}
+								{exclude {tag {tag flag_prop}}}
+							}
+							{amount 1}
+						}
+						{tag_add flag_prop}
+					}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 1}}
+									{"spawn"
+										{entity "mg_stand_nsvt_rus_ai"}
+										{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_nsvt_rus_ai"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 2}}
+									{"spawn"
+										{entity "mg_stand_nsvt_ukr_ai"}
+										{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_nsvt_ukr_ai"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 4}}
+									{"spawn"
+										{entity "mg_stand_qjz171"}
+										{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_qjz171"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"default"
+									{"spawn"
+										{entity "bgm71_tow"}
+										{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "bgm71_tow"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+							}
+						}
+						{"default"}
+					}
+				}
+			)
+			(define "ed_props_af2"
+				{"if"
+					{condition {type entities} {selector {tag enemy_def_af2}}}
+					{"spawn"
+						{entity "para_ammo"}
+						{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
+					}
+					{"delay" {time 0.1}}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {entity "para_ammo"}}
+								{exclude {tag {tag flag_prop}}}
+							}
+							{amount 1}
+						}
+						{tag_add flag_prop}
+					}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 1}}
+									{"spawn"
+										{entity "mg_stand_nsvt_rus_ai"}
+										{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_nsvt_rus_ai"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 2}}
+									{"spawn"
+										{entity "mg_stand_nsvt_ukr_ai"}
+										{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_nsvt_ukr_ai"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 4}}
+									{"spawn"
+										{entity "mg_stand_qjz171"}
+										{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_qjz171"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"default"
+									{"spawn"
+										{entity "bgm71_tow"}
+										{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "bgm71_tow"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+							}
+						}
+						{"default"}
+					}
+				}
+			)
+			(define "ed_props_af3"
+				{"if"
+					{condition {type entities} {selector {tag enemy_def_af3}}}
+					{"spawn"
+						{entity "para_ammo"}
+						{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
+					}
+					{"delay" {time 0.1}}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {entity "para_ammo"}}
+								{exclude {tag {tag flag_prop}}}
+							}
+							{amount 1}
+						}
+						{tag_add flag_prop}
+					}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 1}}
+									{"spawn"
+										{entity "mg_stand_nsvt_rus_ai"}
+										{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_nsvt_rus_ai"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 2}}
+									{"spawn"
+										{entity "mg_stand_nsvt_ukr_ai"}
+										{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_nsvt_ukr_ai"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 4}}
+									{"spawn"
+										{entity "mg_stand_qjz171"}
+										{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "mg_stand_qjz171"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+								{"default"
+									{"spawn"
+										{entity "bgm71_tow"}
+										{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
+									}
+									{"delay" {time 0.1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select {entity "bgm71_tow"}}
+												{exclude {tag {tag flag_prop}}}
+											}
+											{amount 1}
+										}
+										{tag_add flag_prop}
+									}
+								}
+							}
+						}
+						{"default"}
+					}
+				}
+			)
+			(define "ed_place_flag_props"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "flag_props_done$"} {op "=="} {value 0}}
+						{"set_i" {var "flag_props_done$"} {op "="} {value 1}}
+						("ed_props_af1")
+						("ed_props_af2")
+						("ed_props_af3")
+					}
+					{"default"}
+				}
+			)
+
 			{"enemy_defense/init"
 				{condition
 					{expression "1 & 2 & 3 & 4"}
@@ -857,6 +1184,7 @@
 						("ed_pick_garrison")
 					}
 					{"delay" {time 8}}
+					("ed_place_flag_props")
 					{"set_i" {var "enemy_defense_place$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_defense_stage$"} {op "="} {value 2}}
 					; Hand the cadence over only once the garrison has finished landing. The
