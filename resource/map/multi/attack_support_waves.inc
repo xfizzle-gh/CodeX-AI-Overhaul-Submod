@@ -4053,9 +4053,17 @@
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
 				}
-				{"actor_state"
+				; Driver leaves the field instead of idling: drive for waypoint "0" and the
+				; cleanup trigger below removes the hull 45s later, wreck included.
+				{"entity_state"
 					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
-					{movement {speed stop}}
+					{tag_add am_motor_leaving}
+				}
+				{"action"
+					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
+					{drop orders}
+					{action move}
+					{waypoint "0"}
 				}
 				{"entity_state"
 					{selector {tag attack_support_deploy}}
@@ -4297,5 +4305,21 @@
 					{"delay" {time 45}}
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 19}}
 					("as_poke_faction_motor")
+				}
+			}
+
+			; One-shot per truck: give the departing hull 45s of driving, then remove it
+			; (dead or alive) so trucks never accumulate. Fires only when a hull is leaving.
+			{"attack_support/motor_cleanup"
+				{condition
+					{expression "1 & 2"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.entities" {selector {tag am_motor_leaving}} {count {op ">"} {value 0}}}
+					}
+				}
+				{actions
+					{"delay" {time 45}}
+					{"delete" {selector {ignore_captured_by_user 0} {tag am_motor_leaving}}}
 				}
 			}

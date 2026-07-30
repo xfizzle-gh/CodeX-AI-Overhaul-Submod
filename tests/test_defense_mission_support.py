@@ -220,7 +220,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
         self.assertEqual(len(ea), len(set(ea)), "duplicate enemy-attack trigger")
         self.assertEqual(
             set(ea),
-            {"init", "clock", "motor_test"} | {
+            {"init", "clock", "motor_test", "motor_cleanup"} | {
                 "%s_%s" % (key, suffix)
                 for key, _army in EA_FACTIONS
                 for suffix, _cmd, _role, _take, _stage in EA_DRAWS
@@ -228,7 +228,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
         )
         # motor_test: TEST-ONLY forced staggered truck scheduler (gated on
         # enemy_attack_motor_test$; poke-only, deploys nothing itself).
-        self.assertEqual(len(ea), 15)
+        self.assertEqual(len(ea), 16)
 
         # Trigger namespaces are disjoint from each other and from the two
         # attack-mission engines, so no {"trigger"} poke can cross systems.

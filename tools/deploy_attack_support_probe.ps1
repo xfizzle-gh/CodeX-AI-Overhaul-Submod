@@ -1277,7 +1277,7 @@ $EntrySpacing = 270.0
 # Defence reinforcements form up BEHIND the defender's own spawn line rather than
 # on it: rear pads sit RearFactor x the spawn centroid, further from the objectives
 # than the troops already holding them. 1.00 would collapse them onto the entry pads.
-$RearFactor = 1.35
+$RearFactor = 1.15
 $FlankDepth = 0.50
 $FlankSpread = 0.35
 # Airmobile LZ pads (Phase 5 E1): deeper toward centre than flanks.

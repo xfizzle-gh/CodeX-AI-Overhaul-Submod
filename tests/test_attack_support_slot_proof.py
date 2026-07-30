@@ -898,7 +898,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         # E2 has dedicated MOVE-placement and flight contracts in
         # test_e2_airmobile.py; this enumeration covers legacy wave deployers only.
         deployers = [n for n in re.findall(r'\{"attack_support/([a-z0-9_]+)"', code)
-                     if n not in ("init", "clock", "motor_test")
+                     if n not in ("init", "clock", "motor_test", "motor_cleanup")
                      and not n.startswith("e2_")]
         self.assertTrue(deployers)
         for name in deployers:

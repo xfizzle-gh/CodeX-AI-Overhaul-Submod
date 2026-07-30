@@ -769,7 +769,7 @@
 					{condition {type entities} {selector {tag enemy_def_af1}}}
 					{"switch"
 						{"case"
-							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
+							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 1}}	; weapons at every level (was 2) - user 2026-07-30
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 1}}
@@ -882,7 +882,7 @@
 					{condition {type entities} {selector {tag enemy_def_af2}}}
 					{"switch"
 						{"case"
-							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
+							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 1}}	; weapons at every level (was 2) - user 2026-07-30
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 1}}
@@ -995,7 +995,7 @@
 					{condition {type entities} {selector {tag enemy_def_af3}}}
 					{"switch"
 						{"case"
-							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
+							{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 1}}	; weapons at every level (was 2) - user 2026-07-30
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 1}}
