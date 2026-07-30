@@ -3188,6 +3188,699 @@
 				}
 			}
 
+			; ===== E2 REAL AIR INSERT PROBES =====
+			; Default-off live flight proof. Gate 1 flies a helo; gate 2 is reserved for
+			; Task 4's real paradrop. Forced probes never touch production wave budgets.
+
+			(define "e2_reset_target"
+				{"entity_state" {selector {tag support_e2_flag_target}} {tag_remove support_e2_flag_target}}
+				{"set_i" {var "support_e2_flag$"} {op "="} {value 0}}
+				{"set_i" {var "support_e2_lz$"} {op "="} {value 0}}
+			)
+
+			(define "e2_announce_helo"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"talk"
+							{selector {ignore_captured_by_user 0} {amount 1} {tag player} {zone "gamezone"} {type human} {state "not dead"}}
+							{text "mission/multi/support/e2_helo_inbound"}
+						}
+					}
+					{"default"}
+				}
+			)
+
+			(define "e2_announce_failed"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"talk"
+							{selector {ignore_captured_by_user 0} {amount 1} {tag player} {zone "gamezone"} {type human} {state "not dead"}}
+							{text "mission/multi/support/e2_insert_failed"}
+						}
+					}
+					{"default"}
+				}
+			)
+
+			; Both tags are required: support_e2_aircraft also exists on unclaimed parked
+			; templates, which must never be deleted by another package's cleanup.
+			(define "e2_delete_aircraft"
+				{"delete" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}}}
+			)
+
+			(define "e2_fail_and_cleanup"
+				("e2_delete_aircraft")
+				{"entity_state" {selector {tag support_e2_claim}} {tag_remove support_e2_claim}}
+				{"entity_state" {selector {tag support_e2_team}} {tag_remove support_e2_team}}
+				{"entity_state" {selector {tag support_e2_helo}} {tag_remove support_e2_helo}}
+				{"entity_state" {selector {tag support_e2_place_one}} {tag_remove support_e2_place_one}}
+				{"entity_state" {selector {tag support_e2_placed}} {tag_remove support_e2_placed}}
+				{"entity_state" {selector {tag support_e2_flag_target}} {tag_remove support_e2_flag_target}}
+				{"set_i" {var "support_e2_stage$"} {op "="} {value 70}}
+				("e2_announce_failed")
+			)
+
+			(define "e2_complete_cleanup"
+				("e2_delete_aircraft")
+				{"entity_state" {selector {tag support_e2_claim}} {tag_remove support_e2_claim}}
+				{"entity_state" {selector {tag support_e2_helo}} {tag_remove support_e2_helo}}
+				{"entity_state" {selector {tag support_e2_place_one}} {tag_remove support_e2_place_one}}
+				{"entity_state" {selector {tag support_e2_placed}} {tag_remove support_e2_placed}}
+				{"entity_state" {selector {tag support_e2_flag_target}} {tag_remove support_e2_flag_target}}
+				{"set_i" {var "support_e2_stage$"} {op "="} {value 70}}
+			)
+
+			(define "e2_choose_flag"
+				("e2_reset_target")
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group {select {tag {tag flag}}} {exclude {state {state inactive}}}}
+						{sort {type shuffle}}
+						{amount 1}
+					}
+					{tag_add support_e2_flag_target}
+				}
+				{"delay" {time 0.1}}
+				{"switch"
+					{"case"
+						{condition {type entities} {selector {tag support_e2_flag_target}}}
+						; Some managed maps do not expose numbered capture tags. A value of 1
+						; therefore records the honest portable fact: one active target was selected.
+						{"set_i" {var "support_e2_flag$"} {op "="} {value 1}}
+					}
+					{"default"
+						{"set_i" {var "support_e2_fail$"} {op "="} {value 3}}
+						("e2_fail_and_cleanup")
+					}
+				}
+			)
+
+			(define "e2_own_current"
+				{"switch"
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 1}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "1"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 2}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "2"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 3}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "3"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 4}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 5}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 6}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 7}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 8}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 9}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 10}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 11}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 12}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 13}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 14}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 15}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "16"}}}
+					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 8}}}
+				}
+			)
+
+			(define "e2_place_one"
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group {select {tag {tag support_e2_team}}} {exclude {tag {tag support_e2_placed}}}}
+						{amount 1}
+					}
+					{tag_add support_e2_place_one}
+					{tag_remove support_e2_team}
+				}
+				{"delay" {time 0.05}}
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}} {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target_waypoint "attack_support_air_a2"}}}
+							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 1}} {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target_waypoint "attack_support_air_a1"}}}
+							{"default" {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target {ignore_captured_by_user 0} {amount 1} {tag spawn_a}}}}
+						}
+					}
+					{"default"
+						{"switch"
+							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}} {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target_waypoint "attack_support_air_b2"}}}
+							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 1}} {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target_waypoint "attack_support_air_b1"}}}
+							{"default" {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target {ignore_captured_by_user 0} {amount 1} {tag spawn_b}}}}
+						}
+					}
+				}
+				{"entity_state"
+					{selector {tag support_e2_place_one}}
+					{tag_add support_e2_team}
+					{tag_add support_e2_placed}
+					{tag_add attack_support_src}
+					{tag_remove ally_sup_tpl}
+					{tag_remove support_e2_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+					{tag_remove support_e2_place_one}
+				}
+				{"delay" {time 0.5}}
+			)
+
+			(define "e2_order_team"
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag support_e2_team}}
+					{control AI}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"action"
+					{selector {ignore_captured_by_user 0} {tag support_e2_team}}
+					{drop orders}
+					{action advance}
+					{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
+				}
+			)
+
+			; Reuse the same guard shape already shipped by E1. If its first choice is
+			; unsafe, try the other numbered air pad; if both checks fail, lz=0 means
+			; infantry-only standoff at the corresponding entry pad and fail code 4.
+			(define "e2_choose_lz"
+				{"switch"
+					{"case" {condition {type rand} {value 0.5}} {"set_i" {var "support_e2_lz$"} {op "="} {value 2}}}
+					{"default" {"set_i" {var "support_e2_lz$"} {op "="} {value 1}}}
+				}
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector {ignore_captured_by_user 0} {type human} {state "not dead"} {tag _bot} {distance 120}}
+							{count {op ">"} {value 0}}
+						}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 1}} {"set_i" {var "support_e2_lz$"} {op "="} {value 2}}}
+							{"default" {"set_i" {var "support_e2_lz$"} {op "="} {value 1}}}
+						}
+						{"delay" {time 0.05}}
+						{"switch"
+							{"case"
+								{condition
+									{type entities}
+									{selector {ignore_captured_by_user 0} {type human} {state "not dead"} {tag _bot} {distance 120}}
+									{count {op ">"} {value 0}}
+								}
+								{"set_i" {var "support_e2_fail$"} {op "="} {value 4}}
+								{"set_i" {var "support_e2_lz$"} {op "="} {value 0}}
+							}
+							{"default"}
+						}
+					}
+					{"default"}
+				}
+			)
+
+			(define "e2_promote_helo"
+				{"entity_state"
+					{selector {tag support_e2_helo}}
+					{tag_remove ally_sup_tpl}
+					{tag_remove support_e2_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+			)
+
+			(define "e2_place_aircraft_entry"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+						{"placement" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {target_waypoint "attack_support_entry_b1"}}
+					}
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+						{"placement" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {target_waypoint "attack_support_entry_a1"}}
+					}
+					{"default"
+						{"placement" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {target_waypoint "attack_support_entry_b1"}}
+					}
+				}
+			)
+
+			(define "e2_order_aircraft_lz"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}}
+								{"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_b2"}}
+							}
+							{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_b1"}}}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}}
+								{"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_a2"}}
+							}
+							{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_a1"}}}
+						}
+					}
+					{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_b1"}}}
+				}
+			)
+
+			(define "e2_order_aircraft_exit"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_entry_b1"}}
+					}
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_entry_a1"}}
+					}
+					{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_entry_b1"}}}
+				}
+			)
+
+			{"attack_support/e2_helo_rusa"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "support_e2_test$"} {op "=="} {value 1}}
+						{"6.cmp_i" {var "support_e2_stage$"} {op "=="} {value 0}}
+						{"7.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
+						{"8.entities" {selector {tag support_e2_rusa_helo}} {count {op ">="} {value 1}}}
+						{"9.entities" {selector {tag support_e2_rusa_helo_crew}} {count {op ">="} {value 2}}}
+						{"10.entities" {selector {tag support_e2_rusa_helo_team}} {count {op ">="} {value 4}}}
+					}
+				}
+				{actions
+					; Consume one parked hull, both linked pilots, and four independent troops.
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag support_e2_rusa_helo}}}} {amount 1}}
+						{tag_add support_e2_claim}
+						{tag_add support_e2_helo}
+						{tag_remove support_e2_rusa_helo}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag support_e2_rusa_helo_crew}}}} {amount 2}}
+						{tag_add support_e2_claim}
+						{tag_add support_e2_helo}
+						{tag_remove support_e2_rusa_helo_crew}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag support_e2_rusa_helo_team}}}} {amount 4}}
+						{tag_add support_e2_claim}
+						{tag_add support_e2_team}
+						{tag_remove support_e2_rusa_helo_team}
+					}
+					{"set_i" {var "support_e2_stage$"} {op "="} {value 10}}
+					("e2_choose_flag")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+							("e2_own_current")
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+									("e2_choose_lz")
+									{"switch"
+										{"case"
+											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
+											; Both deep pads unsafe: delete the unused helo and deliver the
+											; four claimed troops at the entry standoff. Failure remains honest.
+											("e2_delete_aircraft")
+											("e2_announce_failed")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+											("e2_place_one")
+											("e2_place_one")
+											("e2_place_one")
+											("e2_place_one")
+											("e2_order_team")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+											("e2_complete_cleanup")
+										}
+										{"default"
+											("e2_promote_helo")
+											("e2_place_aircraft_entry")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+											; Attested order: establish altitude, give AI control, then move.
+											{"air_state"
+												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
+												{altitude 30}
+											}
+											{"actor_state"
+												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
+												{drop sensor}
+												{control AI}
+												{movement {speed fast}}
+											}
+											("e2_order_aircraft_lz")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+											; Time-based primary arrival window for the flight proof.
+											{"delay" {time 40}}
+											{"switch"
+												{"case"
+													{condition
+														{type entities}
+														{selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim} {state operatable}}
+													}
+													("e2_announce_helo")
+													{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+													("e2_place_one")
+													("e2_place_one")
+													("e2_place_one")
+													("e2_place_one")
+													("e2_order_team")
+													{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+													("e2_order_aircraft_exit")
+													{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
+													{"delay" {time 60}}
+													("e2_complete_cleanup")
+												}
+												{"default"
+													{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+													("e2_fail_and_cleanup")
+												}
+											}
+										}
+									}
+								}
+								{"default" ("e2_fail_and_cleanup")}
+							}
+						}
+						{"default"}
+					}
+				}
+			}
+
+
+			{"attack_support/e2_helo_ukr"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "support_e2_test$"} {op "=="} {value 1}}
+						{"6.cmp_i" {var "support_e2_stage$"} {op "=="} {value 0}}
+						{"7.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
+						{"8.entities" {selector {tag support_e2_ukr_helo}} {count {op ">="} {value 1}}}
+						{"9.entities" {selector {tag support_e2_ukr_helo_crew}} {count {op ">="} {value 2}}}
+						{"10.entities" {selector {tag support_e2_ukr_helo_team}} {count {op ">="} {value 4}}}
+					}
+				}
+				{actions
+					; Consume one parked hull, both linked pilots, and four independent troops.
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag support_e2_ukr_helo}}}} {amount 1}}
+						{tag_add support_e2_claim}
+						{tag_add support_e2_helo}
+						{tag_remove support_e2_ukr_helo}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag support_e2_ukr_helo_crew}}}} {amount 2}}
+						{tag_add support_e2_claim}
+						{tag_add support_e2_helo}
+						{tag_remove support_e2_ukr_helo_crew}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag support_e2_ukr_helo_team}}}} {amount 4}}
+						{tag_add support_e2_claim}
+						{tag_add support_e2_team}
+						{tag_remove support_e2_ukr_helo_team}
+					}
+					{"set_i" {var "support_e2_stage$"} {op "="} {value 10}}
+					("e2_choose_flag")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+							("e2_own_current")
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+									("e2_choose_lz")
+									{"switch"
+										{"case"
+											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
+											; Both deep pads unsafe: delete the unused helo and deliver the
+											; four claimed troops at the entry standoff. Failure remains honest.
+											("e2_delete_aircraft")
+											("e2_announce_failed")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+											("e2_place_one")
+											("e2_place_one")
+											("e2_place_one")
+											("e2_place_one")
+											("e2_order_team")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+											("e2_complete_cleanup")
+										}
+										{"default"
+											("e2_promote_helo")
+											("e2_place_aircraft_entry")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+											; Attested order: establish altitude, give AI control, then move.
+											{"air_state"
+												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
+												{altitude 30}
+											}
+											{"actor_state"
+												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
+												{drop sensor}
+												{control AI}
+												{movement {speed fast}}
+											}
+											("e2_order_aircraft_lz")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+											; Time-based primary arrival window for the flight proof.
+											{"delay" {time 40}}
+											{"switch"
+												{"case"
+													{condition
+														{type entities}
+														{selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim} {state operatable}}
+													}
+													("e2_announce_helo")
+													{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+													("e2_place_one")
+													("e2_place_one")
+													("e2_place_one")
+													("e2_place_one")
+													("e2_order_team")
+													{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+													("e2_order_aircraft_exit")
+													{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
+													{"delay" {time 60}}
+													("e2_complete_cleanup")
+												}
+												{"default"
+													{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+													("e2_fail_and_cleanup")
+												}
+											}
+										}
+									}
+								}
+								{"default" ("e2_fail_and_cleanup")}
+							}
+						}
+						{"default"}
+					}
+				}
+			}
+
+
+			{"attack_support/e2_helo_nato"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "support_e2_test$"} {op "=="} {value 1}}
+						{"6.cmp_i" {var "support_e2_stage$"} {op "=="} {value 0}}
+						{"7.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
+						{"8.entities" {selector {tag support_e2_nato_helo}} {count {op ">="} {value 1}}}
+						{"9.entities" {selector {tag support_e2_nato_helo_crew}} {count {op ">="} {value 2}}}
+						{"10.entities" {selector {tag support_e2_nato_helo_team}} {count {op ">="} {value 4}}}
+					}
+				}
+				{actions
+					; Consume one parked hull, both linked pilots, and four independent troops.
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag support_e2_nato_helo}}}} {amount 1}}
+						{tag_add support_e2_claim}
+						{tag_add support_e2_helo}
+						{tag_remove support_e2_nato_helo}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag support_e2_nato_helo_crew}}}} {amount 2}}
+						{tag_add support_e2_claim}
+						{tag_add support_e2_helo}
+						{tag_remove support_e2_nato_helo_crew}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag support_e2_nato_helo_team}}}} {amount 4}}
+						{tag_add support_e2_claim}
+						{tag_add support_e2_team}
+						{tag_remove support_e2_nato_helo_team}
+					}
+					{"set_i" {var "support_e2_stage$"} {op "="} {value 10}}
+					("e2_choose_flag")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+							("e2_own_current")
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+									("e2_choose_lz")
+									{"switch"
+										{"case"
+											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
+											; Both deep pads unsafe: delete the unused helo and deliver the
+											; four claimed troops at the entry standoff. Failure remains honest.
+											("e2_delete_aircraft")
+											("e2_announce_failed")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+											("e2_place_one")
+											("e2_place_one")
+											("e2_place_one")
+											("e2_place_one")
+											("e2_order_team")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+											("e2_complete_cleanup")
+										}
+										{"default"
+											("e2_promote_helo")
+											("e2_place_aircraft_entry")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+											; Attested order: establish altitude, give AI control, then move.
+											{"air_state"
+												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
+												{altitude 30}
+											}
+											{"actor_state"
+												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
+												{drop sensor}
+												{control AI}
+												{movement {speed fast}}
+											}
+											("e2_order_aircraft_lz")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+											; Time-based primary arrival window for the flight proof.
+											{"delay" {time 40}}
+											{"switch"
+												{"case"
+													{condition
+														{type entities}
+														{selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim} {state operatable}}
+													}
+													("e2_announce_helo")
+													{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+													("e2_place_one")
+													("e2_place_one")
+													("e2_place_one")
+													("e2_place_one")
+													("e2_order_team")
+													{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+													("e2_order_aircraft_exit")
+													{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
+													{"delay" {time 60}}
+													("e2_complete_cleanup")
+												}
+												{"default"
+													{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+													("e2_fail_and_cleanup")
+												}
+											}
+										}
+									}
+								}
+								{"default" ("e2_fail_and_cleanup")}
+							}
+						}
+						{"default"}
+					}
+				}
+			}
+
+
+			{"attack_support/e2_dispatch"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "support_e2_stage$"} {op "=="} {value 0}}
+						{"6.cmp_i" {var "support_e2_test$"} {op ">"} {value 0}}
+					}
+				}
+				{actions
+					{"set_i" {var "support_e2_fail$"} {op "="} {value 0}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_test$"} {op "=="} {value 1}}
+							{"switch"
+								{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}} {"trigger" {name "attack_support/e2_helo_rusa"}}}
+								{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}} {"trigger" {name "attack_support/e2_helo_ukr"}}}
+								{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 3}} {"trigger" {name "attack_support/e2_helo_nato"}}}
+								{"default"
+									{"set_i" {var "support_e2_fail$"} {op "="} {value 1}}
+									("e2_fail_and_cleanup")
+								}
+							}
+						}
+						{"case"
+							{condition {type cmp_i} {var "support_e2_test$"} {op "=="} {value 2}}
+							; Task 4 supplies these triggers. Keeping the dispatch cases here makes
+							; gate 2 explicit while the default-zero ship state remains inert.
+							{"switch"
+								{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}} {"trigger" {name "attack_support/e2_para_rusa"}}}
+								{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}} {"trigger" {name "attack_support/e2_para_ukr"}}}
+								{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 3}} {"trigger" {name "attack_support/e2_para_nato"}}}
+								{"default"
+									{"set_i" {var "support_e2_fail$"} {op "="} {value 1}}
+									("e2_fail_and_cleanup")
+								}
+							}
+						}
+						{"default"
+							{"set_i" {var "support_e2_fail$"} {op "="} {value 1}}
+							("e2_fail_and_cleanup")
+						}
+					}
+					; A supported trigger claims immediately. Remaining at zero means its
+					; exact hull/crew/team pool condition failed.
+					{"delay" {time 1}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 0}}
+							{"set_i" {var "support_e2_fail$"} {op "="} {value 2}}
+							("e2_fail_and_cleanup")
+						}
+						{"default"}
+					}
+				}
+			}
+
+			; ===== E2 PARADROP (Task 4 boundary; no release lifecycle in Task 3) =====
+
 			; ===== MOTORIZED INSERT (cmd 19) =====
 			; Truck + linked crew/pax place at entry, drive toward flag, emit passengers,
 			; pax advance, truck holds. Cap attack_support_motor_left$=1. All four factions.

@@ -80,3 +80,87 @@ class E2CeIsolationTests(unittest.TestCase):
         self.assertIn('{tag paratrooper_need_orders}', selector)
         self.assertRegex(exclude, r"\{tag\s+\{tag support_e2_para_pax\}")
         self.assertEqual(order_block.count("support_e2_para_pax"), 1)
+
+
+class E2HelicopterLifecycleTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.waves = WAVES.read_text(encoding="utf-8")
+
+    def test_dispatch_is_strictly_default_off_and_budget_neutral(self) -> None:
+        self.assertIn("; ===== E2 REAL AIR INSERT PROBES =====", self.waves)
+        e2 = block(self.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== MOTORIZED INSERT")
+        self.assertIn('{var "support_e2_test$"} {op "=="} {value 1}', e2)
+        self.assertIn('{var "support_e2_test$"} {op "=="} {value 2}', e2)
+        for gate in (
+            '{var "user_is_defender$"} {op "=="} {value 0}',
+            '{var "attack_support_ready$"} {op "=="} {value 1}',
+            '{var "attack_support_use_mi$"} {op "=="} {value 1}',
+            '{var "id_attack_support$"} {op ">"} {value 0}',
+            '{var "support_e2_stage$"} {op "=="} {value 0}',
+            '{var "support_e2_test$"} {op ">"} {value 0}',
+        ):
+            self.assertIn(gate, e2)
+        for budget in (
+            "attack_support_waves_left$",
+            "attack_support_air_left$",
+            "attack_support_motor_left$",
+            "attack_support_ifv_left$",
+        ):
+            self.assertNotIn(f'{{var "{budget}"}} {{op "-"}}', e2)
+        self.assertNotIn('{var "attack_support_wave_cmd$"} {op "="}', e2)
+
+    def test_helicopter_uses_attested_flight_sequence_and_existing_pads(self) -> None:
+        e2 = block(self.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== E2 PARADROP")
+        self.assertEqual(e2.count('{"air_state"'), 3)
+        self.assertEqual(e2.count('{altitude 30}'), 3)
+        self.assertEqual(e2.count('{drop sensor}'), 3)
+        self.assertGreaterEqual(e2.count('{control AI}'), 3)
+        self.assertGreaterEqual(e2.count('{action move}'), 6)
+        for side in "ab":
+            self.assertIn(f'{{waypoint "attack_support_entry_{side}1"}}', e2)
+            for n in (1, 2):
+                self.assertIn(f'{{waypoint "attack_support_air_{side}{n}"}}', e2)
+        self.assertNotRegex(e2, r"support_e2_lz_fpc|e2_lz_fpc")
+        self.assertNotIn("{clone}", e2)
+
+    def test_helicopter_places_four_independent_troops_at_half_second_cadence(self) -> None:
+        e2 = block(self.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== E2 PARADROP")
+        self.assertIn('(define "e2_place_one"', e2)
+        self.assertIn('{"delay" {time 0.5}}', e2)
+        self.assertGreaterEqual(e2.count('("e2_place_one")'), 12)
+        self.assertIn('{action advance}', e2)
+        self.assertIn('{tag support_e2_flag_target}', e2)
+        self.assertIn('{amount 1}', e2)
+
+    def test_helicopter_has_fail_closed_faction_and_bounded_delete(self) -> None:
+        e2 = block(self.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== E2 PARADROP")
+        for faction in ("rusa", "ukr", "nato"):
+            self.assertIn(f'{{"attack_support/e2_helo_{faction}"', e2)
+        self.assertNotIn("attack_support/e2_helo_prc", e2)
+        self.assertIn('{value 1}', e2)
+        self.assertIn('(define "e2_delete_aircraft"', e2)
+        self.assertIn('{"delete"', e2)
+        self.assertRegex(e2, r'\{"delay" \{time (?:45|60|75|90)\}\}')
+
+    def test_ownership_switch_lists_1_through_16_and_default_has_no_player(self) -> None:
+        e2 = block(self.waves, '(define "e2_own_current"', '(define "e2_place_one"')
+        for player in range(1, 17):
+            self.assertIn(f'{{player "{player}"}}', e2)
+        default = e2.split('{"default"', 1)[1]
+        self.assertNotIn('{player "', default)
+
+    def test_cleanup_targets_only_the_claimed_aircraft(self) -> None:
+        delete = block(self.waves, '(define "e2_delete_aircraft"', '(define "e2_fail_and_cleanup"')
+        self.assertIn('{tag support_e2_aircraft}', delete)
+        self.assertIn('{tag support_e2_claim}', delete)
+        self.assertNotIn('{selector {ignore_captured_by_user 0} {tag support_e2_aircraft}}', delete)
+
+    def test_supported_pools_are_exact_and_task4_is_not_implemented_here(self) -> None:
+        e2 = block(self.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== E2 PARADROP")
+        for faction in ("rusa", "ukr", "nato"):
+            self.assertIn(f'support_e2_{faction}_helo', e2)
+            self.assertIn(f'support_e2_{faction}_helo_crew', e2)
+            self.assertIn(f'support_e2_{faction}_helo_team', e2)
+        self.assertNotIn('{effect drop_paratrooper}', e2)
+        self.assertNotIn('{effect drop_paratroopers}', e2)

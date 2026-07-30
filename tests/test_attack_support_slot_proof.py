@@ -814,11 +814,13 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         # Main + flank + airmobile LZ placement sites (count drifts with default branches).
         self.assertGreaterEqual(code.count('{"placement"'), 20)
         for point in (1, 2, 3):
+            expected_a = 2 if point == 1 else 1
+            expected_b = 4 if point == 1 else 2
             self.assertEqual(
-                code.count('{target_waypoint "attack_support_entry_a%d"}' % point), 1
+                code.count('{target_waypoint "attack_support_entry_a%d"}' % point), expected_a
             )
             self.assertEqual(
-                code.count('{target_waypoint "attack_support_entry_b%d"}' % point), 2
+                code.count('{target_waypoint "attack_support_entry_b%d"}' % point), expected_b
             )
         for point in (1, 2):
             self.assertEqual(
@@ -891,8 +893,11 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             code.count('("am_finish_deploy")') + code.count('("as_finish_motor")'),
         )
         # motor_test is a scheduler: it pokes the faction motor triggers, which deploy.
+        # E2 has dedicated MOVE-placement and flight contracts in
+        # test_e2_airmobile.py; this enumeration covers legacy wave deployers only.
         deployers = [n for n in re.findall(r'\{"attack_support/([a-z0-9_]+)"', code)
-                     if n not in ("init", "clock", "motor_test")]
+                     if n not in ("init", "clock", "motor_test")
+                     and not n.startswith("e2_")]
         self.assertTrue(deployers)
         for name in deployers:
             with self.subTest(deployer=name):
@@ -1447,6 +1452,8 @@ class SupportDiagnosticGateTests(unittest.TestCase):
             "airborne_inbound_ukr",
             "airborne_inbound_prc",
             "motorized_inbound",
+            "e2_helo_inbound",
+            "e2_insert_failed",
         }
         for name, code in self.raw_engines.items():
             for match in key_re.finditer(code):
