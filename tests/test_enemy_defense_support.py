@@ -1048,6 +1048,14 @@ class EnemyDefenseSupportTests(unittest.TestCase):
         self.assertIn("$utilitySource = Join-Path $RepoRoot $files[9]", self.deploy)
         self.assertNotIn("$conquestSource = Join-Path $RepoRoot $files[6]", self.deploy)
 
+    def test_flag_props_claim_parked_pool(self) -> None:
+        code = self.code
+        code_only = "\n".join(line.split(";", 1)[0] for line in code.splitlines())
+        self.assertNotIn("{select {entity", code_only)
+        self.assertNotIn('{"spawn"', code_only)
+        self.assertIn("flag_prop_ammo", code)
+        self.assertIn('{tag_add flag_prop_move}', code)
+
     def test_delimiters_are_balanced(self) -> None:
         for text in (self.engine, self.templates):
             code = strip_comments(text)

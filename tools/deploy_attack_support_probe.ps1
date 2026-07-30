@@ -57,7 +57,9 @@ $files = @(
     "resource\map\multi\faction_support_templates.inc",
     # Player-facing support announcement strings (Phase 1). APPENDED only.
     "localizations\default\interface\text\mission\multi\support_events.pot",
-    "localizations\default\interface\text\mission\multi\ce_mission_messages.pot"
+    "localizations\default\interface\text\mission\multi\ce_mission_messages.pot",
+    # Phase-4 flag prop prototypes (shared by Q2 + Q4 garrison steps).
+    "resource\map\multi\flag_props_templates.inc"
 )
 
 $gameSetSource = Join-Path $RepoRoot $files[0]
@@ -73,8 +75,9 @@ $utilitySource = Join-Path $RepoRoot $files[9]
 $dsSource = Join-Path $RepoRoot $files[10]
 $eaSource = Join-Path $RepoRoot $files[11]
 $factionTplSource = Join-Path $RepoRoot $files[12]
+$flagPropsTplSource = Join-Path $RepoRoot $files[15]
 
-foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSource, $wavesSource, $tplSource, $defSource, $defTplSource, $conquestSource, $utilitySource, $dsSource, $eaSource, $factionTplSource)) {
+foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSource, $wavesSource, $tplSource, $defSource, $defTplSource, $conquestSource, $utilitySource, $dsSource, $eaSource, $factionTplSource, $flagPropsTplSource)) {
     if (-not (Test-Path -LiteralPath $source)) {
         throw "Missing source file: $source"
     }
@@ -1046,6 +1049,7 @@ $factionTplInclude = '(include "../faction_support_templates.inc")'
 # the engine in the triggers section, the prototype pool in the entities section.
 $defInclude = '(include "../enemy_defense_support.inc")'
 $defTplInclude = '(include "../enemy_defense_templates.inc")'
+$flagPropsTplInclude = '(include "../flag_props_templates.inc")'
 # The two human-DEFENCE mission engines, in the triggers section behind the two
 # attack-mission ones. Neither has a templates include: defence support claims from the
 # attack-support pool and enemy attack from the enemy-defence pools, and the engines
@@ -1195,6 +1199,22 @@ foreach ($mapFile in $mapFiles) {
     }
     if ($defTplCount -ne 1) {
         throw "Expected exactly one enemy-defence templates include in: $mapFile"
+    }
+
+
+    # Flag-prop prototypes (Phase 4), entities section after enemy-defence pool.
+    $text = [System.IO.File]::ReadAllText($mapFile)
+    $flagPropsTplCount = ([regex]::Matches($text, [regex]::Escape($flagPropsTplInclude))).Count
+    if ($flagPropsTplCount -eq 0) {
+        if (-not $text.Contains($defTplInclude)) {
+            throw "Map is missing the flag-props templates include anchor: $mapFile"
+        }
+        $text = $text.Replace($defTplInclude, $defTplInclude + "`r`n`t" + $flagPropsTplInclude)
+        [System.IO.File]::WriteAllText($mapFile, $text, [System.Text.UTF8Encoding]::new($false))
+        $flagPropsTplCount = 1
+    }
+    if ($flagPropsTplCount -ne 1) {
+        throw "Expected exactly one flag-props templates include in: $mapFile"
     }
 
     # The two human-DEFENCE mission engines, in the triggers section behind the
@@ -1433,7 +1453,7 @@ foreach ($mapFile in $mapFiles) {
     # Every include the four quadrants need, exactly once each, and nothing from the
     # retired allied-support experiment.
     $text = [System.IO.File]::ReadAllText($mapFile)
-    foreach ($include in @($varsInclude, $tplInclude, $factionTplInclude, $defTplInclude, $wavesInclude, $defInclude, $dsInclude, $eaInclude)) {
+    foreach ($include in @($varsInclude, $tplInclude, $factionTplInclude, $defTplInclude, $flagPropsTplInclude, $wavesInclude, $defInclude, $dsInclude, $eaInclude)) {
         $n = ([regex]::Matches($text, [regex]::Escape($include))).Count
         if ($n -ne 1) {
             throw "Expected exactly one $include in: $mapFile (found $n)"
@@ -1857,6 +1877,51 @@ foreach ($pair in @(
     }
 }
 
+
+
+# Flag-prop pool (Phase 4 rewrite).
+$flagPropsTarget = Join-Path $WorkshopRoot "resource\map\multi\flag_props_templates.inc"
+if (-not (Test-Path -LiteralPath $flagPropsTarget)) {
+    throw "Workshop is missing flag_props_templates.inc"
+}
+if ((Select-String -LiteralPath $flagPropsTarget -SimpleMatch '{Able "-select"}').Count -ne 15) {
+    throw "Workshop flag-prop pool is not the 15-prototype pool"
+}
+foreach ($marker in @(
+    '{Entity "para_ammo"',
+    '{Entity "mg_stand_nsvt_rus_ai"',
+    '{Entity "mg_stand_nsvt_ukr_ai"',
+    '{Entity "mg_stand_qjz171"',
+    '{Entity "bgm71_tow_ai"',
+    '"flag_prop_tpl"',
+    '"flag_prop_ammo"',
+    '"flag_prop_wpn_rusa"',
+    '"flag_prop_wpn_nato"'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $flagPropsTarget -SimpleMatch $marker)) {
+        throw "Workshop flag-prop pool is missing marker: $marker"
+    }
+}
+if (Select-String -Quiet -LiteralPath $flagPropsTarget -SimpleMatch '{clone}') {
+    throw "Workshop flag-prop pool uses forbidden {clone}"
+}
+# Engines must not use entity-name selectors or runtime spawn for props.
+foreach ($pair in @(
+    @((Join-Path $WorkshopRoot "resource\map\multi\defense_support_waves.inc"), "defence support"),
+    @((Join-Path $WorkshopRoot "resource\map\multi\enemy_defense_support.inc"), "enemy defence")
+)) {
+    $code = Get-Content -LiteralPath $pair[0] -Raw
+    $codeOnly = ($code -split "`n" | ForEach-Object { ($_ -split ";", 2)[0] }) -join "`n"
+    if ($codeOnly -match '\{select \{entity') {
+        throw ("Workshop {0} still uses entity-name selectors for props" -f $pair[1])
+    }
+    if ($codeOnly -match '\{"spawn"') {
+        throw ("Workshop {0} still uses runtime spawn" -f $pair[1])
+    }
+    if ($codeOnly -notmatch 'flag_prop_ammo') {
+        throw ("Workshop {0} missing flag_prop_ammo claim" -f $pair[1])
+    }
+}
 
 # Phase 5: only friendly attack engine may address airmobile LZ pads.
 # Friendly attack + defense both use airmobile LZ pads (parity).

@@ -37,7 +37,7 @@
 ; slot with a per-value diagnostic timer so a live run pins the real number.
 ;
 ; FACTION: follows user_nation$
-; AIRMOBILE PARITY: deep LZ pads (attack_support_air_*) on defender side.
+; AIRMOBILE PARITY (post-approval): deep LZ pads; NO aircraft entity (narrative only). (attack_support_air_*) on defender side.
 ; Test: attack_support_air_test$=1 -> defense_support/air_test at +30s (no prep wait).
 ; Ship: set air_test$=0; L2+ random airmobile via cmd 18. (1 rusa / 2 ukr / 3 nato / 4 prc fold). NATO keeps the
 ; specialty USMC/1AD/ARF/pzgren mix; other nations use ally_sup_* line/wpn pools.
@@ -1135,32 +1135,28 @@
 
 			; GARRISON + PATROL — arms as soon as defender identity is known (no prep wait).
 			; Makes the map feel alive while the player places during prep.
-			; Phase 4: unmanned supply crate + L2+ crewless weapon on defended flags.
-			; Spawn at waypoint 0, then placement onto flag anchors (MI spawn has no {target}).
-			; No parameterized define calls — mission MI only allows bare ("name").
-			; Crate para_ammo; weapons faction MG stands / TOW. Tag flag_prop (unowned).
+			; Phase 4: unmanned supply + L2+ crewless weapon on defended flags.
+			; Parked prototypes in flag_props_templates.inc - claim by static tag,
+			; placement MOVE to flag anchor (same pipeline as every other pool).
+			; No runtime spawn verb. No entity-name selectors. Tag flag_prop on claimed props.
 
 			(define "ds_props_af1"
 				{"if"
 					{condition {type entities} {selector {tag def_sup_af1}}}
-					{"spawn"
-						{entity "para_ammo"}
-						{waypoint "0"}
-						{disable_random_spawn_position}
-					}
-					{"delay" {time 0.05}}
 					{"entity_state"
 						{selector
 							{source advanced}
 							{group
-								{select {entity "para_ammo"}}
+								{select {tag {tag flag_prop_ammo}}}
 								{exclude {tag {tag flag_prop}}}
 							}
 							{amount 1}
 						}
 						{tag_add flag_prop}
 						{tag_add flag_prop_move}
+						{tag_remove flag_prop_ammo}
 					}
+					{"delay" {time 0.05}}
 					{"placement"
 						{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 						{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -1175,24 +1171,20 @@
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}}
-									{"spawn"
-										{entity "mg_stand_nsvt_rus_ai"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_nsvt_rus_ai"}}
+												{select {tag {tag flag_prop_wpn_rusa}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_rusa}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -1204,24 +1196,20 @@
 								}
 								{"case"
 									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}}
-									{"spawn"
-										{entity "mg_stand_nsvt_ukr_ai"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_nsvt_ukr_ai"}}
+												{select {tag {tag flag_prop_wpn_ukr}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_ukr}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -1233,24 +1221,20 @@
 								}
 								{"case"
 									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 4}}
-									{"spawn"
-										{entity "mg_stand_qjz171"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_qjz171"}}
+												{select {tag {tag flag_prop_wpn_prc}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_prc}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -1261,24 +1245,20 @@
 									}
 								}
 								{"default"
-									{"spawn"
-										{entity "bgm71_tow"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "bgm71_tow"}}
+												{select {tag {tag flag_prop_wpn_nato}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_nato}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -1298,24 +1278,20 @@
 			(define "ds_props_af2"
 				{"if"
 					{condition {type entities} {selector {tag def_sup_af2}}}
-					{"spawn"
-						{entity "para_ammo"}
-						{waypoint "0"}
-						{disable_random_spawn_position}
-					}
-					{"delay" {time 0.05}}
 					{"entity_state"
 						{selector
 							{source advanced}
 							{group
-								{select {entity "para_ammo"}}
+								{select {tag {tag flag_prop_ammo}}}
 								{exclude {tag {tag flag_prop}}}
 							}
 							{amount 1}
 						}
 						{tag_add flag_prop}
 						{tag_add flag_prop_move}
+						{tag_remove flag_prop_ammo}
 					}
+					{"delay" {time 0.05}}
 					{"placement"
 						{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 						{target {ignore_captured_by_user 0} {tag def_sup_af2}}
@@ -1330,24 +1306,20 @@
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}}
-									{"spawn"
-										{entity "mg_stand_nsvt_rus_ai"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_nsvt_rus_ai"}}
+												{select {tag {tag flag_prop_wpn_rusa}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_rusa}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af2}}
@@ -1359,24 +1331,20 @@
 								}
 								{"case"
 									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}}
-									{"spawn"
-										{entity "mg_stand_nsvt_ukr_ai"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_nsvt_ukr_ai"}}
+												{select {tag {tag flag_prop_wpn_ukr}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_ukr}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af2}}
@@ -1388,24 +1356,20 @@
 								}
 								{"case"
 									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 4}}
-									{"spawn"
-										{entity "mg_stand_qjz171"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_qjz171"}}
+												{select {tag {tag flag_prop_wpn_prc}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_prc}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af2}}
@@ -1416,24 +1380,20 @@
 									}
 								}
 								{"default"
-									{"spawn"
-										{entity "bgm71_tow"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "bgm71_tow"}}
+												{select {tag {tag flag_prop_wpn_nato}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_nato}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af2}}
@@ -1453,24 +1413,20 @@
 			(define "ds_props_af3"
 				{"if"
 					{condition {type entities} {selector {tag def_sup_af3}}}
-					{"spawn"
-						{entity "para_ammo"}
-						{waypoint "0"}
-						{disable_random_spawn_position}
-					}
-					{"delay" {time 0.05}}
 					{"entity_state"
 						{selector
 							{source advanced}
 							{group
-								{select {entity "para_ammo"}}
+								{select {tag {tag flag_prop_ammo}}}
 								{exclude {tag {tag flag_prop}}}
 							}
 							{amount 1}
 						}
 						{tag_add flag_prop}
 						{tag_add flag_prop_move}
+						{tag_remove flag_prop_ammo}
 					}
+					{"delay" {time 0.05}}
 					{"placement"
 						{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 						{target {ignore_captured_by_user 0} {tag def_sup_af3}}
@@ -1485,24 +1441,20 @@
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}}
-									{"spawn"
-										{entity "mg_stand_nsvt_rus_ai"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_nsvt_rus_ai"}}
+												{select {tag {tag flag_prop_wpn_rusa}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_rusa}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af3}}
@@ -1514,24 +1466,20 @@
 								}
 								{"case"
 									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}}
-									{"spawn"
-										{entity "mg_stand_nsvt_ukr_ai"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_nsvt_ukr_ai"}}
+												{select {tag {tag flag_prop_wpn_ukr}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_ukr}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af3}}
@@ -1543,24 +1491,20 @@
 								}
 								{"case"
 									{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 4}}
-									{"spawn"
-										{entity "mg_stand_qjz171"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_qjz171"}}
+												{select {tag {tag flag_prop_wpn_prc}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_prc}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af3}}
@@ -1571,24 +1515,20 @@
 									}
 								}
 								{"default"
-									{"spawn"
-										{entity "bgm71_tow"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "bgm71_tow"}}
+												{select {tag {tag flag_prop_wpn_nato}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_nato}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af3}}
@@ -1619,9 +1559,8 @@
 				}
 			)
 
-
 			; DAY-2 / parity test: airmobile on player DEFENSE ~30s after identity (no prep wait).
-			; Shares attack_support_air_test$ toggle: 1=force, 0=production-only (L2+ random in pick).
+			; Shared Day-2 toggle attack_support_air_test$ (set in garrison_init AND attack init): 1=force, 0=production-only (L2+ random in pick).
 			{"defense_support/air_test"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5"}
@@ -1935,7 +1874,7 @@
 			; abandoning the one it is on. Every re-order ends in cover, because this is
 			; a defence. The condition simply stops matching once the group is wiped,
 			; and matches again if a later wave joins the group.
-			{"defense_support/hold_1"
+						{"defense_support/hold_1"
 				{condition
 					{expression "1 & 2"}
 					{terms
@@ -1970,61 +1909,184 @@
 						}
 					}
 					{"delay" {time 0.1}}
-					; ~50% active flags, ~50% roam (spare flags) — friendly patrol parity.
+					; 50% hold/redistribute on active flags (then cover); 50% patrol roam.
 					{"switch"
 						{"case"
-							{condition {type rand} {value 0.25}}
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_af1}}
-							}
-						}
-						{"case"
-							{condition {type rand} {value 0.34}}
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_af2}}
-							}
-						}
-						{"case"
-							{condition {type rand} {value 0.34}}
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_af3}}
-							}
-						}
-						{"case"
 							{condition {type rand} {value 0.5}}
-							{"action"
+							{"switch"
+								{"case"
+									{condition {type rand} {value 0.34}}
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_af1}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+											}
+										}
+										{"default"
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af2}}
+											}
+										}
+									}
+								}
+								{"case"
+									{condition {type rand} {value 0.5}}
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_af2}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af2}}
+											}
+										}
+										{"default"
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+											}
+										}
+									}
+								}
+								{"default"
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_af3}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af3}}
+											}
+										}
+										{"default"
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+											}
+										}
+									}
+								}
+							}
+							{"delay" {time 35}}
+							{"actor_to_cover"
 								{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_r1}}
 							}
 						}
 						{"default"
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_r2}}
+							; Roam: spare flags r1/r2, else defender-side entry pads only.
+							{"switch"
+								{"case"
+									{condition {type rand} {value 0.34}}
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_r1}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_r1}}
+											}
+										}
+										{"default"
+											{"switch"
+												{"case"
+													{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+													{"action"
+														{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+														{drop orders}
+														{action move}
+														{waypoint "attack_support_entry_b1"}
+													}
+												}
+												{"default"
+													{"action"
+														{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+														{drop orders}
+														{action move}
+														{waypoint "attack_support_entry_a1"}
+													}
+												}
+											}
+										}
+									}
+								}
+								{"case"
+									{condition {type rand} {value 0.5}}
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_r2}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_r2}}
+											}
+										}
+										{"default"
+											{"switch"
+												{"case"
+													{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+													{"action"
+														{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+														{drop orders}
+														{action move}
+														{waypoint "attack_support_entry_b2"}
+													}
+												}
+												{"default"
+													{"action"
+														{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+														{drop orders}
+														{action move}
+														{waypoint "attack_support_entry_a2"}
+													}
+												}
+											}
+										}
+									}
+								}
+								{"default"
+									{"switch"
+										{"case"
+											{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+												{drop orders}
+												{action move}
+												{waypoint "attack_support_entry_b3"}
+											}
+										}
+										{"default"
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
+												{drop orders}
+												{action move}
+												{waypoint "attack_support_entry_a3"}
+											}
+										}
+									}
+								}
 							}
 						}
-					}
-					{"delay" {time 35}}
-					{"actor_to_cover"
-						{selector {ignore_captured_by_user 0} {tag def_sup_h1}}
 					}
 					{"delay" {time 0.1}}
 					{"trigger" {name "defense_support/hold_1"}}
 				}
 			}
+
 
 			; HOLD GROUP 2. Self-re-arming re-order on its own modest 90-150s ladder, so
 			; the three groups never move in step. Roughly two thirds of all re-orders
@@ -2033,7 +2095,7 @@
 			; abandoning the one it is on. Every re-order ends in cover, because this is
 			; a defence. The condition simply stops matching once the group is wiped,
 			; and matches again if a later wave joins the group.
-			{"defense_support/hold_2"
+						{"defense_support/hold_2"
 				{condition
 					{expression "1 & 2"}
 					{terms
@@ -2068,60 +2130,184 @@
 						}
 					}
 					{"delay" {time 0.1}}
+					; 50% hold/redistribute on active flags (then cover); 50% patrol roam.
 					{"switch"
 						{"case"
-							{condition {type rand} {value 0.25}}
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_af2}}
-							}
-						}
-						{"case"
-							{condition {type rand} {value 0.34}}
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_af1}}
-							}
-						}
-						{"case"
-							{condition {type rand} {value 0.34}}
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_af3}}
-							}
-						}
-						{"case"
 							{condition {type rand} {value 0.5}}
-							{"action"
+							{"switch"
+								{"case"
+									{condition {type rand} {value 0.34}}
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_af1}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+											}
+										}
+										{"default"
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af2}}
+											}
+										}
+									}
+								}
+								{"case"
+									{condition {type rand} {value 0.5}}
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_af2}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af2}}
+											}
+										}
+										{"default"
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+											}
+										}
+									}
+								}
+								{"default"
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_af3}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af3}}
+											}
+										}
+										{"default"
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+											}
+										}
+									}
+								}
+							}
+							{"delay" {time 35}}
+							{"actor_to_cover"
 								{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_r1}}
 							}
 						}
 						{"default"
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_r2}}
+							; Roam: spare flags r1/r2, else defender-side entry pads only.
+							{"switch"
+								{"case"
+									{condition {type rand} {value 0.34}}
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_r1}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_r1}}
+											}
+										}
+										{"default"
+											{"switch"
+												{"case"
+													{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+													{"action"
+														{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+														{drop orders}
+														{action move}
+														{waypoint "attack_support_entry_b1"}
+													}
+												}
+												{"default"
+													{"action"
+														{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+														{drop orders}
+														{action move}
+														{waypoint "attack_support_entry_a1"}
+													}
+												}
+											}
+										}
+									}
+								}
+								{"case"
+									{condition {type rand} {value 0.5}}
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_r2}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_r2}}
+											}
+										}
+										{"default"
+											{"switch"
+												{"case"
+													{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+													{"action"
+														{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+														{drop orders}
+														{action move}
+														{waypoint "attack_support_entry_b2"}
+													}
+												}
+												{"default"
+													{"action"
+														{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+														{drop orders}
+														{action move}
+														{waypoint "attack_support_entry_a2"}
+													}
+												}
+											}
+										}
+									}
+								}
+								{"default"
+									{"switch"
+										{"case"
+											{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+												{drop orders}
+												{action move}
+												{waypoint "attack_support_entry_b3"}
+											}
+										}
+										{"default"
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
+												{drop orders}
+												{action move}
+												{waypoint "attack_support_entry_a3"}
+											}
+										}
+									}
+								}
 							}
 						}
-					}
-					{"delay" {time 35}}
-					{"actor_to_cover"
-						{selector {ignore_captured_by_user 0} {tag def_sup_h2}}
 					}
 					{"delay" {time 0.1}}
 					{"trigger" {name "defense_support/hold_2"}}
 				}
 			}
+
 
 			; HOLD GROUP 3. Self-re-arming re-order on its own modest 90-150s ladder, so
 			; the three groups never move in step. Roughly two thirds of all re-orders
@@ -2130,7 +2316,7 @@
 			; abandoning the one it is on. Every re-order ends in cover, because this is
 			; a defence. The condition simply stops matching once the group is wiped,
 			; and matches again if a later wave joins the group.
-			{"defense_support/hold_3"
+						{"defense_support/hold_3"
 				{condition
 					{expression "1 & 2"}
 					{terms
@@ -2165,60 +2351,184 @@
 						}
 					}
 					{"delay" {time 0.1}}
+					; 50% hold/redistribute on active flags (then cover); 50% patrol roam.
 					{"switch"
 						{"case"
-							{condition {type rand} {value 0.25}}
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_af3}}
-							}
-						}
-						{"case"
-							{condition {type rand} {value 0.34}}
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_af1}}
-							}
-						}
-						{"case"
-							{condition {type rand} {value 0.34}}
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_af2}}
-							}
-						}
-						{"case"
 							{condition {type rand} {value 0.5}}
-							{"action"
+							{"switch"
+								{"case"
+									{condition {type rand} {value 0.34}}
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_af1}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+											}
+										}
+										{"default"
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af2}}
+											}
+										}
+									}
+								}
+								{"case"
+									{condition {type rand} {value 0.5}}
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_af2}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af2}}
+											}
+										}
+										{"default"
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+											}
+										}
+									}
+								}
+								{"default"
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_af3}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af3}}
+											}
+										}
+										{"default"
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
+											}
+										}
+									}
+								}
+							}
+							{"delay" {time 35}}
+							{"actor_to_cover"
 								{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_r1}}
 							}
 						}
 						{"default"
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag def_sup_r2}}
+							; Roam: spare flags r1/r2, else defender-side entry pads only.
+							{"switch"
+								{"case"
+									{condition {type rand} {value 0.34}}
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_r1}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_r1}}
+											}
+										}
+										{"default"
+											{"switch"
+												{"case"
+													{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+													{"action"
+														{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+														{drop orders}
+														{action move}
+														{waypoint "attack_support_entry_b1"}
+													}
+												}
+												{"default"
+													{"action"
+														{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+														{drop orders}
+														{action move}
+														{waypoint "attack_support_entry_a1"}
+													}
+												}
+											}
+										}
+									}
+								}
+								{"case"
+									{condition {type rand} {value 0.5}}
+									{"switch"
+										{"case"
+											{condition {type entities} {selector {tag def_sup_r2}}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+												{drop orders}
+												{action advance}
+												{target {ignore_captured_by_user 0} {tag def_sup_r2}}
+											}
+										}
+										{"default"
+											{"switch"
+												{"case"
+													{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+													{"action"
+														{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+														{drop orders}
+														{action move}
+														{waypoint "attack_support_entry_b2"}
+													}
+												}
+												{"default"
+													{"action"
+														{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+														{drop orders}
+														{action move}
+														{waypoint "attack_support_entry_a2"}
+													}
+												}
+											}
+										}
+									}
+								}
+								{"default"
+									{"switch"
+										{"case"
+											{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+												{drop orders}
+												{action move}
+												{waypoint "attack_support_entry_b3"}
+											}
+										}
+										{"default"
+											{"action"
+												{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
+												{drop orders}
+												{action move}
+												{waypoint "attack_support_entry_a3"}
+											}
+										}
+									}
+								}
 							}
 						}
-					}
-					{"delay" {time 35}}
-					{"actor_to_cover"
-						{selector {ignore_captured_by_user 0} {tag def_sup_h3}}
 					}
 					{"delay" {time 0.1}}
 					{"trigger" {name "defense_support/hold_3"}}
 				}
 			}
+
 
 			; COMPOSITION 1 - 4 USMC infantry. Also the pool-short fallback, so this
 			; pool is the deepest one the shared NATO pool ships. Taking the bodies
@@ -3191,7 +3501,26 @@
 					{"switch"
 						{"case"
 							{condition {type entities} {selector {tag def_sup_deploy}}}
-							{"set_i" {var "defense_support_use_air$"} {op "="} {value 1}}
+							; Enemy near LZ guard — if bots already within 120, fall back to edge pads.
+							{"switch"
+								{"case"
+									{condition
+										{type entities}
+										{selector
+											{ignore_captured_by_user 0}
+											{type human}
+											{state "not dead"}
+											{tag _bot}
+											{distance 120}
+										}
+										{count {op ">"} {value 0}}
+									}
+									{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}
+								}
+								{"default"
+									{"set_i" {var "defense_support_use_air$"} {op "="} {value 1}}
+								}
+							}
 							{"set_i" {var "defense_support_air_left$"} {op "-"} {value 1}}
 							{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
 							{"delay" {time 0.1}}
@@ -3257,7 +3586,26 @@
 					{"switch"
 						{"case"
 							{condition {type entities} {selector {tag def_sup_deploy}}}
-							{"set_i" {var "defense_support_use_air$"} {op "="} {value 1}}
+							; Enemy near LZ guard — if bots already within 120, fall back to edge pads.
+							{"switch"
+								{"case"
+									{condition
+										{type entities}
+										{selector
+											{ignore_captured_by_user 0}
+											{type human}
+											{state "not dead"}
+											{tag _bot}
+											{distance 120}
+										}
+										{count {op ">"} {value 0}}
+									}
+									{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}
+								}
+								{"default"
+									{"set_i" {var "defense_support_use_air$"} {op "="} {value 1}}
+								}
+							}
 							{"set_i" {var "defense_support_air_left$"} {op "-"} {value 1}}
 							{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
 							{"delay" {time 0.1}}
@@ -3323,7 +3671,26 @@
 					{"switch"
 						{"case"
 							{condition {type entities} {selector {tag def_sup_deploy}}}
-							{"set_i" {var "defense_support_use_air$"} {op "="} {value 1}}
+							; Enemy near LZ guard — if bots already within 120, fall back to edge pads.
+							{"switch"
+								{"case"
+									{condition
+										{type entities}
+										{selector
+											{ignore_captured_by_user 0}
+											{type human}
+											{state "not dead"}
+											{tag _bot}
+											{distance 120}
+										}
+										{count {op ">"} {value 0}}
+									}
+									{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}
+								}
+								{"default"
+									{"set_i" {var "defense_support_use_air$"} {op "="} {value 1}}
+								}
+							}
 							{"set_i" {var "defense_support_air_left$"} {op "-"} {value 1}}
 							{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
 							{"delay" {time 0.1}}
@@ -3389,7 +3756,26 @@
 					{"switch"
 						{"case"
 							{condition {type entities} {selector {tag def_sup_deploy}}}
-							{"set_i" {var "defense_support_use_air$"} {op "="} {value 1}}
+							; Enemy near LZ guard — if bots already within 120, fall back to edge pads.
+							{"switch"
+								{"case"
+									{condition
+										{type entities}
+										{selector
+											{ignore_captured_by_user 0}
+											{type human}
+											{state "not dead"}
+											{tag _bot}
+											{distance 120}
+										}
+										{count {op ">"} {value 0}}
+									}
+									{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}
+								}
+								{"default"
+									{"set_i" {var "defense_support_use_air$"} {op "="} {value 1}}
+								}
+							}
 							{"set_i" {var "defense_support_air_left$"} {op "-"} {value 1}}
 							{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
 							{"delay" {time 0.1}}

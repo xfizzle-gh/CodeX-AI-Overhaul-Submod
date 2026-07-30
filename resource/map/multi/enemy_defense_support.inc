@@ -754,32 +754,28 @@
 			; mission-authority call, so a positive spawn side proves the defence-side
 			; perspective vars have actually been published rather than merely defaulting
 			; to 0 - which is what makes this engine provably inert on a defence mission.
-			; Phase 4: unmanned supply crate + L2+ crewless weapon on defended flags.
-			; Spawn at waypoint 0, then placement onto flag anchors (MI spawn has no {target}).
-			; No parameterized define calls — mission MI only allows bare ("name").
-			; Crate para_ammo; weapons faction MG stands / TOW. Tag flag_prop (unowned).
+			; Phase 4: unmanned supply + L2+ crewless weapon on defended flags.
+			; Parked prototypes in flag_props_templates.inc - claim by static tag,
+			; placement MOVE to flag anchor (same pipeline as every other pool).
+			; No runtime spawn verb. No entity-name selectors. Tag flag_prop on claimed props.
 
 			(define "ed_props_af1"
 				{"if"
 					{condition {type entities} {selector {tag enemy_def_af1}}}
-					{"spawn"
-						{entity "para_ammo"}
-						{waypoint "0"}
-						{disable_random_spawn_position}
-					}
-					{"delay" {time 0.05}}
 					{"entity_state"
 						{selector
 							{source advanced}
 							{group
-								{select {entity "para_ammo"}}
+								{select {tag {tag flag_prop_ammo}}}
 								{exclude {tag {tag flag_prop}}}
 							}
 							{amount 1}
 						}
 						{tag_add flag_prop}
 						{tag_add flag_prop_move}
+						{tag_remove flag_prop_ammo}
 					}
+					{"delay" {time 0.05}}
 					{"placement"
 						{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 						{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
@@ -794,24 +790,20 @@
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 1}}
-									{"spawn"
-										{entity "mg_stand_nsvt_rus_ai"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_nsvt_rus_ai"}}
+												{select {tag {tag flag_prop_wpn_rusa}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_rusa}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
@@ -823,24 +815,20 @@
 								}
 								{"case"
 									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 2}}
-									{"spawn"
-										{entity "mg_stand_nsvt_ukr_ai"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_nsvt_ukr_ai"}}
+												{select {tag {tag flag_prop_wpn_ukr}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_ukr}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
@@ -852,24 +840,20 @@
 								}
 								{"case"
 									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 4}}
-									{"spawn"
-										{entity "mg_stand_qjz171"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_qjz171"}}
+												{select {tag {tag flag_prop_wpn_prc}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_prc}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
@@ -880,24 +864,20 @@
 									}
 								}
 								{"default"
-									{"spawn"
-										{entity "bgm71_tow"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "bgm71_tow"}}
+												{select {tag {tag flag_prop_wpn_nato}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_nato}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag enemy_def_af1}}
@@ -917,24 +897,20 @@
 			(define "ed_props_af2"
 				{"if"
 					{condition {type entities} {selector {tag enemy_def_af2}}}
-					{"spawn"
-						{entity "para_ammo"}
-						{waypoint "0"}
-						{disable_random_spawn_position}
-					}
-					{"delay" {time 0.05}}
 					{"entity_state"
 						{selector
 							{source advanced}
 							{group
-								{select {entity "para_ammo"}}
+								{select {tag {tag flag_prop_ammo}}}
 								{exclude {tag {tag flag_prop}}}
 							}
 							{amount 1}
 						}
 						{tag_add flag_prop}
 						{tag_add flag_prop_move}
+						{tag_remove flag_prop_ammo}
 					}
+					{"delay" {time 0.05}}
 					{"placement"
 						{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 						{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
@@ -949,24 +925,20 @@
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 1}}
-									{"spawn"
-										{entity "mg_stand_nsvt_rus_ai"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_nsvt_rus_ai"}}
+												{select {tag {tag flag_prop_wpn_rusa}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_rusa}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
@@ -978,24 +950,20 @@
 								}
 								{"case"
 									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 2}}
-									{"spawn"
-										{entity "mg_stand_nsvt_ukr_ai"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_nsvt_ukr_ai"}}
+												{select {tag {tag flag_prop_wpn_ukr}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_ukr}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
@@ -1007,24 +975,20 @@
 								}
 								{"case"
 									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 4}}
-									{"spawn"
-										{entity "mg_stand_qjz171"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_qjz171"}}
+												{select {tag {tag flag_prop_wpn_prc}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_prc}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
@@ -1035,24 +999,20 @@
 									}
 								}
 								{"default"
-									{"spawn"
-										{entity "bgm71_tow"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "bgm71_tow"}}
+												{select {tag {tag flag_prop_wpn_nato}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_nato}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag enemy_def_af2}}
@@ -1072,24 +1032,20 @@
 			(define "ed_props_af3"
 				{"if"
 					{condition {type entities} {selector {tag enemy_def_af3}}}
-					{"spawn"
-						{entity "para_ammo"}
-						{waypoint "0"}
-						{disable_random_spawn_position}
-					}
-					{"delay" {time 0.05}}
 					{"entity_state"
 						{selector
 							{source advanced}
 							{group
-								{select {entity "para_ammo"}}
+								{select {tag {tag flag_prop_ammo}}}
 								{exclude {tag {tag flag_prop}}}
 							}
 							{amount 1}
 						}
 						{tag_add flag_prop}
 						{tag_add flag_prop_move}
+						{tag_remove flag_prop_ammo}
 					}
+					{"delay" {time 0.05}}
 					{"placement"
 						{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 						{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
@@ -1104,24 +1060,20 @@
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 1}}
-									{"spawn"
-										{entity "mg_stand_nsvt_rus_ai"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_nsvt_rus_ai"}}
+												{select {tag {tag flag_prop_wpn_rusa}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_rusa}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
@@ -1133,24 +1085,20 @@
 								}
 								{"case"
 									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 2}}
-									{"spawn"
-										{entity "mg_stand_nsvt_ukr_ai"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_nsvt_ukr_ai"}}
+												{select {tag {tag flag_prop_wpn_ukr}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_ukr}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
@@ -1162,24 +1110,20 @@
 								}
 								{"case"
 									{condition {type cmp_i} {var "enemy_defense_army$"} {op "=="} {value 4}}
-									{"spawn"
-										{entity "mg_stand_qjz171"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "mg_stand_qjz171"}}
+												{select {tag {tag flag_prop_wpn_prc}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_prc}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag enemy_def_af3}}
@@ -1190,24 +1134,20 @@
 									}
 								}
 								{"default"
-									{"spawn"
-										{entity "bgm71_tow"}
-										{waypoint "0"}
-										{disable_random_spawn_position}
-									}
-									{"delay" {time 0.05}}
 									{"entity_state"
 										{selector
 											{source advanced}
 											{group
-												{select {entity "bgm71_tow"}}
+												{select {tag {tag flag_prop_wpn_nato}}}
 												{exclude {tag {tag flag_prop}}}
 											}
 											{amount 1}
 										}
 										{tag_add flag_prop}
 										{tag_add flag_prop_move}
+										{tag_remove flag_prop_wpn_nato}
 									}
+									{"delay" {time 0.05}}
 									{"placement"
 										{selector {ignore_captured_by_user 0} {tag flag_prop_move}}
 										{target {ignore_captured_by_user 0} {tag enemy_def_af3}}

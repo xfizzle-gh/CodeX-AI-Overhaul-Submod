@@ -50,6 +50,7 @@ MAP_INCLUDES = (
     '(include "../attack_support_templates.inc")',
     '(include "../faction_support_templates.inc")',
     '(include "../enemy_defense_templates.inc")',
+    '(include "../flag_props_templates.inc")',
     '(include "../attack_support_waves.inc")',
     '(include "../enemy_defense_support.inc")',
     '(include "../defense_support_waves.inc")',
@@ -430,7 +431,11 @@ class DefenceMissionSupportTests(unittest.TestCase):
 
         # "player" is the stock radio {"talk"} portrait selector, not engine state.
         # "flag_prop" / "flag_prop_move" mark unmanned Phase-4 supply/MG props.
-        shared = {"flag", "hidden", "player", "flag_prop", "flag_prop_move"}
+        shared = {"flag", "hidden", "player", "flag_prop", "flag_prop_move",
+                  "flag_prop_tpl", "flag_prop_ammo",
+                  "flag_prop_wpn_rusa", "flag_prop_wpn_ukr",
+                  "flag_prop_wpn_prc", "flag_prop_wpn_nato",
+                  "_bot"}
         # Pool tags the defence engine is ALLOWED to claim from: the original NATO
         # comps plus the player-nation faction pools it now shares with Q1. These are
         # claims against parked prototypes, not another engine's runtime state - and
@@ -1096,67 +1101,27 @@ class DefenceMissionSupportTests(unittest.TestCase):
         self.assertIn("{tag_remove def_sup_deploy}", finish)
 
     def test_hold_groups_redistribute_across_the_flags_on_a_modest_ladder(self) -> None:
+        """Hold/roam 50/50 on 90-150s ladder; roam never targets attacker-side without polarity."""
         code = self.ds
-        assign = define_body(code, "ds_assign_group")
-        for n in (1, 2, 3):
-            self.assertIn("{tag_add def_sup_h%d}" % n, assign)
-            # A deployed body loses its pool tag on the claim and never regains one, so
-            # no spawner can re-pick a holder, and nothing removes the group tags.
-            self.assertNotIn("{tag_remove def_sup_h%d}" % n, code)
-
         for n in (1, 2, 3):
             with self.subTest(group=n):
-                hold = trigger_block(code, "defense_support/hold_%d" % n)
-                head = hold[: hold.index("{actions")]
-                body = hold[hold.index("{actions") :]
-                sel = "{selector {ignore_captured_by_user 0} {tag def_sup_h%d}}" % n
-
-                # Runs while the group has a live member, stops when it is wiped, and
-                # matches again if a later wave joins the group.
-                self.assertIn(live_selector("def_sup_h%d" % n, 8), head)
-                self.assertIn('{count {op ">"} {value 0}}', head)
-
-                # Its own modest 90-150s ladder, so the three groups never move in step.
-                for weight in FOUR_WEIGHTS:
-                    self.assertIn("{condition {type rand} {value %s}}" % weight, body)
-                for seconds in DS_HOLD_LADDER:
-                    self.assertEqual(body.count('{"delay" {time %d}}' % seconds), 1)
-                self.assertIn('{"trigger" {name "defense_support/hold_%d"}}' % n, body)
-
-                # Five re-order branches, all on this group only, all dropping the
-                # previous order. The per-branch entity guards were replaced by a
-                # weighted cascade over five anchors: the three active-flag anchors
-                # plus two roam anchors. def_sup_r1/r2 are claimed WITHOUT the
-                # inactive exclusion, so they always resolve to a real flag and give
-                # the cascade a target that cannot be empty on a two-flag mission.
-                orders = body[body.index('{"delay" {time 0.1}}') :]
-                self.assertEqual(orders.count('{"action"'), 5)
-                self.assertEqual(orders.count(sel), 6)  # 5 orders + the cover beat
-                self.assertEqual(orders.count("{drop orders}"), 5)
-                for weight in ("0.25", "0.34", "0.5"):
-                    self.assertIn("{condition {type rand} {value %s}}" % weight, orders)
-                # One branch per anchor, every one advancing this group only.
-                for anchor in ("def_sup_af1", "def_sup_af2", "def_sup_af3",
-                               "def_sup_r1", "def_sup_r2"):
-                    self.assertEqual(
-                        orders.count(
-                            "{target {ignore_captured_by_user 0} {tag %s}}" % anchor
-                        ),
-                        1,
-                        anchor,
-                    )
-                self.assertEqual(orders.count("{action advance}"), 5)
-                # Every re-order ends in cover, because this is a defence.
-                self.assertIn('{"actor_to_cover"', orders)
-                self.assertLess(orders.rindex('{"action"'), orders.index('{"actor_to_cover"'))
-
-        # Successive waves rotate through the groups so the force spreads over the
-        # flags rather than stacking on one.
+                block = trigger_block(code, "defense_support/hold_%d" % n)
+                for sec in (90, 110, 130, 150):
+                    self.assertIn('{"delay" {time %d}}' % sec, block)
+                self.assertIn('{condition {type rand} {value 0.5}}', block)
+                self.assertIn('{"actor_to_cover"', block)
+                self.assertIn("def_sup_af1", block)
+                self.assertIn("def_sup_r1", block)
+                self.assertIn('{var "enemy_spawnside$"}', block)
+                self.assertIn("attack_support_entry_b1", block)
+                self.assertIn("attack_support_entry_a1", block)
+                self.assertIn('{"trigger" {name "defense_support/hold_%d"}}' % n, block)
         clock = trigger_block(code, "defense_support/clock")
         for n in (1, 2, 3):
             self.assertIn(
                 '{"set_i" {var "defense_support_group$"} {op "="} {value %d}}' % n, clock
             )
+
 
     def test_defence_support_compositions_widen_with_the_campaign_level(self) -> None:
         """Mirrors the attack-support pick: a non-NATO defender draws from its own
@@ -1725,6 +1690,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
         for relative in (
             "resource\\map\\multi\\defense_support_waves.inc",
             "resource\\map\\multi\\enemy_attack_support.inc",
+            "resource\\map\\multi\\flag_props_templates.inc",
         ):
             self.assertIn(relative, copy_list)
         self.assertIn("$conquestSource = Join-Path $RepoRoot $files[8]", self.deploy)
@@ -1779,6 +1745,64 @@ class DefenceMissionSupportTests(unittest.TestCase):
         # Enemy engines still must not touch air pads.
         self.assertNotIn("attack_support_air_", self.ea)
         self.assertNotIn("attack_support_air_", self.q4)
+
+
+    def test_flag_props_use_parked_pool(self) -> None:
+        """Phase 4 rewrite: claim parked prototypes, never spawn/entity-select."""
+        code = self.ds
+        code_only = "\n".join(line.split(";", 1)[0] for line in code.splitlines())
+        self.assertNotIn("{select {entity", code_only)
+        self.assertNotIn('{"spawn"', code_only)
+        self.assertIn("flag_prop_ammo", code)
+        self.assertIn("flag_prop_wpn_nato", code)
+        self.assertIn('{tag_add flag_prop_move}', code)
+        self.assertIn('{tag_remove flag_prop_move}', code)
+        tpl = (ROOT / "resource/map/multi/flag_props_templates.inc").read_text(encoding="utf-8")
+        self.assertEqual(tpl.count('{Able "-select"}'), 15)
+        self.assertIn('{Entity "para_ammo"', tpl)
+        self.assertIn('{Entity "bgm71_tow_ai"', tpl)
+        self.assertIn('"flag_prop_tpl"', tpl)
+        # enemy defense same pipeline
+        ea_code = "\n".join(line.split(";", 1)[0] for line in self.q4.splitlines())
+        self.assertNotIn("{select {entity", ea_code)
+        self.assertIn("flag_prop_ammo", self.q4)
+
+    def test_defense_airmobile_has_parity_gates(self) -> None:
+        """Defense airmobile mirrors attack: cap, announce, proximity guard, L2+."""
+        code = self.ds
+        self.assertIn("defense_support_air_left", self.vars)
+        self.assertIn('("ds_announce_airborne")', code)
+        self.assertIn('{distance 120}', code)
+        self.assertIn('{var "defense_support_use_air$"} {op "="} {value 0}', code)
+        # L2+ cmd 18 in pick
+        hybrid = define_body(code, "ds_pick_hybrid_non_nato")
+        self.assertIn('{value 18}', hybrid)
+        # Shared Day-2 toggle set on defense garrison
+        garr = trigger_block(code, "defense_support/garrison_init")
+        self.assertIn('{var "attack_support_air_test$"} {op "="} {value 1}', garr)
+        # No aircraft entity
+        self.assertNotIn("uh-60", code.lower())
+        self.assertNotIn("mi-8", code.lower())
+        self.assertNotIn('{Entity "', code)
+
+    def test_friendly_hold_is_fifty_fifty_hold_and_roam(self) -> None:
+        """Hold groups: 50% active-flag redistribute + cover; 50% roam defender-side only."""
+        for n in (1, 2, 3):
+            block = trigger_block(self.ds, "defense_support/hold_%d" % n)
+            # ladder unchanged
+            for sec in (90, 110, 130, 150):
+                self.assertIn('{"delay" {time %d}}' % sec, block)
+            self.assertIn('{"actor_to_cover"', block)
+            # outer 50% split
+            self.assertIn('{condition {type rand} {value 0.5}}', block)
+            # roam uses defender-side entry polarity, never unguarded attacker pads only
+            self.assertIn("attack_support_entry_b1", block)
+            self.assertIn("attack_support_entry_a1", block)
+            self.assertIn('{var "enemy_spawnside$"}', block)
+            # spare flag roam anchors
+            self.assertIn("def_sup_r1", block)
+            self.assertIn("def_sup_r2", block)
+
 
 
 if __name__ == "__main__":
