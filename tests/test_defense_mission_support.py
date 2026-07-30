@@ -43,10 +43,12 @@ DEPLOY = ROOT / "tools/deploy_attack_support_probe.ps1"
 WORKSHOP = Path("E:/Steam/steamapps/workshop/content/400750/3636883799")
 
 # Every include the four quadrants need in a patched map, in the order the deploy script
-# lays them down. Two entities-section pools and four triggers-section engines: Q2 and Q3
-# park nothing of their own.
+# lays them down. THREE entities-section pools and four triggers-section engines: Q2 and
+# Q3 park nothing of their own, and faction_support_templates.inc is the shared
+# player-nation pool that Q1 and Q2 both draw from.
 MAP_INCLUDES = (
     '(include "../attack_support_templates.inc")',
+    '(include "../faction_support_templates.inc")',
     '(include "../enemy_defense_templates.inc")',
     '(include "../attack_support_waves.inc")',
     '(include "../enemy_defense_support.inc")',
@@ -54,15 +56,34 @@ MAP_INCLUDES = (
     '(include "../enemy_attack_support.inc")',
 )
 
+# Faction-aware pools shared by Q1 (attack support) and Q2 (defence support). The two
+# never run on the same mission - Q1 gates on user_is_defender$ == 0 and Q2 on == 1 - so
+# each pool only ever has to cover ONE engine's worst case, not the sum of both.
+# faction_support_army$ folds user_nation$: sov/pol join rusa, csa/frg join nato.
+FACTION_ARMIES = (("rusa", 1), ("ukr", 2), ("nato", 3), ("prc", 4))
+# comp suffix -> (wave command, bodies drawn per wave, pool depth per faction)
+FACTION_COMPS = (
+    ("line", 10, 4, 24),
+    ("wpn", 11, 4, 16),
+    ("recon", 12, 3, 15),
+    ("assault", 13, 4, 16),
+    ("eng", 14, 3, 12),
+    ("manpad", 15, 2, 8),
+)
+# The published fold, mapping every user_nation$ the CE setup can emit onto a pool.
+# Anything else falls through to NATO, so an unpublished nation cannot stall a wave.
+NATION_FOLD = {1: 1, 5: 1, 8: 1, 2: 2, 3: 3, 4: 3, 7: 3, 6: 4}
+
 # Q2 draws: trigger suffix -> (wave_cmd, shared attack-support pool, bodies, stage base)
 DS_DRAWS = (
     ("usmc", 1, "attack_support_inf_usmc", 4, 10),
     ("1ad", 2, "attack_support_inf_1ad", 4, 20),
     ("pzgd", 3, "attack_support_inf_pzgd", 6, 30),
+    ("arf", 5, "attack_support_inf_arf", 4, 50),
 )
 # Depth of the shared NATO pool, read back below from the shipped template file.
 DS_POOL_DEPTH = {"attack_support_inf_usmc": 20, "attack_support_inf_1ad": 20,
-                 "attack_support_inf_pzgd": 12}
+                 "attack_support_inf_pzgd": 12, "attack_support_inf_arf": 20}
 
 # Q3 faction key -> enemy_attack_army$ value. Same fold as enemy_defense_support.inc,
 # resolved into its own var so the two pool-sharing engines stay decoupled.
@@ -76,7 +97,11 @@ WAVE_BUDGET = ((3, 8), (2, 6))
 DS_LIVE_CAP = 14   # parity with the friendly attack-support engine
 EA_LIVE_CAP = 16   # parity with the hostile enemy-defence engine
 
-DS_CLOCK_LADDER = (140, 180, 215, 250, 290)
+# Tightened with the faction pools, the same ~20% trim the attack-support clock took,
+# so the defender is not left waiting five minutes between reinforcements. The first
+# bucket is 115 rather than 110 because 110 is a DS_HOLD_LADDER value and the
+# anti-synchronisation pin below forbids a recurring delay shared by the two.
+DS_CLOCK_LADDER = (115, 145, 170, 200, 230)
 DS_HOLD_LADDER = (90, 110, 130, 150)
 DS_OPENING = (25, 32, 40)
 EA_CLOCK_LADDER = (125, 165, 205, 240, 280)
@@ -168,12 +193,24 @@ class DefenceMissionSupportTests(unittest.TestCase):
     def test_trigger_inventory_is_exactly_what_the_design_calls_for(self) -> None:
         ds = trigger_names(self.ds, "defense_support")
         self.assertEqual(len(ds), len(set(ds)), "duplicate defence-support trigger")
+        # The original NATO comps survive; the faction-aware pools add one trigger
+        # per faction per comp, plus the one-shot flag garrison.
         self.assertEqual(
             set(ds),
-            {"init", "clock", "hold_1", "hold_2", "hold_3",
-             "comp_usmc", "comp_1ad", "comp_pzgd"},
+            {"init", "clock", "garrison_init", "hold_1", "hold_2", "hold_3",
+             "comp_usmc", "comp_1ad", "comp_pzgd", "comp_arf"} | {
+                "ally_%s_%s" % (key, suffix)
+                for key, _army in FACTION_ARMIES
+                for suffix, _cmd, _take, _depth in FACTION_COMPS
+            },
         )
-        self.assertEqual(len(ds), 8)
+        self.assertEqual(len(ds), 10 + len(FACTION_ARMIES) * len(FACTION_COMPS))
+        self.assertEqual(len(ds), 34)
+        # Light vehicles are attack-only: the defence engine must not grow a veh
+        # trigger, and must not reference the vehicle pools at all.
+        self.assertFalse([n for n in ds if "veh" in n])
+        for key, _army in FACTION_ARMIES:
+            self.assertNotIn("ally_sup_%s_veh" % key, self.ds)
 
         ea = trigger_names(self.ea, "enemy_attack")
         self.assertEqual(len(ea), len(set(ea)), "duplicate enemy-attack trigger")
@@ -198,11 +235,16 @@ class DefenceMissionSupportTests(unittest.TestCase):
 
     def test_mi_defines_are_declared_before_they_are_called(self) -> None:
         for code, names in (
-            (self.ds, ("ds_place_at_entry", "ds_own_to_defenderbot", "ds_report_owner",
-                       "ds_claim_anchors", "ds_assign_group", "ds_finish",
-                       "ds_pick_composition")),
-            (self.ea, ("ea_place_at_entry", "ea_own_to_enemy", "ea_resolve_army",
-                       "ea_finish", "ea_poke_line", "ea_poke_wpn", "ea_pick_wave")),
+            (self.ds, ("ds_place_at_entry", "ds_place_one", "ds_own_to_defenderbot",
+                       "ds_report_owner", "ds_claim_anchors", "ds_assign_group",
+                       "ds_finish", "ds_pick_composition", "ds_pick_garrison",
+                       "ds_resolve_army", "ds_pick_hybrid_non_nato",
+                       "ds_poke_faction_line", "ds_poke_faction_wpn",
+                       "ds_poke_faction_recon", "ds_poke_faction_assault",
+                       "ds_poke_faction_eng", "ds_poke_faction_manpad")),
+            (self.ea, ("ea_place_at_entry", "ea_place_one", "ea_own_to_enemy",
+                       "ea_resolve_army", "ea_finish", "ea_poke_line", "ea_poke_wpn",
+                       "ea_pick_wave")),
         ):
             for name in names:
                 with self.subTest(define=name):
@@ -329,13 +371,32 @@ class DefenceMissionSupportTests(unittest.TestCase):
             return set(re.findall(r"\{tag(?:_add|_remove)? ([a-z0-9_]+)\}", code))
 
         shared = {"flag", "hidden"}
-        ds_own = tags(self.ds) - shared - set(DS_POOL_DEPTH) - {"attack_support_tpl"}
+        # Pool tags the defence engine is ALLOWED to claim from: the original NATO
+        # comps plus the player-nation faction pools it now shares with Q1. These are
+        # claims against parked prototypes, not another engine's runtime state - and
+        # Q1 and Q2 never run on the same mission, so the claim cannot race.
+        faction_pools = {"ally_sup_tpl"} | {
+            "ally_sup_%s" % key for key, _army in FACTION_ARMIES
+        } | {
+            "ally_sup_%s_%s" % (key, suffix)
+            for key, _army in FACTION_ARMIES
+            for suffix, _cmd, _take, _depth in FACTION_COMPS
+        }
+        # Vehicle pools are attack-only, so they are deliberately NOT allow-listed
+        # here: if the defence engine ever names one this test fails.
+        ds_shared = set(DS_POOL_DEPTH) | {"attack_support_tpl"} | faction_pools
+        ds_own = tags(self.ds) - shared - ds_shared
         ea_own = tags(self.ea) - shared - {"enemy_def_tpl"} - {
             "enemy_def_%s_%s" % (key, role)
             for key, _army in EA_FACTIONS for role in EA_POOL_DEPTH
         }
         self.assertTrue(all(t.startswith("def_sup_") for t in ds_own), ds_own)
         self.assertTrue(all(t.startswith("ea_") for t in ea_own), ea_own)
+        # Every faction pool the defence engine claims must be one of the allowed
+        # ones - a typo'd or invented pool tag would silently never match.
+        claimed = {t for t in tags(self.ds) if t.startswith("ally_sup_")}
+        self.assertTrue(claimed)
+        self.assertFalse(claimed - faction_pools, claimed - faction_pools)
         self.assertFalse(ds_own & ea_own)
         self.assertFalse(ds_own & tags(self.q1))
         self.assertFalse(ea_own & tags(self.q4))
@@ -414,7 +475,9 @@ class DefenceMissionSupportTests(unittest.TestCase):
 
         # Q3 reinforces the attacker, so side 1 (a) -> entry_a. Same reading as Q4,
         # which delivers to the enemy defender's own edge on an attack mission.
-        place = define_body(self.ea, "ea_place_at_entry")
+        # Both engines stagger arrivals one body at a time now, so the side switch
+        # lives in the single-body step that the wrapper repeats.
+        place = define_body(self.ea, "ea_place_one")
         side_a = place.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
         side_b = place.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
         self.assertLess(side_a, side_b)
@@ -426,7 +489,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
 
         # Q2 reinforces the player/defender, which is the side the attacker is NOT on,
         # so side 1 (a) -> entry_b. Same reading as Q1.
-        place = define_body(self.ds, "ds_place_at_entry")
+        place = define_body(self.ds, "ds_place_one")
         side_a = place.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
         side_b = place.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
         self.assertLess(side_a, side_b)
@@ -504,8 +567,11 @@ class DefenceMissionSupportTests(unittest.TestCase):
         for n in range(1, 17):
             self.assertIn("DEFENSE SUPPORT OWNER - SLOT %d" % n, report)
         self.assertIn("DEFENSE SUPPORT OWNER - UNRESOLVED", report)
-        init = trigger_block(self.ds, "defense_support/init")
-        self.assertIn('("ds_report_owner")', init)
+        # Reported once, from garrison_init rather than init: the garrison arms as
+        # soon as the defender bot and the spawn side are known, whereas init waits
+        # for prep to end, so garrison_init is the first place the slot is resolved.
+        garrison = trigger_block(self.ds, "defense_support/garrison_init")
+        self.assertIn('("ds_report_owner")', garrison)
         self.assertEqual(self.ds.count('("ds_report_owner")'), 1)
 
         # id_defenderbot$ is conquest.lua's DefenderBotId, published by every bot
@@ -809,8 +875,14 @@ class DefenceMissionSupportTests(unittest.TestCase):
         # A mission activates only ~2 of a map's 2-5 flag_point entities, so all three
         # picks exclude inactive, and each excludes the earlier picks so the tags land
         # on three different flags.
+        # Three active-flag anchors, each excluding inactive, plus two roam anchors
+        # that are allowed to be any flag - five shuffled picks, three of which are
+        # the inactive-excluding ones.
         self.assertEqual(anchors.count("{state {state inactive}}"), 3)
-        self.assertEqual(anchors.count("{sort {type shuffle}}"), 3)
+        self.assertEqual(anchors.count("{sort {type shuffle}}"), 5)
+        self.assertEqual(anchors.count("{select {tag {tag flag}}}"), 5)
+        for n in (1, 2):
+            self.assertEqual(code.count("{tag_add def_sup_r%d}" % n), 1, n)
         for n in (1, 2, 3):
             anchor = "{tag_add def_sup_af%d}" % n
             self.assertEqual(code.count(anchor), 1)
@@ -819,9 +891,25 @@ class DefenceMissionSupportTests(unittest.TestCase):
             self.assertIn("{state {state inactive}}", window)
             for earlier in range(1, n):
                 self.assertIn("{tag {tag def_sup_af%d}}" % earlier, window)
-        # Claimed once, from init: flag activation is fixed for the mission.
-        self.assertEqual(code.count('("ds_claim_anchors")'), 1)
-        self.assertIn('("ds_claim_anchors")', trigger_block(code, "defense_support/init"))
+        # Flag activation is fixed for the mission, so the anchors are claimed once -
+        # by garrison_init, which arms as soon as the defender bot and spawn side are
+        # known. init carries a guarded re-claim for the case where the identity
+        # arrived too late for the garrison to have run, and that branch fires only
+        # when no anchor exists yet, so the anchors are never re-rolled mid-mission.
+        self.assertEqual(code.count('("ds_claim_anchors")'), 2)
+        self.assertIn('("ds_claim_anchors")',
+                      trigger_block(code, "defense_support/garrison_init"))
+        init = trigger_block(code, "defense_support/init")
+        self.assertIn('("ds_claim_anchors")', init)
+        reclaim = init.index('("ds_claim_anchors")')
+        guard = block_at(init, init.rindex('{"switch"', 0, reclaim))
+        self.assertIn(
+            "{condition {type entities} {selector {tag def_sup_af1}}}", guard
+        )
+        # The re-claim sits in the default arm: anchors present means do nothing.
+        self.assertLess(guard.index("{selector {tag def_sup_af1}}"),
+                        guard.index('("ds_claim_anchors")'))
+        self.assertIn('{"default"', guard[:guard.index('("ds_claim_anchors")')])
 
         finish = define_body(code, "ds_finish")
         for marker in (
@@ -902,25 +990,29 @@ class DefenceMissionSupportTests(unittest.TestCase):
                     self.assertEqual(body.count('{"delay" {time %d}}' % seconds), 1)
                 self.assertIn('{"trigger" {name "defense_support/hold_%d"}}' % n, body)
 
-                # Three re-order branches, all on this group only, all dropping the
-                # previous order: its own flag plus the two others, each guarded so a
-                # branch never orders at a tag with no entity behind it.
+                # Five re-order branches, all on this group only, all dropping the
+                # previous order. The per-branch entity guards were replaced by a
+                # weighted cascade over five anchors: the three active-flag anchors
+                # plus two roam anchors. def_sup_r1/r2 are claimed WITHOUT the
+                # inactive exclusion, so they always resolve to a real flag and give
+                # the cascade a target that cannot be empty on a two-flag mission.
                 orders = body[body.index('{"delay" {time 0.1}}') :]
                 self.assertEqual(orders.count('{"action"'), 5)
                 self.assertEqual(orders.count(sel), 6)  # 5 orders + the cover beat
                 self.assertEqual(orders.count("{drop orders}"), 5)
-                for other in (2, 3):
-                    guard = orders.index(
-                        "{condition {type entities} {selector {tag def_sup_af%d}}}" % other
+                for weight in ("0.25", "0.34", "0.5"):
+                    self.assertIn("{condition {type rand} {value %s}}" % weight, orders)
+                # One branch per anchor, every one advancing this group only.
+                for anchor in ("def_sup_af1", "def_sup_af2", "def_sup_af3",
+                               "def_sup_r1", "def_sup_r2"):
+                    self.assertEqual(
+                        orders.count(
+                            "{target {ignore_captured_by_user 0} {tag %s}}" % anchor
+                        ),
+                        1,
+                        anchor,
                     )
-                    guarded = block_at(orders, orders.rindex('{"switch"', 0, guard))
-                    self.assertIn(
-                        "{target {ignore_captured_by_user 0} {tag def_sup_af%d}}" % other,
-                        guarded,
-                    )
-                    self.assertIn(
-                        "{target {ignore_captured_by_user 0} {tag def_sup_af1}}", guarded
-                    )
+                self.assertEqual(orders.count("{action advance}"), 5)
                 # Every re-order ends in cover, because this is a defence.
                 self.assertIn('{"actor_to_cover"', orders)
                 self.assertLess(orders.rindex('{"action"'), orders.index('{"actor_to_cover"'))
@@ -934,57 +1026,92 @@ class DefenceMissionSupportTests(unittest.TestCase):
             )
 
     def test_defence_support_compositions_widen_with_the_campaign_level(self) -> None:
+        """Mirrors the attack-support pick: a non-NATO defender draws from its own
+        faction pools, NATO keeps its specialty comps with the hybrid comps injected
+        at L2/L3. Neither branch may ever reach a vehicle - those are attack-only."""
         code = self.ds
         pick = define_body(code, "ds_pick_composition")
+        hybrid = define_body(code, "ds_pick_hybrid_non_nato")
 
         def offered(block: str) -> set:
             return set(
                 int(m)
                 for m in re.findall(
                     r'\{"set_i" \{var "defense_support_wave_cmd\$"\} \{op "="\} '
-                    r"\{value (\d)\}\}",
+                    r"\{value (\d+)\}\}",
                     block,
                 )
             )
 
-        level_case = {}
-        for level in (3, 2):
-            at = pick.index(
-                '{condition {type cmp_i} {var "defense_level$"} {op "=="} {value %d}}'
-                % level
-            )
-            level_case[level] = block_at(pick, pick.rindex('{"case"', 0, at))
-        # L3 and L2 can both reach the pzgren hold team; L1 cannot.
-        self.assertEqual(offered(level_case[3]), {1, 2, 3})
-        self.assertEqual(offered(level_case[2]), {1, 2, 3})
-        after_l2 = pick.index(level_case[2]) + len(level_case[2])
-        level1 = block_at(pick, pick.index('{"default"', after_l2))
-        self.assertEqual(offered(level1), {1, 2})
-        # L3 leads with the heavy team, L2 only mixes it in.
-        self.assertIn("{condition {type rand} {value 0.4}}", level_case[3])
-        self.assertIn("{condition {type rand} {value 0.25}}", level_case[2])
+        def levels(body: str) -> dict:
+            out = {}
+            for level in (3, 2):
+                at = body.index(
+                    '{condition {type cmp_i} {var "defense_level$"} {op "=="} {value %d}}'
+                    % level
+                )
+                out[level] = block_at(body, body.rindex('{"case"', 0, at))
+            after = body.index(out[2]) + len(out[2])
+            out[1] = block_at(body, body.index('{"default"', after))
+            return out
 
-        # Pool-short fallback: step down to the deepest pool, then give up on this
-        # cycle rather than spin. A draw clears the command as its first action, so a
-        # command still standing four seconds later means the pool could not field it.
-        short = pick.index("DEFENSE SUPPORT POOL SHORT - RIFLE TEAM INSTEAD")
+        # Non-NATO: L1 line + recon, L2 adds wpn/assault/eng, L3 adds the MANPAD team.
+        nn = levels(hybrid)
+        self.assertEqual(offered(nn[1]), {10, 12})
+        self.assertEqual(offered(nn[2]), {10, 11, 12, 13, 14})
+        self.assertEqual(offered(nn[3]), {10, 11, 12, 13, 14, 15})
+        # NATO: specialty comps survive, hybrids injected from L2.
+        na = levels(pick)
+        self.assertEqual(offered(na[1]), {1, 2, 5, 12})
+        self.assertEqual(offered(na[2]), {1, 2, 3, 12, 13, 14})
+        self.assertEqual(offered(na[3]), {1, 2, 3, 12, 13, 14, 15})
+        # MANPAD is the L3-only unlock on both branches.
+        for branch in (nn, na):
+            self.assertNotIn(15, offered(branch[1]))
+            self.assertNotIn(15, offered(branch[2]))
+            self.assertIn(15, offered(branch[3]))
+        # THE attack-only pin: no level of either branch may offer the vehicle comp,
+        # and the whole engine must never name a vehicle pool.
+        for branch in (nn, na):
+            for lvl in (1, 2, 3):
+                self.assertNotIn(16, offered(branch[lvl]))
+        self.assertNotIn(16, offered(code))
+        self.assertNotIn("_veh", code)
+
+        # Pool-short fallback: step down to the player's own line pool, then give up
+        # on this cycle rather than spin. A draw clears the command as its first
+        # action, so a command still standing means the pool could not field it.
+        short = pick.index("DEFENSE SUPPORT POOL SHORT - FACTION LINE")
         gaveup = pick.index("DEFENSE SUPPORT POOL EXHAUSTED")
         self.assertLess(short, gaveup)
         self.assertIn(
-            '{condition {type cmp_i} {var "defense_support_wave_cmd$"} {op ">"} {value 1}}',
+            '{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}',
             pick[:short],
         )
+        self.assertIn('("ds_poke_faction_line")', pick[:short])
         self.assertIn(
             '{condition {type cmp_i} {var "defense_support_wave_cmd$"} {op ">"} {value 0}}',
             pick[short:gaveup],
         )
-        # The opening wave is always the fallback rifle team, so the first arrival can
-        # never be the one that finds a pool short.
+
+        # The opening wave is no longer hardcoded to the rifle team: init clears the
+        # command and goes through the ordinary faction-aware pick, so a non-NATO
+        # defender's first arrival is its own nation's line or recon team.
         init = trigger_block(code, "defense_support/init")
         self.assertIn(
-            '{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 1}}', init
+            '{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}', init
         )
-        self.assertIn('{"trigger" {name "defense_support/comp_usmc"}}', init)
+        self.assertIn('("ds_pick_composition")', init)
+
+        # The flag garrison is line-or-recon ONLY - never a weapons team, never a
+        # vehicle - and it resolves the faction before it picks.
+        garrison = define_body(code, "ds_pick_garrison")
+        self.assertEqual(offered(garrison) - {0}, {10, 12})
+        self.assertTrue(garrison.index('("ds_resolve_army")') < garrison.index('{"switch"'))
+        self.assertIn('("ds_poke_faction_line")', garrison)
+        self.assertIn('("ds_poke_faction_recon")', garrison)
+        for banned in ("wpn", "assault", "eng", "manpad", "veh"):
+            self.assertNotIn('("ds_poke_faction_%s")' % banned, garrison, banned)
 
     # ----------------------------------------------------- Q3 behaviour: assault
 
@@ -1030,18 +1157,28 @@ class DefenceMissionSupportTests(unittest.TestCase):
         self.assertEqual(finish.count("{amount 2}"), 1)
         for _s, _c, _r, take, _st in EA_DRAWS:
             self.assertEqual(take, 4)
-        # G1 goes straight in; G2 takes a cover beat first, which breaks the line.
-        g1 = finish.index("{selector {ignore_captured_by_user 0} {tag ea_g1}}")
-        cover = finish.index('{"actor_to_cover"')
-        self.assertLess(g1, cover)
-        self.assertIn(
-            "{target {ignore_captured_by_user 0} {tag ea_flag1}}", finish[g1:cover]
-        )
-        for n in (2, 3):
-            self.assertIn(
-                "{target {ignore_captured_by_user 0} {tag ea_flag%d}}" % n,
-                finish[cover:],
-            )
+        # The retired cover beat is gone. The line is broken by sending the two
+        # groups to DIFFERENT flags instead: G1 always takes flag1, and G2 rolls
+        # between flag3 and flag2, so the two halves of a wave never converge on the
+        # same point and pile up on each other.
+        self.assertNotIn('{"actor_to_cover"', finish)
+        # Read each order as a whole: which group it selects, and which flag it sends
+        # them to. G1's set and G2's set must be disjoint.
+        by_group = {"ea_g1": set(), "ea_g2": set()}
+        for m in re.finditer(r'\{"action"', finish):
+            order = block_at(finish, m.start())
+            grp = re.search(r"\{selector \{ignore_captured_by_user 0\} \{tag (ea_g\d)\}\}",
+                            order)
+            tgt = re.search(r"\{target \{ignore_captured_by_user 0\} \{tag (ea_flag\d)\}\}",
+                            order)
+            if grp and tgt:
+                by_group[grp.group(1)].add(tgt.group(1))
+        self.assertEqual(by_group["ea_g1"], {"ea_flag1"})
+        self.assertEqual(by_group["ea_g2"], {"ea_flag2", "ea_flag3"})
+        self.assertFalse(by_group["ea_g1"] & by_group["ea_g2"])
+        # Both groups advance rather than beelining, and each drops its prior order.
+        self.assertEqual(finish.count("{action advance}"), 3)
+        self.assertEqual(finish.count("{drop orders}"), 3)
         self.assertIn("{tag_remove ea_deploy}", finish)
 
     def test_enemy_attack_faction_selection_is_its_own_bot_army_switch(self) -> None:
@@ -1279,6 +1416,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 )
                 self.assertIn(
                     '(include "../attack_support_templates.inc")\n'
+                    '\t(include "../faction_support_templates.inc")\n'
                     '\t(include "../enemy_defense_templates.inc")',
                     mi,
                 )

@@ -36,7 +36,30 @@ COMPOSITIONS = (
     ("comp_1ad", 2, "attack_support_inf_1ad", 5),
     ("comp_acav", 3, "attack_support_inf_1ad", 4),
     ("comp_pzgren", 4, "attack_support_inf_pzgd", 6),
+    ("comp_arf", 5, "attack_support_inf_arf", 5),
 )
+
+# Faction-aware pools, keyed by the player's own nation rather than a fixed NATO
+# roster. faction_support_army$ folds user_nation$ down to these four: sov and pol
+# fall in with rusa, csa and frg with nato, exactly as the enemy engines fold
+# bot_army$. Depths are per faction; every one is shared by the attack and the
+# defence engine, which never run on the same mission.
+FACTION_ARMIES = (("rusa", 1), ("ukr", 2), ("nato", 3), ("prc", 4))
+# comp suffix -> (wave command, bodies drawn per wave, pool depth per faction)
+FACTION_COMPS = (
+    ("line", 10, 4, 24),
+    ("wpn", 11, 4, 16),
+    ("recon", 12, 3, 15),
+    ("assault", 13, 4, 16),
+    ("eng", 14, 3, 12),
+    ("manpad", 15, 2, 8),
+)
+# Light vehicles are attack-only and counter-gated rather than pool-counted:
+# Ukraine fields three humvees, NATO two Fenneks, and no other faction has any.
+FACTION_VEH = (("ukr", 2, 3), ("nato", 3, 2))
+# The full fold from user_nation$ (published by dcg/player_nation) to the four
+# faction pools. Anything unmapped fails closed to NATO.
+NATION_FOLD = {1: 1, 5: 1, 8: 1, 2: 2, 3: 3, 4: 3, 7: 3, 6: 4}
 
 
 def strip_comments(text: str) -> str:
@@ -282,11 +305,20 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         ):
             self.assertIn(term, init)
 
-        # Opening wave 30-45s in, one small USMC rifle team (composition 1).
+        # Opening wave 30-45s in. Since the faction-aware pools landed the opening
+        # wave is no longer hardcoded to the USMC team: init resolves the player's
+        # faction first and then goes through the ordinary weighted pick, so at L1
+        # it is a line or recon team of the player's own nation.
         for seconds in (30, 38, 45):
             self.assertEqual(code.count('{"delay" {time %d}}' % seconds), 1, seconds)
-        self.assertIn('{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 1}}', init)
-        self.assertIn('{"trigger" {name "attack_support/comp_usmc"}}', init)
+        self.assertIn('("as_resolve_army")', init)
+        self.assertIn('("am_pick_composition")', init)
+        # The faction must be resolved before the pick reads it, or the pick falls
+        # through to the NATO default on a non-NATO player.
+        self.assertLess(init.index('("as_resolve_army")'),
+                        init.index('("am_pick_composition")'))
+        # The command is cleared on entry so a stale command cannot deploy a wave.
+        self.assertIn('{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}', init)
 
         # The clock is held shut until the opening wave has landed - its condition
         # is otherwise already true here and it would fire alongside init.
@@ -294,7 +326,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         ok_off = init.index('{"set_i" {var "attack_support_next_ok$"} {op "="} {value 0}}')
         ok_on = init.index('{"set_i" {var "attack_support_next_ok$"} {op "="} {value 1}}')
         busy_off = init.index('{"set_i" {var "attack_support_busy$"} {op "="} {value 0}}')
-        opening = init.index('{"trigger" {name "attack_support/comp_usmc"}}')
+        opening = init.index('("am_pick_composition")')
         self.assertLess(busy_on, opening)
         self.assertLess(ok_off, opening)
         self.assertLess(opening, ok_on)
@@ -333,11 +365,12 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         ):
             self.assertIn(term, clock)
 
-        # Randomized 150-300s cadence as a weighted {type rand} cascade. The
-        # 0.2/0.25/0.33/0.5 ladder is what makes the five buckets ~20% each.
+        # Randomized 120-240s cadence as a weighted {type rand} cascade - about 20%
+        # tighter than the retired 150-300s ladder, so wave 2 arrives in ~3-5 min
+        # rather than 5-6. The 0.2/0.25/0.33/0.5 ladder keeps the five buckets ~20%.
         for value in ("0.2", "0.25", "0.33", "0.5"):
             self.assertIn("{condition {type rand} {value %s}}" % value, clock)
-        for seconds in (150, 190, 225, 260, 300):
+        for seconds in (120, 150, 180, 210, 240):
             self.assertEqual(clock.count('{"delay" {time %d}}' % seconds), 1, seconds)
 
         # Re-arms itself: one cycle always ends by clearing busy and firing again.
@@ -378,56 +411,101 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         self.assertIn('("am_pick_composition")', dispatch)
 
     def test_composition_pool_widens_with_the_campaign_level(self) -> None:
+        """The pick is two-branched since the faction-aware pools landed: a player
+        on a non-NATO nation draws entirely from its own faction pools, while NATO
+        keeps the original specialty compositions and has the shared hybrid comps
+        injected on top at L2/L3. Both branches must still widen with the level."""
         code = self.code
         pick = define_body(code, "am_pick_composition")
-        level_case = {}
-        for level in (3, 2):
-            at = pick.index(
-                '{condition {type cmp_i} {var "defense_level$"} {op "=="} {value %d}}' % level
-            )
-            level_case[level] = block_at(pick, pick.rindex('{"case"', 0, at))
+        hybrid = define_body(code, "as_pick_hybrid_non_nato")
+
+        def levels(body: str) -> dict:
+            """L3 / L2 case bodies plus the L1 default that trails them."""
+            out = {}
+            for level in (3, 2):
+                at = body.index(
+                    '{condition {type cmp_i} {var "defense_level$"} {op "=="} {value %d}}'
+                    % level
+                )
+                out[level] = block_at(body, body.rindex('{"case"', 0, at))
+            after = body.index(out[2]) + len(out[2])
+            out[1] = block_at(body, body.index('{"default"', after))
+            return out
 
         def offered(block: str) -> set:
             return set(
                 int(m)
                 for m in re.findall(
-                    r'\{"set_i" \{var "attack_support_wave_cmd\$"\} \{op "="\} \{value (\d)\}\}',
+                    r'\{"set_i" \{var "attack_support_wave_cmd\$"\} \{op "="\} \{value (\d+)\}\}',
                     block,
                 )
             )
 
-        # L3 draws from all four, L2 from the first three, L1 (and an unpublished
-        # level 0, which lands in the default) from the two infantry-only teams.
-        self.assertEqual(offered(level_case[3]), {1, 2, 3, 4})
-        self.assertEqual(offered(level_case[2]), {1, 2, 3})
-        after_l2 = pick.index(level_case[2]) + len(level_case[2])
-        level1 = block_at(pick, pick.index('{"default"', after_l2))
-        self.assertEqual(offered(level1), {1, 2})
+        # Non-NATO: L1 is line + recon only; L2 adds wpn/assault/eng and the rare
+        # vehicle; L3 additionally unlocks the MANPAD team.
+        nn = levels(hybrid)
+        self.assertEqual(offered(nn[1]), {10, 12})
+        self.assertEqual(offered(nn[2]), {10, 11, 12, 13, 14, 16})
+        self.assertEqual(offered(nn[3]), {10, 11, 12, 13, 14, 15, 16})
+        # MANPAD is the L3-only unlock, and L1 offers no vehicle.
+        self.assertNotIn(15, offered(nn[2]))
+        self.assertNotIn(16, offered(nn[1]))
 
-        # Every case picks exactly one composition and pokes exactly that trigger.
-        for cmd, name in ((4, "comp_pzgren"), (3, "comp_acav"), (2, "comp_1ad"), (1, "comp_usmc")):
+        # NATO: specialty comps 1-5 survive, with hybrid comps injected at L2/L3.
+        na = levels(pick)
+        self.assertEqual(offered(na[1]), {1, 2, 5, 12})
+        self.assertEqual(offered(na[2]), {1, 2, 3, 5, 12, 13, 14, 16})
+        self.assertEqual(offered(na[3]), {1, 2, 3, 4, 5, 12, 13, 14, 15, 16})
+        # The NATO branch never draws the generic faction line/wpn pools directly;
+        # those are reached only through the pool-short fallback below.
+        for lvl in (1, 2, 3):
+            self.assertNotIn(10, offered(na[lvl]))
+            self.assertNotIn(11, offered(na[lvl]))
+
+        # Every specialty case picks one composition and pokes exactly that trigger.
+        for cmd, name in ((4, "comp_pzgren"), (3, "comp_acav"), (5, "comp_arf"),
+                          (2, "comp_1ad"), (1, "comp_usmc")):
             at = pick.index(
                 '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value %d}}' % cmd
             )
             self.assertIn(
                 '{"trigger" {name "attack_support/%s"}}' % name, pick[at : at + 200]
             )
+        # Every hybrid case pokes the matching faction fan-out define.
+        for cmd, poke in ((10, "line"), (11, "wpn"), (12, "recon"), (13, "assault"),
+                          (14, "eng"), (15, "manpad"), (16, "veh")):
+            at = hybrid.index(
+                '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value %d}}' % cmd
+            )
+            self.assertIn('("as_poke_faction_%s")' % poke, hybrid[at : at + 200])
 
-        # Pool-short fallback: step down to the deepest pool, then give up on this
-        # cycle rather than spin. A composition clears the command on entry, so a
-        # command still standing means that pool could not field the wave.
-        self.assertIn("ATTACK SUPPORT POOL SHORT - RIFLE TEAM INSTEAD", pick)
+        # Pool-short fallback: step down to the player's own line pool, then give up
+        # on this cycle rather than spin. A composition clears the command on entry,
+        # so a command still standing means that pool could not field the wave.
+        self.assertIn("ATTACK SUPPORT POOL SHORT - FACTION LINE", pick)
         self.assertIn("ATTACK SUPPORT POOL EXHAUSTED", pick)
-        short = pick.index("ATTACK SUPPORT POOL SHORT - RIFLE TEAM INSTEAD")
+        short = pick.index("ATTACK SUPPORT POOL SHORT - FACTION LINE")
         gaveup = pick.index("ATTACK SUPPORT POOL EXHAUSTED")
         self.assertLess(short, gaveup)
+        # The step-down sets the faction line command and pokes it.
         self.assertIn(
-            '{condition {type cmp_i} {var "attack_support_wave_cmd$"} {op ">"} {value 1}}',
+            '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 10}}',
+            pick[:short],
+        )
+        self.assertIn('("as_poke_faction_line")', pick[:short])
+        # Both fallback stages trigger on "a command is still standing".
+        self.assertIn(
+            '{condition {type cmp_i} {var "attack_support_wave_cmd$"} {op ">"} {value 0}}',
             pick[:short],
         )
         self.assertIn(
             '{condition {type cmp_i} {var "attack_support_wave_cmd$"} {op ">"} {value 0}}',
             pick[short:gaveup],
+        )
+        # Giving up clears the command so the next cycle starts clean.
+        self.assertIn(
+            '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}',
+            pick[short:gaveup + 200],
         )
 
     def test_every_composition_is_command_gated_and_pool_gated(self) -> None:
@@ -539,13 +617,35 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         self.assertIn('{target_waypoint "attack_support_entry_b"}', code[side_a:side_b])
         self.assertIn('{target_waypoint "attack_support_entry_a"}', code[side_b:])
 
-        # Placement happens before promotion, on every deploy: four compositions
-        # plus the shared vehicle step.
-        self.assertEqual(code.count('("am_place_at_entry")'), 5)
-        self.assertEqual(code.count('("am_finish_deploy")'), 5)
+        # Placement happens before promotion on EVERY deploy. Pinning a bare count
+        # went stale the moment the faction pools added comps, so instead require
+        # that the two always come in pairs and that every deploying trigger uses
+        # them - that is the property that actually matters.
+        self.assertEqual(code.count('("am_place_at_entry")'),
+                         code.count('("am_finish_deploy")'))
+        deployers = [n for n in re.findall(r'\{"attack_support/([a-z0-9_]+)"', code)
+                     if n not in ("init", "clock")]
+        self.assertTrue(deployers)
+        for name in deployers:
+            with self.subTest(deployer=name):
+                block = trigger_block(code, name)
+                self.assertIn('("am_place_at_entry")', block)
+                self.assertIn('("am_finish_deploy")', block)
+                self.assertLess(block.index('("am_place_at_entry")'),
+                                block.index('("am_finish_deploy")'))
         place = code.index('(define "am_place_at_entry"')
         finish = code.index('(define "am_finish_deploy"')
         self.assertLess(place, finish)
+
+        # Bodies land one at a time. Placing a whole fireteam onto one pad piles
+        # them up, so am_place_at_entry is a run of single-body placements and then
+        # clears the one-shot marker.
+        placer = define_body(code, "am_place_at_entry")
+        self.assertGreaterEqual(placer.count('("am_place_one")'), 6)
+        self.assertIn('{tag_remove attack_support_placed}', placer)
+        one = define_body(code, "am_place_one")
+        self.assertIn('{amount 1}', one)
+        self.assertIn('{exclude {tag {tag attack_support_placed}}}', one)
 
     def test_ownership_switch_covers_every_literal_player_slot(self) -> None:
         code = self.code
@@ -668,8 +768,23 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             self.assertIn("{tag_add attack_support_g%d}" % n, block)
             self.assertIn("{tag_remove attack_support_g%d}" % n, block)
         self.assertEqual(block.count("{amount 2}"), 3)
-        # A cover beat in the middle breaks the line before the final push.
-        self.assertIn('{"actor_to_cover"', block)
+
+        # The retired {"actor_to_cover"} cover beat is gone; the line is now broken
+        # by scattering the fireteams across up to three DIFFERENT active flags, so
+        # elements peel apart instead of pausing together. Each pick excludes the
+        # ones already taken, which is what stops all three landing on one flag.
+        self.assertNotIn('{"actor_to_cover"', block)
+        for n in (1, 2, 3):
+            self.assertEqual(block.count("{tag_add attack_support_flag%d}" % n), 1, n)
+            # Stale picks from the previous wave are cleared before choosing again.
+            self.assertIn("{tag_remove attack_support_flag%d}" % n, block)
+        second = block.index("{tag_add attack_support_flag2}")
+        third = block.index("{tag_add attack_support_flag3}")
+        self.assertIn("{tag {tag attack_support_flag1}}", block[:second])
+        for prior in (1, 2):
+            self.assertIn("{tag {tag attack_support_flag%d}}" % prior, block[:third])
+        # Every fireteam then advances rather than beelining from a raw coordinate.
+        self.assertEqual(block.count("{action advance}"), 4)
 
         # The deploy tag is consumed at the end of every deploy, so the next wave
         # starts from an empty set instead of re-ordering the previous one.
@@ -678,20 +793,32 @@ class AttackSupportSlotProofTests(unittest.TestCase):
     def test_wave_pool_is_deep_enough_for_the_level_budget(self) -> None:
         code = strip_comments(self.templates)
 
-        # 64 parked prototypes. A wave MOVES pool originals out and never returns
-        # them, so the pool carries the whole L3 budget of 8 waves across every
-        # composition it can draw. Parked off-map at player 0, claimed by tag.
-        self.assertEqual(code.count('{Able "-select"}'), 64)
-        self.assertEqual(code.count("{Tags "), 64)
-        self.assertEqual(code.count("{Player 0}"), 64)
-        self.assertEqual(code.count('"attack_support_tpl"'), 64)
-        self.assertEqual(code.count('"hidden"'), 64)
+        # 84 parked prototypes - the original 64 plus the 20-strong ARF pool that
+        # came in with composition 5. A wave MOVES pool originals out and never
+        # returns them, so the pool carries the whole L3 budget of 8 waves across
+        # every composition it can draw. Parked off-map at player 0, claimed by tag.
+        self.assertEqual(code.count('{Able "-select"}'), 84)
+        self.assertEqual(code.count("{Tags "), 84)
+        self.assertEqual(code.count("{Player 0}"), 84)
+        self.assertEqual(code.count('"attack_support_tpl"'), 84)
+        self.assertEqual(code.count('"hidden"'), 84)
         for pool, count in (
             ("attack_support_inf_usmc", 20),
             ("attack_support_inf_1ad", 20),
             ("attack_support_inf_pzgd", 12),
+            ("attack_support_inf_arf", 20),
         ):
             self.assertEqual(code.count('"%s"' % pool), count, pool)
+
+        # This file shares every fully-resolved map with enemy_defense_templates.inc,
+        # whose MID band opens at 9100. The ARF block originally numbered itself
+        # 9084..9103 and duplicated four MIDs in all fourteen maps, so the whole
+        # file must stay strictly below that band.
+        mids = [int(m) for m in re.findall(r"\{MID (\d+)\}", code)]
+        self.assertEqual(len(mids), 84)
+        self.assertEqual(len(set(mids)), 84, "duplicate MID inside the pool")
+        self.assertLess(max(mids), 9100, "pool runs into the enemy-defence MID band")
+        self.assertEqual((min(mids), max(mids)), (9000, 9083))
         # Deepest pool is the fallback composition's, since every short draw ends there.
         self.assertGreaterEqual(
             code.count('"attack_support_inf_usmc"'), code.count('"attack_support_inf_pzgd"')
@@ -729,13 +856,16 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         for n in (1, 2, 3, 4):
             self.assertEqual(code.count('"attack_support_hmmwv%d"' % n), 3)
 
-        # Ids and MIDs stay unique, and must not disturb the defense pool's block.
+        # Ids and MIDs stay unique, and must not disturb either neighbouring pool's
+        # block: enemy_defense_templates.inc owns 0xb1xx / MID 9100+ and
+        # faction_support_templates.inc owns 0xb2xx-0xb3xx / MID 9300+.
         ids = re.findall(r"\{(?:Entity|Human) \"[^\"]*\" (0x[0-9a-f]+)", code)
-        self.assertEqual(len(ids), 64)
-        self.assertEqual(len(set(ids)), 64)
+        self.assertEqual(len(ids), 84)
+        self.assertEqual(len(set(ids)), 84)
         mids = re.findall(r"\{MID (\d+)\}", code)
-        self.assertEqual(len(set(mids)), 64)
+        self.assertEqual(len(set(mids)), 84)
         self.assertNotIn("0xaf0", code)
+        self.assertTrue(all(i.startswith("0xaf") for i in ids), "id band drifted")
         self.assertEqual(code.count("{"), code.count("}"))
 
     def test_all_cwa_maps_include_the_wave_engine(self) -> None:
@@ -759,6 +889,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
                 # read_text normalises CRLF, so match on \n here.
                 self.assertIn(
                     '(include "../attack_support_templates.inc")\n'
+                    '\t(include "../faction_support_templates.inc")\n'
                     '\t(include "../enemy_defense_templates.inc")',
                     mi,
                 )
@@ -868,7 +999,14 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             '{"trigger" {name "attack_support/clock"}}',
             "ATTACK SUPPORT NEAR CAP DEFER",
             "{state \"not dead\"}",
-            "must park 64 prototypes",
+            "must park 84 prototypes",
+            # The player-nation pool has to be shipped, include-injected and depth
+            # checked by the deploy, or the faction waves reference nothing.
+            "resource\\map\\multi\\faction_support_templates.inc",
+            '(include "../faction_support_templates.inc")',
+            "must park 379 prototypes",
+            'ally_sup_rusa_line',
+            "must not park a vehicle pool",
             # Border's inline vars block is converted to the shared include so the
             # engine gates stop reading silent zeroes there.
             "BORDER-VARS converted inline vars block in",

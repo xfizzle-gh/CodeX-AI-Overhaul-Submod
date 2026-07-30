@@ -297,7 +297,14 @@ class EnemyDefenseSupportTests(unittest.TestCase):
 
         # The garrison is MOVED onto its flag. {"placement"} takes a plain {target}
         # entity selector - the form dcg_functions.inc uses for spawn helpers.
-        place = define_body(code, "ed_place")
+        # Placement is now staggered: ed_place is a run of single-body placements so
+        # a whole fireteam is not crushed into one pile on the flag, and ed_place_one
+        # carries the actual per-flag targets.
+        wrapper = define_body(code, "ed_place")
+        self.assertGreaterEqual(wrapper.count('("ed_place_one")'), 6)
+        place = define_body(code, "ed_place_one")
+        self.assertIn("{amount 1}", place)
+        self.assertIn("{exclude {tag {tag enemy_def_placed}}}", place)
         for n in (1, 2, 3):
             self.assertIn(
                 "{target {ignore_captured_by_user 0} {tag enemy_def_af%d}}" % n, place
@@ -446,7 +453,9 @@ class EnemyDefenseSupportTests(unittest.TestCase):
 
     def test_reinforcements_enter_at_the_defenders_own_map_edge(self) -> None:
         code = self.code
-        place = define_body(code, "ed_place")
+        # The side switch lives in the single-body placement step that ed_place now
+        # repeats, so read it from there.
+        place = define_body(code, "ed_place_one")
         # Note the reading of enemy_spawnside$: side 1 (a) means the DEFENDER is on
         # side a, so its reinforcements enter at attack_support_entry_a. This is the
         # opposite of the attack-support engine, which deliberately enters from the
@@ -940,6 +949,7 @@ class EnemyDefenseSupportTests(unittest.TestCase):
                 )
                 self.assertIn(
                     '(include "../attack_support_templates.inc")\n'
+                    '\t(include "../faction_support_templates.inc")\n'
                     '\t(include "../enemy_defense_templates.inc")',
                     mi,
                 )
