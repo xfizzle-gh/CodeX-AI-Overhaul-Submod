@@ -358,8 +358,9 @@ foreach ($marker in @(
     # Round-robin cursor over the two attack-support flank pads (Phase 2).
     '{"attack_support_flank_rr"}',
     # Rare IFV wave budget (Phase 3). 1 per mission max.
-    '{"attack_support_ifv_left"},
-    {"attack_support_motor_left"},
+    '{"attack_support_ifv_left"}',
+    # Motorized truck insert budget (cmd 19). 1 per mission max.
+    '{"attack_support_motor_left"}',
     # Airmobile insert budget (Phase 5 E1). Cap 2/mission. Narrative helo only.
     '{"attack_support_air_left"}',
     '{"defense_support_air_left"}',
