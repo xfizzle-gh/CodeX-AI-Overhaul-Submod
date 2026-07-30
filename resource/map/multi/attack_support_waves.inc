@@ -87,7 +87,6 @@
 					{"case"
 						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
 						{"timer" {time 5} {title "mission/multi/support/wave_inbound"}}
-						{"sound" {name "interface/task_new"}}
 					}
 					{"default"}
 				}
@@ -97,7 +96,6 @@
 					{"case"
 						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
 						{"timer" {time 5} {title "mission/multi/support/vehicle_inbound"}}
-						{"sound" {name "interface/task_new"}}
 					}
 					{"default"}
 				}
@@ -107,7 +105,6 @@
 					{"case"
 						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
 						{"timer" {time 5} {title "mission/multi/support/flank_inbound"}}
-						{"sound" {name "interface/task_new"}}
 					}
 					{"default"}
 				}
@@ -117,7 +114,6 @@
 					{"case"
 						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
 						{"timer" {time 6} {title "mission/multi/support/waves_exhausted"}}
-						{"sound" {name "interface/task_new"}}
 					}
 					{"default"}
 				}
