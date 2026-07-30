@@ -38,7 +38,16 @@ $files = @(
     # utility.lua carries the spawnPoint nil-guard. string.sub on a nil spawn
     # point faulted natively, so this file has to ship with conquest.lua or the
     # fix simply is not present in the game.
-    "resource\script\multiplayer\modes\utility.lua"
+    "resource\script\multiplayer\modes\utility.lua",
+    # The two human-DEFENCE mission engines. Appended rather than inserted so the
+    # index-based lookups above keep pointing at the same files. Both gate every
+    # trigger on user_is_defender$ == 1 and both wait for prep_inform$ == 1, and
+    # neither parks prototypes of its own: defence support claims from the
+    # attack-support NATO pool and enemy attack claims from the enemy-defence
+    # faction pools, which is safe because the attack-mission engines that own
+    # those pools are inert on exactly the missions these two run on.
+    "resource\map\multi\defense_support_waves.inc",
+    "resource\map\multi\enemy_attack_support.inc"
 )
 
 $gameSetSource = Join-Path $RepoRoot $files[0]
@@ -51,8 +60,10 @@ $defSource = Join-Path $RepoRoot $files[6]
 $defTplSource = Join-Path $RepoRoot $files[7]
 $conquestSource = Join-Path $RepoRoot $files[8]
 $utilitySource = Join-Path $RepoRoot $files[9]
+$dsSource = Join-Path $RepoRoot $files[10]
+$eaSource = Join-Path $RepoRoot $files[11]
 
-foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSource, $wavesSource, $tplSource, $defSource, $defTplSource, $conquestSource, $utilitySource)) {
+foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSource, $wavesSource, $tplSource, $defSource, $defTplSource, $conquestSource, $utilitySource, $dsSource, $eaSource)) {
     if (-not (Test-Path -LiteralPath $source)) {
         throw "Missing source file: $source"
     }
@@ -95,6 +106,12 @@ foreach ($marker in @(
 function Get-LuaCode([string]$path) {
     return ((Get-Content -LiteralPath $path) | ForEach-Object { ($_ -split '--', 2)[0] }) -join "`n"
 }
+# Comment-stripped view of an MI include. The engine headers name every neighbouring
+# system in prose - which files they mirror, which pools they share, which var they
+# deliberately do NOT read - so a cross-system substring check has to run on code only.
+function Get-MiCode([string]$path) {
+    return ((Get-Content -LiteralPath $path) | ForEach-Object { ($_ -split ';', 2)[0] }) -join "`n"
+}
 $SlotUnsafe = @('spawnPointName', 'PlayerSpawnPoint', 'require(')
 $supportCode = Get-LuaCode $supportSource
 foreach ($banned in $SlotUnsafe) {
@@ -127,7 +144,29 @@ foreach ($marker in @(
     '{"enemy_defense_trickle_ok"}',
     '{"enemy_defense_trickle_busy"}',
     '{"enemy_defense_surge_ok"}',
-    '{"enemy_defense_surge_busy"}'
+    '{"enemy_defense_surge_busy"}',
+    # Human-DEFENCE mission state. Same reason: an undeclared read is a silent zero,
+    # and a silent zero on defense_support_armed$ would re-arm the engine every tick.
+    '{"defense_support_armed"}',
+    '{"defense_support_transferred"}',
+    '{"defense_support_stage"}',
+    '{"defense_support_wave_cmd"}',
+    '{"defense_support_wave_num"}',
+    '{"defense_support_waves_left"}',
+    '{"defense_support_busy"}',
+    '{"defense_support_next_ok"}',
+    '{"defense_support_group"}',
+    '{"defense_support_owner_fail"}',
+    '{"enemy_attack_armed"}',
+    '{"enemy_attack_army"}',
+    '{"enemy_attack_stage"}',
+    '{"enemy_attack_transferred"}',
+    '{"enemy_attack_wave_cmd"}',
+    '{"enemy_attack_wave_num"}',
+    '{"enemy_attack_waves_left"}',
+    '{"enemy_attack_busy"}',
+    '{"enemy_attack_next_ok"}',
+    '{"enemy_attack_owner_fail"}'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $varsSource -SimpleMatch $marker)) {
         throw "Source dcg_vars.inc is missing marker: $marker"
@@ -398,6 +437,211 @@ foreach ($breed in @(
     }
 }
 
+# ===== HUMAN-DEFENCE MISSION ENGINES (source side) =====
+# Quadrants 2 and 3. Same hard-won pipeline as the attack-mission pair: no clone,
+# bare pool selectors, literal {player} switch, {tag flag} capture points, and every
+# trigger gated on user_is_defender$ == 1 so both are provably inert on an attack
+# mission. Both also gate on prep_inform$ == 1, because a defence mission runs a real
+# 480s preparation phase and nothing may deploy into it.
+foreach ($marker in @(
+    '{"defense_support/init"',
+    '{"defense_support/clock"',
+    '{"defense_support/hold_1"',
+    '{"defense_support/hold_3"',
+    '{"defense_support/comp_usmc"',
+    '{"defense_support/comp_1ad"',
+    '{"defense_support/comp_pzgd"',
+    '{var "user_is_defender$"}',
+    '{var "prep_inform$"}',
+    '{var "id_defenderbot$"}',
+    '{var "enemy_spawnside$"}',
+    '{var "defense_level$"}',
+    '{var "defense_support_wave_cmd$"}',
+    '{var "defense_support_waves_left$"}',
+    '{var "defense_support_group$"}',
+    # Self-re-arming cadence and hold-group re-order ladders, both randomized. The
+    # 140-290s clock shares no value with enemy_attack_support.inc's 125-280s clock,
+    # which is the only other engine live on the same mission.
+    '{"trigger" {name "defense_support/clock"}}',
+    '{"trigger" {name "defense_support/hold_1"}}',
+    '{"delay" {time 140}}',
+    '{"delay" {time 290}}',
+    '{"delay" {time 90}}',
+    '{"delay" {time 150}}',
+    # Reinforcements enter at the DEFENDER's own edge, which is the side the enemy is
+    # NOT on: for this engine enemy_spawnside$ 1 means side b.
+    '{target_waypoint "attack_support_entry_a"}',
+    '{target_waypoint "attack_support_entry_b"}',
+    # They advance on the claimed ACTIVE flags and then dig in. This is a defence.
+    '{tag_add def_sup_af1}',
+    '{target {ignore_captured_by_user 0} {tag def_sup_af1}}',
+    '{"actor_to_cover"',
+    '{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}',
+    # Live cap defers without consuming a wave, exactly as attack support does.
+    '{tag def_sup_src}',
+    '{state "not dead"}',
+    '{count {op ">"} {value 14}}',
+    'DEFENSE SUPPORT NEAR CAP DEFER',
+    'DEFENSE SUPPORT WAVES EXHAUSTED',
+    'DEFENSE SUPPORT POOL SHORT - RIFLE TEAM INSTEAD',
+    'DEFENSE SUPPORT POOL EXHAUSTED',
+    # Shared NATO pool: a claim strips the pool tag it took from.
+    '{tag_remove attack_support_inf_usmc}',
+    '{tag_remove attack_support_inf_1ad}',
+    '{tag_remove attack_support_inf_pzgd}',
+    '{tag_remove attack_support_tpl}',
+    # Capture points are addressed as {tag flag}; fpc* is absent from outback.
+    '{select {tag {tag flag}}}',
+    # Bare deploy selector - decorating it zeroes the match on these units.
+    '{group {select {tag {tag def_sup_deploy}}}}',
+    # The owner is NOT guessed. An unresolved defender bot transfers nothing.
+    'DEFENSE SUPPORT OWNER UNRESOLVED - NO TRANSFER',
+    '{var "defense_support_owner_fail$"}',
+    'DEFENSE SUPPORT OWNER - SLOT 1',
+    '("ds_place_at_entry")',
+    '("ds_own_to_defenderbot")',
+    '("ds_report_owner")',
+    '("ds_claim_anchors")',
+    '("ds_assign_group")',
+    '("ds_finish")',
+    '("ds_pick_composition")'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $dsSource -SimpleMatch $marker)) {
+        throw "Source defence support engine is missing marker: $marker"
+    }
+}
+foreach ($marker in @(
+    '{"enemy_attack/init"',
+    '{"enemy_attack/clock"',
+    '{"enemy_attack/rusa_line"',
+    '{"enemy_attack/nato_wpn"',
+    '{var "user_is_defender$"}',
+    '{var "prep_inform$"}',
+    '{var "id_1st_enemy$"}',
+    '{var "enemy_spawnside$"}',
+    '{var "bot_army$"}',
+    '{var "defense_level$"}',
+    '{var "enemy_attack_army$"}',
+    '{var "enemy_attack_wave_cmd$"}',
+    '{var "enemy_attack_waves_left$"}',
+    '{"trigger" {name "enemy_attack/clock"}}',
+    '{"delay" {time 125}}',
+    '{"delay" {time 280}}',
+    # Attacker pressure enters at the ATTACKER's own edge: enemy_spawnside$ 1 is
+    # side a here, the same reading the enemy-defence engine uses.
+    '{target_waypoint "attack_support_entry_a"}',
+    '{target_waypoint "attack_support_entry_b"}',
+    '{tag_add ea_flag1}',
+    '{target {ignore_captured_by_user 0} {tag ea_flag1}}',
+    '{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}',
+    '{tag ea_src}',
+    '{state "not dead"}',
+    '{count {op ">"} {value 16}}',
+    'ENEMY ATTACK NEAR CAP DEFER',
+    'ENEMY ATTACK WAVES EXHAUSTED',
+    'ENEMY ATTACK POOL SHORT - LINE TEAM INSTEAD',
+    'ENEMY ATTACK POOL EXHAUSTED',
+    'ENEMY ATTACK OWNER UNRESOLVED - NO TRANSFER',
+    '{var "enemy_attack_owner_fail$"}',
+    # Shared enemy-defence faction pools: a claim strips the pool tag it took from.
+    '{tag_remove enemy_def_rusa_line}',
+    '{tag_remove enemy_def_ukr_line}',
+    '{tag_remove enemy_def_prc_line}',
+    '{tag_remove enemy_def_nato_line}',
+    '{tag_remove enemy_def_rusa_wpn}',
+    '{tag_remove enemy_def_nato_wpn}',
+    '{tag_remove enemy_def_tpl}',
+    '{select {tag {tag flag}}}',
+    '{group {select {tag {tag ea_deploy}}}}',
+    '("ea_place_at_entry")',
+    '("ea_own_to_enemy")',
+    '("ea_resolve_army")',
+    '("ea_finish")',
+    '("ea_poke_line")',
+    '("ea_poke_wpn")',
+    '("ea_pick_wave")'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $eaSource -SimpleMatch $marker)) {
+        throw "Source enemy attack engine is missing marker: $marker"
+    }
+}
+foreach ($pair in @(@($dsSource, 'defence support'), @($eaSource, 'enemy attack'))) {
+    $path = $pair[0]
+    $label = $pair[1]
+    foreach ($n in 1..16) {
+        if (-not (Select-String -Quiet -LiteralPath $path -SimpleMatch ('{player "' + $n + '"}'))) {
+            throw "Source $label engine is missing literal ownership case for player $n. The engine will not accept a var in the {player} node, so all sixteen slots must be spelled out"
+        }
+    }
+    # The same pipeline constraints that cost the attack-support engine a live run each.
+    foreach ($banned in @('{clone}', '{include {prop human}}', '{prop {prop human}}', '{state {state operatable}}', '{zone {zone "gamezone"}}', '{player "0"}')) {
+        if (Select-String -Quiet -LiteralPath $path -SimpleMatch $banned) {
+            throw "Source $label engine uses the forbidden idiom $banned"
+        }
+    }
+    if (Select-String -Quiet -LiteralPath $path -Pattern '^[^;]*\bfpc') {
+        throw "Source $label engine still targets fpc* capture points. Those tags are absent from outback entirely; address capture points as {tag flag}"
+    }
+    # Every trigger must carry the defence-mission gate, or the system fires on a
+    # human-ATTACK mission and reinforces the wrong side.
+    $text = [System.IO.File]::ReadAllText($path)
+    $triggers = [regex]::Matches($text, '\{"(?:defense_support|enemy_attack)/[a-z0-9_]+"')
+    $gates = [regex]::Matches($text, [regex]::Escape('{var "user_is_defender$"} {op "=="} {value 1}'))
+    if ($triggers.Count -lt 8) {
+        throw "Source $label engine declares only $($triggers.Count) triggers"
+    }
+    if ($gates.Count -lt $triggers.Count) {
+        throw "Only $($gates.Count) of the $($triggers.Count) $label triggers carry the user_is_defender$ == 1 gate"
+    }
+    # A defence mission has a real 480s prep phase. Both init triggers must wait for
+    # it, or waves land on top of the player's own placement.
+    if (-not (Select-String -Quiet -LiteralPath $path -SimpleMatch '{var "prep_inform$"} {op "=="} {value 1}')) {
+        throw "Source $label engine does not gate on prep_inform$ == 1, so it deploys during the defence preparation phase"
+    }
+    # These two engines park no prototypes of their own; they claim from the pools the
+    # attack-mission engines own. A template include here would double-park them.
+    if (Select-String -Quiet -LiteralPath $path -Pattern '^\s*\{(Human|Entity|Vehicle) ') {
+        throw "Source $label engine declares entities. It must claim from the existing parked pools, not park its own"
+    }
+}
+# Neither engine may read the other's state, even though both are live on the same
+# mission and each shares prototypes with an attack-mission engine. Checked on the
+# comment-stripped view: the headers name every neighbouring system on purpose.
+$dsCode = Get-MiCode $dsSource
+$eaCode = Get-MiCode $eaSource
+foreach ($banned in @('enemy_attack_', 'enemy_def_', 'id_1st_enemy', 'attack_support_src', 'attack_support_deploy')) {
+    if ($dsCode.Contains($banned)) {
+        throw "Source defence support engine reaches into other-system state: $banned"
+    }
+}
+foreach ($banned in @('defense_support_', 'def_sup_', 'enemy_defense_', 'id_defenderbot', 'id_attack_support', 'enemy_def_src', 'enemy_def_deploy')) {
+    if ($eaCode.Contains($banned)) {
+        throw "Source enemy attack engine reaches into other-system state: $banned"
+    }
+}
+# The shared pools are read as claims, and nothing else from those systems is touched.
+foreach ($pool in @('attack_support_inf_usmc', 'attack_support_inf_1ad', 'attack_support_inf_pzgd')) {
+    if (-not $dsCode.Contains($pool)) {
+        throw "Source defence support engine does not claim the shared NATO pool: $pool"
+    }
+}
+foreach ($faction in @('rusa', 'ukr', 'prc', 'nato')) {
+    foreach ($role in @('line', 'wpn')) {
+        $pool = "enemy_def_" + $faction + "_" + $role
+        if (-not $eaCode.Contains($pool)) {
+            throw "Source enemy attack engine does not claim the shared faction pool: $pool"
+        }
+    }
+}
+# The two live-on-the-same-mission cadences must not share a delay value, or the
+# friendly and hostile arrivals drift into phase with each other.
+$dsDelays = [regex]::Matches([System.IO.File]::ReadAllText($dsSource), '\{"delay" \{time (\d+)\}\}') | ForEach-Object { [int]$_.Groups[1].Value } | Where-Object { $_ -ge 60 }
+$eaDelays = [regex]::Matches([System.IO.File]::ReadAllText($eaSource), '\{"delay" \{time (\d+)\}\}') | ForEach-Object { [int]$_.Groups[1].Value } | Where-Object { $_ -ge 60 }
+$shared = @($dsDelays | Where-Object { $eaDelays -contains $_ })
+if ($shared.Count -ne 0) {
+    throw "The defence-mission engines share cadence values ($($shared -join ', ')), so friendly and hostile waves would synchronise"
+}
+
 foreach ($marker in @(
     '{Human "mp/nato/2022s/usmc_rifleman" 0xaf23',
     '{Human "mp/nato/2022s/1ad_rifleman" 0xaf37',
@@ -453,11 +697,24 @@ foreach ($marker in @(
     'local function ScheduleSpawnOrderNudge',
     'local function publishEnemySpawnSide',
     'BotApi.Scene:SetVar("enemy_spawnside"',
-    'Context.SpawnSeekTimer = Context.SpawnSeekTimer or {}'
+    'Context.SpawnSeekTimer = Context.SpawnSeekTimer or {}',
+    # ensureAttackPrepInform's early return. botDefender is THIS BOT's role - the line
+    # right above it writes user_is_defender as `botDefender and 0 or 1`, and
+    # OnPrepTimeOver's "when player was defending, bot is attacker" branch keys on
+    # `not botDefender`. So the human-ATTACK case, which is what this function exists
+    # for because those missions never raise PrepTimeOver, is botDefender == true.
+    'if not botDefender then return end'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $conquestSource -SimpleMatch $marker)) {
         throw "Source conquest.lua is missing marker: $marker"
     }
+}
+# The inverted form published prep_inform on the first quant of every human-DEFENCE
+# mission. That made prep read as already over at t=0: it fired dcg_script's
+# dcg2/userdefend/prep_end during the player's own placement, and it would let both
+# defence-mission wave engines deploy into the preparation phase they gate on.
+if (Select-String -Quiet -LiteralPath $conquestSource -SimpleMatch 'if botDefender then return end') {
+    throw "Source conquest.lua still carries the inverted ensureAttackPrepInform gate, which publishes prep_inform at t=0 on a defence mission"
 }
 $conquestText = [System.IO.File]::ReadAllText($conquestSource)
 foreach ($pair in @(
@@ -487,6 +744,7 @@ foreach ($breed in @("usmc_rifleman", "1ad_rifleman", "pzgd_rifleman", "usarmy_c
 
 Write-Host "Deploying attack support wave engine (opening wave 30-45s, then randomized 150-300s cadence, level-scaled composition pools)"
 Write-Host "  plus the enemy defence engine (garrison on the live flags, four patrol groups, 45-90s trickle + 180-300s surge off the defender's own edge)"
+Write-Host "  plus the two human-DEFENCE mission engines, both behind prep_inform: defensive support for the defender bot (25-40s opening, 140-290s cadence, hold groups on the active flags) and enemy attacker pressure (65-95s opening, 125-280s cadence, assault on the player's flags)"
 Write-Host "Repository: $RepoRoot"
 Write-Host "Branch:     $branch"
 Write-Host "Workshop:   $WorkshopRoot"
@@ -541,6 +799,13 @@ $tplInclude = '(include "../attack_support_templates.inc")'
 # the engine in the triggers section, the prototype pool in the entities section.
 $defInclude = '(include "../enemy_defense_support.inc")'
 $defTplInclude = '(include "../enemy_defense_templates.inc")'
+# The two human-DEFENCE mission engines, in the triggers section behind the two
+# attack-mission ones. Neither has a templates include: defence support claims from the
+# attack-support pool and enemy attack from the enemy-defence pools, and the engines
+# that own those pools are inert on a defence mission, so there is no contention and
+# nothing extra to park.
+$dsInclude = '(include "../defense_support_waves.inc")'
+$eaInclude = '(include "../enemy_attack_support.inc")'
 $waypointsAnchor = "`t`t{waypoints"
 $entryName = '{"attack_support_entry_'
 # Name kept from the probe era on purpose: it holds the genuinely pristine
@@ -641,6 +906,27 @@ foreach ($mapFile in $mapFiles) {
         throw "Expected exactly one enemy-defence templates include in: $mapFile"
     }
 
+    # The two human-DEFENCE mission engines, in the triggers section behind the
+    # enemy-defence engine so all four quadrants sit together in a fixed order.
+    # Idempotent, and each anchored on the include immediately ahead of it.
+    foreach ($pair in @(@($defInclude, $dsInclude), @($dsInclude, $eaInclude))) {
+        $ahead = $pair[0]
+        $add = $pair[1]
+        $text = [System.IO.File]::ReadAllText($mapFile)
+        $n = ([regex]::Matches($text, [regex]::Escape($add))).Count
+        if ($n -eq 0) {
+            if (-not $text.Contains($ahead)) {
+                throw "Map is missing the include anchor $ahead for $add : $mapFile"
+            }
+            $text = $text.Replace($ahead, $ahead + "`r`n`t`t`t" + $add)
+            [System.IO.File]::WriteAllText($mapFile, $text, [System.Text.UTF8Encoding]::new($false))
+            $n = 1
+        }
+        if ($n -ne 1) {
+            throw "Expected exactly one $add in: $mapFile (found $n)"
+        }
+    }
+
     # Attack-side entry waypoints, one per spawn side. The dynamic campaign swaps
     # attacker/defender spawns per mission instance, so the engine picks between
     # them at runtime from enemy_spawnside$ - a single static entry is never right.
@@ -698,6 +984,20 @@ foreach ($mapFile in $mapFiles) {
     if ([regex]::IsMatch($text, 'attack_mate')) {
         throw "Map still carries pre-rename attack_mate naming: $mapFile"
     }
+    # Waypoint "0" is the roam fallback the enemy-defence patrols use where a map has
+    # no spare flag point, and it is base-game map geometry - losing it would silently
+    # turn those branches into no-ops.
+    if (-not [regex]::IsMatch($text, '\{"0"\s*\r?\n\s*\{position ')) {
+        throw "Map lost its waypoint 0: $mapFile"
+    }
+    # Every include the four quadrants need, exactly once each, and nothing from the
+    # retired allied-support experiment.
+    foreach ($include in @($tplInclude, $defTplInclude, $wavesInclude, $defInclude, $dsInclude, $eaInclude)) {
+        $n = ([regex]::Matches($text, [regex]::Escape($include))).Count
+        if ($n -ne 1) {
+            throw "Expected exactly one $include in: $mapFile (found $n)"
+        }
+    }
     if (([regex]::Matches($text, [regex]::Escape('{"allied_support_entry"'))).Count -ne 1) {
         throw "Map lost its allied_support_entry waypoint: $mapFile"
     }
@@ -713,13 +1013,20 @@ $waves = Join-Path $WorkshopRoot $files[4]
 $def = Join-Path $WorkshopRoot $files[6]
 $defTpl = Join-Path $WorkshopRoot $files[7]
 $conquest = Join-Path $WorkshopRoot $files[8]
+$ds = Join-Path $WorkshopRoot $files[10]
+$ea = Join-Path $WorkshopRoot $files[11]
 
 if (-not (Select-String -Quiet -LiteralPath $gameSet -SimpleMatch "{aiTeamPlayers 1}")) {
     throw "Workshop game set does not contain the attack support AI slot marker"
 }
 foreach ($marker in @(
     'local function ensureAttackPrepInform',
-    'local function IssueScatterOrder'
+    'local function IssueScatterOrder',
+    # botDefender is THIS BOT's role, so the early return has to fire on the human
+    # DEFENCE case (not botDefender). The inverted form published prep_inform on the
+    # first quant of every defence mission, which made prep read as already over at
+    # t=0 and would let the defence-mission wave engines deploy into the prep phase.
+    'if not botDefender then return end'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $conquest -SimpleMatch $marker)) {
         throw "Workshop conquest.lua is missing marker: $marker"
@@ -873,6 +1180,62 @@ if (Select-String -Quiet -LiteralPath $defTpl -Pattern '^\s*\{Human ""') {
     throw "Workshop enemy defence pool reverted to the breed-less empty-name Human form"
 }
 
+# ===== HUMAN-DEFENCE MISSION ENGINES (workshop side) =====
+foreach ($marker in @(
+    '{"defense_support/init"',
+    '{"defense_support/clock"',
+    '{"defense_support/hold_1"',
+    '{"defense_support/comp_usmc"',
+    '{var "user_is_defender$"}',
+    '{var "prep_inform$"}',
+    '{var "id_defenderbot$"}',
+    '{"trigger" {name "defense_support/clock"}}',
+    '{"trigger" {name "defense_support/hold_1"}}',
+    '{target {ignore_captured_by_user 0} {tag def_sup_af1}}',
+    'DEFENSE SUPPORT NEAR CAP DEFER',
+    'DEFENSE SUPPORT WAVES EXHAUSTED',
+    'DEFENSE SUPPORT OWNER UNRESOLVED - NO TRANSFER',
+    '{group {select {tag {tag def_sup_deploy}}}}'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $ds -SimpleMatch $marker)) {
+        throw "Workshop defence support engine is missing marker: $marker"
+    }
+}
+foreach ($marker in @(
+    '{"enemy_attack/init"',
+    '{"enemy_attack/clock"',
+    '{"enemy_attack/rusa_line"',
+    '{"enemy_attack/nato_wpn"',
+    '{var "user_is_defender$"}',
+    '{var "prep_inform$"}',
+    '{var "id_1st_enemy$"}',
+    '{var "bot_army$"}',
+    '{"trigger" {name "enemy_attack/clock"}}',
+    '{target {ignore_captured_by_user 0} {tag ea_flag1}}',
+    'ENEMY ATTACK NEAR CAP DEFER',
+    'ENEMY ATTACK WAVES EXHAUSTED',
+    '{group {select {tag {tag ea_deploy}}}}'
+)) {
+    if (-not (Select-String -Quiet -LiteralPath $ea -SimpleMatch $marker)) {
+        throw "Workshop enemy attack engine is missing marker: $marker"
+    }
+}
+foreach ($pair in @(@($ds, 'defence support'), @($ea, 'enemy attack'))) {
+    $path = $pair[0]
+    $label = $pair[1]
+    foreach ($banned in @('{clone}', '{include {prop human}}', '{state {state operatable}}', '{zone {zone "gamezone"}}')) {
+        if (Select-String -Quiet -LiteralPath $path -SimpleMatch $banned) {
+            throw "Workshop $label engine uses the forbidden idiom $banned"
+        }
+    }
+    if (Select-String -Quiet -LiteralPath $path -Pattern '^[^;]*\bfpc') {
+        throw "Workshop $label engine still targets fpc* capture points"
+    }
+    if (-not (Select-String -Quiet -LiteralPath $path -SimpleMatch '{var "prep_inform$"} {op "=="} {value 1}')) {
+        throw "Workshop $label engine does not gate on prep_inform$ == 1, so it deploys during the defence preparation phase"
+    }
+}
+
 Write-Host "`nVerification markers:"
 Select-String -LiteralPath $gameSet -Pattern "aiTeamPlayers 1"
 Select-String -LiteralPath $botMain -Pattern "CODEX_ATTACK_SUPPORT_ROUTER|route_skip|first_player_slot|safeRequire"
@@ -881,6 +1244,9 @@ Select-String -LiteralPath $vars -Pattern "attack_support_armed|attack_support_w
 Select-String -LiteralPath $waves -Pattern '\{"attack_support/|ATTACK SUPPORT (ARMED|WAVE|NEAR|POOL)'
 Select-String -LiteralPath $vars -Pattern "enemy_defense_"
 Select-String -LiteralPath $def -Pattern '\{"enemy_defense/'
+Select-String -LiteralPath $vars -Pattern "defense_support_|enemy_attack_"
+Select-String -LiteralPath $ds -Pattern '\{"defense_support/|DEFENSE SUPPORT (ARMED|WAVE|NEAR|POOL|OWNER)'
+Select-String -LiteralPath $ea -Pattern '\{"enemy_attack/|ENEMY ATTACK (ARMED|WAVE|NEAR|POOL|ARMY)'
 Write-Host "Patched maps: $($mapFiles.Count)"
 
 Write-Host "`nDeployment complete. Fully restart Gates of Hell before testing."

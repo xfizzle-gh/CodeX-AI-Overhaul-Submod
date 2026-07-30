@@ -793,10 +793,19 @@ end
 -- human is confirmed attacker so MI attack probes are not gated forever.
 -- NOTE: must stay ABOVE OnGameQuant — a local defined after its caller resolves
 -- to a nil global at call time and hard-crashes the bot on its first quant.
+-- botDefender is THIS BOT's role: true means the bot defends, so the human is the
+-- ATTACKER (SetVar("user_is_defender", botDefender and 0 or 1) right above, and
+-- OnPrepTimeOver's "when player was defending, bot is attacker" branch uses
+-- `not botDefender`). The early return therefore has to fire on `not botDefender`:
+-- that is the human-DEFENCE mission, which runs a real 480s preparation phase and
+-- must wait for OnPrepTimeOver. Publishing prep_inform there at the first quant
+-- made every prep_inform consumer treat prep as already over at t=0 - it fired
+-- dcg_script's dcg2/userdefend/prep_end during the player's own placement, and it
+-- would let the defence-mission wave engines deploy into the prep phase.
 local attackPrepInformPublished = false
 local function ensureAttackPrepInform()
 	if attackPrepInformPublished then return end
-	if botDefender then return end -- enemy bot is attacker => human is defender; wait for real prep
+	if not botDefender then return end -- bot is attacker => human is defender; wait for real prep
 	if not isMissionAuthority or not isMissionAuthority() then return end
 	BotApi.Scene:SetVar("prep_inform", 1)
 	attackPrepInformPublished = true

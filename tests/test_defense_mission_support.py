@@ -1,0 +1,1402 @@
+"""Structure pins for the two human-DEFENCE mission engines.
+
+Phase C, the quadrant that completes the support parity:
+
+    quadrant  mission                engine                        owner
+    Q1        human attacks          attack_support_waves.inc      id_attack_support$
+    Q4        human attacks          enemy_defense_support.inc     id_1st_enemy$
+    Q2        human DEFENDS          defense_support_waves.inc     id_defenderbot$
+    Q3        human DEFENDS          enemy_attack_support.inc      id_1st_enemy$
+
+Q2 and Q3 are the two files this module pins. Everything asserted here is either a
+hard-won pipeline constraint inherited from the attack-mission pair (no cloning, bare
+pool selectors, literal {player} switch, {tag flag} capture points, integer-only vars) or
+a behavioural promise of the defence-mission design: nothing deploys until the real 480s
+preparation phase is over, the friendly waves hold flags and dig in, the hostile waves
+push them, both claim from the pools the attack-mission engines already park, and the
+whole pair is provably inert on a human-ATTACK mission.
+
+The inertness proof runs in BOTH directions here on purpose: Q2/Q3 must be inert when
+user_is_defender$ == 0 and Q1/Q4 must stay inert when it is 1, because that mutual
+exclusion is also what makes the pool sharing safe.
+"""
+
+from __future__ import annotations
+
+import re
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+MULTI = ROOT / "resource/map/multi"
+VARS = MULTI / "dcg_vars.inc"
+DS = MULTI / "defense_support_waves.inc"            # Q2
+EA = MULTI / "enemy_attack_support.inc"             # Q3
+Q1 = MULTI / "attack_support_waves.inc"
+Q4 = MULTI / "enemy_defense_support.inc"
+Q1_TEMPLATES = MULTI / "attack_support_templates.inc"
+Q4_TEMPLATES = MULTI / "enemy_defense_templates.inc"
+CE_SETUP = MULTI / "ce/map_setup/ce_map_setup_triggers.inc"
+CONQUEST = ROOT / "resource/script/multiplayer/modes/conquest.lua"
+GAME_SET = ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set"
+DEPLOY = ROOT / "tools/deploy_attack_support_probe.ps1"
+
+# Every include the four quadrants need in a patched map, in the order the deploy script
+# lays them down. Two entities-section pools and four triggers-section engines: Q2 and Q3
+# park nothing of their own.
+MAP_INCLUDES = (
+    '(include "../attack_support_templates.inc")',
+    '(include "../enemy_defense_templates.inc")',
+    '(include "../attack_support_waves.inc")',
+    '(include "../enemy_defense_support.inc")',
+    '(include "../defense_support_waves.inc")',
+    '(include "../enemy_attack_support.inc")',
+)
+
+# Q2 draws: trigger suffix -> (wave_cmd, shared attack-support pool, bodies, stage base)
+DS_DRAWS = (
+    ("usmc", 1, "attack_support_inf_usmc", 4, 10),
+    ("1ad", 2, "attack_support_inf_1ad", 4, 20),
+    ("pzgd", 3, "attack_support_inf_pzgd", 6, 30),
+)
+# Depth of the shared NATO pool, read back below from the shipped template file.
+DS_POOL_DEPTH = {"attack_support_inf_usmc": 20, "attack_support_inf_1ad": 20,
+                 "attack_support_inf_pzgd": 12}
+
+# Q3 faction key -> enemy_attack_army$ value. Same fold as enemy_defense_support.inc,
+# resolved into its own var so the two pool-sharing engines stay decoupled.
+EA_FACTIONS = (("rusa", 1), ("ukr", 2), ("prc", 4), ("nato", 3))
+# Q3 draws: trigger suffix -> (wave_cmd, shared enemy-defence pool role, bodies, stage)
+EA_DRAWS = (("line", 1, "line", 4, 10), ("wpn", 2, "wpn", 4, 20))
+EA_POOL_DEPTH = {"line": 24, "wpn": 16}
+
+# Budgets. Both mirror the attack-mission pair: L1 4 / L2 6 / L3 8, level 0 -> L1.
+WAVE_BUDGET = ((3, 8), (2, 6))
+DS_LIVE_CAP = 14   # parity with the friendly attack-support engine
+EA_LIVE_CAP = 16   # parity with the hostile enemy-defence engine
+
+DS_CLOCK_LADDER = (140, 180, 215, 250, 290)
+DS_HOLD_LADDER = (90, 110, 130, 150)
+DS_OPENING = (25, 32, 40)
+EA_CLOCK_LADDER = (125, 165, 205, 240, 280)
+EA_OPENING = (65, 80, 95)
+# Weighted {type rand} cascade. 0.2/0.25/0.33/0.5 makes five buckets ~20% each;
+# 0.25/0.34/0.5 makes four buckets ~25% each.
+FIVE_WEIGHTS = ("0.2", "0.25", "0.33", "0.5")
+FOUR_WEIGHTS = ("0.25", "0.34", "0.5")
+
+# The simple selector form live units answer to. The advanced selector's prop/state
+# decorations zero the match on these entities, which is why the caps use this shape.
+def live_selector(tag: str, depth: int) -> str:
+    pad = "\t" * depth
+    return (
+        "{selector\n"
+        "%s{ignore_captured_by_user 0}\n"
+        "%s{tag %s}\n"
+        "%s{type human}\n"
+        '%s{state "not dead"}\n'
+        "%s}" % (pad, pad, tag, pad, pad, "\t" * (depth - 1))
+    )
+
+
+def strip_comments(text: str) -> str:
+    """MI comment-stripped view. The headers quote bad forms as cautionary examples,
+    so every structural count must run on code only."""
+    return "\n".join(line.split(";", 1)[0] for line in text.splitlines())
+
+
+def block_at(text: str, start: int) -> str:
+    """Return the balanced {...} block that opens at or after `start`."""
+    open_at = text.index("{", start)
+    depth = 0
+    for pos in range(open_at, len(text)):
+        char = text[pos]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return text[open_at : pos + 1]
+    raise AssertionError("unbalanced block starting at %d" % open_at)
+
+
+def trigger_block(code: str, name: str) -> str:
+    return block_at(code, code.index('{"%s"' % name))
+
+
+def define_body(code: str, name: str) -> str:
+    """Return the whole balanced (define "name" ... ) form, nested calls included."""
+    open_at = code.index('(define "%s"' % name)
+    depth = 0
+    for pos in range(open_at, len(code)):
+        char = code[pos]
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth == 0:
+                return code[open_at : pos + 1]
+    raise AssertionError("unbalanced define %s" % name)
+
+
+def trigger_names(code: str, prefix: str) -> list:
+    return re.findall(r'\{"%s/([a-z0-9_]+)"' % prefix, code)
+
+
+class DefenceMissionSupportTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.vars = VARS.read_text(encoding="utf-8")
+        cls.ds_raw = DS.read_text(encoding="utf-8")
+        cls.ea_raw = EA.read_text(encoding="utf-8")
+        cls.ds = strip_comments(cls.ds_raw)
+        cls.ea = strip_comments(cls.ea_raw)
+        cls.q1 = strip_comments(Q1.read_text(encoding="utf-8"))
+        cls.q4 = strip_comments(Q4.read_text(encoding="utf-8"))
+        cls.q1_tpl = strip_comments(Q1_TEMPLATES.read_text(encoding="utf-8"))
+        cls.q4_tpl = strip_comments(Q4_TEMPLATES.read_text(encoding="utf-8"))
+        cls.conquest = CONQUEST.read_text(encoding="utf-8")
+        cls.deploy = DEPLOY.read_text(encoding="utf-8")
+        cls.maps = sorted(
+            p for p in MULTI.iterdir()
+            if p.is_dir() and p.name.startswith("dcg_[cwa71]_")
+        )
+
+    # ---------------------------------------------------------------- structure
+
+    def test_trigger_inventory_is_exactly_what_the_design_calls_for(self) -> None:
+        ds = trigger_names(self.ds, "defense_support")
+        self.assertEqual(len(ds), len(set(ds)), "duplicate defence-support trigger")
+        self.assertEqual(
+            set(ds),
+            {"init", "clock", "hold_1", "hold_2", "hold_3",
+             "comp_usmc", "comp_1ad", "comp_pzgd"},
+        )
+        self.assertEqual(len(ds), 8)
+
+        ea = trigger_names(self.ea, "enemy_attack")
+        self.assertEqual(len(ea), len(set(ea)), "duplicate enemy-attack trigger")
+        self.assertEqual(
+            set(ea),
+            {"init", "clock"} | {
+                "%s_%s" % (key, suffix)
+                for key, _army in EA_FACTIONS
+                for suffix, _cmd, _role, _take, _stage in EA_DRAWS
+            },
+        )
+        self.assertEqual(len(ea), 10)
+
+        # Trigger namespaces are disjoint from each other and from the two
+        # attack-mission engines, so no {"trigger"} poke can cross systems.
+        for code in (self.ds, self.ea, self.q1, self.q4):
+            spaces = set(re.findall(r'\{"([a-z_]+)/[a-z0-9_]+"', code))
+            self.assertEqual(len(spaces), 1, spaces)
+        self.assertEqual(
+            len({"defense_support", "enemy_attack", "attack_support", "enemy_defense"}), 4
+        )
+
+    def test_mi_defines_are_declared_before_they_are_called(self) -> None:
+        for code, names in (
+            (self.ds, ("ds_place_at_entry", "ds_own_to_defenderbot", "ds_report_owner",
+                       "ds_claim_anchors", "ds_assign_group", "ds_finish",
+                       "ds_pick_composition")),
+            (self.ea, ("ea_place_at_entry", "ea_own_to_enemy", "ea_resolve_army",
+                       "ea_finish", "ea_poke_line", "ea_poke_wpn", "ea_pick_wave")),
+        ):
+            for name in names:
+                with self.subTest(define=name):
+                    definition = '(define "%s"' % name
+                    self.assertEqual(code.count(definition), 1, name)
+                    at_def = code.index(definition)
+                    self.assertNotIn(
+                        '("%s")' % name, code[:at_def],
+                        "%s called above its define" % name,
+                    )
+            # No define is dead weight, and no call has no define behind it.
+            defined = set(re.findall(r'\(define "([a-z0-9_]+)"', code))
+            called = set(re.findall(r'\("([a-z0-9_]+)"\)', code))
+            self.assertEqual(defined, set(names))
+            self.assertEqual(called, defined)
+
+    def test_engine_state_is_explicitly_declared(self) -> None:
+        for name in (
+            "defense_support_armed",
+            "defense_support_transferred",
+            "defense_support_stage",
+            "defense_support_wave_cmd",
+            "defense_support_wave_num",
+            "defense_support_waves_left",
+            "defense_support_busy",
+            "defense_support_next_ok",
+            "defense_support_group",
+            "defense_support_owner_fail",
+            "enemy_attack_armed",
+            "enemy_attack_army",
+            "enemy_attack_stage",
+            "enemy_attack_transferred",
+            "enemy_attack_wave_cmd",
+            "enemy_attack_wave_num",
+            "enemy_attack_waves_left",
+            "enemy_attack_busy",
+            "enemy_attack_next_ok",
+            "enemy_attack_owner_fail",
+        ):
+            self.assertIn('{"%s"}' % name, self.vars)
+
+        # UNDECLARED-VAR SWEEP. An undeclared read is a silent zero, which on an
+        # *_armed$ latch means the engine re-arms every tick. defense_level$ is the one
+        # exception by design: CE owns it and declares it in ce/ce_vars.inc.
+        declared = set(re.findall(r'\{"([a-z0-9_]+)"\}', self.vars))
+        declared.add("defense_level")
+        for code in (self.ds, self.ea):
+            for name in sorted(set(re.findall(r'\{var "([a-z0-9_]+)\$"\}', code))):
+                self.assertIn(name, declared, "undeclared var read: %s$" % name)
+
+        # No var is declared for these engines and then never read.
+        read = set(re.findall(r'\{var "([a-z0-9_]+)\$"\}', self.ds + "\n" + self.ea))
+        for prefix in ("defense_support_", "enemy_attack_"):
+            for name in sorted(re.findall(r'\{"(%s[a-z0-9_]+)"\}' % prefix, self.vars)):
+                self.assertIn(name, read, "declared but never read: %s$" % name)
+
+    # -------------------------------------------------------- inertness, both ways
+
+    def test_every_defence_engine_trigger_is_gated_to_defence_missions(self) -> None:
+        # THE inertness proof, direction one. A missing gate on any one trigger means
+        # these engines fire on a human-ATTACK mission, where they would reinforce the
+        # wrong side AND contend with the attack-mission engines for the same pools.
+        gate = '{var "user_is_defender$"} {op "=="} {value 1}'
+        for code, prefix in ((self.ds, "defense_support"), (self.ea, "enemy_attack")):
+            for name in trigger_names(code, prefix):
+                with self.subTest(trigger="%s/%s" % (prefix, name)):
+                    block = trigger_block(code, "%s/%s" % (prefix, name))
+                    self.assertIn(gate, block[: block.index("{actions")])
+            # Nothing reads user_is_defender$ any other way, so no branch inside a
+            # trigger can be reached on an attack mission either.
+            self.assertEqual(code.count('{var "user_is_defender$"}'), code.count(gate))
+            self.assertNotIn('{var "user_is_defender$"} {op "=="} {value 0}', code)
+
+    def test_attack_mission_engines_stay_gated_the_other_way(self) -> None:
+        # THE inertness proof, direction two - and the regression that keeps the pool
+        # sharing safe. Q2 claims from the pool Q1 owns and Q3 from the pools Q4 owns,
+        # which is only sound because a mission has exactly one value of
+        # user_is_defender$ and each pair of claimants sits on opposite sides of it.
+        gate = '{var "user_is_defender$"} {op "=="} {value 0}'
+        for code, prefix in ((self.q1, "attack_support"), (self.q4, "enemy_defense")):
+            names = trigger_names(code, prefix)
+            self.assertTrue(names)
+            for name in names:
+                with self.subTest(trigger="%s/%s" % (prefix, name)):
+                    block = trigger_block(code, "%s/%s" % (prefix, name))
+                    self.assertIn(gate, block[: block.index("{actions")])
+            self.assertEqual(code.count('{var "user_is_defender$"}'), code.count(gate))
+            self.assertNotIn('{var "user_is_defender$"} {op "=="} {value 1}', code)
+
+    def test_neither_defence_engine_reaches_into_another_systems_state(self) -> None:
+        # Q2 owns to the friendly defender bot and Q3 to the enemy attacker. Reading
+        # each other's state, or an attack-mission engine's state, is how a wave ends up
+        # handed to the wrong player or counted against the wrong cap.
+        for forbidden in (
+            '{var "id_1st_enemy$"}',
+            '{var "id_attack_support$"}',
+            '{var "attack_support_ready$"}',
+            "attack_support_src",
+            "attack_support_deploy",
+            "enemy_def_src",
+            "enemy_def_deploy",
+            "enemy_attack_",
+            "allied_support",
+        ):
+            self.assertNotIn(forbidden, self.ds, forbidden)
+        for forbidden in (
+            '{var "id_defenderbot$"}',
+            '{var "id_attack_support$"}',
+            "attack_support_src",
+            "attack_support_deploy",
+            "enemy_def_src",
+            "enemy_def_deploy",
+            "enemy_def_p1",
+            "enemy_defense_",
+            "defense_support_",
+            "def_sup_",
+            "allied_support",
+        ):
+            self.assertNotIn(forbidden, self.ea, forbidden)
+
+        # Runtime tag namespaces are disjoint across all four engines except for the
+        # deliberate reads into the shared pools, which are claims, not state.
+        def tags(code: str) -> set:
+            return set(re.findall(r"\{tag(?:_add|_remove)? ([a-z0-9_]+)\}", code))
+
+        shared = {"flag", "hidden"}
+        ds_own = tags(self.ds) - shared - set(DS_POOL_DEPTH) - {"attack_support_tpl"}
+        ea_own = tags(self.ea) - shared - {"enemy_def_tpl"} - {
+            "enemy_def_%s_%s" % (key, role)
+            for key, _army in EA_FACTIONS for role in EA_POOL_DEPTH
+        }
+        self.assertTrue(all(t.startswith("def_sup_") for t in ds_own), ds_own)
+        self.assertTrue(all(t.startswith("ea_") for t in ea_own), ea_own)
+        self.assertFalse(ds_own & ea_own)
+        self.assertFalse(ds_own & tags(self.q1))
+        self.assertFalse(ea_own & tags(self.q4))
+
+    # ------------------------------------------------------------- the prep phase
+
+    def test_both_engines_wait_for_the_real_preparation_phase(self) -> None:
+        gate = '{var "prep_inform$"} {op "=="} {value 1}'
+        for code, prefix in ((self.ds, "defense_support"), (self.ea, "enemy_attack")):
+            init = trigger_block(code, "%s/init" % prefix)
+            self.assertIn(gate, init[: init.index("{actions")])
+            # Exactly one reader: the gate. Nothing branches on it later.
+            self.assertEqual(code.count('{var "prep_inform$"}'), 1)
+            # And nothing pre-places: no delivery happens outside a spawner.
+            self.assertNotIn('{"placement"', trigger_block(code, "%s/init" % prefix))
+
+        # A defence mission genuinely has a prep phase to wait for.
+        self.assertRegex(
+            GAME_SET.read_text(encoding="utf-8"),
+            r"\{preparationTime\s+480\}",
+        )
+        # prep_inform$ is published when it ends.
+        self.assertIn("function OnPrepTimeOver()", self.conquest)
+        prep_over = self.conquest.index("function OnPrepTimeOver()")
+        self.assertIn(
+            'BotApi.Scene:SetVar("prep_inform", 1)',
+            self.conquest[prep_over : prep_over + 400],
+        )
+        self.assertIn(
+            "BotApi.Events:Subscribe(BotApi.Events.PrepTimeOver, OnPrepTimeOver)",
+            self.conquest,
+        )
+
+    def test_the_early_prep_inform_shortcut_is_attack_only(self) -> None:
+        # ensureAttackPrepInform exists because human-ATTACK missions often never raise
+        # PrepTimeOver. botDefender is THIS BOT's role, so "human attacks" is
+        # botDefender == true - the same reading the two lines below prove. The gate was
+        # inverted, which published prep_inform on the first quant of every DEFENCE
+        # mission: prep then read as already over at t=0, which fires dcg_script's
+        # dcg2/userdefend/prep_end during the player's own placement and would let both
+        # engines in this module deploy into the preparation phase they gate on.
+        self.assertIn(
+            'BotApi.Scene:SetVar("user_is_defender", botDefender and 0 or 1)',
+            self.conquest,
+        )
+        self.assertIn(
+            "-- When player was defending, bot is attacker", self.conquest
+        )
+        body_at = self.conquest.index("local function ensureAttackPrepInform()")
+        body = self.conquest[body_at : self.conquest.index("\nend", body_at)]
+        self.assertIn("if not botDefender then return end", body)
+        self.assertNotIn("if botDefender then return end", body)
+        # Must stay above OnGameQuant: a local defined after its caller resolves to a
+        # nil global and hard-crashes the bot on its first quant.
+        self.assertLess(body_at, self.conquest.index("function OnGameQuant()"))
+
+    # ------------------------------------------------------------ side resolution
+
+    def test_each_engine_enters_from_the_side_its_own_force_holds(self) -> None:
+        # enemy_spawnside$ is published from conquest.lua's mission-authority branch,
+        # and the mission authority is the ENEMY bot (myId == firstEnemyId). On a
+        # defence mission the enemy bot is the ATTACKER, so enemy_spawnside$ names the
+        # attacker's physical side.
+        self.assertIn("local function isMissionAuthority()", self.conquest)
+        self.assertIn(
+            "return firstEnemyId > 0 and myId == firstEnemyId", self.conquest
+        )
+        role = self.conquest.index('BotApi.Scene:SetVar("user_is_defender"')
+        authority = self.conquest.index(
+            "if not isMissionAuthority() then return false end"
+        )
+        pub = self.conquest.index("publishEnemySpawnSide()", role)
+        self.assertLess(authority, role)
+        self.assertLess(role, pub)
+        self.assertIn('BotApi.Scene:SetVar("enemy_spawnside", sideNum)', self.conquest)
+
+        # Q3 reinforces the attacker, so side 1 (a) -> entry_a. Same reading as Q4,
+        # which delivers to the enemy defender's own edge on an attack mission.
+        place = define_body(self.ea, "ea_place_at_entry")
+        side_a = place.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
+        side_b = place.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
+        self.assertLess(side_a, side_b)
+        self.assertIn('{target_waypoint "attack_support_entry_a"}', place[side_a:side_b])
+        self.assertIn('{target_waypoint "attack_support_entry_b"}', place[side_b:])
+        # Unpublished side falls back to a rather than stalling.
+        self.assertEqual(place.count('{target_waypoint "attack_support_entry_a"}'), 2)
+        self.assertEqual(place.count('{target_waypoint "attack_support_entry_b"}'), 1)
+
+        # Q2 reinforces the player/defender, which is the side the attacker is NOT on,
+        # so side 1 (a) -> entry_b. Same reading as Q1.
+        place = define_body(self.ds, "ds_place_at_entry")
+        side_a = place.index('{var "enemy_spawnside$"} {op "=="} {value 1}')
+        side_b = place.index('{var "enemy_spawnside$"} {op "=="} {value 2}')
+        self.assertLess(side_a, side_b)
+        self.assertIn('{target_waypoint "attack_support_entry_b"}', place[side_a:side_b])
+        self.assertIn('{target_waypoint "attack_support_entry_a"}', place[side_b:])
+        self.assertEqual(place.count('{target_waypoint "attack_support_entry_b"}'), 2)
+        self.assertEqual(place.count('{target_waypoint "attack_support_entry_a"}'), 1)
+
+        # The two defence-mission engines therefore enter from OPPOSITE edges, and each
+        # matches the attack-mission engine that serves the same side.
+        for a, b in ((self.ds, self.q1), (self.ea, self.q4)):
+            for value, side in ((1, None), (2, None)):
+                pat = '{var "enemy_spawnside$"} {op "=="} {value %d}' % value
+                mine = a[a.index(pat) : a.index(pat) + 400]
+                theirs = b[b.index(pat) : b.index(pat) + 400]
+                for wp in ("attack_support_entry_a", "attack_support_entry_b"):
+                    self.assertEqual(
+                        '{target_waypoint "%s"}' % wp in mine,
+                        '{target_waypoint "%s"}' % wp in theirs,
+                        (value, wp),
+                    )
+
+        # Both engines also depend on enemy_spawnside$ > 0 as their readiness proof:
+        # user_is_defender$ has no "unpublished" value of its own, but a positive spawn
+        # side proves the whole perspective block really was written.
+        for code, prefix in ((self.ds, "defense_support"), (self.ea, "enemy_attack")):
+            init = trigger_block(code, "%s/init" % prefix)
+            self.assertIn(
+                '{var "enemy_spawnside$"} {op ">"} {value 0}',
+                init[: init.index("{actions")],
+            )
+
+    # --------------------------------------------------------- ownership handover
+
+    def test_defence_support_owns_to_the_defender_bot_and_never_guesses(self) -> None:
+        own = define_body(self.ds, "ds_own_to_defenderbot")
+        for n in range(1, 17):
+            self.assertIn(
+                '{condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value %d}}' % n,
+                own,
+            )
+            self.assertIn('{player "%d"}' % n, own)
+        self.assertNotIn('{player "17"}', own)
+        self.assertNotIn('{player "0"}', self.ds)
+        self.assertNotIn('{player "id_defenderbot$"}', self.ds)
+
+        # THE non-guess. Unlike the other three engines, the default branch transfers
+        # nothing: on a defence mission a guessed slot could be the attacker's. It
+        # records the failure and leaves the wave at player 0, where it can do no harm.
+        default = block_at(own, own.rindex('{"default"'))
+        self.assertNotIn('{"player"', default)
+        self.assertIn(
+            '{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}', default
+        )
+        self.assertIn("DEFENSE SUPPORT OWNER UNRESOLVED - NO TRANSFER", default)
+        self.assertEqual(own.count('{"player"'), 16)
+
+        # id_defenderbot$ gates init, the clock and every draw, so nothing deploys
+        # before the id is published.
+        for name in ("init", "clock") + tuple(
+            "comp_%s" % suffix for suffix, _c, _p, _t, _s in DS_DRAWS
+        ):
+            block = trigger_block(self.ds, "defense_support/%s" % name)
+            self.assertIn(
+                '{var "id_defenderbot$"} {op ">"} {value 0}',
+                block[: block.index("{actions")],
+                name,
+            )
+
+        # Diagnostic timer, fired once from init: timer titles cannot interpolate a var,
+        # so the resolved slot is reported by spelling out all sixteen possibilities. A
+        # live run reads the real number off this line, which is what the switch above
+        # has to be checked against.
+        report = define_body(self.ds, "ds_report_owner")
+        for n in range(1, 17):
+            self.assertIn("DEFENSE SUPPORT OWNER - SLOT %d" % n, report)
+        self.assertIn("DEFENSE SUPPORT OWNER - UNRESOLVED", report)
+        init = trigger_block(self.ds, "defense_support/init")
+        self.assertIn('("ds_report_owner")', init)
+        self.assertEqual(self.ds.count('("ds_report_owner")'), 1)
+
+        # id_defenderbot$ is conquest.lua's DefenderBotId, published by every bot
+        # because it is perspective-neutral - the only published id that can name a
+        # friendly AI defender on a defence mission.
+        self.assertIn(
+            "defenderBotId = resolvePositiveId(conquest.DefenderBotId, "
+            "BotApi.Instance.CampaignDefenderBotId)",
+            self.conquest,
+        )
+        self.assertIn(
+            'if defenderBotId > 0 then BotApi.Scene:SetVar("id_defenderbot", '
+            "defenderBotId) end",
+            self.conquest,
+        )
+        publish = self.conquest.index("local function publishConquestIds()")
+        self.assertLess(
+            publish,
+            self.conquest.index("if not isMissionAuthority() then return false end"),
+        )
+
+    def test_enemy_attack_owns_to_the_attacker_bot_and_never_guesses(self) -> None:
+        own = define_body(self.ea, "ea_own_to_enemy")
+        for n in range(1, 17):
+            self.assertIn(
+                '{condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value %d}}' % n,
+                own,
+            )
+            self.assertIn('{player "%d"}' % n, own)
+        self.assertNotIn('{player "0"}', self.ea)
+        self.assertNotIn('{player "id_1st_enemy$"}', self.ea)
+        default = block_at(own, own.rindex('{"default"'))
+        self.assertNotIn('{"player"', default)
+        self.assertIn(
+            '{"set_i" {var "enemy_attack_owner_fail$"} {op "="} {value 1}}', default
+        )
+        self.assertIn("ENEMY ATTACK OWNER UNRESOLVED - NO TRANSFER", default)
+        self.assertEqual(own.count('{"player"'), 16)
+
+        for name in ("init", "clock") + tuple(
+            "%s_%s" % (key, suffix)
+            for key, _army in EA_FACTIONS
+            for suffix, _c, _r, _t, _s in EA_DRAWS
+        ):
+            block = trigger_block(self.ea, "enemy_attack/%s" % name)
+            self.assertIn(
+                '{var "id_1st_enemy$"} {op ">"} {value 0}',
+                block[: block.index("{actions")],
+                name,
+            )
+        self.assertIn(
+            'if firstEnemyId > 0 then BotApi.Scene:SetVar("id_1st_enemy", '
+            "firstEnemyId) end",
+            self.conquest,
+        )
+
+        # Ownership is handed over exactly once per deploy, after placement.
+        for code, own_name, place, finish in (
+            (self.ds, "ds_own_to_defenderbot", "ds_place_at_entry", "ds_finish"),
+            (self.ea, "ea_own_to_enemy", "ea_place_at_entry", "ea_finish"),
+        ):
+            self.assertEqual(code.count('("%s")' % own_name), 1)
+            self.assertIn('("%s")' % own_name, define_body(code, finish))
+            self.assertLess(
+                code.index('(define "%s"' % place), code.index('(define "%s"' % finish)
+            )
+
+    # ------------------------------------------------------------- pool sharing
+
+    def test_both_engines_claim_shared_pools_and_park_nothing(self) -> None:
+        # Neither file declares an entity. That is the whole point of the sharing: 224
+        # prototypes are already parked for the attack-mission pair and the engines that
+        # own them are inert on exactly the missions these two run on.
+        for raw in (self.ds_raw, self.ea_raw):
+            self.assertFalse(re.search(r"^\s*\{(Human|Entity|Vehicle) ", raw, re.M))
+            self.assertNotIn("{Tags ", raw)
+            self.assertNotIn("{MID ", raw)
+            self.assertNotIn("{Position ", raw)
+            self.assertNotIn("{Link ", raw)
+
+        # Q2 claims the attack-support NATO pool, one draw per pool, and strips the pool
+        # tag it took from - so the pool tag still means "still parked" for whichever
+        # engine is live.
+        for suffix, _cmd, pool, take, _stage in DS_DRAWS:
+            actions = trigger_block(self.ds, "defense_support/comp_%s" % suffix)
+            self.assertIn("{group {select {tag {tag %s}}}}" % pool, actions)
+            self.assertIn("{tag_remove %s}" % pool, actions)
+            self.assertIn("{amount %d}" % take, actions)
+            self.assertEqual(self.q1_tpl.count('"%s"' % pool), DS_POOL_DEPTH[pool])
+        self.assertIn("{tag_remove attack_support_tpl}", define_body(self.ds, "ds_finish"))
+
+        # Q3 claims the four enemy-defence faction pools the same way.
+        for key, _army in EA_FACTIONS:
+            for suffix, _cmd, role, take, _stage in EA_DRAWS:
+                pool = "enemy_def_%s_%s" % (key, role)
+                actions = trigger_block(self.ea, "enemy_attack/%s_%s" % (key, suffix))
+                self.assertIn("{group {select {tag {tag %s}}}}" % pool, actions)
+                self.assertIn("{tag_remove %s}" % pool, actions)
+                self.assertIn("{amount %d}" % take, actions)
+                self.assertEqual(self.q4_tpl.count('"%s"' % pool), EA_POOL_DEPTH[role])
+        self.assertIn("{tag_remove enemy_def_tpl}", define_body(self.ea, "ea_finish"))
+
+        # DEPTH. A claim MOVES prototypes out and never returns them, so each engine's
+        # reachable pools together have to field the whole L3 budget of eight waves.
+        max_waves = max(w for _l, w in WAVE_BUDGET)
+        ds_draws = sum(
+            DS_POOL_DEPTH[pool] // take for _s, _c, pool, take, _st in DS_DRAWS
+        )
+        self.assertGreaterEqual(ds_draws, max_waves)
+        # And the fallback pool alone has to carry a decent share, because every short
+        # draw ends there.
+        self.assertGreaterEqual(DS_POOL_DEPTH["attack_support_inf_usmc"] // 4, 5)
+        for key, _army in EA_FACTIONS:
+            ea_draws = sum(
+                EA_POOL_DEPTH[role] // take for _s, _c, role, take, _st in EA_DRAWS
+            )
+            self.assertGreaterEqual(ea_draws, max_waves, key)
+        # Q3's line pool is the fallback, so it must be the deeper of the two.
+        self.assertGreater(EA_POOL_DEPTH["line"], EA_POOL_DEPTH["wpn"])
+
+        # The pool-sharing rationale is written down where the next reader will look.
+        for raw in (self.ds_raw, self.ea_raw):
+            self.assertIn("POOL SHARING", raw)
+
+    # ------------------------------------------------------- budgets and cadence
+
+    def test_wave_budget_matches_the_attack_mission_pair(self) -> None:
+        for code, prefix, var in (
+            (self.ds, "defense_support", "defense_support_waves_left"),
+            (self.ea, "enemy_attack", "enemy_attack_waves_left"),
+        ):
+            init = trigger_block(code, "%s/init" % prefix)
+            for level, waves in WAVE_BUDGET:
+                at = init.index(
+                    '{condition {type cmp_i} {var "defense_level$"} {op "=="} '
+                    "{value %d}}" % level
+                )
+                body = init[at : at + 400]
+                self.assertIn(
+                    '{"set_i" {var "%s$"} {op "="} {value %d}}' % (var, waves), body
+                )
+            # Level 1, and an unpublished level 0, land in the default.
+            self.assertIn('{"set_i" {var "%s$"} {op "="} {value 4}}' % var, init)
+            # One budget, one spawner: exactly one place decrements it per cycle, plus
+            # the opening wave in init.
+            self.assertEqual(code.count('{"set_i" {var "%s$"} {op "-"} {value 1}}' % var), 2)
+
+        # PROPORTIONALITY. Read the attack-mission numbers out of the shipped engines
+        # rather than restating them, so the four quadrants cannot silently drift apart.
+        for level, waves in WAVE_BUDGET + ((1, 4),):
+            self.assertIn(
+                '{"set_i" {var "attack_support_waves_left$"} {op "="} {value %d}}' % waves,
+                self.q1,
+            )
+            self.assertIn(
+                '{"set_i" {var "enemy_defense_waves_left$"} {op "="} {value %d}}' % waves,
+                self.q4,
+            )
+
+    def test_defense_level_is_published_on_defence_missions_too(self) -> None:
+        # The budget above is worthless if CE only computes defense_level$ when the
+        # human attacks. Its trigger is gated on defense_level$ == 0 and nothing else,
+        # and it carries its own user_is_defender$ == 1 branch, which is direct evidence
+        # the author expected it to run on a defence mission.
+        setup = CE_SETUP.read_text(encoding="utf-8")
+        block = block_at(
+            setup,
+            setup.index(
+                '{"conquest_enhanced_mechanics/ai_defenders/set_defense_level"'
+            ),
+        )
+        condition = block_at(block, block.index("{condition"))
+        self.assertIn('{var "defense_level$"}', condition)
+        self.assertNotIn("user_is_defender", condition)
+        self.assertIn('{var "user_is_defender$"}', block)
+        flat = re.sub(r"\s+", " ", block)
+        for value in (1, 2, 3):
+            self.assertIn(
+                '{"set_i" {var "defense_level$"} {op "="} {value %d} }' % value, flat
+            )
+        # And CE declares it, which is why it is the one exception in the sweep above.
+        self.assertIn(
+            '{"defense_level"}', (MULTI / "ce/ce_vars.inc").read_text(encoding="utf-8")
+        )
+
+    def test_live_unit_caps_defer_without_consuming_a_wave(self) -> None:
+        for code, prefix, tag, cap, marker in (
+            (self.ds, "defense_support", "def_sup_src", DS_LIVE_CAP,
+             "DEFENSE SUPPORT NEAR CAP DEFER"),
+            (self.ea, "enemy_attack", "ea_src", EA_LIVE_CAP,
+             "ENEMY ATTACK NEAR CAP DEFER"),
+        ):
+            with self.subTest(engine=prefix):
+                block = trigger_block(code, "%s/clock" % prefix)
+                self.assertIn(live_selector(tag, 9), block)
+                self.assertIn('{count {op ">"} {value %d}}' % cap, block)
+
+                defer = block_at(
+                    block, block.rindex('{"case"', 0, block.index(marker))
+                )
+                self.assertIn(marker, defer)
+                self.assertNotIn('{"set_i" {var "%s_waves_left$"}' % prefix, defer)
+                self.assertNotIn('{"set_i" {var "%s_wave_num$"}' % prefix, defer)
+                self.assertNotIn('_pick_', defer)
+
+                dispatch = block_at(
+                    block, block.index('{"default"', block.index(marker))
+                )
+                self.assertIn(
+                    '{"set_i" {var "%s_wave_num$"} {op "+"} {value 1}}' % prefix, dispatch
+                )
+                self.assertIn(
+                    '{"set_i" {var "%s_waves_left$"} {op "-"} {value 1}}' % prefix,
+                    dispatch,
+                )
+                # The roster marker is never removed, or the cap would stop counting.
+                self.assertNotIn("{tag_remove %s}" % tag, code)
+
+        # Cap parity with the quadrant each engine mirrors: friendly caps match the
+        # friendly system, hostile caps the hostile one.
+        self.assertIn('{count {op ">"} {value %d}}' % DS_LIVE_CAP, self.q1)
+        self.assertIn('{count {op ">"} {value %d}}' % EA_LIVE_CAP, self.q4)
+
+    def test_cadences_are_randomized_self_rearming_and_never_synchronise(self) -> None:
+        for code, prefix, ladder, opening in (
+            (self.ds, "defense_support", DS_CLOCK_LADDER, DS_OPENING),
+            (self.ea, "enemy_attack", EA_CLOCK_LADDER, EA_OPENING),
+        ):
+            with self.subTest(engine=prefix):
+                clock = trigger_block(code, "%s/clock" % prefix)
+                head = clock[: clock.index("{actions")]
+                self.assertIn(
+                    '{"1.cmp_i" {var "%s_next_ok$"} {op "=="} {value 1}}' % prefix, head
+                )
+                self.assertIn(
+                    '{"2.cmp_i" {var "%s_busy$"} {op "=="} {value 0}}' % prefix, head
+                )
+                self.assertIn(
+                    '{"3.cmp_i" {var "%s_waves_left$"} {op ">"} {value 0}}' % prefix, head
+                )
+                for weight in FIVE_WEIGHTS:
+                    self.assertIn("{condition {type rand} {value %s}}" % weight, clock)
+                for seconds in ladder:
+                    self.assertEqual(clock.count('{"delay" {time %d}}' % seconds), 1)
+                # Self-re-arming, and it reports when the budget runs out.
+                self.assertIn('{"trigger" {name "%s/clock"}}' % prefix, clock)
+                self.assertIn(
+                    '{"set_i" {var "%s_busy$"} {op "="} {value 1}}' % prefix, clock
+                )
+                self.assertIn(
+                    '{"set_i" {var "%s_busy$"} {op "="} {value 0}}' % prefix, clock
+                )
+                self.assertIn("WAVES EXHAUSTED", clock)
+
+                # The clock stays latched shut until init has issued the opening wave,
+                # otherwise its condition is already true at arming time and it fires
+                # alongside init.
+                init = trigger_block(code, "%s/init" % prefix)
+                ok_off = init.index(
+                    '{"set_i" {var "%s_next_ok$"} {op "="} {value 0}}' % prefix
+                )
+                ok_on = init.index(
+                    '{"set_i" {var "%s_next_ok$"} {op "="} {value 1}}' % prefix
+                )
+                hand_over = init.index('{"trigger" {name "%s/clock"}}' % prefix)
+                self.assertLess(ok_off, ok_on)
+                self.assertLess(ok_on, hand_over)
+                # Arms exactly once and never resets its own latch.
+                self.assertIn(
+                    '{"1.cmp_i" {var "%s_armed$"} {op "=="} {value 0}}' % prefix, init
+                )
+                self.assertIn(
+                    '{"set_i" {var "%s_armed$"} {op "="} {value 1}}' % prefix, init
+                )
+                self.assertNotIn(
+                    '{"set_i" {var "%s_armed$"} {op "="} {value 0}}' % prefix, code
+                )
+                for seconds in opening:
+                    self.assertIn('{"delay" {time %d}}' % seconds, init)
+
+        # Attacker pressure builds: Q3's opening lags Q2's entirely.
+        self.assertLess(max(DS_OPENING), min(EA_OPENING))
+
+        # THE anti-synchronisation pin. Q2 and Q3 are the only two engines live on the
+        # same mission, so no recurring delay value may appear in both - otherwise
+        # friendly and hostile arrivals would drift into phase with each other.
+        def recurring(code: str) -> set:
+            return set(
+                int(m) for m in re.findall(r'\{"delay" \{time (\d+)\}\}', code)
+            ) - set(range(0, 60))
+
+        self.assertFalse(recurring(self.ds) & recurring(self.ea))
+        self.assertFalse(set(DS_CLOCK_LADDER) & set(EA_CLOCK_LADDER))
+        self.assertFalse(set(DS_CLOCK_LADDER) & set(DS_HOLD_LADDER))
+
+    # ------------------------------------------------------- Q2 behaviour: hold
+
+    def test_defence_support_advances_on_active_flags_and_digs_in(self) -> None:
+        code = self.ds
+        anchors = define_body(code, "ds_claim_anchors")
+        # A mission activates only ~2 of a map's 2-5 flag_point entities, so all three
+        # picks exclude inactive, and each excludes the earlier picks so the tags land
+        # on three different flags.
+        self.assertEqual(anchors.count("{state {state inactive}}"), 3)
+        self.assertEqual(anchors.count("{sort {type shuffle}}"), 3)
+        for n in (1, 2, 3):
+            anchor = "{tag_add def_sup_af%d}" % n
+            self.assertEqual(code.count(anchor), 1)
+            pick = anchors.rindex("{select {tag {tag flag}}}", 0, anchors.index(anchor))
+            window = anchors[pick : anchors.index(anchor)]
+            self.assertIn("{state {state inactive}}", window)
+            for earlier in range(1, n):
+                self.assertIn("{tag {tag def_sup_af%d}}" % earlier, window)
+        # Claimed once, from init: flag activation is fixed for the mission.
+        self.assertEqual(code.count('("ds_claim_anchors")'), 1)
+        self.assertIn('("ds_claim_anchors")', trigger_block(code, "defense_support/init"))
+
+        finish = define_body(code, "ds_finish")
+        for marker in (
+            "{tag_add def_sup_src}",
+            "{tag_remove hidden}",
+            "{inactive off}",
+            "{impregnability disabled}",
+            "{discovered on}",
+            "{control AI}",
+            "{ai_move {mode enable}}",
+            "{weapon_prepare on}",
+            "{fire_mode open}",
+            "{move_mode free}",
+            # Selection is stripped so the human can never inherit these units.
+            "{remove select}",
+        ):
+            self.assertIn(marker, finish)
+
+        # no_retreat OFF: a defence may give ground. Q1 deliberately pins its
+        # teammates on instead, and Q3 below is the assault.
+        self.assertIn("{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}", finish)
+        self.assertNotIn("{no_retreat on}", code)
+
+        # Arrivals advance on the flag their hold group owns and THEN take cover -
+        # arriving is not the end of the order, digging in is.
+        advance = finish.rindex('{"action"')
+        cover = finish.index('{"actor_to_cover"', advance)
+        self.assertLess(advance, cover)
+        self.assertIn("{target {ignore_captured_by_user 0} {tag def_sup_af1}}", finish)
+        # Group choice is the caller's, and each group has a flag with an af1 fallback
+        # for a map where the mission activated fewer flags than there are groups.
+        for n in (2, 3):
+            self.assertIn(
+                '{condition {type cmp_i} {var "defense_support_group$"} {op "=="} '
+                "{value %d}}" % n,
+                finish,
+            )
+            guard = finish.index(
+                "{condition {type entities} {selector {tag def_sup_af%d}}}" % n
+            )
+            guarded = block_at(finish, finish.rindex('{"switch"', 0, guard))
+            self.assertIn(
+                "{target {ignore_captured_by_user 0} {tag def_sup_af%d}}" % n, guarded
+            )
+            self.assertIn(
+                "{target {ignore_captured_by_user 0} {tag def_sup_af1}}", guarded
+            )
+
+        # The deploy tag is consumed at the end of every deploy, so the next claim
+        # starts from an empty set instead of re-ordering the previous arrivals.
+        self.assertIn("{tag_remove def_sup_deploy}", finish)
+
+    def test_hold_groups_redistribute_across_the_flags_on_a_modest_ladder(self) -> None:
+        code = self.ds
+        assign = define_body(code, "ds_assign_group")
+        for n in (1, 2, 3):
+            self.assertIn("{tag_add def_sup_h%d}" % n, assign)
+            # A deployed body loses its pool tag on the claim and never regains one, so
+            # no spawner can re-pick a holder, and nothing removes the group tags.
+            self.assertNotIn("{tag_remove def_sup_h%d}" % n, code)
+
+        for n in (1, 2, 3):
+            with self.subTest(group=n):
+                hold = trigger_block(code, "defense_support/hold_%d" % n)
+                head = hold[: hold.index("{actions")]
+                body = hold[hold.index("{actions") :]
+                sel = "{selector {ignore_captured_by_user 0} {tag def_sup_h%d}}" % n
+
+                # Runs while the group has a live member, stops when it is wiped, and
+                # matches again if a later wave joins the group.
+                self.assertIn(live_selector("def_sup_h%d" % n, 8), head)
+                self.assertIn('{count {op ">"} {value 0}}', head)
+
+                # Its own modest 90-150s ladder, so the three groups never move in step.
+                for weight in FOUR_WEIGHTS:
+                    self.assertIn("{condition {type rand} {value %s}}" % weight, body)
+                for seconds in DS_HOLD_LADDER:
+                    self.assertEqual(body.count('{"delay" {time %d}}' % seconds), 1)
+                self.assertIn('{"trigger" {name "defense_support/hold_%d"}}' % n, body)
+
+                # Three re-order branches, all on this group only, all dropping the
+                # previous order: its own flag plus the two others, each guarded so a
+                # branch never orders at a tag with no entity behind it.
+                orders = body[body.index('{"delay" {time 0.1}}') :]
+                self.assertEqual(orders.count('{"action"'), 5)
+                self.assertEqual(orders.count(sel), 6)  # 5 orders + the cover beat
+                self.assertEqual(orders.count("{drop orders}"), 5)
+                for other in (2, 3):
+                    guard = orders.index(
+                        "{condition {type entities} {selector {tag def_sup_af%d}}}" % other
+                    )
+                    guarded = block_at(orders, orders.rindex('{"switch"', 0, guard))
+                    self.assertIn(
+                        "{target {ignore_captured_by_user 0} {tag def_sup_af%d}}" % other,
+                        guarded,
+                    )
+                    self.assertIn(
+                        "{target {ignore_captured_by_user 0} {tag def_sup_af1}}", guarded
+                    )
+                # Every re-order ends in cover, because this is a defence.
+                self.assertIn('{"actor_to_cover"', orders)
+                self.assertLess(orders.rindex('{"action"'), orders.index('{"actor_to_cover"'))
+
+        # Successive waves rotate through the groups so the force spreads over the
+        # flags rather than stacking on one.
+        clock = trigger_block(code, "defense_support/clock")
+        for n in (1, 2, 3):
+            self.assertIn(
+                '{"set_i" {var "defense_support_group$"} {op "="} {value %d}}' % n, clock
+            )
+
+    def test_defence_support_compositions_widen_with_the_campaign_level(self) -> None:
+        code = self.ds
+        pick = define_body(code, "ds_pick_composition")
+
+        def offered(block: str) -> set:
+            return set(
+                int(m)
+                for m in re.findall(
+                    r'\{"set_i" \{var "defense_support_wave_cmd\$"\} \{op "="\} '
+                    r"\{value (\d)\}\}",
+                    block,
+                )
+            )
+
+        level_case = {}
+        for level in (3, 2):
+            at = pick.index(
+                '{condition {type cmp_i} {var "defense_level$"} {op "=="} {value %d}}'
+                % level
+            )
+            level_case[level] = block_at(pick, pick.rindex('{"case"', 0, at))
+        # L3 and L2 can both reach the pzgren hold team; L1 cannot.
+        self.assertEqual(offered(level_case[3]), {1, 2, 3})
+        self.assertEqual(offered(level_case[2]), {1, 2, 3})
+        after_l2 = pick.index(level_case[2]) + len(level_case[2])
+        level1 = block_at(pick, pick.index('{"default"', after_l2))
+        self.assertEqual(offered(level1), {1, 2})
+        # L3 leads with the heavy team, L2 only mixes it in.
+        self.assertIn("{condition {type rand} {value 0.4}}", level_case[3])
+        self.assertIn("{condition {type rand} {value 0.25}}", level_case[2])
+
+        # Pool-short fallback: step down to the deepest pool, then give up on this
+        # cycle rather than spin. A draw clears the command as its first action, so a
+        # command still standing four seconds later means the pool could not field it.
+        short = pick.index("DEFENSE SUPPORT POOL SHORT - RIFLE TEAM INSTEAD")
+        gaveup = pick.index("DEFENSE SUPPORT POOL EXHAUSTED")
+        self.assertLess(short, gaveup)
+        self.assertIn(
+            '{condition {type cmp_i} {var "defense_support_wave_cmd$"} {op ">"} {value 1}}',
+            pick[:short],
+        )
+        self.assertIn(
+            '{condition {type cmp_i} {var "defense_support_wave_cmd$"} {op ">"} {value 0}}',
+            pick[short:gaveup],
+        )
+        # The opening wave is always the fallback rifle team, so the first arrival can
+        # never be the one that finds a pool short.
+        init = trigger_block(code, "defense_support/init")
+        self.assertIn(
+            '{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 1}}', init
+        )
+        self.assertIn('{"trigger" {name "defense_support/comp_usmc"}}', init)
+
+    # ----------------------------------------------------- Q3 behaviour: assault
+
+    def test_enemy_attack_mirrors_the_attack_support_order_flow(self) -> None:
+        code = self.ea
+        finish = define_body(code, "ea_finish")
+        for marker in (
+            "{tag_add ea_src}",
+            "{tag_remove hidden}",
+            "{inactive off}",
+            "{impregnability disabled}",
+            "{discovered on}",
+            "{control AI}",
+            "{ai_move {mode enable}}",
+            "{weapon_prepare on}",
+            "{fire_mode open}",
+            "{move_mode free}",
+            "{remove select}",
+        ):
+            self.assertIn(marker, finish)
+        # no_retreat ON: this is the assault half of the defence mission.
+        self.assertIn("{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}", finish)
+        self.assertNotIn("{no_retreat off}", code)
+
+        # Fresh flag picks every deploy, so successive waves do not all converge on the
+        # same objective - the Q1 idiom, and the reason the tags are cleared first.
+        for n in (1, 2, 3):
+            self.assertIn("{tag_remove ea_flag%d}" % n, finish)
+            self.assertLess(
+                finish.index("{tag_remove ea_flag%d}" % n),
+                finish.index("{tag_add ea_flag%d}" % n),
+            )
+        self.assertEqual(finish.count("{state {state inactive}}"), 3)
+        self.assertEqual(finish.count("{sort {type shuffle}}"), 3)
+        self.assertEqual(code.count("{select {tag {tag flag}}}"), 3)
+
+        # Two staggered fireteams. Every draw is four bodies, so two pairs is the whole
+        # wave and a third group would only ever order an empty selector.
+        for n in (1, 2):
+            self.assertIn("{tag_add ea_g%d}" % n, finish)
+            self.assertIn("{tag_remove ea_g%d}" % n, finish)
+        self.assertNotIn("ea_g3", code)
+        self.assertEqual(finish.count("{amount 2}"), 1)
+        for _s, _c, _r, take, _st in EA_DRAWS:
+            self.assertEqual(take, 4)
+        # G1 goes straight in; G2 takes a cover beat first, which breaks the line.
+        g1 = finish.index("{selector {ignore_captured_by_user 0} {tag ea_g1}}")
+        cover = finish.index('{"actor_to_cover"')
+        self.assertLess(g1, cover)
+        self.assertIn(
+            "{target {ignore_captured_by_user 0} {tag ea_flag1}}", finish[g1:cover]
+        )
+        for n in (2, 3):
+            self.assertIn(
+                "{target {ignore_captured_by_user 0} {tag ea_flag%d}}" % n,
+                finish[cover:],
+            )
+        self.assertIn("{tag_remove ea_deploy}", finish)
+
+    def test_enemy_attack_faction_selection_is_its_own_bot_army_switch(self) -> None:
+        code = self.ea
+        resolve = define_body(code, "ea_resolve_army")
+        # SetVar is integer-only, so the mapping has to be read off conquest.lua's
+        # nationMap: 1 rusa, 2 ukr, 3 nato, 4 csa, 5 sov, 6 prc, 7 frg, 8 pol. On a
+        # defence mission the bot it describes is the ATTACKER, which is the side this
+        # engine reinforces.
+        self.assertIn(
+            "local nationMap = { rusa = 1, ukr = 2, nato = 3, csa = 4, sov = 5, "
+            "prc = 6, frg = 7, pol = 8,",
+            self.conquest,
+        )
+        self.assertIn(
+            'BotApi.Scene:SetVar("bot_army", nationMap[botNation] or 0)', self.conquest
+        )
+        authority = self.conquest.index(
+            "if not isMissionAuthority() then return false end"
+        )
+        self.assertLess(authority, self.conquest.index('SetVar("bot_army"'))
+
+        for bot_army, army in ((2, 2), (3, 3), (4, 3), (6, 4), (7, 3)):
+            at = resolve.index(
+                '{condition {type cmp_i} {var "bot_army$"} {op "=="} {value %d}}' % bot_army
+            )
+            case = block_at(resolve, resolve.rindex('{"case"', 0, at))
+            self.assertIn(
+                '{"set_i" {var "enemy_attack_army$"} {op "="} {value %d}}' % army, case
+            )
+        # sov (5), pol (8) and an unpublished 0 fall through to the rusa pool, so the
+        # engine never stalls waiting for a var it may not get.
+        for absent in (1, 5, 8):
+            self.assertNotIn(
+                '{condition {type cmp_i} {var "bot_army$"} {op "=="} {value %d}}' % absent,
+                resolve,
+            )
+        default = block_at(resolve, resolve.index('{"default"'))
+        self.assertIn('{"set_i" {var "enemy_attack_army$"} {op "="} {value 1}}', default)
+
+        # Its own var, resolved from the same source as enemy_defense_army$ but never
+        # reading it: the two pool-sharing engines must stay decoupled.
+        self.assertNotIn("enemy_defense_army", code)
+        self.assertIn(
+            '{"set_i" {var "enemy_defense_army$"} {op "="} {value 1}}', self.q4
+        )
+
+        # Exactly one faction can answer a poke, so poking all four is safe.
+        for suffix, _cmd, _role, _take, _stage in EA_DRAWS:
+            poke = define_body(code, "ea_poke_%s" % suffix)
+            for key, _army in EA_FACTIONS:
+                self.assertIn(
+                    '{"trigger" {name "enemy_attack/%s_%s"}}' % (key, suffix), poke
+                )
+
+    def test_enemy_attack_draws_widen_with_the_level_and_fall_back_gracefully(self) -> None:
+        code = self.ea
+        pick = define_body(code, "ea_pick_wave")
+
+        def offered(block: str) -> set:
+            return set(
+                int(m)
+                for m in re.findall(
+                    r'\{"set_i" \{var "enemy_attack_wave_cmd\$"\} \{op "="\} '
+                    r"\{value (\d)\}\}",
+                    block,
+                )
+            )
+
+        level_case = {}
+        for level in (3, 2):
+            at = pick.index(
+                '{condition {type cmp_i} {var "defense_level$"} {op "=="} {value %d}}'
+                % level
+            )
+            level_case[level] = block_at(pick, pick.rindex('{"case"', 0, at))
+        self.assertEqual(offered(level_case[3]), {1, 2})
+        self.assertEqual(offered(level_case[2]), {1, 2})
+        after_l2 = pick.index(level_case[2]) + len(level_case[2])
+        level1 = block_at(pick, pick.index('{"default"', after_l2))
+        self.assertEqual(offered(level1), {1})
+        # L3 leads with the weapons team, L2 only mixes it in - same shape as Q4.
+        self.assertIn("{condition {type rand} {value 0.6}}", level_case[3])
+        self.assertIn("{condition {type rand} {value 0.34}}", level_case[2])
+        self.assertIn("{condition {type rand} {value 0.6}}", self.q4)
+
+        short = pick.index("ENEMY ATTACK POOL SHORT - LINE TEAM INSTEAD")
+        gaveup = pick.index("ENEMY ATTACK POOL EXHAUSTED")
+        self.assertLess(short, gaveup)
+        self.assertIn(
+            '{condition {type cmp_i} {var "enemy_attack_wave_cmd$"} {op ">"} {value 1}}',
+            pick[:short],
+        )
+        self.assertIn(
+            '{condition {type cmp_i} {var "enemy_attack_wave_cmd$"} {op ">"} {value 0}}',
+            pick[short:gaveup],
+        )
+        # Both the opening wave and every cycle go through the one level-aware pick.
+        self.assertEqual(code.count('("ea_pick_wave")'), 2)
+
+    def test_every_draw_is_command_gated_army_gated_and_pool_gated(self) -> None:
+        # COMMAND GATING, inherited from the attack-support engine: waves keyed on
+        # entity presence alone all fired at once. Each draw has its own command value
+        # AND clears it as its first action.
+        for suffix, cmd, pool, take, stage in DS_DRAWS:
+            name = "defense_support/comp_%s" % suffix
+            with self.subTest(draw=name):
+                block = trigger_block(self.ds, name)
+                head = block[: block.index("{actions")]
+                actions = block[block.index("{actions") :]
+                self.assertIn(
+                    '{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} '
+                    "{value %d}}" % cmd,
+                    head,
+                )
+                self.assertIn(
+                    '{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}',
+                    actions[:200],
+                )
+                # POOL GATING: a claim strips the pool tag from the bodies it takes,
+                # so counting the tag is exactly "still parked".
+                self.assertIn("{selector {tag %s}}" % pool, head)
+                self.assertIn('{count {op ">="} {value %d}}' % take, head)
+                self.assertIn("{tag_add def_sup_deploy}", actions)
+                self.assertLess(
+                    actions.index('("ds_place_at_entry")'), actions.index('("ds_finish")')
+                )
+                for value in (stage + 1, stage + 2):
+                    self.assertIn(
+                        '{"set_i" {var "defense_support_stage$"} {op "="} '
+                        "{value %d}}" % value,
+                        actions,
+                    )
+
+        for key, army in EA_FACTIONS:
+            for suffix, cmd, role, take, stage in EA_DRAWS:
+                name = "enemy_attack/%s_%s" % (key, suffix)
+                pool = "enemy_def_%s_%s" % (key, role)
+                with self.subTest(draw=name):
+                    block = trigger_block(self.ea, name)
+                    head = block[: block.index("{actions")]
+                    actions = block[block.index("{actions") :]
+                    self.assertIn(
+                        '{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} '
+                        "{value %d}}" % cmd,
+                        head,
+                    )
+                    self.assertIn(
+                        '{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}',
+                        actions[:200],
+                    )
+                    # ARMY GATING: only the resolved faction can answer.
+                    self.assertIn(
+                        '{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} '
+                        "{value %d}}" % army,
+                        head,
+                    )
+                    self.assertIn("{selector {tag %s}}" % pool, head)
+                    self.assertIn('{count {op ">="} {value %d}}' % take, head)
+                    self.assertIn("{tag_add ea_deploy}", actions)
+                    self.assertLess(
+                        actions.index('("ea_place_at_entry")'),
+                        actions.index('("ea_finish")'),
+                    )
+                    for value in (stage + 1, stage + 2):
+                        self.assertIn(
+                            '{"set_i" {var "enemy_attack_stage$"} {op "="} '
+                            "{value %d}}" % value,
+                            actions,
+                        )
+
+    # ------------------------------------------------------- pipeline regression
+
+    def test_engines_never_clone_and_never_decorate_the_pool_selector(self) -> None:
+        for code, deploy_tag in ((self.ds, "def_sup_deploy"), (self.ea, "ea_deploy")):
+            with self.subTest(deploy_tag=deploy_tag):
+                # NO CLONING. Three promote designs (runtime tag, gamezone, player-0
+                # identity) each matched zero freshly created entities on the
+                # attack-support engine: a new entity's provenance is invisible to every
+                # selector this format can express. The pool originals are MOVED, so
+                # they keep the tags the template file put on them.
+                self.assertNotIn("{clone}", code)
+                self.assertNotIn('{zone {zone "gamezone"}}', code)
+                self.assertNotIn("{zone ", code)
+
+                # SELECTOR RULE: decorating the advanced selector that addresses pool
+                # units zeroes the match. Live proof in one run: a bare select moved all
+                # four; the same select plus a prop/state decoration matched nothing in
+                # the very next action.
+                self.assertNotIn("{prop {prop human}}", code)
+                self.assertNotIn("{include {prop human}}", code)
+                self.assertNotIn("{state {state operatable}}", code)
+                self.assertNotIn("{include", code)
+                self.assertIn("{group {select {tag {tag %s}}}}" % deploy_tag, code)
+
+                # Capture points are addressed as {tag flag}: the fpc1..fpc5 tags are
+                # absent from one of the fourteen maps entirely, which left units
+                # standing still on a live run.
+                self.assertNotIn("fpc", code)
+
+                # SetVar is integer-only, so every var these engines touch is an integer
+                # compare or an integer assignment. A string or float var is a silent 0.
+                self.assertNotIn('{"set_s"', code)
+                self.assertNotIn('{"set_f"', code)
+                self.assertNotIn("{type cmp_s}", code)
+                self.assertNotIn("{type cmp_f}", code)
+                for value in re.findall(
+                    r'\{"set_i" \{var "[a-z0-9_]+\$"\} \{op "[-+=]"\} \{value (-?[\w.]+)\}\}',
+                    code,
+                ):
+                    self.assertRegex(value, r"^-?\d+$", "non-integer set_i: %s" % value)
+
+                # {"placement"} happens before promotion, and nothing is placed at a raw
+                # coordinate.
+                self.assertNotIn("{position ", code)
+
+    # --------------------------------------------------------------- map wiring
+
+    def test_all_cwa_maps_wire_all_four_quadrants_exactly_once(self) -> None:
+        self.assertEqual(len(self.maps), 14)
+        for d in self.maps:
+            mi = (d / "campaign_capture_the_flag.mi").read_text(encoding="utf-8")
+            with self.subTest(map=d.name):
+                for include in MAP_INCLUDES:
+                    self.assertEqual(mi.count(include), 1, include)
+                # read_text normalises CRLF, so match on \n here. The four engines sit
+                # together in a fixed order in the triggers section, attack-mission pair
+                # first, and the two pools sit together in the entities section.
+                self.assertIn(
+                    '(include "../attack_support_waves.inc")\n'
+                    '\t\t\t(include "../enemy_defense_support.inc")\n'
+                    '\t\t\t(include "../defense_support_waves.inc")\n'
+                    '\t\t\t(include "../enemy_attack_support.inc")',
+                    mi,
+                )
+                self.assertIn(
+                    '(include "../attack_support_templates.inc")\n'
+                    '\t(include "../enemy_defense_templates.inc")',
+                    mi,
+                )
+                # Both entry waypoints, which the four engines read in two different
+                # directions, must be present exactly once each.
+                self.assertEqual(mi.count('{"attack_support_entry_a"'), 1)
+                self.assertEqual(mi.count('{"attack_support_entry_b"'), 1)
+                # Waypoint "0" is the enemy-defence patrol roam fallback.
+                self.assertRegex(mi, r'\{"0"\s*\r?\n\s*\{position ')
+                # No stray naming for the two new systems.
+                self.assertNotIn("defense_support_templates", mi)
+                self.assertNotIn("enemy_attack_templates", mi)
+
+    def test_border_is_the_one_map_that_declares_no_engine_state(self) -> None:
+        # KNOWN GAP, pinned rather than silently inherited. dcg_vars.inc is where all
+        # four quadrants declare their state, and thirteen of the fourteen maps include
+        # it. border does not: it carries an eleven-var inline block of its own and
+        # includes neither dcg_vars.inc nor dcg_script.inc.
+        #
+        # An undeclared read is a silent zero, so on border user_is_defender$ reads 0
+        # (which fails Q2's and Q3's == 1 gate outright) and every owner id reads 0
+        # (which fails Q1's and Q4's > 0 gate). All four engines are therefore INERT on
+        # border rather than misbehaving, which is why this is a coverage gap and not a
+        # correctness bug. It predates this phase - Q1 and Q4 shipped with it - and
+        # closing it means giving border the shared var block, which would activate four
+        # wave engines on a map that has never run one.
+        with_vars = []
+        for d in self.maps:
+            mi = (d / "campaign_capture_the_flag.mi").read_text(encoding="utf-8")
+            if '(include "../dcg_vars.inc")' in mi:
+                with_vars.append(d.name)
+        self.assertEqual(len(with_vars), 13)
+        self.assertNotIn("dcg_[cwa71]_border", with_vars)
+
+        border = (
+            MULTI / "dcg_[cwa71]_border/campaign_capture_the_flag.mi"
+        ).read_text(encoding="utf-8")
+        for name in (
+            "user_is_defender",
+            "prep_inform",
+            "id_defenderbot",
+            "id_1st_enemy",
+            "defense_support_armed",
+            "enemy_attack_armed",
+            "attack_support_armed",
+            "enemy_defense_armed",
+        ):
+            self.assertNotIn('{"%s"}' % name, border, name)
+        # It still gets the includes, so a later fix is a one-line vars change and not
+        # a re-wiring job.
+        for include in MAP_INCLUDES:
+            self.assertEqual(border.count(include), 1, include)
+
+    def test_deployment_ships_and_guards_both_defence_mission_engines(self) -> None:
+        for marker in (
+            "resource\\map\\multi\\defense_support_waves.inc",
+            "resource\\map\\multi\\enemy_attack_support.inc",
+            '(include "../defense_support_waves.inc")',
+            '(include "../enemy_attack_support.inc")',
+            '{"defense_support/init"',
+            '{"defense_support/hold_1"',
+            '{"enemy_attack/init"',
+            '{"enemy_attack/nato_wpn"',
+            '{var "id_defenderbot$"}',
+            '{var "prep_inform$"}',
+            "DEFENSE SUPPORT NEAR CAP DEFER",
+            "DEFENSE SUPPORT OWNER UNRESOLVED - NO TRANSFER",
+            "ENEMY ATTACK NEAR CAP DEFER",
+            "ENEMY ATTACK POOL SHORT - LINE TEAM INSTEAD",
+            '{"defense_support_armed"}',
+            '{"defense_support_owner_fail"}',
+            '{"enemy_attack_armed"}',
+            '{"enemy_attack_owner_fail"}',
+            # Inertness, prep gating, no-park and no-cross-read guards.
+            "triggers carry the user_is_defender$ == 1 gate",
+            "does not gate on prep_inform$ == 1",
+            "It must claim from the existing parked pools, not park its own",
+            "reaches into other-system state",
+            "share cadence values",
+            # The corrected prep-inform gate has to ship with the engines.
+            "if not botDefender then return end",
+            "still carries the inverted ensureAttackPrepInform gate",
+        ):
+            self.assertIn(marker, self.deploy)
+
+        # The new files must actually be in the copy list, not merely checked, and the
+        # index-based lookups must still point at the same files as before.
+        copy_list = self.deploy[self.deploy.index("$files = @("):]
+        copy_list = copy_list[: copy_list.index("\n)")]
+        for relative in (
+            "resource\\map\\multi\\defense_support_waves.inc",
+            "resource\\map\\multi\\enemy_attack_support.inc",
+        ):
+            self.assertIn(relative, copy_list)
+        self.assertIn("$conquestSource = Join-Path $RepoRoot $files[8]", self.deploy)
+        self.assertIn("$utilitySource = Join-Path $RepoRoot $files[9]", self.deploy)
+        self.assertIn("$dsSource = Join-Path $RepoRoot $files[10]", self.deploy)
+        self.assertIn("$eaSource = Join-Path $RepoRoot $files[11]", self.deploy)
+        # Neither engine gets a templates include: they claim from the shared pools.
+        self.assertNotIn("defense_support_templates", self.deploy)
+        self.assertNotIn("enemy_attack_templates", self.deploy)
+
+    def test_delimiters_are_balanced(self) -> None:
+        for raw in (self.ds_raw, self.ea_raw):
+            code = strip_comments(raw)
+            self.assertEqual(code.count("{"), code.count("}"))
+            self.assertEqual(code.count("("), code.count(")"))
+        # Trigger and define bodies each parse as one balanced form.
+        for code, prefix in ((self.ds, "defense_support"), (self.ea, "enemy_attack")):
+            for name in trigger_names(code, prefix):
+                block = trigger_block(code, "%s/%s" % (prefix, name))
+                self.assertEqual(block.count("{"), block.count("}"), name)
+                self.assertIn("{condition", block)
+                self.assertIn("{actions", block)
+            for name in re.findall(r'\(define "([a-z0-9_]+)"', code):
+                body = define_body(code, name)
+                self.assertEqual(body.count("{"), body.count("}"), name)
+                self.assertEqual(body.count("("), body.count(")"), name)
+
+
+if __name__ == "__main__":
+    unittest.main()

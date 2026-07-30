@@ -49,3 +49,23 @@
 			{"enemy_defense_trickle_busy"}
 			{"enemy_defense_surge_ok"}
 			{"enemy_defense_surge_busy"}
+			{"defense_support_armed"}
+			{"defense_support_transferred"}
+			{"defense_support_stage"}
+			{"defense_support_wave_cmd"}
+			{"defense_support_wave_num"}
+			{"defense_support_waves_left"}
+			{"defense_support_busy"}
+			{"defense_support_next_ok"}
+			{"defense_support_group"}
+			{"defense_support_owner_fail"}
+			{"enemy_attack_armed"}
+			{"enemy_attack_army"}
+			{"enemy_attack_stage"}
+			{"enemy_attack_transferred"}
+			{"enemy_attack_wave_cmd"}
+			{"enemy_attack_wave_num"}
+			{"enemy_attack_waves_left"}
+			{"enemy_attack_busy"}
+			{"enemy_attack_next_ok"}
+			{"enemy_attack_owner_fail"}
