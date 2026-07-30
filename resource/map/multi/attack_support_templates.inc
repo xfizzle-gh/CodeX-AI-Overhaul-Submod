@@ -13,7 +13,7 @@
 ;   attack_support_inf_arf   20 = 4 x 5-strong ARF/NATO rifle team (composition 5, L1+)
 ;   attack_support_inf_pzgd  12 = 2 x 6-strong German pzgren team (composition 4)
 ;   attack_support_hmmwv1..4  4 crewed humvees, taken in order by attack_support_hmmwv_left$
-; All also carry attack_support_tpl and hidden. Parked y=-35100, x band -3200..-1600.
+; All also carry attack_support_tpl and hidden. Parked y=-35100, x band -3200..-1320.
 
 ; ===== COMPOSITION 1 POOL — USMC rifle teams (20 = 4 x 5) =====
 	{Human "mp/nato/2022s/usmc_teamlead" 0xaf20
@@ -344,124 +344,124 @@
 	{Human "mp/nato/2022s/nato_teamlead" 0xaf60
 		{Position -1700 -35100}
 		{Player 0}
-		{MID 9084}
+		{MID 9000}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_mg" 0xaf61
 		{Position -1680 -35100}
 		{Player 0}
-		{MID 9085}
+		{MID 9001}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_grenadier" 0xaf62
 		{Position -1660 -35100}
 		{Player 0}
-		{MID 9086}
+		{MID 9002}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_rifleman" 0xaf63
 		{Position -1640 -35100}
 		{Player 0}
-		{MID 9087}
+		{MID 9003}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_medic" 0xaf64
 		{Position -1620 -35100}
 		{Player 0}
-		{MID 9088}
+		{MID 9004}
 		{Able "-select"}
 	}
 
 	{Human "mp/nato/2022s/nato_teamlead" 0xaf65
 		{Position -1600 -35100}
 		{Player 0}
-		{MID 9089}
+		{MID 9005}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_mg" 0xaf66
 		{Position -1580 -35100}
 		{Player 0}
-		{MID 9090}
+		{MID 9006}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_grenadier" 0xaf67
 		{Position -1560 -35100}
 		{Player 0}
-		{MID 9091}
+		{MID 9007}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_rifleman" 0xaf68
 		{Position -1540 -35100}
 		{Player 0}
-		{MID 9092}
+		{MID 9008}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_medic" 0xaf69
 		{Position -1520 -35100}
 		{Player 0}
-		{MID 9093}
+		{MID 9009}
 		{Able "-select"}
 	}
 
 	{Human "mp/nato/2022s/nato_teamlead" 0xaf6a
 		{Position -1500 -35100}
 		{Player 0}
-		{MID 9094}
+		{MID 9010}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_mg" 0xaf6b
 		{Position -1480 -35100}
 		{Player 0}
-		{MID 9095}
+		{MID 9011}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_grenadier" 0xaf6c
 		{Position -1460 -35100}
 		{Player 0}
-		{MID 9096}
+		{MID 9012}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_rifleman" 0xaf6d
 		{Position -1440 -35100}
 		{Player 0}
-		{MID 9097}
+		{MID 9013}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_medic" 0xaf6e
 		{Position -1420 -35100}
 		{Player 0}
-		{MID 9098}
+		{MID 9014}
 		{Able "-select"}
 	}
 
 	{Human "mp/nato/2022s/nato_teamlead" 0xaf6f
 		{Position -1400 -35100}
 		{Player 0}
-		{MID 9099}
+		{MID 9015}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_mg" 0xaf70
 		{Position -1380 -35100}
 		{Player 0}
-		{MID 9100}
+		{MID 9016}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_grenadier" 0xaf71
 		{Position -1360 -35100}
 		{Player 0}
-		{MID 9101}
+		{MID 9017}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_rifleman" 0xaf72
 		{Position -1340 -35100}
 		{Player 0}
-		{MID 9102}
+		{MID 9018}
 		{Able "-select"}
 	}
 	{Human "mp/nato/2022s/nato_medic" 0xaf73
 		{Position -1320 -35100}
 		{Player 0}
-		{MID 9103}
+		{MID 9019}
 		{Able "-select"}
 	}
 
