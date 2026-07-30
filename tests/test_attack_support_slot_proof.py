@@ -204,10 +204,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         engines - which never run on the same mission, so each only has to cover ONE
         engine's worst case. The binding number is the L3 budget of 8 waves."""
         code = self.faction_tpl
-        self.assertEqual(code.count('{Able "-select"}'), 379)
-        self.assertEqual(code.count("{Player 0}"), 379)
-        self.assertEqual(code.count('"ally_sup_tpl"'), 379)
-        self.assertEqual(code.count('"hidden"'), 379)
+        self.assertEqual(code.count('{Able "-select"}'), 411)
+        self.assertEqual(code.count("{Player 0}"), 411)
+        self.assertEqual(code.count('"ally_sup_tpl"'), 411)
+        self.assertEqual(code.count('"hidden"'), 411)
 
         for key, _army in FACTION_ARMIES:
             for suffix, _cmd, take, depth in FACTION_COMPS:
@@ -244,11 +244,11 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
         # Bands: this pool must not collide with either neighbour in a resolved map.
         ids = re.findall(r"\{(?:Entity|Human) \"[^\"]*\" (0x[0-9a-f]+)", code)
-        self.assertEqual(len(ids), 379)
-        self.assertEqual(len(set(ids)), 379)
+        self.assertEqual(len(ids), 411)
+        self.assertEqual(len(set(ids)), 411)
         self.assertTrue(all(i.startswith(("0xb2", "0xb3")) for i in ids))
         mids = [int(m) for m in re.findall(r"\{MID (\d+)\}", code)]
-        self.assertEqual(len(set(mids)), 379)
+        self.assertEqual(len(set(mids)), 411)
         self.assertGreaterEqual(min(mids), 9300)
         # Real breeds only, and none of the retired idioms.
         self.assertNotIn('{Human ""', code)
@@ -654,8 +654,8 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         # vehicle; L3 additionally unlocks the MANPAD team.
         nn = levels(hybrid)
         self.assertEqual(offered(nn[1]), {10, 12})
-        self.assertEqual(offered(nn[2]), {10, 11, 12, 13, 14, 16})
-        self.assertEqual(offered(nn[3]), {10, 11, 12, 13, 14, 15, 16})
+        self.assertEqual(offered(nn[2]), {10, 11, 12, 13, 14, 16, 17})
+        self.assertEqual(offered(nn[3]), {10, 11, 12, 13, 14, 15, 16, 17})
         # MANPAD is the L3-only unlock, and L1 offers no vehicle.
         self.assertNotIn(15, offered(nn[2]))
         self.assertNotIn(16, offered(nn[1]))
@@ -682,7 +682,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             )
         # Every hybrid case pokes the matching faction fan-out define.
         for cmd, poke in ((10, "line"), (11, "wpn"), (12, "recon"), (13, "assault"),
-                          (14, "eng"), (15, "manpad"), (16, "veh")):
+                          (14, "eng"), (15, "manpad"), (16, "veh"), (17, "ifv")):
             at = hybrid.index(
                 '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value %d}}' % cmd
             )
@@ -1447,6 +1447,56 @@ class AttackSupportFlankTests(unittest.TestCase):
         self.assertIn("$FlankDepth", self.deploy)
         self.assertIn("$FlankSpread", self.deploy)
         self.assertIn("attack_support_flank_", self.deploy)
+
+
+
+
+class AttackSupportIfvTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.waves = (ROOT / "resource/map/multi/attack_support_waves.inc").read_text(
+            encoding="utf-8"
+        )
+        cls.tpl = (
+            ROOT / "resource/map/multi/faction_support_templates.inc"
+        ).read_text(encoding="utf-8")
+        cls.vars = VARS.read_text(encoding="utf-8")
+
+    def test_ifv_entities_and_breeds(self) -> None:
+        for hull in ("bmp2_rus", "bmp2_ukr", "zbl08", "m2a3"):
+            self.assertIn(hull, self.tpl)
+        for crew in (
+            "rus_vehicleman",
+            "ukr_vehicleman",
+            "pla_crew",
+            "usarmy_crew",
+        ):
+            self.assertIn(crew, self.tpl)
+
+    def test_ifv_mid_band_and_ids(self) -> None:
+        mids = [int(x) for x in re.findall(r"\{MID (\d+)\}", self.tpl)]
+        ifv_mids = [m for m in mids if 9700 <= m <= 9731]
+        self.assertEqual(len(ifv_mids), 32)
+        self.assertIn("0xb380", self.tpl)
+
+    def test_ifv_cmd_and_cap(self) -> None:
+        self.assertIn('{"attack_support_ifv_left"}', self.vars)
+        self.assertIn(
+            '{var "attack_support_ifv_left$"} {op "="} {value 1}', self.waves
+        )
+        self.assertIn(
+            '{var "attack_support_wave_cmd$"} {op "="} {value 17}', self.waves
+        )
+        self.assertIn('("as_poke_faction_ifv")', self.waves)
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            self.assertIn("attack_support/ally_%s_ifv" % fac, self.waves)
+
+    def test_ifv_attack_only(self) -> None:
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            parts = self.waves.split('{"attack_support/ally_%s_ifv"' % fac)
+            self.assertGreaterEqual(len(parts), 2, fac)
+            block = parts[1][:900]
+            self.assertIn('{var "user_is_defender$"} {op "=="} {value 0}', block)
 
 
 if __name__ == "__main__":

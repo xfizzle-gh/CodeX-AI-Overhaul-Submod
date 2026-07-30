@@ -2348,6 +2348,224 @@
 	{Link 0xb379 {0xb378 "driver"}}
 	{Link 0xb37a {0xb378 "gunner2"}}
 
+
+; ===== RARE IFV PACKAGES (cmd 17, attack L2+/L3, cap 1) =====
+; MID 9700-9731 ids 0xb380+. y=-36400.
+
+; ----- ALLY RUSA IFV -----
+	{Entity "bmp2_rus" 0xb380
+		{Position -9000 -36400}
+		{Player 0}
+		{MID 9700}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xb381
+		{Position -8995 -36400}
+		{Player 0}
+		{MID 9701}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xb382
+		{Position -8990 -36400}
+		{Player 0}
+		{MID 9702}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xb383
+		{Position -8985 -36400}
+		{Player 0}
+		{MID 9703}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_squadlead" 0xb384
+		{Position -8970 -36400}
+		{Player 0}
+		{MID 9704}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xb385
+		{Position -8950 -36400}
+		{Player 0}
+		{MID 9705}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_mg" 0xb386
+		{Position -8930 -36400}
+		{Player 0}
+		{MID 9706}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus90_rifleman" 0xb387
+		{Position -8910 -36400}
+		{Player 0}
+		{MID 9707}
+		{Able "-select"}
+	}
+
+; ----- ALLY UKR IFV -----
+	{Entity "bmp2_ukr" 0xb388
+		{Position -5000 -36400}
+		{Player 0}
+		{MID 9708}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xb389
+		{Position -4995 -36400}
+		{Player 0}
+		{MID 9709}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xb38a
+		{Position -4990 -36400}
+		{Player 0}
+		{MID 9710}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xb38b
+		{Position -4985 -36400}
+		{Player 0}
+		{MID 9711}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_squadlead" 0xb38c
+		{Position -4970 -36400}
+		{Player 0}
+		{MID 9712}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xb38d
+		{Position -4950 -36400}
+		{Player 0}
+		{MID 9713}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_mg" 0xb38e
+		{Position -4930 -36400}
+		{Player 0}
+		{MID 9714}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ter_rifleman" 0xb38f
+		{Position -4910 -36400}
+		{Player 0}
+		{MID 9715}
+		{Able "-select"}
+	}
+
+; ----- ALLY PRC IFV -----
+	{Entity "zbl08" 0xb390
+		{Position -1000 -36400}
+		{Player 0}
+		{MID 9716}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xb391
+		{Position -995 -36400}
+		{Player 0}
+		{MID 9717}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xb392
+		{Position -990 -36400}
+		{Player 0}
+		{MID 9718}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xb393
+		{Position -985 -36400}
+		{Player 0}
+		{MID 9719}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_squadlead" 0xb394
+		{Position -970 -36400}
+		{Player 0}
+		{MID 9720}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xb395
+		{Position -950 -36400}
+		{Player 0}
+		{MID 9721}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_mg" 0xb396
+		{Position -930 -36400}
+		{Player 0}
+		{MID 9722}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xb397
+		{Position -910 -36400}
+		{Player 0}
+		{MID 9723}
+		{Able "-select"}
+	}
+
+; ----- ALLY NATO IFV -----
+	{Entity "m2a3" 0xb398
+		{Position 3000 -36400}
+		{Player 0}
+		{MID 9724}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/usarmy_crew" 0xb399
+		{Position 3005 -36400}
+		{Player 0}
+		{MID 9725}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/usarmy_crew" 0xb39a
+		{Position 3010 -36400}
+		{Player 0}
+		{MID 9726}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/usarmy_crew" 0xb39b
+		{Position 3015 -36400}
+		{Player 0}
+		{MID 9727}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_squadlead" 0xb39c
+		{Position 3030 -36400}
+		{Player 0}
+		{MID 9728}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xb39d
+		{Position 3050 -36400}
+		{Player 0}
+		{MID 9729}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_mg" 0xb39e
+		{Position 3070 -36400}
+		{Player 0}
+		{MID 9730}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0xb39f
+		{Position 3090 -36400}
+		{Player 0}
+		{MID 9731}
+		{Able "-select"}
+	}
+
+; ----- IFV CREW LINKS -----
+	{Link 0xb381 {0xb380 "driver"}}
+	{Link 0xb382 {0xb380 "gunner"}}
+	{Link 0xb383 {0xb380 "commander"}}
+	{Link 0xb389 {0xb388 "driver"}}
+	{Link 0xb38a {0xb388 "gunner"}}
+	{Link 0xb38b {0xb388 "commander"}}
+	{Link 0xb391 {0xb390 "driver"}}
+	{Link 0xb392 {0xb390 "gunner"}}
+	{Link 0xb393 {0xb390 "commander"}}
+	{Link 0xb399 {0xb398 "driver"}}
+	{Link 0xb39a {0xb398 "gunner"}}
+	{Link 0xb39b {0xb398 "commander"}}
+
 ; ===== TAGS =====
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb200}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb201}
@@ -2728,3 +2946,35 @@
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh2" "hidden" 0xb378}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh2" "hidden" 0xb379}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh2" "hidden" 0xb37a}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "hidden" 0xb380}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "hidden" 0xb381}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "hidden" 0xb382}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "hidden" 0xb383}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv_inf" "hidden" 0xb384}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv_inf" "hidden" 0xb385}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv_inf" "hidden" 0xb386}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv_inf" "hidden" 0xb387}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv" "ally_sup_ukr_ifv1" "hidden" 0xb388}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv" "ally_sup_ukr_ifv1" "hidden" 0xb389}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv" "ally_sup_ukr_ifv1" "hidden" 0xb38a}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv" "ally_sup_ukr_ifv1" "hidden" 0xb38b}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv_inf" "hidden" 0xb38c}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv_inf" "hidden" 0xb38d}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv_inf" "hidden" 0xb38e}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv_inf" "hidden" 0xb38f}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv" "ally_sup_prc_ifv1" "hidden" 0xb390}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv" "ally_sup_prc_ifv1" "hidden" 0xb391}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv" "ally_sup_prc_ifv1" "hidden" 0xb392}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv" "ally_sup_prc_ifv1" "hidden" 0xb393}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv_inf" "hidden" 0xb394}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv_inf" "hidden" 0xb395}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv_inf" "hidden" 0xb396}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv_inf" "hidden" 0xb397}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "hidden" 0xb398}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "hidden" 0xb399}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "hidden" 0xb39a}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "hidden" 0xb39b}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv_inf" "hidden" 0xb39c}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv_inf" "hidden" 0xb39d}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv_inf" "hidden" 0xb39e}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv_inf" "hidden" 0xb39f}
