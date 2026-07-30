@@ -88,7 +88,7 @@
 ; in all four engines at once. Never add an ungated timer: tools/deploy_attack_support_probe.ps1
 ; and the test suite both fail the build the moment one appears.
 ; PLAYER ANNOUNCEMENTS / support_announce$ - separate gate (default ON via init).
-; Player-facing timers use support_announce$, never support_debug$. Declared in dcg_vars.inc.
+; Player-facing radio uses support_announce$ + {"talk"} (soldier portrait), never support_debug$.
 ;
 ; ENTRY POINTS / triple pads. Each side's map-edge arrival is THREE waypoints, not one:
 ; attack_support_entry_a1/a2/a3 and b1/b2/b3, an equilateral triangle of side ~27m whose
@@ -117,11 +117,23 @@
 				}
 			)
 
+			; Player-facing radio talk (support_announce$ default ON via init).
+			; Stock {"talk"} so a live player soldier portrait delivers the line.
 			(define "ds_announce_wave"
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
-						{"timer" {time 5} {title "mission/multi/support/wave_inbound"}}
+						{"talk"
+							{selector
+								{ignore_captured_by_user 0}
+								{amount 1}
+								{tag player}
+								{zone "gamezone"}
+								{type human}
+								{state "not dead"}
+							}
+							{text "mission/multi/support/wave_inbound"}
+						}
 					}
 					{"default"}
 				}
@@ -130,7 +142,17 @@
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
-						{"timer" {time 5} {title "mission/multi/support/defense_reinforced"}}
+						{"talk"
+							{selector
+								{ignore_captured_by_user 0}
+								{amount 1}
+								{tag player}
+								{zone "gamezone"}
+								{type human}
+								{state "not dead"}
+							}
+							{text "mission/multi/support/defense_reinforced"}
+						}
 					}
 					{"default"}
 				}
@@ -139,7 +161,17 @@
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
-						{"timer" {time 6} {title "mission/multi/support/waves_exhausted"}}
+						{"talk"
+							{selector
+								{ignore_captured_by_user 0}
+								{amount 1}
+								{tag player}
+								{zone "gamezone"}
+								{type human}
+								{state "not dead"}
+							}
+							{text "mission/multi/support/waves_exhausted"}
+						}
 					}
 					{"default"}
 				}

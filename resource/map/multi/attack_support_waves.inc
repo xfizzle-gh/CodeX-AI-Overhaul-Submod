@@ -1,4 +1,4 @@
-; Attack support waves — the human attacker's AI teammate reinforcement engine.
+﻿; Attack support waves â€” the human attacker's AI teammate reinforcement engine.
 ; Included by all fourteen CWA campaign_capture_the_flag.mi maps. Runs ONLY when the
 ; human is attacking; attack_support.lua publishes id_attack_support$ /
 ; attack_support_ready$ / attack_support_use_mi$ and nothing here moves until it has.
@@ -8,7 +8,7 @@
 ; {"placement"} and promoted in place. Never cloned: three promote designs each
 ; matched zero freshly created entities, because a new entity's provenance is
 ; invisible to every selector this format can express. Ownership is a literal 1-16
-; {player} switch on id_attack_support$ — the engine will not accept a var there.
+; {player} switch on id_attack_support$ â€” the engine will not accept a var there.
 ;
 ; SCHEDULE
 ;   opening wave  30/38/45s after the identity is published, one small rifle team
@@ -49,7 +49,7 @@
 ; in all four engines at once. Never add an ungated timer: tools/deploy_attack_support_probe.ps1
 ; and the test suite both fail the build the moment one appears.
 ; PLAYER ANNOUNCEMENTS / support_announce$ - separate gate (default ON via init).
-; Player-facing timers use support_announce$, never support_debug$. Declared in dcg_vars.inc.
+; Player-facing radio uses support_announce$ + {"talk"} (soldier portrait), never support_debug$. Declared in dcg_vars.inc.
 ;
 ; ENTRY POINTS / triple pads. Each side's map-edge arrival is THREE waypoints, not one:
 ; attack_support_entry_a1/a2/a3 and b1/b2/b3, an equilateral triangle of side ~27m whose
@@ -80,13 +80,24 @@
 				}
 			)
 
-			; Player-facing announcements (support_announce$ default ON via init).
+			; Player-facing radio talk (support_announce$ default ON via init).
+			; Uses stock {"talk"} so a live player soldier portrait delivers the line.
 			; Distinct from support_debug$ diagnostics. Never mix the two gates.
 			(define "as_announce_wave"
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
-						{"timer" {time 5} {title "mission/multi/support/wave_inbound"}}
+						{"talk"
+							{selector
+								{ignore_captured_by_user 0}
+								{amount 1}
+								{tag player}
+								{zone "gamezone"}
+								{type human}
+								{state "not dead"}
+							}
+							{text "mission/multi/support/wave_inbound"}
+						}
 					}
 					{"default"}
 				}
@@ -95,7 +106,17 @@
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
-						{"timer" {time 5} {title "mission/multi/support/vehicle_inbound"}}
+						{"talk"
+							{selector
+								{ignore_captured_by_user 0}
+								{amount 1}
+								{tag player}
+								{zone "gamezone"}
+								{type human}
+								{state "not dead"}
+							}
+							{text "mission/multi/support/vehicle_inbound"}
+						}
 					}
 					{"default"}
 				}
@@ -104,7 +125,17 @@
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
-						{"timer" {time 5} {title "mission/multi/support/flank_inbound"}}
+						{"talk"
+							{selector
+								{ignore_captured_by_user 0}
+								{amount 1}
+								{tag player}
+								{zone "gamezone"}
+								{type human}
+								{state "not dead"}
+							}
+							{text "mission/multi/support/flank_inbound"}
+						}
 					}
 					{"default"}
 				}
@@ -113,7 +144,17 @@
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
-						{"timer" {time 6} {title "mission/multi/support/waves_exhausted"}}
+						{"talk"
+							{selector
+								{ignore_captured_by_user 0}
+								{amount 1}
+								{tag player}
+								{zone "gamezone"}
+								{type human}
+								{state "not dead"}
+							}
+							{text "mission/multi/support/waves_exhausted"}
+						}
 					}
 					{"default"}
 				}
@@ -427,9 +468,9 @@
 					{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
 					{remove select}
 				}
-				; Brief settle only — long pad dwell was stacking corpses at the entry.
+				; Brief settle only â€” long pad dwell was stacking corpses at the entry.
 				{"delay" {time 0.25}}
-				; Up to 3 active flags, shuffled — different elements peel different ways.
+				; Up to 3 active flags, shuffled â€” different elements peel different ways.
 				{"entity_state"
 					{selector
 						{source advanced}
@@ -1209,7 +1250,7 @@
 				}
 			}
 
-			; COMPOSITION 1 — 5 USMC infantry. Also the pool-short fallback, so this pool
+			; COMPOSITION 1 â€” 5 USMC infantry. Also the pool-short fallback, so this pool
 			; is the deepest. Taking the bodies strips the pool tag, so the gate below can
 			; simply count the tag to know what is still parked and available.
 			{"attack_support/comp_usmc"
@@ -1252,7 +1293,7 @@
 				}
 			}
 
-			; COMPOSITION 5 — 5 ARF / generic NATO infantry (European ARF kit).
+			; COMPOSITION 5 â€” 5 ARF / generic NATO infantry (European ARF kit).
 			{"attack_support/comp_arf"
 				{condition
 					{expression "1 & 2 & 3 & 4"}
@@ -1293,7 +1334,7 @@
 				}
 			}
 
-			; COMPOSITION 2 — 5 1AD infantry.
+			; COMPOSITION 2 â€” 5 1AD infantry.
 			{"attack_support/comp_1ad"
 				{condition
 					{expression "1 & 2 & 3 & 4"}
@@ -1334,7 +1375,7 @@
 				}
 			}
 
-			; COMPOSITION 3 (level 2+) — 4 1AD infantry, then one crewed humvee behind
+			; COMPOSITION 3 (level 2+) â€” 4 1AD infantry, then one crewed humvee behind
 			; them. Infantry first: a vehicle placed into the same spot clips and flips.
 			{"attack_support/comp_acav"
 				{condition
@@ -1386,7 +1427,7 @@
 				}
 			}
 
-			; COMPOSITION 4 (level 3) — 6 German pzgren, then two crewed humvees one at a
+			; COMPOSITION 4 (level 3) â€” 6 German pzgren, then two crewed humvees one at a
 			; time with a gap between them.
 			{"attack_support/comp_pzgren"
 				{condition

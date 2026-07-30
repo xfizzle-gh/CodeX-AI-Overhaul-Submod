@@ -418,7 +418,8 @@ class DefenceMissionSupportTests(unittest.TestCase):
         def tags(code: str) -> set:
             return set(re.findall(r"\{tag(?:_add|_remove)? ([a-z0-9_]+)\}", code))
 
-        shared = {"flag", "hidden"}
+        # "player" is the stock radio {"talk"} portrait selector, not engine state.
+        shared = {"flag", "hidden", "player"}
         # Pool tags the defence engine is ALLOWED to claim from: the original NATO
         # comps plus the player-nation faction pools it now shares with Q1. These are
         # claims against parked prototypes, not another engine's runtime state - and
@@ -1451,7 +1452,13 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 # they keep the tags the template file put on them.
                 self.assertNotIn("{clone}", code)
                 self.assertNotIn('{zone {zone "gamezone"}}', code)
-                self.assertNotIn("{zone ", code)
+                # {zone "gamezone"} allowed only inside stock {"talk"} portrait selectors.
+                code_no_talk = re.sub(
+                    r'\{"talk"[\s\S]*?\n\t\t\t\t\t\t\}',
+                    "",
+                    code,
+                )
+                self.assertNotIn("{zone ", code_no_talk)
 
                 # SELECTOR RULE: decorating the advanced selector that addresses pool
                 # units zeroes the match. Live proof in one run: a bare select moved all

@@ -932,7 +932,14 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         self.assertNotIn("{clone}", code)
         self.assertNotIn('{zone {zone "gamezone"}}', code)
         self.assertNotIn('{player "0"}', code)
-        self.assertNotIn("{zone ", code)
+        # {zone "gamezone"} is allowed only inside player-facing {"talk"} selectors
+        # (stock radio UI). Strip those blocks before the pool-selector ban.
+        code_no_talk = re.sub(
+            r'\{"talk"[\s\S]*?\n\t\t\t\t\t\t\}',
+            "",
+            code,
+        )
+        self.assertNotIn("{zone ", code_no_talk)
 
         # SELECTOR RULE: decorating the advanced selector that addresses pool
         # units zeroes the match. Live proof in one run: a bare select moved all
@@ -1341,7 +1348,8 @@ class SupportDiagnosticGateTests(unittest.TestCase):
 
     def test_gate_uses_one_consistent_minimal_shape(self) -> None:
         for name, code in self.engines.items():
-            gates = code.count(self.DEBUG_GATE) + code.count(self.ANNOUNCE_GATE)
+            # Timers are diagnostics only (support_debug$). Announce uses {"talk"}.
+            gates = code.count(self.DEBUG_GATE)
             self.assertEqual(code.count('{"timer"'), gates, name)
             self.assertGreaterEqual(code.count('{"default"}'), gates, name)
 
@@ -1385,8 +1393,23 @@ class SupportDiagnosticGateTests(unittest.TestCase):
             chunk = self.pot[idx : idx + 400]
             self.assertRegex(chunk, r'msgstr "[^"]+"')
 
+
+    def test_friendly_announce_uses_talk(self) -> None:
+        """Player lines use stock talk (portrait), not timer HUD spam."""
+        for name in ("attack_support_waves", "defense_support_waves"):
+            code = self.raw_engines[name]
+            self.assertIn('{"talk"', code, name)
+            self.assertIn('{text "mission/multi/support/', code, name)
+            # announce macros must not use timer titles
+            for m in re.finditer(
+                r'\(define "(?:as|ds)_announce_[a-z_]+"[\s\S]*?\n\t\t\t\)',
+                code,
+            ):
+                body = m.group(0)
+                self.assertNotIn('{"timer"', body, m.group(0)[:80])
+
     def test_engines_reference_only_known_announce_keys(self) -> None:
-        key_re = re.compile(r'title "mission/multi/support/([^"]+)"')
+        key_re = re.compile(r'(?:title|text) "mission/multi/support/([^"]+)"')
         known = {
             "wave_inbound",
             "vehicle_inbound",
