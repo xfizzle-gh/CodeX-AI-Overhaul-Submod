@@ -59,7 +59,14 @@ $files = @(
     "localizations\default\interface\text\mission\multi\support_events.pot",
     "localizations\default\interface\text\mission\multi\ce_mission_messages.pot",
     # Phase-4 flag prop prototypes (shared by Q2 + Q4 garrison steps).
-    "resource\map\multi\flag_props_templates.inc"
+    "resource\map\multi\flag_props_templates.inc",
+    # Shadow of the base-game flag ammo supply entity. Identical to the vanilla def
+    # except that it pulls Code:X's modern resupply tables instead of the WW2 ones,
+    # and it is what the per-flag {Link ... "ammo"} lines the map patcher writes
+    # actually resolve to. Same virtual path as the pak entry, so the .mdl and the
+    # supply_zone decal still come from the pak and are not shipped here.
+    # APPENDED only - the $files[n] lookups above are positional.
+    "resource\entity\service\-multiplayer\flag_point\flagpoint_ammo\flagpoint_ammo.def"
 )
 
 $gameSetSource = Join-Path $RepoRoot $files[0]
@@ -76,8 +83,9 @@ $dsSource = Join-Path $RepoRoot $files[10]
 $eaSource = Join-Path $RepoRoot $files[11]
 $factionTplSource = Join-Path $RepoRoot $files[12]
 $flagPropsTplSource = Join-Path $RepoRoot $files[15]
+$flagAmmoDefSource = Join-Path $RepoRoot $files[16]
 
-foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSource, $wavesSource, $tplSource, $defSource, $defTplSource, $conquestSource, $utilitySource, $dsSource, $eaSource, $factionTplSource, $flagPropsTplSource)) {
+foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSource, $wavesSource, $tplSource, $defSource, $defTplSource, $conquestSource, $utilitySource, $dsSource, $eaSource, $factionTplSource, $flagPropsTplSource, $flagAmmoDefSource)) {
     if (-not (Test-Path -LiteralPath $source)) {
         throw "Missing source file: $source"
     }
@@ -86,6 +94,19 @@ foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSourc
 # spawn point, so the read must stay type-guarded before the substring.
 if (-not (Select-String -Quiet -LiteralPath $utilitySource -SimpleMatch 'if type(spawnPoint) ~= "string" or spawnPoint == "" then')) {
     throw "Source utility.lua is missing the spawnPoint nil-guard, which crashes natively on a slot with no spawn point"
+}
+# The whole point of shadowing this def is the modern ammo table. Shipping it with
+# the base include would silently give every flag a WW2 crate whose regeneration is
+# switched off by gameclass - the exact defect this replaces - so the swap is pinned
+# here, and so is the call that consumes it.
+if (-not (Select-String -Quiet -LiteralPath $flagAmmoDefSource -SimpleMatch '(include "/properties/resupply_hotmod.inc")')) {
+    throw "Source flagpoint_ammo.def does not pull the modern resupply tables"
+}
+if (Select-String -Quiet -LiteralPath $flagAmmoDefSource -SimpleMatch '(include "/properties/resupply.inc")') {
+    throw "Source flagpoint_ammo.def still pulls the base WW2 resupply tables"
+}
+if (-not (Select-String -Quiet -LiteralPath $flagAmmoDefSource -SimpleMatch '("flag_ammo_heavy")')) {
+    throw "Source flagpoint_ammo.def is missing the flag_ammo_heavy supply-zone call"
 }
 
 if (-not (Select-String -Quiet -LiteralPath $gameSetSource -SimpleMatch "{aiTeamPlayers 1}")) {
@@ -178,6 +199,142 @@ function Test-SupportTimerGate([string]$path, [string]$label) {
     }
     Write-Host "OK gate $label $gated/$timers timers behind support_debug|announce`$"
 }
+
+# ---------------------------------------------------------------------------
+# FLAG AMMO SUPPLY POINTS
+#
+# Every flag in this map family ships with an EMPTY built-in placer socket -
+# {Placer {State "ammo" {Unlinked}}} - and nothing on the map ever fills it, so
+# holding a flag buys the holder no resupply whatsoever. Vanilla's own CTF maps
+# fill that socket the other way round and never carry the Placer block at all:
+# a childless {Entity "flagpoint_ammo"} carrying the supply_zone extender, plus a
+# {Link <child> {<flag> "ammo"}} line binding it into the flag's "ammo" slot.
+# Reference shape, base game 2v2_countryside/battle_zones.mi lines 353-357 and
+# 401. This step reproduces that exactly, once per flag, on every managed map.
+#
+# The ammo TABLE comes from the shadow def this repo ships at
+# resource/entity/service/-multiplayer/flag_point/flagpoint_ammo/flagpoint_ammo.def
+# - the vanilla def with one line changed, /properties/resupply.inc ->
+# /properties/resupply_hotmod.inc, so its ("flag_ammo_heavy") call resolves to
+# Code:X's modern table (24m radius, 5s regeneration, limit 750, modern items)
+# instead of the base one, whose items are WW2 and whose regeneration is disabled
+# by gameclass. Only the .def is shadowed: the .mdl and supply_zone.ebm resolve
+# from the pak through the same virtual path (precedent: barbwire_on_wall.def).
+#
+# The flag never carries both forms. Vanilla has the Link and no Placer; a
+# pristine map here has the Placer and no Link; a patched map must look like
+# vanilla, so the empty socket is removed as part of linking.
+#
+# Self-healing and idempotent: every block this step has ever written is stripped
+# first and then rebuilt from the flags actually present in the file, so a rerun
+# is a byte-for-byte no-op and an interrupted run repairs itself on the next pass.
+#
+# Child entity ids come from 0xfd00 upward. That band was collision-swept across
+# every .mi and .inc in resource/map/multi (highest id anywhere in the family is
+# 0xf801; the parked pools live at 0xb0xx), and the sweep is re-asserted per file
+# below rather than trusted - ids only have to be unique within one mission file,
+# but a silent collision would rebind somebody else's link.
+$FlagAmmoIdBase = 0xfd00
+# Insertion anchor. The generated blocks belong in the entities section, after the
+# map's own {Link} lines and ahead of the {Tags} block, which is exactly where the
+# templates include already sits - and unlike the {Link} lines themselves (factory
+# and winds_valley have none at all) it is present exactly once in every managed
+# map, repo copy included, and is verified so by the include checks below.
+$FlagAmmoAnchor = '(include "../attack_support_templates.inc")'
+function Set-FlagAmmoSupply([string]$path, [string]$label) {
+    $text = [System.IO.File]::ReadAllText($path)
+
+    # 1. Strip everything a previous run of this step wrote, so what follows is
+    #    generated from scratch rather than reconciled.
+    $text = [regex]::Replace(
+        $text,
+        '[ \t]*\{Entity "flagpoint_ammo" 0x[0-9a-fA-F]+\r?\n[ \t]*\{Extender "supply_zone"\r?\n[ \t]*\{enabled\}\r?\n[ \t]*\{current 0\}\r?\n[ \t]*\}\r?\n[ \t]*\}\r?\n',
+        ''
+    )
+    $text = [regex]::Replace(
+        $text,
+        '[ \t]*\{Link 0x[0-9a-fA-F]+ \{0x[0-9a-fA-F]+ "ammo"\}\}\r?\n',
+        ''
+    )
+    if ($text.Contains('flagpoint_ammo')) {
+        throw "Could not strip a previously written flagpoint_ammo block from: $path"
+    }
+
+    # 2. Retire the empty socket. A flag on this family carries at most two placer
+    #    states, "sandbags" and "ammo" (factory has both, everything else only
+    #    ammo), so drop the ammo state and then drop the Placer block if that left
+    #    it with nothing in it. A Placer that still holds sandbags is untouched.
+    $text = [regex]::Replace($text, '[ \t]*\{State "ammo" \{Unlinked\}\}\r?\n', '')
+    $text = [regex]::Replace($text, '[ \t]*\{Placer\r?\n[ \t]*\}\r?\n', '')
+    if ([regex]::IsMatch($text, '\{State "ammo" \{Unlinked\}\}')) {
+        throw "Map still carries an unlinked ammo placer socket after the strip: $path"
+    }
+
+    # 3. One supply point per campaign flag, in file order.
+    $flagIds = @()
+    foreach ($m in [regex]::Matches($text, '\{Entity "flag_point_campaign_\d+" (0x[0-9a-fA-F]+)')) {
+        $flagIds += $m.Groups[1].Value
+    }
+    if ($flagIds.Count -lt 1) {
+        throw "No flag_point_campaign entities to link ammo supply into: $path"
+    }
+    if (($flagIds | Sort-Object -Unique).Count -ne $flagIds.Count) {
+        throw "Duplicate flag entity ids in: $path"
+    }
+    if (-not $text.Contains($FlagAmmoAnchor)) {
+        throw "Map is missing the flag-ammo insertion anchor: $path"
+    }
+
+    $entities = ""
+    $links = ""
+    for ($i = 0; $i -lt $flagIds.Count; $i++) {
+        $childId = "0x{0:x}" -f ($FlagAmmoIdBase + $i)
+        if ([regex]::IsMatch($text, '\b' + [regex]::Escape($childId) + '\b')) {
+            throw "Flag-ammo child id $childId already in use in: $path"
+        }
+        # Entity block first, Link line after - the engine resolves a Link against
+        # entities already declared, and vanilla emits them in that order too.
+        $entities += "{Entity `"flagpoint_ammo`" $childId`r`n`t`t{Extender `"supply_zone`"`r`n`t`t`t{enabled}`r`n`t`t`t{current 0}`r`n`t`t}`r`n`t}`r`n`t"
+        $links += "{Link $childId {$($flagIds[$i]) `"ammo`"}}`r`n`t"
+    }
+    # The anchor already carries its own leading tab, which becomes the indent of
+    # the first emitted line; every block trails one so the anchor lands indented.
+    $text = $text.Replace($FlagAmmoAnchor, $entities + $links + $FlagAmmoAnchor)
+    [System.IO.File]::WriteAllText($path, $text, [System.Text.UTF8Encoding]::new($false))
+
+    # 4. Re-read and verify against the file on disk, not against the buffer.
+    $text = [System.IO.File]::ReadAllText($path)
+    $entityCount = ([regex]::Matches($text, '\{Entity "flagpoint_ammo" 0x[0-9a-fA-F]+')).Count
+    if ($entityCount -ne $flagIds.Count) {
+        throw "Expected $($flagIds.Count) flagpoint_ammo entities in $path (found $entityCount)"
+    }
+    $linkMatches = [regex]::Matches($text, '\{Link (0x[0-9a-fA-F]+) \{(0x[0-9a-fA-F]+) "ammo"\}\}')
+    if ($linkMatches.Count -ne $flagIds.Count) {
+        throw "Expected $($flagIds.Count) ammo links in $path (found $($linkMatches.Count))"
+    }
+    $sources = @(); $targets = @()
+    foreach ($m in $linkMatches) {
+        $sources += $m.Groups[1].Value
+        $targets += $m.Groups[2].Value
+    }
+    if (($sources | Sort-Object -Unique).Count -ne $sources.Count) {
+        throw "Duplicate flag-ammo child ids in: $path"
+    }
+    if (($targets | Sort-Object -Unique).Count -ne $targets.Count) {
+        throw "Two ammo supply points linked into the same flag in: $path"
+    }
+    foreach ($flagId in $flagIds) {
+        if ($targets -notcontains $flagId) {
+            throw "Flag $flagId has no ammo supply point in: $path"
+        }
+    }
+    if ([regex]::IsMatch($text, '\{State "ammo" \{Unlinked\}\}')) {
+        throw "Map carries both a linked supply point and an unlinked socket: $path"
+    }
+    Write-Host "FLAG-AMMO $label $($flagIds.Count) flag(s) linked in $path"
+    return $flagIds.Count
+}
+
 $SlotUnsafe = @('spawnPointName', 'PlayerSpawnPoint', 'require(')
 $supportCode = Get-LuaCode $supportSource
 foreach ($banned in $SlotUnsafe) {
@@ -1080,6 +1237,8 @@ $AirDepth = 0.65
 # pre-patch maps, and the "already backed up" check below is what stops a rerun
 # from overwriting them with maps this script has already patched.
 $backupRoot = Join-Path $WorkshopRoot "_attack_support_probe_backups"
+# Running total for the summary line: one ammo supply point per flag across the family.
+$flagAmmoTotal = 0
 
 foreach ($mapFile in $mapFiles) {
     # Legacy cleanup for maps written by an earlier deploy. Those files no longer
@@ -1462,6 +1621,17 @@ foreach ($mapFile in $mapFiles) {
     if ([regex]::IsMatch($text, 'allied_support')) {
         throw "Map still references the retired allied-support experiment: $mapFile"
     }
+
+    # Live ammo supply on every flag, deployed copy AND repo copy. The repo copy is
+    # patched too because this is real map content rather than derived geometry: the
+    # waypoint triples above are regenerated from a single repo centroid every run
+    # and so deliberately live only in the workshop, but the supply points are the
+    # same in both, and a repo map that lacked them would look like a regression to
+    # anyone reading the tracked file. Anchor and flag set are identical in the two
+    # copies, so both land byte-identically.
+    $flagsPatched = Set-FlagAmmoSupply $mapFile "workshop"
+    $null = Set-FlagAmmoSupply $repoMap "repo"
+    $flagAmmoTotal += $flagsPatched
 
     Write-Host "PATCHED $mapFile"
 }
@@ -1862,6 +2032,28 @@ Select-String -LiteralPath $vars -Pattern "defense_support_|enemy_attack_"
 Select-String -LiteralPath $ds -Pattern '\{"defense_support/|DEFENSE SUPPORT (ARMED|WAVE|NEAR|POOL|OWNER)'
 Select-String -LiteralPath $ea -Pattern '\{"enemy_attack/|ENEMY ATTACK (ARMED|WAVE|NEAR|POOL|ARMY)'
 Write-Host "Patched maps: $($mapFiles.Count)"
+Write-Host "Flag ammo supply points linked: $flagAmmoTotal"
+
+# The deployed def is what the {Link ... "ammo"} lines actually resolve to, so the
+# include swap is verified on the copy the game reads, not only on the source.
+$flagAmmoDef = Join-Path $WorkshopRoot $files[16]
+if (-not (Test-Path -LiteralPath $flagAmmoDef)) {
+    throw "Workshop is missing the flagpoint_ammo shadow def"
+}
+if (-not (Select-String -Quiet -LiteralPath $flagAmmoDef -SimpleMatch '(include "/properties/resupply_hotmod.inc")')) {
+    throw "Workshop flagpoint_ammo.def does not pull the modern resupply tables"
+}
+if (Select-String -Quiet -LiteralPath $flagAmmoDef -SimpleMatch '(include "/properties/resupply.inc")') {
+    throw "Workshop flagpoint_ammo.def still pulls the base WW2 resupply tables"
+}
+if (-not (Select-String -Quiet -LiteralPath $flagAmmoDef -SimpleMatch '("flag_ammo_heavy")')) {
+    throw "Workshop flagpoint_ammo.def is missing the flag_ammo_heavy supply-zone call"
+}
+# Shipping the .mdl alongside would shadow the pak model too and is not the intent -
+# only the def is ours; the geometry and the decal stay base-game.
+if (Test-Path -LiteralPath (Join-Path $WorkshopRoot "resource\entity\service\-multiplayer\flag_point\flagpoint_ammo\flagpoint_ammo.mdl")) {
+    throw "Workshop carries a shadow flagpoint_ammo.mdl, which was never meant to ship"
+}
 
 Write-Host "`nDeployment complete. Fully restart Gates of Hell before testing."
 

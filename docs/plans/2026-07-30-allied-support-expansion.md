@@ -87,9 +87,23 @@
 
 **Verified assets:** crate `para_ammo` (Code:X `codx_inventory/inf_crate_fin/para_ammo.def` — modern, ammo-supply 250, open inventory box); crewless weapons `mg_stand_nsvt_rus_ai`, `mg_stand_nsvt_ukr_ai`, `mg_stand_qjz171` (PRC), `bgm71_tow_ai` (NATO), `spg9_ai`. Spawn verb precedent: `{"spawn"} {entity "…"} {waypoint …}` (`base_map_setup_triggers.inc:9041`) and offset-spawn (`vehicle_ce.inc:625`).
 
-**v1 scope (user decision: DEFENDER-SIDE ALWAYS, both mission types — mirrors vanilla's defender-emplacement logic):** props spawn at the active flags of whichever side is DEFENDING that mission. Human-defense missions: placed by `defense_support_waves.inc`'s garrison step at prep end, weapon faction via `user_nation$` fold. Human-attack missions: placed by `enemy_defense_support.inc`'s garrison step at its init, weapon faction via `bot_army$` fold. Per active flag: 1 `para_ammo` crate always; at L2+ additionally 1 faction-matched crewless weapon (`mg_stand_nsvt_rus_ai` / `mg_stand_nsvt_ukr_ai` / `mg_stand_qjz171` / `bgm71_tow_ai`). Spawned unowned (player-0) → mannable by anyone on either side, exactly the MoW feel requested. New tag namespace `flag_prop` + test-pinned exclusion from every engine's claim selectors. **No CE modification** — both placements run from our own engines' garrison steps. Weapon-in-crate inventory injection deferred to v2 pending item-name recon.
+**v1 scope (user decision: DEFENDER-SIDE ALWAYS, both mission types — mirrors vanilla's defender-emplacement logic):** props spawn at the active flags of whichever side is DEFENDING that mission. Human-defense missions: placed by `defense_support_waves.inc`'s garrison step at prep end, weapon faction via `user_nation$` fold. Human-attack missions: placed by `enemy_defense_support.inc`'s garrison step at its init, weapon faction via `bot_army$` fold. Per active flag, at L2+: 1 faction-matched crewless weapon (`mg_stand_nsvt_rus_ai` / `mg_stand_nsvt_ukr_ai` / `mg_stand_qjz171` / `bgm71_tow_ai`). Spawned unowned (player-0) → mannable by anyone on either side, exactly the MoW feel requested. New tag namespace `flag_prop` + test-pinned exclusion from every engine's claim selectors. **No CE modification** — both placements run from our own engines' garrison steps.
+
+**Crate half RETIRED (user decision, 2026-07-30 — superseded, see Phase 6).** The `para_ammo` crate that v1 placed on every defended flag is gone: the three prototypes (ids `0xb040`-`0xb042`, MIDs 9260-9262) are out of `flag_props_templates.inc`, which is now a 12-prototype weapons-only pool, and the claim/place blocks are out of both garrison paths. Reason: Phase 6 gives every flag a real linked supply point, which is strictly better in every dimension — it is the vanilla mechanism, it follows the flag when it changes hands, it costs no pool depth and it needs no engine step. The crate would have been a second, worse supply source sitting on top of it. Test-pinned as retired in all three files; the L2+ crewless weapon placement is untouched.
 
 **Steps:** prop placement block in `defense_support_waves.inc` garrison phase → tag exclusions swept across engines → pins (defense-only, 1/flag caps, entity names, exclusions) → suite → deploy ×2 → live-test gate → commit "Add unmanned supply and weapon props to defended flags" → push.
+
+### Phase 6 — Live ammo supply on every flag (community ask, vanilla mechanism) — SHIPPED 2026-07-30
+
+**Problem:** every flag in the CWA CTF family carries an empty built-in placer socket, `{Placer {State "ammo" {Unlinked}}}`, and nothing on the map ever fills it. Holding a flag bought the holder no resupply at all.
+
+**Mechanism (recon-verified against the base game, no invention):** the base game's own CTF maps fill that socket the other way round and never carry the Placer block — a childless `{Entity "flagpoint_ammo"}` holding the `supply_zone` extender, plus a `{Link <child> {<flag> "ammo"}}` line binding it into the slot. Reference shape: `multi/2v2_countryside/battle_zones.mi` lines 353-357 and 401. The two forms are mutually exclusive; the empty socket is removed as the link lands.
+
+**Modern ammo table:** shipped as a shadow def at the vanilla virtual path, `resource/entity/service/-multiplayer/flag_point/flagpoint_ammo/flagpoint_ammo.def`, byte-identical to the base def except `(include "/properties/resupply.inc")` → `(include "/properties/resupply_hotmod.inc")`. Its `("flag_ammo_heavy")` call then resolves to Code:X's `resupply_hotmod.inc:1019` — 24m radius, 5s regeneration, limit 750, modern items — instead of the base table, whose items are WW2 and whose regeneration is disabled by gameclass. Only the `.def` is shadowed: the `.mdl` and `supply_zone.ebm` resolve from the pak through the same virtual path (precedent: `barbwire_on_wall.def`).
+
+**Delivery:** an idempotent, self-healing step in `tools/deploy_attack_support_probe.ps1` (`Set-FlagAmmoSupply`), same shape as the waypoint generator — strip everything the previous run wrote, then rebuild from the flags actually present. Runs over the deployed copy AND the repo copy of each map, so repo == workshop. Child ids come from `0xfd00` upward, a band collision-swept across every `.mi` and `.inc` in `resource/map/multi` (highest id anywhere else is `0xf801`) and re-asserted per file. **48 supply points across the 14 managed maps.**
+
+**Scope:** exactly the 14 `dcg_[cwa71]_*` CTF maps the deploy owns. `bakhmut_1`, `forest_` and `map_ukrcity` also ship CTF maps but are NOT managed by this deploy — no includes, no waypoints, no supply points — and that exclusion is now test-pinned so widening it has to be deliberate.
 
 ### Phase 5 — Airmobile insert (E1) — APPROVED (2026-07-30) — LOW RISK
 
@@ -123,6 +137,7 @@
 | 3 IFV (RUSA pilot → all four) | Med | Yes — L2+ attack mission |
 | 4 Flag props | Med | Yes — one defense mission |
 | 5 Airmobile insert (E1) | Low-Med | Yes — one L2+ attack mission |
+| 6 Flag ammo supply | Low | Yes — any mission; walk a rifleman onto a held flag |
 
 ## Approval record (2026-07-30, from user)
 1. ✅ Phases 1–4 approved in order, live-test gates respected.
@@ -130,5 +145,6 @@
 2. ✅ Phase 1 bonus approved: fix the ~25 orphaned CE `mission/multi/*` localization keys (separate commit).
 3. ✅ Phase 3: ALL FOUR factions in one series (no single-faction pilot).
 4. ✅ Phase 4: defender-side ALWAYS, both mission types (see revised v1 scope above).
+5. ✅ Phase 6 (2026-07-30): link a `flagpoint_ammo` into every CTF flag's built-in "ammo" placer slot using the vanilla mechanism, with a shadow `.def` swapping the ammo table to Code:X's modern one. The same decision retires the crate half of Phase 4 as superseded; the L2+ crewless weapon placement stays.
 
 Executor: Grok (external session), under the marching orders at the top of this document. Post-execution audit by the Claude toolchain against this document is expected — deviations from the marching orders will be treated as defects even if the feature works.

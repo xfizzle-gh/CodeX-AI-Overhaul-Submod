@@ -203,9 +203,6 @@
 	{Entity "flag_point_campaign_1" 0xe007
 		{Position 7461.53 -1188.48}
 		{xform zl 108.08}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f1}
 			{zone
@@ -227,9 +224,6 @@
 	{Entity "flag_point_campaign_2" 0xe00a
 		{Position -4511.37 -1608.59 67.01}
 		{xform zl 173.97}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f2}
 			{zone
@@ -251,9 +245,6 @@
 	{Entity "flag_point_campaign_3" 0xe00d
 		{Position -3344.08 3352.33}
 		{xform zl -42.76}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f3}
 			{zone
@@ -275,9 +266,6 @@
 	{Entity "flag_point_campaign_4" 0xe010
 		{Position 3144.8 -5009.38}
 		{xform zl -110.6}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f4}
 			{zone
@@ -299,9 +287,6 @@
 	{Entity "flag_point_campaign_5" 0xe013
 		{Position 1470.02 1526.26 66.98}
 		{xform zl 155.87}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f5}
 			{zone
@@ -3258,6 +3243,41 @@
 	}
 	{Link 0x8016 {0x382f "8"}}
 	{Link 0x8018 {0x382f "4"}}
+	{Entity "flagpoint_ammo" 0xfd00
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd01
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd02
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd03
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd04
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Link 0xfd00 {0xe007 "ammo"}}
+	{Link 0xfd01 {0xe00a "ammo"}}
+	{Link 0xfd02 {0xe00d "ammo"}}
+	{Link 0xfd03 {0xe010 "ammo"}}
+	{Link 0xfd04 {0xe013 "ammo"}}
 	(include "../attack_support_templates.inc")
 	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")

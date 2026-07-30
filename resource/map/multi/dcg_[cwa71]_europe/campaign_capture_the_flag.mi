@@ -1919,9 +1919,6 @@
 	{Entity "flag_point_campaign_3" 0x8002
 		{Position 3681.83 -821.08}
 		{xform zl 1.56}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f3}
 			{zone
@@ -1943,9 +1940,6 @@
 	{Entity "flag_point_campaign_1" 0x8004
 		{Position 995.46 882.33}
 		{xform zl 63.09}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f1}
 			{zone
@@ -1967,9 +1961,6 @@
 	{Entity "flag_point_campaign_2" 0xc013
 		{Position -1065.49 1469.74}
 		{xform zl -120.89}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f2}
 			{zone
@@ -1989,6 +1980,27 @@
 		{MID 112}
 	}
 	{Link 0x8023 {0x507f "5"}}
+	{Entity "flagpoint_ammo" 0xfd00
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd01
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd02
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Link 0xfd00 {0x8002 "ammo"}}
+	{Link 0xfd01 {0x8004 "ammo"}}
+	{Link 0xfd02 {0xc013 "ammo"}}
 	(include "../attack_support_templates.inc")
 	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
