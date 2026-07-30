@@ -923,7 +923,7 @@
 					{"switch"
 						{"case"
 							{condition {type rand} {value 0.2}}
-							{"delay" {time 110}}
+							{"delay" {time 115}}
 						}
 						{"case"
 							{condition {type rand} {value 0.25}}
