@@ -814,8 +814,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         # Main + flank + airmobile LZ placement sites (count drifts with default branches).
         self.assertGreaterEqual(code.count('{"placement"'), 20)
         for point in (1, 2, 3):
-            expected_a = 2 if point == 1 else 1
-            expected_b = 4 if point == 1 else 2
+            # E2 aircraft placement plus its explicit fail-4 infantry fallback
+            # add two point-1 branches on a and four on b (including defaults).
+            expected_a = 3 if point == 1 else 1
+            expected_b = 6 if point == 1 else 2
             self.assertEqual(
                 code.count('{target_waypoint "attack_support_entry_a%d"}' % point), expected_a
             )

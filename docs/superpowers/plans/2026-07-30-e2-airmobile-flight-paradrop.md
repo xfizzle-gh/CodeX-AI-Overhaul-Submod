@@ -49,10 +49,10 @@ The tasks below must use these names exactly:
 | Item | Exact contract |
 |---|---|
 | Test gate | `support_e2_test$`: `0=off`, `1=helicopter`, `2=paradrop` |
-| State | `support_e2_stage$`: `0=idle`, `10=claimed`, `20=placed`, `30=inbound`, `40=insert/release`, `50=survivors ordered`, `60=aircraft exiting`, `70=cleaned` |
+| State | `support_e2_stage$`: `0=idle`, `10=dispatch reserved`, `20=package claimed/target selected`, `30=inbound`, `40=insert/release`, `50=survivors ordered`, `60=aircraft exiting`, `70=cleaned` |
 | Failure | `support_e2_fail$`: `0=none`, `1=unsupported faction`, `2=pool short`, `3=no active flag`, `4=no safe LZ`, `5=arrival timeout`, `6=release timeout`, `7=no landed survivor`, `8=ownership unresolved` |
 | LZ | `support_e2_lz$`: `0=none`, `1=air pad 1`, `2=air pad 2` |
-| Flag | `support_e2_flag$`: `0=none`, `1`-`5` for selected `fpc1`-`fpc5` |
+| Flag | `support_e2_flag$`: `0=none`, `1=one portable active target selected` |
 | Target tags | `support_e2_flag_target`, `support_e2_aircraft`, `support_e2_helo`, `support_e2_plane`, `support_e2_team`, `support_e2_para_pax`, `support_e2_released`, `support_e2_landed` |
 | Defines | `e2_reset_target`, `e2_choose_flag`, `e2_own_current`, `e2_place_one`, `e2_order_team`, `e2_delete_aircraft`, `e2_fail_and_cleanup` |
 | Triggers | `attack_support/e2_dispatch`, `attack_support/e2_helo_rusa`, `attack_support/e2_helo_ukr`, `attack_support/e2_helo_nato`, `attack_support/e2_para_rusa`, `attack_support/e2_para_ukr`, `attack_support/e2_para_nato`, `attack_support/e2_para_landed` |
@@ -426,8 +426,8 @@ Insert a new E2 section immediately before the current motorized section. Implem
     remove support_e2_flag_target from any previous entity; set flag/lz to 0
 (define "e2_choose_flag")
     choose one operatable, non-inactive entity tagged flag; add support_e2_flag_target;
-    set support_e2_flag$ by testing the selected entity against fpc1..fpc5;
-    if none exists set fail=3 and invoke e2_fail_and_cleanup
+    set support_e2_flag$ to 1 as the portable active-target sentinel;
+    if none exists set fail=3; the caller invokes the single cleanup path
 (define "e2_own_current")
     switch on id_attack_support$ with literal cases 1..16, each applying entity_state
     {player "N"} to selector {tag support_e2_claim}; default sets fail=8 and does no ownership
@@ -462,7 +462,7 @@ Map faction values exactly: `1=RUSA`, `2=UKR`, `3=NATO`; default/`4=PRC` sets fa
 Each faction trigger must:
 
 1. Claim one hull plus its linked pilots by changing the hull package tag to `support_e2_claim`, `support_e2_aircraft`, `support_e2_helo`; claim exactly four independent team humans as `support_e2_claim` + `support_e2_team`.
-2. Set stage `10`, call `e2_choose_flag`, then `e2_own_current`.
+2. Require the dispatch-reserved stage `10`, claim the package, call `e2_choose_flag`, advance to stage `20`, then call `e2_own_current`.
 3. Choose side exactly as E1: `enemy_spawnside$ == 1` uses `_b`; `== 2` uses `_a`; default `_b`.
 4. Choose pad 1 or 2 with the existing enemy-within-120 guard, recording `support_e2_lz$`; if both are unsafe, set fail `4` and use the documented infantry-only standoff fallback while deleting the unused helicopter.
 5. MOVE-place the hull at `attack_support_entry_<side>1`, then run this exact order:

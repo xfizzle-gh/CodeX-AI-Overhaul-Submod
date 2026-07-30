@@ -11,10 +11,41 @@ POT = ROOT / "localizations/default/interface/text/mission/multi/support_events.
 DEPLOY = ROOT / "tools/deploy_attack_support_probe.ps1"
 CE_MAP = ROOT / "resource/map/multi/ce/ai_logic/ce_ai_logic_triggers.inc"
 CE_SCRIPT = ROOT / "resource/map_scripts/ai_logic/ce_ai_logic_triggers.inc"
+PLAN = ROOT / "docs/superpowers/plans/2026-07-30-e2-airmobile-flight-paradrop.md"
 
 
 def block(text: str, start: str, end: str) -> str:
     return text.split(start, 1)[1].split(end, 1)[0]
+
+
+def mi_block(text: str, marker: str) -> str:
+    """Return the balanced MI {...} form beginning at marker."""
+    start = text.index(marker)
+    open_at = text.index("{", start)
+    depth = 0
+    for pos in range(open_at, len(text)):
+        if text[pos] == "{":
+            depth += 1
+        elif text[pos] == "}":
+            depth -= 1
+            if depth == 0:
+                return text[open_at : pos + 1]
+    raise AssertionError(f"unbalanced MI block: {marker}")
+
+
+def mi_define(text: str, name: str) -> str:
+    """Return the balanced (define ...) form, including nested calls."""
+    marker = f'(define "{name}"'
+    start = text.index(marker)
+    depth = 0
+    for pos in range(start, len(text)):
+        if text[pos] == "(":
+            depth += 1
+        elif text[pos] == ")":
+            depth -= 1
+            if depth == 0:
+                return text[start : pos + 1]
+    raise AssertionError(f"unbalanced MI define: {name}")
 
 
 class E2PoolAndStateTests(unittest.TestCase):
@@ -164,3 +195,134 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
             self.assertIn(f'support_e2_{faction}_helo_team', e2)
         self.assertNotIn('{effect drop_paratrooper}', e2)
         self.assertNotIn('{effect drop_paratroopers}', e2)
+
+    def test_dispatch_reserves_stage_before_async_child_and_pool_short_is_atomic(self) -> None:
+        dispatch = mi_block(self.waves, '{"attack_support/e2_dispatch"')
+        reserve = '{"set_i" {var "support_e2_stage$"} {op "="} {value 10}}'
+        first_child = '{"trigger" {name "attack_support/e2_helo_rusa"}}'
+        self.assertLess(dispatch.index(reserve), dispatch.index(first_child))
+        timeout = dispatch.split('{"delay" {time 1}}', 1)[1]
+        self.assertIn('{var "support_e2_stage$"} {op "=="} {value 10}', timeout)
+        self.assertIn('{var "support_e2_fail$"} {op "="} {value 2}', timeout)
+        for faction in ("rusa", "ukr", "nato"):
+            helo = mi_block(self.waves, f'{{"attack_support/e2_helo_{faction}"')
+            condition = helo.split('{actions', 1)[0]
+            self.assertIn('{var "support_e2_stage$"} {op "=="} {value 10}', condition)
+            self.assertNotIn('{var "support_e2_stage$"} {op "=="} {value 0}', condition)
+            selected = helo.index('("e2_choose_flag")')
+            accepted = helo.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}')
+            flight = helo.index('{"air_state"')
+            self.assertLess(selected, accepted)
+            self.assertLess(accepted, flight)
+
+    def test_pad_safety_uses_one_claimed_marker_and_two_independent_near_queries(self) -> None:
+        claim = mi_define(self.waves, "e2_claim_lz_marker")
+        self.assertIn('{tag support_e2_team}', claim)
+        self.assertIn('{tag_add support_e2_lz_marker}', claim)
+        self.assertIn('{amount 1}', claim)
+        self.assertNotIn('{tag_remove support_e2_team}', claim)
+
+        place = mi_define(self.waves, "e2_place_lz_marker")
+        for side in "ab":
+            for pad in (1, 2):
+                self.assertIn(
+                    f'{{target_waypoint "attack_support_air_{side}{pad}"}}', place
+                )
+        self.assertNotIn('attack_support_entry_', place)
+
+        choose = mi_define(self.waves, "e2_choose_lz")
+        self.assertEqual(choose.count('("e2_claim_lz_marker")'), 1)
+        self.assertEqual(choose.count('("e2_place_lz_marker")'), 2)
+        self.assertEqual(choose.count('{type near}'), 2)
+        self.assertEqual(choose.count('{distance 120}'), 2)
+        self.assertEqual(choose.count('{tag support_e2_lz_marker}'), 2)
+        self.assertGreaterEqual(choose.count('{tag _bot}'), 2)
+        self.assertEqual(choose.count('{type human}'), 2)
+        self.assertEqual(choose.count('{state operatable}'), 2)
+        self.assertNotIn('{type entities}', choose)
+        self.assertNotIn('{source advanced}', choose)
+
+    def test_arrival_is_pad_anchored_before_any_troop_promotion(self) -> None:
+        for faction in ("rusa", "ukr", "nato"):
+            helo = mi_block(self.waves, f'{{"attack_support/e2_helo_{faction}"')
+            arrival = helo.split('{"delay" {time 40}}', 1)[1]
+            near = arrival.index('{type near}')
+            announce = arrival.index('("e2_announce_helo")')
+            place = arrival.index('("e2_place_one")')
+            self.assertLess(near, announce)
+            self.assertLess(near, place)
+            self.assertIn('{units', arrival[:announce])
+            self.assertIn('{tag support_e2_helo}', arrival[:announce])
+            self.assertIn('{state operatable}', arrival[:announce])
+            self.assertIn('{near_to', arrival[:announce])
+            self.assertIn('{tag support_e2_lz_marker}', arrival[:announce])
+            self.assertIn('{distance 120}', arrival[:announce])
+            self.assertNotIn('target_waypoint', arrival[:announce])
+            fail5 = arrival.index('{var "support_e2_fail$"} {op "="} {value 5}')
+            failure_default = arrival.rfind('{"default"', 0, fail5)
+            self.assertGreaterEqual(failure_default, 0)
+            failed = mi_block(arrival[failure_default:], '{"default"')
+            self.assertIn('("e2_order_aircraft_exit")', failed)
+            self.assertEqual(failed.count('("e2_fail_and_cleanup")'), 1)
+            self.assertNotIn('("e2_place_one")', failed)
+            self.assertNotIn('("e2_place_one_entry")', failed)
+
+    def test_fail4_uses_numbered_entry_helper_and_each_abort_cleans_once(self) -> None:
+        choose_flag = mi_define(self.waves, "e2_choose_flag")
+        self.assertIn('{var "support_e2_fail$"} {op "="} {value 3}', choose_flag)
+        self.assertNotIn('e2_fail_and_cleanup', choose_flag)
+        self.assertNotIn('e2_complete_cleanup', choose_flag)
+
+        entry = mi_define(self.waves, "e2_place_one_entry")
+        self.assertIn('{target_waypoint "attack_support_entry_a1"}', entry)
+        self.assertIn('{target_waypoint "attack_support_entry_b1"}', entry)
+        self.assertNotIn('{tag spawn_a}', entry)
+        self.assertNotIn('{tag spawn_b}', entry)
+        self.assertIn('{"delay" {time 0.5}}', entry)
+
+        for faction in ("rusa", "ukr", "nato"):
+            helo = mi_block(self.waves, f'{{"attack_support/e2_helo_{faction}"')
+            fail4_at = helo.index('{var "support_e2_fail$"} {op "=="} {value 4}')
+            fail4 = helo[fail4_at : helo.index('{"default"', fail4_at)]
+            self.assertEqual(fail4.count('("e2_place_one_entry")'), 4)
+            self.assertEqual(fail4.count('("e2_complete_cleanup")'), 1)
+            self.assertNotIn('("e2_delete_aircraft")', fail4)
+            self.assertNotIn('("e2_fail_and_cleanup")', fail4)
+
+    def test_deployer_pins_task3_source_and_workshop_contracts(self) -> None:
+        deploy = DEPLOY.read_text(encoding="utf-8")
+        for array in (
+            "$E2HeloWaveMarkers",
+            "$E2HeloTemplateMarkers",
+            "$E2HeloForbiddenMarkers",
+        ):
+            self.assertIn(array, deploy)
+        for marker in (
+            "; ===== E2 REAL AIR INSERT PROBES =====",
+            '{"attack_support/e2_dispatch"',
+            '{"attack_support/e2_helo_rusa"',
+            '{"attack_support/e2_helo_ukr"',
+            '{"attack_support/e2_helo_nato"',
+            '{"air_state"',
+            'support_e2_lz',
+            '{"delete"',
+            '{Altitude 22}',
+        ):
+            self.assertIn(marker, deploy)
+        for marker in ('attack_support/e2_helo_prc', '{clone}', 'support_e2_lz_fpc'):
+            self.assertIn(marker, deploy)
+        for side in ("Source", "Workshop"):
+            self.assertIn(f'{side} wave engine is missing E2 helicopter marker', deploy)
+            self.assertIn(f'{side} E2 helicopter template is missing marker', deploy)
+            self.assertIn(f'{side} wave engine contains forbidden E2 helicopter marker', deploy)
+
+    def test_plan_records_portable_active_target_sentinel(self) -> None:
+        plan = PLAN.read_text(encoding="utf-8")
+        self.assertIn(
+            '`support_e2_flag$`: `0=none`, `1=one portable active target selected`',
+            plan,
+        )
+        self.assertNotIn('`1`-`5` for selected `fpc1`-`fpc5`', plan)
+        task3 = block(plan, "### Task 3:", "### Task 4:")
+        self.assertIn("set support_e2_flag$ to 1 as the portable active-target sentinel", task3)
+        self.assertNotIn("testing the selected entity against fpc1..fpc5", task3)

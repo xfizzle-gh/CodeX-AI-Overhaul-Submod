@@ -106,6 +106,27 @@ foreach ($marker in @('{Entity "mi17_b8_rus"', '{Entity "mi17_b8_ukr"', '{Entity
 foreach ($key in @('mission/multi/support/e2_helo_inbound', 'mission/multi/support/e2_para_inbound', 'mission/multi/support/e2_insert_failed')) {
     if (-not (Select-String -Quiet -LiteralPath (Join-Path $RepoRoot $files[13]) -SimpleMatch "msgctxt `"$key`"")) { throw "Source support_events.pot is missing msgctxt $key" }
 }
+$E2HeloWaveMarkers = @(
+    '; ===== E2 REAL AIR INSERT PROBES =====',
+    '{"attack_support/e2_dispatch"',
+    '{"attack_support/e2_helo_rusa"',
+    '{"attack_support/e2_helo_ukr"',
+    '{"attack_support/e2_helo_nato"',
+    '{"air_state"',
+    'support_e2_lz',
+    '{"delete"'
+)
+$E2HeloTemplateMarkers = @('{Altitude 22}')
+$E2HeloForbiddenMarkers = @('attack_support/e2_helo_prc', '{clone}', 'support_e2_lz_fpc')
+foreach ($marker in $E2HeloWaveMarkers) {
+    if (-not (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch $marker)) { throw "Source wave engine is missing E2 helicopter marker: $marker" }
+}
+foreach ($marker in $E2HeloTemplateMarkers) {
+    if (-not (Select-String -Quiet -LiteralPath $factionTplSource -SimpleMatch $marker)) { throw "Source E2 helicopter template is missing marker: $marker" }
+}
+foreach ($marker in $E2HeloForbiddenMarkers) {
+    if (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch $marker) { throw "Source wave engine contains forbidden E2 helicopter marker: $marker" }
+}
 # string.sub on a nil spawnPointName faulted natively on slots the engine gives no
 # spawn point, so the read must stay type-guarded before the substring.
 if (-not (Select-String -Quiet -LiteralPath $utilitySource -SimpleMatch 'if type(spawnPoint) ~= "string" or spawnPoint == "" then')) {
@@ -1782,6 +1803,12 @@ if (Select-String -Quiet -LiteralPath $waves -SimpleMatch '{clone}') {
 if (Select-String -Quiet -LiteralPath $waves -Pattern '^[^;]*\bfpc') {
     throw "Workshop wave engine still targets fpc* capture points"
 }
+foreach ($marker in $E2HeloWaveMarkers) {
+    if (-not (Select-String -Quiet -LiteralPath $waves -SimpleMatch $marker)) { throw "Workshop wave engine is missing E2 helicopter marker: $marker" }
+}
+foreach ($marker in $E2HeloForbiddenMarkers) {
+    if (Select-String -Quiet -LiteralPath $waves -SimpleMatch $marker) { throw "Workshop wave engine contains forbidden E2 helicopter marker: $marker" }
+}
 if (-not (Select-String -Quiet -LiteralPath $waves -SimpleMatch '{tag_add attack_support_flag1}')) {
     throw "Workshop wave engine is not claiming a real flag point"
 }
@@ -1810,6 +1837,9 @@ if ((Select-String -LiteralPath $tplTarget -SimpleMatch '{Able "-select"}').Coun
 $factionTarget = Join-Path $WorkshopRoot "resource\map\multi\faction_support_templates.inc"
 if (-not (Test-Path -LiteralPath $factionTarget)) {
     throw "Workshop is missing the player-nation pool: faction_support_templates.inc"
+}
+foreach ($marker in $E2HeloTemplateMarkers) {
+    if (-not (Select-String -Quiet -LiteralPath $factionTarget -SimpleMatch $marker)) { throw "Workshop E2 helicopter template is missing marker: $marker" }
 }
 if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able "-select"}').Count -ne 502) {
     throw "Workshop faction pool is not the 502-prototype player-nation pool"
