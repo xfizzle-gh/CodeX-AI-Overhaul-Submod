@@ -105,6 +105,9 @@
 
 **Do NOT hook CE's `paratrooper_need_orders` lifecycle** — its order path (waypoints 5004–5006 / grid effects) conflicts with our ordering. Our own order flow applies after insert.
 
+
+**Defense-side airmobile parity added post-approval (2026-07-30):** E1 was attack-only in the original approval; defense_support_waves.inc now mirrors it (cmd 18, L2+ ~15%, `defense_support_air_left$` cap 2, faction talk keys, 120-unit enemy-proximity guard falling back to edge pads, deep `attack_support_air_*` LZs). **No aircraft entity** — narrative helo only; delivery is teleport placement. Day-2 force toggle `attack_support_air_test$` is **shared**: attack init sets it on attack missions; defense `garrison_init` sets it on defense missions (same default ON for testing; set 0 to ship production-only rolls).
+
 ### Parked (approval recorded 2026-07-30)
 
 - **E2 — flyover theater (PARKED, time-boxed experiment AFTER Phases 1–5 ship):** a real transport entity crossing the map as set dressing during airmobile inserts. Assets: `uh-60m_blackhawk_mg` (West-81 — dependency already declared by the stack), `mi17_b8_rus`/`mi17_b8_ukr` (Code:X). **PRC deliverable for E2:** a PLA-owned Mi-171Sh adaptation cloned from the in-stack `mi17_b8` asset (in-repo `.def` clone; precedent: `resource/entity/construction/_military/fortifications/*.def`). Time-box: one session; success criterion = reliable scripted flight across two maps without crashes; failure = kill E2 permanently.
