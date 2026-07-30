@@ -869,7 +869,7 @@
 			)
 
 			; cmd 10 line 11 wpn 12 recon 13 assault 14 eng 15 manpad 16 light veh
-			; 17 IFV 18 airmobile 19 motorized truck (RUSA/UKR/NATO; PRC skips — no passenger-group truck)
+			; 17 IFV 18 airmobile 19 motorized truck (RUSA/UKR/NATO/PRC sx2190 passenger)
 			; NATO specialty cmds 1-5 still used when faction_support_army$ == 3.
 			(define "as_poke_faction_line"
 				{"trigger" {name "attack_support/ally_rusa_line"}}
@@ -919,11 +919,11 @@
 				{"trigger" {name "attack_support/ally_prc_ifv"}}
 				{"trigger" {name "attack_support/ally_nato_ifv"}}
 			)
-			; PRC is absent by design: Code:X ships no PLA carrier whose passengers sit in
-			; placer group "passenger", so {emit {mode passengers}} could not dismount them.
+			; PRC uses shaanxi_sx2190_passenger (group passengers). PLA IFVs still use group crew.
 			(define "as_poke_faction_motor"
 				{"trigger" {name "attack_support/ally_rusa_motor"}}
 				{"trigger" {name "attack_support/ally_ukr_motor"}}
+				{"trigger" {name "attack_support/ally_prc_motor"}}
 				{"trigger" {name "attack_support/ally_nato_motor"}}
 			)
 			(define "as_poke_faction_veh"
@@ -3183,7 +3183,7 @@
 
 			; ===== MOTORIZED INSERT (cmd 19) =====
 			; Truck + linked crew/pax place at entry, drive toward flag, emit passengers,
-			; pax advance, truck holds. Cap attack_support_motor_left$=1. PRC has no package.
+			; pax advance, truck holds. Cap attack_support_motor_left$=1. All four factions.
 			(define "as_finish_motor"
 				{"delay" {time 0.5}}
 				{"entity_state"
@@ -3383,6 +3383,52 @@
 						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_pax}}}}}
 						{tag_add attack_support_motor_pax}
 						{tag_remove ally_sup_ukr_motor_pax}
+					}
+					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("am_place_at_entry")
+					("as_finish_motor")
+				}
+			}
+
+
+			{"attack_support/ally_prc_motor"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 19}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "attack_support_motor_left$"} {op ">"} {value 0}}
+						{"6.entities" {selector {tag ally_sup_prc_motor_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
+					("as_announce_motor")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ATTACK SUPPORT MOTORIZED INSERT"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor}}}}}
+						{tag_add attack_support_deploy}
+						{tag_remove ally_sup_prc_motor}
+						{tag_remove ally_sup_prc_motor_crew}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_hull}}}}}
+						{tag_add attack_support_motor_hull}
+						{tag_remove ally_sup_prc_motor_hull}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_pax}}}}}
+						{tag_add attack_support_motor_pax}
+						{tag_remove ally_sup_prc_motor_pax}
 					}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
 					{"delay" {time 0.1}}

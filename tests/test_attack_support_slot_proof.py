@@ -204,10 +204,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         engines - which never run on the same mission, so each only has to cover ONE
         engine's worst case. The binding number is the L3 budget of 8 waves."""
         code = self.faction_tpl
-        self.assertEqual(code.count('{Able "-select"}'), 444)
-        self.assertEqual(code.count("{Player 0}"), 444)
-        self.assertEqual(code.count('"ally_sup_tpl"'), 444)
-        self.assertEqual(code.count('"hidden"'), 444)
+        self.assertEqual(code.count('{Able "-select"}'), 455)
+        self.assertEqual(code.count("{Player 0}"), 455)
+        self.assertEqual(code.count('"ally_sup_tpl"'), 455)
+        self.assertEqual(code.count('"hidden"'), 455)
 
         for key, _army in FACTION_ARMIES:
             for suffix, _cmd, take, depth in FACTION_COMPS:
@@ -244,11 +244,11 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
         # Bands: this pool must not collide with either neighbour in a resolved map.
         ids = re.findall(r"\{(?:Entity|Human) \"[^\"]*\" (0x[0-9a-f]+)", code)
-        self.assertEqual(len(ids), 444)
-        self.assertEqual(len(set(ids)), 444)
+        self.assertEqual(len(ids), 455)
+        self.assertEqual(len(set(ids)), 455)
         self.assertTrue(all(i.startswith(("0xb2", "0xb3")) for i in ids))
         mids = [int(m) for m in re.findall(r"\{MID (\d+)\}", code)]
-        self.assertEqual(len(set(mids)), 444)
+        self.assertEqual(len(set(mids)), 455)
         self.assertGreaterEqual(min(mids), 9300)
         # Real breeds only, and none of the retired idioms.
         self.assertNotIn('{Human ""', code)
@@ -1282,7 +1282,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             # checked by the deploy, or the faction waves reference nothing.
             "resource\\map\\multi\\faction_support_templates.inc",
             '(include "../faction_support_templates.inc")',
-            "must park 444 prototypes",
+            "must park 455 prototypes",
             '{"attack_support_air_left"}',
             '{"attack_support_air_test"}',
             "attack_support_air_",
@@ -1651,7 +1651,7 @@ class CeMissionMessagesPotTests(unittest.TestCase):
 
 
 class AttackSupportMotorizedInsertTests(unittest.TestCase):
-    """Cmd 19 motorized truck insert: RUSA/UKR/NATO packages; PRC skipped."""
+    """Cmd 19 motorized truck insert: all four factions (PRC = SX2190 passenger)."""
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -1666,27 +1666,26 @@ class AttackSupportMotorizedInsertTests(unittest.TestCase):
         self.assertIn("motorized_inbound", self.pot)
         self.assertIn('("as_announce_motor")', self.waves)
 
-    def test_motor_triggers_three_factions_not_prc(self) -> None:
-        for fac in ("rusa", "ukr", "nato"):
+    def test_motor_triggers_all_four_factions(self) -> None:
+        for fac in ("rusa", "ukr", "prc", "nato"):
             self.assertIn('{"attack_support/ally_%s_motor"' % fac, self.waves)
             self.assertIn("ally_sup_%s_motor_hull" % fac, self.tpl)
-        self.assertNotIn('{"attack_support/ally_prc_motor"', self.waves)
-        self.assertNotIn("ally_sup_prc_motor", self.tpl)
 
     def test_motor_entities_and_links(self) -> None:
-        # Verified multiplayer unit names (units_*.set); PRC has no passenger-group truck.
         self.assertIn('{Entity "ural"', self.tpl)
         self.assertIn('{Entity "ural_vsu"', self.tpl)
         self.assertIn('{Entity "fmtv"', self.tpl)
+        self.assertIn('{Entity "shaanxi_sx2190_passenger"', self.tpl)
         self.assertIn('{Link 0xb3a1 {0xb3a0 "driver"}}', self.tpl)
-        self.assertIn('{Link 0xb3a3 {0xb3a0 "seat1"}}', self.tpl)
+        self.assertIn('{Link 0xb3c2 {0xb3c1 "driver"}}', self.tpl)
+        self.assertIn('{Link 0xb3c4 {0xb3c1 "seat1"}}', self.tpl)
         self.assertIn('("as_finish_motor")', self.waves)
         self.assertIn("{mode passengers}", self.waves)
         self.assertIn("attack_support_motor_hull", self.waves)
         self.assertIn("attack_support_motor_pax", self.waves)
 
     def test_motor_inert_on_defense(self) -> None:
-        for fac in ("rusa", "ukr", "nato"):
+        for fac in ("rusa", "ukr", "prc", "nato"):
             block = self.waves.split('{"attack_support/ally_%s_motor"' % fac)[1].split('{"attack_support/')[0]
             self.assertIn('{var "user_is_defender$"} {op "=="} {value 0}', block)
 

@@ -2575,17 +2575,12 @@
 ; the places seat1..seatN, all in placer group "passenger" for the seats. That group
 ; is exactly what {emit {mode passengers}} keys on, which is how the dismount works
 ; without ejecting the driver.
-;   RUSA ural      crew_2_human + passenger_10_human  (8 of 10 seats used)
-;   UKR  ural_vsu  crew_2_human + passenger_10_human  (8 of 10 seats used)
-;   NATO fmtv      crew_2_human + passenger_12_human  (8 of 12 seats used)
-; PRC HAS NO ENTRY HERE ON PURPOSE. Code:X ships no PLA vehicle whose passengers sit
-; in placer group "passenger" - every PLA carrier (zbl08, zbl_191_30mm, zbd04_a) puts
-; its passengers in group "crew", so {emit {mode passengers}} would dismount nobody
-; and {emit {mode crew}} would dump the driver with them. PRC missions fall through
-; to the normal infantry wave; see the recon note in attack_support_waves.inc.
-; Ids 0xb3a0-0xb3c0, MIDs 9740-9772, y=-36600 - all fresh bands, swept against every
-; other pool in this stack (attack 9000-9083 / enemy_def 9100-9259 / flag_props
-; 9260-9274 / faction 9300-9731).
+;   RUSA ural                    crew_2 + 8 pax seats
+;   UKR  ural_vsu                crew_2 + 8 pax seats
+;   NATO fmtv                    crew_2 + 8 pax seats
+;   PRC  shaanxi_sx2190_passenger crew_2 + 8 pax (group passengers — emit-safe)
+; PLA IFVs (zbl08 etc.) still put pax in group "crew"; this SX2190 troop truck does not.
+; Ids 0xb3a0-0xb3cb, MIDs 9740-9783, y=-36600.
 ; ----- ALLY RUSA MOTORIZED (ural) -----
 	{Entity "ural" 0xb3a0
 		{Position -9000 -36600}
@@ -2790,6 +2785,75 @@
 		{Able "-select"}
 	}
 
+
+; ----- ALLY PRC MOTORIZED (shaanxi_sx2190_passenger) -----
+	{Entity "shaanxi_sx2190_passenger" 0xb3c1
+		{Position -8400 -36600}
+		{Player 0}
+		{MID 9773}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xb3c2
+		{Position -8395 -36600}
+		{Player 0}
+		{MID 9774}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_crew" 0xb3c3
+		{Position -8390 -36600}
+		{Player 0}
+		{MID 9775}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_squadlead" 0xb3c4
+		{Position -8385 -36600}
+		{Player 0}
+		{MID 9776}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xb3c5
+		{Position -8380 -36600}
+		{Player 0}
+		{MID 9777}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xb3c6
+		{Position -8375 -36600}
+		{Player 0}
+		{MID 9778}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_mg" 0xb3c7
+		{Position -8370 -36600}
+		{Player 0}
+		{MID 9779}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xb3c8
+		{Position -8365 -36600}
+		{Player 0}
+		{MID 9780}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_rifleman" 0xb3c9
+		{Position -8360 -36600}
+		{Player 0}
+		{MID 9781}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_mg" 0xb3ca
+		{Position -8355 -36600}
+		{Player 0}
+		{MID 9782}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_antitank_pf98" 0xb3cb
+		{Position -8350 -36600}
+		{Player 0}
+		{MID 9783}
+		{Able "-select"}
+	}
+
 ; ----- MOTORIZED CREW + PASSENGER LINKS -----
 	{Link 0xb3a1 {0xb3a0 "driver"}}
 	{Link 0xb3a2 {0xb3a0 "commander"}}
@@ -2821,6 +2885,16 @@
 	{Link 0xb3be {0xb3b6 "seat6"}}
 	{Link 0xb3bf {0xb3b6 "seat7"}}
 	{Link 0xb3c0 {0xb3b6 "seat8"}}
+	{Link 0xb3c2 {0xb3c1 "driver"}}
+	{Link 0xb3c3 {0xb3c1 "commander"}}
+	{Link 0xb3c4 {0xb3c1 "seat1"}}
+	{Link 0xb3c5 {0xb3c1 "seat2"}}
+	{Link 0xb3c6 {0xb3c1 "seat3"}}
+	{Link 0xb3c7 {0xb3c1 "seat4"}}
+	{Link 0xb3c8 {0xb3c1 "seat5"}}
+	{Link 0xb3c9 {0xb3c1 "seat6"}}
+	{Link 0xb3ca {0xb3c1 "seat7"}}
+	{Link 0xb3cb {0xb3c1 "seat8"}}
 
 ; ===== TAGS =====
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb200}
@@ -3267,3 +3341,16 @@
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xb3be}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xb3bf}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "hidden" 0xb3c0}
+
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_hull" "hidden" 0xb3c1}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "hidden" 0xb3c2}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "hidden" 0xb3c3}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xb3c4}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xb3c5}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xb3c6}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xb3c7}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xb3c8}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xb3c9}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xb3ca}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "hidden" 0xb3cb}
+
