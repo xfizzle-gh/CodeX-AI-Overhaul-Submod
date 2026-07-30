@@ -585,10 +585,9 @@ The release condition must select only an operatable `support_e2_plane`, require
 {"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
 {"action" {selector {tag support_e2_plane}} {drop orders} {action move}
     {waypoint "attack_support_entry_<resolved-side>1"}}
-{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
 ```
 
-Use the repo-attested effect serialization if it is `{effect drop_paratrooper}` directly rather than nested under `{"effect"...}`; the static contract pins the singular token, while the implementation must copy the exact grammar from `resource/map/multi/bakhmut_1/campaign_capture_the_flag.mi`. A parallel bounded timer of at most `90` seconds sets fail `6`, orders exit, and deletes the plane when `support_e2_released` was never applied. The successful exit also deletes the plane after at most `90` seconds.
+Use the repo-attested effect serialization if it is `{effect drop_paratrooper}` directly rather than nested under `{"effect"...}`; the static contract pins the singular token, while the implementation must copy the exact grammar from `resource/map/multi/bakhmut_1/campaign_capture_the_flag.mi`. Do not set stage `60` at release: the monotonic success path is `30 -> 40 -> 50 -> 60 -> 70`, where landing proves `50`, settlement advances to `60`, and cleanup records `70`. A parallel bounded timer of at most `90` seconds sets fail `6`, orders exit, and deletes the plane when `support_e2_released` was never applied. The successful path deletes the plane after at most `90` seconds while preserving the target and passenger claim through a final `29`-second survivor window (a `119`-second total deadline, within the required `120`-second bound).
 
 - [ ] **Step 5: Implement E2 landing detection and honest no-survivor failure**
 
@@ -596,11 +595,18 @@ Use the repo-attested effect serialization if it is `{effect drop_paratrooper}` 
 
 ```text
 {"entity_state"
+    {selector {ignore_captured_by_user 0} {tag support_e2_para_pax}
+        {tag support_e2_claim} {tag paratrooper_need_orders}
+        {type human} {state operatable}}
+    {tag_add support_e2_landed_candidate}
+}
+{"entity_state"
     {selector {source advanced} {group
-        {select {tag {tag support_e2_para_pax}} {tag {tag paratrooper_need_orders}}}
-        {exclude {state {state dead}} {state {state linked}}}
+        {select {tag {tag support_e2_landed_candidate}}}
+        {exclude {state {state dead}} {state {state linked}} {state {state inactive}}}
     }}
     {tag_add support_e2_landed}
+    {tag_remove support_e2_landed_candidate}
     {tag_remove paratrooper_need_orders}
     {tag_remove ai_spawn}
 }

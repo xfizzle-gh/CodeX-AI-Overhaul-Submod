@@ -127,6 +127,45 @@ foreach ($marker in $E2HeloTemplateMarkers) {
 foreach ($marker in $E2HeloForbiddenMarkers) {
     if (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch $marker) { throw "Source wave engine contains forbidden E2 helicopter marker: $marker" }
 }
+$E2ParaWaveMarkers = @(
+    '; ===== E2 PARADROP',
+    '{"attack_support/e2_para_rusa"',
+    '{"attack_support/e2_para_ukr"',
+    '{"attack_support/e2_para_nato"',
+    '{"attack_support/e2_para_release_rusa"',
+    '{"attack_support/e2_para_release_ukr"',
+    '{"attack_support/e2_para_release_nato"',
+    '{"attack_support/e2_para_landed"',
+    '{effect drop_paratrooper}',
+    '{distance 1500}',
+    '{distance 2500}',
+    'support_e2_released',
+    'support_e2_fail$"} {op "="} {value 6}',
+    'support_e2_fail$"} {op "="} {value 7}'
+)
+$E2ParaForbiddenMarkers = @(
+    '{effect drop_paratroopers}',
+    'waypoint "5004"',
+    'waypoint "5005"',
+    'waypoint "5006"',
+    '{"placement" {selector {tag support_e2_para_pax}',
+    '("e2_place_one")',
+    '("e2_place_one_entry")'
+)
+foreach ($marker in $E2ParaWaveMarkers) {
+    if (-not (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch $marker)) { throw "Source wave engine is missing E2 paradrop marker: $marker" }
+}
+$sourceWaveCode = [System.IO.File]::ReadAllText($wavesSource)
+$sourceParaStart = $sourceWaveCode.IndexOf('; ===== E2 PARADROP')
+$sourceParaEnd = $sourceWaveCode.IndexOf('; ===== MOTORIZED INSERT', $sourceParaStart)
+if ($sourceParaStart -lt 0 -or $sourceParaEnd -le $sourceParaStart) { throw "Source wave engine is missing E2 paradrop marker: section boundary" }
+$sourceParaCode = $sourceWaveCode.Substring($sourceParaStart, $sourceParaEnd - $sourceParaStart)
+foreach ($marker in $E2ParaForbiddenMarkers) {
+    if ($sourceParaCode.Contains($marker)) { throw "Source wave engine contains forbidden E2 paradrop marker: $marker" }
+}
+if ($sourceParaCode -match '(?s)\{"placement".{0,500}support_e2_para_pax') {
+    throw "Source wave engine contains forbidden E2 paradrop marker: para-pax placement fallback"
+}
 # string.sub on a nil spawnPointName faulted natively on slots the engine gives no
 # spawn point, so the read must stay type-guarded before the substring.
 if (-not (Select-String -Quiet -LiteralPath $utilitySource -SimpleMatch 'if type(spawnPoint) ~= "string" or spawnPoint == "" then')) {
@@ -1808,6 +1847,20 @@ foreach ($marker in $E2HeloWaveMarkers) {
 }
 foreach ($marker in $E2HeloForbiddenMarkers) {
     if (Select-String -Quiet -LiteralPath $waves -SimpleMatch $marker) { throw "Workshop wave engine contains forbidden E2 helicopter marker: $marker" }
+}
+foreach ($marker in $E2ParaWaveMarkers) {
+    if (-not (Select-String -Quiet -LiteralPath $waves -SimpleMatch $marker)) { throw "Workshop wave engine is missing E2 paradrop marker: $marker" }
+}
+$workshopWaveCode = [System.IO.File]::ReadAllText($waves)
+$workshopParaStart = $workshopWaveCode.IndexOf('; ===== E2 PARADROP')
+$workshopParaEnd = $workshopWaveCode.IndexOf('; ===== MOTORIZED INSERT', $workshopParaStart)
+if ($workshopParaStart -lt 0 -or $workshopParaEnd -le $workshopParaStart) { throw "Workshop wave engine is missing E2 paradrop marker: section boundary" }
+$workshopParaCode = $workshopWaveCode.Substring($workshopParaStart, $workshopParaEnd - $workshopParaStart)
+foreach ($marker in $E2ParaForbiddenMarkers) {
+    if ($workshopParaCode.Contains($marker)) { throw "Workshop wave engine contains forbidden E2 paradrop marker: $marker" }
+}
+if ($workshopParaCode -match '(?s)\{"placement".{0,500}support_e2_para_pax') {
+    throw "Workshop wave engine contains forbidden E2 paradrop marker: para-pax placement fallback"
 }
 if (-not (Select-String -Quiet -LiteralPath $waves -SimpleMatch '{tag_add attack_support_flag1}')) {
     throw "Workshop wave engine is not claiming a real flag point"

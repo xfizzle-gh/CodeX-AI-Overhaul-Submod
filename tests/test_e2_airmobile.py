@@ -326,3 +326,156 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
         task3 = block(plan, "### Task 3:", "### Task 4:")
         self.assertIn("set support_e2_flag$ to 1 as the portable active-target sentinel", task3)
         self.assertNotIn("testing the selected entity against fpc1..fpc5", task3)
+
+
+class E2ParadropLifecycleTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.waves = WAVES.read_text(encoding="utf-8")
+        cls.e2 = block(cls.waves, "; ===== E2 PARADROP", "; ===== MOTORIZED INSERT")
+
+    def test_supported_launches_reserve_stage_and_accept_target_before_flight(self) -> None:
+        for faction in ("rusa", "ukr", "nato"):
+            launch = mi_block(self.waves, f'{{"attack_support/e2_para_{faction}"')
+            condition = launch.split("{actions", 1)[0]
+            self.assertIn('{var "support_e2_test$"} {op "=="} {value 2}', condition)
+            self.assertIn('{var "support_e2_stage$"} {op "=="} {value 10}', condition)
+            self.assertNotIn('{var "support_e2_stage$"} {op "=="} {value 0}', condition)
+            selected = launch.index('("e2_choose_flag")')
+            accepted = launch.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}')
+            owned = launch.index('("e2_own_current")')
+            flight = launch.index('{"air_state"')
+            self.assertLess(selected, accepted)
+            self.assertLess(accepted, owned)
+            self.assertLess(owned, flight)
+        self.assertNotIn('attack_support/e2_para_prc', self.e2)
+
+    def test_claims_exact_plane_crew_and_payload_pools(self) -> None:
+        crew_counts = {"rusa": 5, "ukr": 3, "nato": 3}
+        for faction, crew_count in crew_counts.items():
+            launch = mi_block(self.waves, f'{{"attack_support/e2_para_{faction}"')
+            for pool in (
+                f"support_e2_{faction}_para",
+                f"support_e2_{faction}_para_crew",
+                f"support_e2_{faction}_para_pax",
+            ):
+                self.assertIn(f'{{tag {pool}}}', launch)
+                self.assertIn(f'{{tag_remove {pool}}}', launch)
+            self.assertIn(f'{{amount {crew_count}}}', launch)
+            self.assertIn('{amount 4}', launch)
+            self.assertGreaterEqual(launch.count('{tag_add support_e2_claim}'), 3)
+            self.assertIn('{tag_add support_e2_plane}', launch)
+            self.assertNotIn('{tag_remove support_e2_para_pax}', launch)
+
+    def test_launch_flight_order_is_attested_and_targets_selected_flag(self) -> None:
+        for faction in ("rusa", "ukr", "nato"):
+            launch = mi_block(self.waves, f'{{"attack_support/e2_para_{faction}"')
+            air = launch.index('{"air_state"')
+            actor = launch.index('{"actor_state"', air)
+            move = launch.index('{"action"', actor)
+            stage30 = launch.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}')
+            self.assertLess(air, actor)
+            self.assertLess(actor, move)
+            self.assertLess(move, stage30)
+            self.assertIn('{altitude 65}', launch[air:actor])
+            self.assertIn('{drop sensor}', launch[actor:move])
+            self.assertIn('{control AI}', launch[actor:move])
+            self.assertIn('{movement {speed fast}}', launch[actor:move])
+            self.assertIn('{action move}', launch[move:stage30])
+            self.assertIn('{tag support_e2_flag_target}', launch[move:stage30])
+            self.assertIn('("e2_place_aircraft_entry")', launch[:air])
+
+    def test_release_is_target_anchored_banded_and_one_shot(self) -> None:
+        for faction in ("rusa", "ukr", "nato"):
+            release = mi_block(self.waves, f'{{"attack_support/e2_para_release_{faction}"')
+            condition = release.split("{actions", 1)[0]
+            self.assertIn('{var "support_e2_test$"} {op "=="} {value 2}', condition)
+            self.assertIn('{var "support_e2_stage$"} {op "=="} {value 30}', condition)
+            self.assertIn('{tag support_e2_plane}', condition)
+            self.assertIn('{state operatable}', condition)
+            self.assertIn('{near_to', condition)
+            self.assertIn('{tag support_e2_flag_target}', condition)
+            self.assertEqual(condition.count('{distance 2500}'), 1)
+            self.assertEqual(condition.count('{distance 1500}'), 1)
+            self.assertRegex(condition, r'\{expression "[^"]*!\d+[^"]*"\}')
+            self.assertIn('{tag support_e2_released}', condition)
+            actions = release.split("{actions", 1)[1]
+            tagged = actions.index('{tag_add support_e2_released}')
+            effect = actions.index('{effect drop_paratrooper}')
+            stage40 = actions.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}')
+            self.assertLess(tagged, effect)
+            self.assertLess(effect, stage40)
+        self.assertEqual(self.e2.count('{effect drop_paratrooper}'), 3)
+        self.assertNotIn('{effect drop_paratroopers}', self.e2)
+
+    def test_missed_release_is_fail6_and_cannot_place_passengers(self) -> None:
+        for faction in ("rusa", "ukr", "nato"):
+            launch = mi_block(self.waves, f'{{"attack_support/e2_para_{faction}"')
+            timeout = launch.split('{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}', 1)[1]
+            self.assertRegex(timeout, r'\{"delay" \{time (?:60|75|90)\}\}')
+            self.assertIn('{var "support_e2_stage$"} {op "=="} {value 30}', timeout)
+            self.assertIn('{var "support_e2_fail$"} {op "="} {value 6}', timeout)
+            self.assertIn('("e2_order_para_exit")', timeout)
+            self.assertIn('("e2_fail_and_cleanup")', timeout)
+        self.assertNotIn('("e2_place_one")', self.e2)
+        self.assertNotIn('("e2_place_one_entry")', self.e2)
+        self.assertNotRegex(self.e2, r'\{"placement"[^}]*support_e2_para_pax')
+
+    def test_survivors_leave_ce_tag_and_advance_on_e2_target(self) -> None:
+        landed = mi_block(self.waves, '{"attack_support/e2_para_landed"')
+        condition = landed.split("{actions", 1)[0]
+        self.assertIn('{var "support_e2_test$"} {op "=="} {value 2}', condition)
+        for tag in ("support_e2_claim", "support_e2_para_pax", "paratrooper_need_orders"):
+            self.assertIn(f'{{tag {tag}}}', condition)
+        actions = landed.split("{actions", 1)[1]
+        self.assertIn('{source advanced}', actions)
+        self.assertNotIn('{prop {prop human}}', actions)
+        self.assertIn('{state {state dead}}', actions)
+        self.assertIn('{state {state linked}}', actions)
+        self.assertIn('{tag_add support_e2_landed}', actions)
+        self.assertIn('{tag_remove paratrooper_need_orders}', actions)
+        self.assertIn('{tag_remove ai_spawn}', actions)
+        self.assertIn('{action advance}', actions)
+        self.assertIn('{tag support_e2_flag_target}', actions)
+        self.assertIn('{var "support_e2_stage$"} {op "="} {value 50}', actions)
+        self.assertIn('{"trigger" {name "attack_support/e2_para_landed"}}', actions)
+        for wp in (5004, 5005, 5006):
+            self.assertNotIn(f'waypoint "{wp}"', self.e2)
+
+    def test_plane_delete_and_survivor_deadline_preserve_honest_failure(self) -> None:
+        settle = mi_define(self.waves, "e2_para_settle")
+        self.assertIn('{"delay" {time 90}}', settle)
+        self.assertIn('("e2_delete_aircraft")', settle)
+        self.assertIn('{"delay" {time 29}}', settle)
+        self.assertIn('{tag support_e2_landed}', settle)
+        self.assertIn('{var "support_e2_fail$"} {op "="} {value 7}', settle)
+        fail7_at = settle.index('{var "support_e2_fail$"} {op "="} {value 7}')
+        self.assertNotIn('("e2_complete_cleanup")', settle[fail7_at:])
+        self.assertIn('("e2_fail_and_cleanup")', settle[fail7_at:])
+        self.assertIn('{var "support_e2_stage$"} {op "="} {value 60}', settle)
+
+    def test_deployer_guards_source_and_workshop_para_contracts(self) -> None:
+        deploy = DEPLOY.read_text(encoding="utf-8")
+        for array in ("$E2ParaWaveMarkers", "$E2ParaForbiddenMarkers"):
+            self.assertIn(array, deploy)
+        for marker in (
+            '; ===== E2 PARADROP',
+            '{"attack_support/e2_para_rusa"',
+            '{"attack_support/e2_para_ukr"',
+            '{"attack_support/e2_para_nato"',
+            '{"attack_support/e2_para_landed"',
+            '{effect drop_paratrooper}',
+            '{distance 1500}',
+            '{distance 2500}',
+            'support_e2_released',
+            'support_e2_fail$"} {op "="} {value 6}',
+            'support_e2_fail$"} {op "="} {value 7}',
+        ):
+            self.assertIn(marker, deploy)
+        for marker in ('{effect drop_paratroopers}', 'waypoint "5004"', 'waypoint "5005"', 'waypoint "5006"'):
+            self.assertIn(marker, deploy)
+        self.assertIn('$sourceWaveCode = [System.IO.File]::ReadAllText($wavesSource)', deploy)
+        self.assertIn('$workshopWaveCode = [System.IO.File]::ReadAllText($waves)', deploy)
+        for side in ("Source", "Workshop"):
+            self.assertIn(f'{side} wave engine is missing E2 paradrop marker', deploy)
+            self.assertIn(f'{side} wave engine contains forbidden E2 paradrop marker', deploy)

@@ -3969,7 +3969,364 @@
 				}
 			}
 
-			; ===== E2 PARADROP (Task 4 boundary; no release lifecycle in Task 3) =====
+			; ===== E2 PARADROP =====
+			; Gate 2 is a real aircraft/ejection proof. The dispatcher exclusively reserves
+			; stage 10; faction children claim once and release monitors own stage 30.
+
+			(define "e2_announce_para"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}
+						{"talk"
+							{selector {ignore_captured_by_user 0} {amount 1} {tag player} {zone "gamezone"} {type human} {state "not dead"}}
+							{text "mission/multi/support/e2_para_inbound"}
+						}
+					}
+					{"default"}
+				}
+			)
+
+			(define "e2_promote_para"
+				{"entity_state"
+					{selector {tag support_e2_claim}}
+					{tag_add attack_support_src}
+					{tag_remove ally_sup_tpl}
+					{tag_remove support_e2_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+			)
+
+
+			(define "e2_order_para_exit"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "attack_support_entry_b1"}}
+					}
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "attack_support_entry_a1"}}
+					}
+					{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "attack_support_entry_b1"}}}
+				}
+			)
+
+			; The plane is deleted at 90 seconds even while the landing window remains open.
+			; A survivor may arrive for 30 more seconds; otherwise fail 7 is preserved.
+			(define "e2_para_settle"
+				{"delay" {time 90}}
+				("e2_delete_aircraft")
+				{"switch"
+					{"case"
+						{condition {type entities} {selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}}
+						{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
+						("e2_complete_cleanup")
+					}
+					{"default"
+						{"delay" {time 29}}
+						{"switch"
+							{"case"
+								{condition {type entities} {selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}}
+								{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
+								("e2_complete_cleanup")
+							}
+							{"default"
+								{"set_i" {var "support_e2_fail$"} {op "="} {value 7}}
+								{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
+								("e2_fail_and_cleanup")
+							}
+						}
+					}
+				}
+			)
+
+			{"attack_support/e2_para_landed"
+				{condition
+					{expression "1 & 2 & 3 & 4"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities" {selector {tag support_e2_flag_target}}}
+						{"4.entities" {selector {ignore_captured_by_user 0} {tag support_e2_para_pax} {tag support_e2_claim} {tag paratrooper_need_orders} {type human} {state operatable}}}
+					}
+				}
+				{actions
+					; The simple selector establishes the three-tag intersection. The temporary
+					; candidate tag then permits the proven advanced select/exclude form without
+					; decorating the pool selector with an include clause that matches nothing.
+					{"entity_state"
+						{selector {ignore_captured_by_user 0} {tag support_e2_para_pax} {tag support_e2_claim} {tag paratrooper_need_orders} {type human} {state operatable}}
+						{tag_add support_e2_landed_candidate}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {tag {tag support_e2_landed_candidate}}}
+								{exclude {state {state dead}} {state {state linked}} {state {state inactive}}}
+							}
+						}
+						{tag_add support_e2_landed}
+						{tag_remove support_e2_landed_candidate}
+						{tag_remove paratrooper_need_orders}
+						{tag_remove ai_spawn}
+					}
+					{"entity_state" {selector {tag support_e2_landed_candidate}} {tag_remove support_e2_landed_candidate}}
+					{"actor_state"
+						{selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}
+						{control AI}
+						{ai_move {mode enable}}
+						{weapon_prepare on}
+						{fire_mode open}
+						{move_mode free}
+						{movement {speed normal} {kind normal} {type normal}}
+						{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+					}
+					{"action"
+						{selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}
+						{drop orders}
+						{action advance}
+						{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
+					}
+					{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+					{"delay" {time 0.25}}
+					{"trigger" {name "attack_support/e2_para_landed"}}
+				}
+			}			{"attack_support/e2_para_rusa"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"6.cmp_i" {var "support_e2_stage$"} {op "=="} {value 10}}
+						{"7.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
+						{"8.entities" {selector {tag support_e2_rusa_para}} {count {op ">="} {value 1}}}
+						{"9.entities" {selector {tag support_e2_rusa_para_crew}} {count {op ">="} {value 5}}}
+						{"10.entities" {selector {tag support_e2_rusa_para_pax}} {count {op ">="} {value 4}}}
+					}
+				}
+				{actions
+					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_rusa_para}}}} {amount 1}} {tag_add support_e2_claim} {tag_add support_e2_plane} {tag_remove support_e2_rusa_para}}
+					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_rusa_para_crew}}}} {amount 5}} {tag_add support_e2_claim} {tag_remove support_e2_rusa_para_crew}}
+					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_rusa_para_pax}}}} {amount 4}} {tag_add support_e2_claim} {tag_remove support_e2_rusa_para_pax}}
+					("e2_choose_flag")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+							{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+							("e2_own_current")
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+									("e2_promote_para")
+									("e2_place_aircraft_entry")
+									{"air_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {altitude 65}}
+									{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop sensor} {control AI} {movement {speed fast}}}
+									{"action"
+										{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}}
+										{drop orders}
+										{action move}
+										{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
+									}
+									{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+									("e2_announce_para")
+									{"delay" {time 90}}
+									{"switch"
+										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+										{"default"}
+									}
+								}
+								{"default" ("e2_fail_and_cleanup")}
+							}
+						}
+						{"default" ("e2_fail_and_cleanup")}
+					}
+				}
+			}
+
+			{"attack_support/e2_para_ukr"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"6.cmp_i" {var "support_e2_stage$"} {op "=="} {value 10}}
+						{"7.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
+						{"8.entities" {selector {tag support_e2_ukr_para}} {count {op ">="} {value 1}}}
+						{"9.entities" {selector {tag support_e2_ukr_para_crew}} {count {op ">="} {value 3}}}
+						{"10.entities" {selector {tag support_e2_ukr_para_pax}} {count {op ">="} {value 4}}}
+					}
+				}
+				{actions
+					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_ukr_para}}}} {amount 1}} {tag_add support_e2_claim} {tag_add support_e2_plane} {tag_remove support_e2_ukr_para}}
+					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_ukr_para_crew}}}} {amount 3}} {tag_add support_e2_claim} {tag_remove support_e2_ukr_para_crew}}
+					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_ukr_para_pax}}}} {amount 4}} {tag_add support_e2_claim} {tag_remove support_e2_ukr_para_pax}}
+					("e2_choose_flag")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+							{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+							("e2_own_current")
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+									("e2_promote_para")
+									("e2_place_aircraft_entry")
+									{"air_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {altitude 65}}
+									{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop sensor} {control AI} {movement {speed fast}}}
+									{"action"
+										{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}}
+										{drop orders}
+										{action move}
+										{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
+									}
+									{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+									("e2_announce_para")
+									{"delay" {time 90}}
+									{"switch"
+										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+										{"default"}
+									}
+								}
+								{"default" ("e2_fail_and_cleanup")}
+							}
+						}
+						{"default" ("e2_fail_and_cleanup")}
+					}
+				}
+			}
+
+			{"attack_support/e2_para_nato"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"6.cmp_i" {var "support_e2_stage$"} {op "=="} {value 10}}
+						{"7.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
+						{"8.entities" {selector {tag support_e2_nato_para}} {count {op ">="} {value 1}}}
+						{"9.entities" {selector {tag support_e2_nato_para_crew}} {count {op ">="} {value 3}}}
+						{"10.entities" {selector {tag support_e2_nato_para_pax}} {count {op ">="} {value 4}}}
+					}
+				}
+				{actions
+					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_nato_para}}}} {amount 1}} {tag_add support_e2_claim} {tag_add support_e2_plane} {tag_remove support_e2_nato_para}}
+					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_nato_para_crew}}}} {amount 3}} {tag_add support_e2_claim} {tag_remove support_e2_nato_para_crew}}
+					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_nato_para_pax}}}} {amount 4}} {tag_add support_e2_claim} {tag_remove support_e2_nato_para_pax}}
+					("e2_choose_flag")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+							{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+							("e2_own_current")
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+									("e2_promote_para")
+									("e2_place_aircraft_entry")
+									{"air_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {altitude 65}}
+									{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop sensor} {control AI} {movement {speed fast}}}
+									{"action"
+										{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}}
+										{drop orders}
+										{action move}
+										{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
+									}
+									{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+									("e2_announce_para")
+									{"delay" {time 90}}
+									{"switch"
+										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+										{"default"}
+									}
+								}
+								{"default" ("e2_fail_and_cleanup")}
+							}
+						}
+						{"default" ("e2_fail_and_cleanup")}
+					}
+				}
+			}
+
+			; Each monitor is independently gated and faction-specific. The inner release
+			; tag is added before the effect, so a second monitor can never repeat it.
+			{"attack_support/e2_para_release_rusa"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & !6 & 7"}
+					{terms
+						{"7.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
+						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_plane}}} {exclude {tag {tag support_e2_released}}}}}}
+						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 2500}}
+						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 1500}}
+					}
+				}
+				{actions
+					{"entity_state" {selector {tag support_e2_plane} {tag support_e2_claim}} {tag_add support_e2_released}}
+					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_plane}}}}} {effect drop_paratrooper}}
+					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+					("e2_order_para_exit")
+					("e2_para_settle")
+				}
+			}
+
+			{"attack_support/e2_para_release_ukr"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & !6 & 7"}
+					{terms
+						{"7.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
+						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_plane}}} {exclude {tag {tag support_e2_released}}}}}}
+						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 2500}}
+						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 1500}}
+					}
+				}
+				{actions
+					{"entity_state" {selector {tag support_e2_plane} {tag support_e2_claim}} {tag_add support_e2_released}}
+					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_plane}}}}} {effect drop_paratrooper}}
+					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+					("e2_order_para_exit")
+					("e2_para_settle")
+				}
+			}
+
+			{"attack_support/e2_para_release_nato"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & !6 & 7"}
+					{terms
+						{"7.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
+						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_plane}}} {exclude {tag {tag support_e2_released}}}}}}
+						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 2500}}
+						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 1500}}
+					}
+				}
+				{actions
+					{"entity_state" {selector {tag support_e2_plane} {tag support_e2_claim}} {tag_add support_e2_released}}
+					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_plane}}}}} {effect drop_paratrooper}}
+					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+					("e2_order_para_exit")
+					("e2_para_settle")
+				}
+			}
 
 			; ===== MOTORIZED INSERT (cmd 19) =====
 			; Truck + linked crew/pax place at entry, drive toward flag, emit passengers,

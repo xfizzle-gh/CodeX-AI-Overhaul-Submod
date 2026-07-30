@@ -1455,6 +1455,7 @@ class SupportDiagnosticGateTests(unittest.TestCase):
             "airborne_inbound_prc",
             "motorized_inbound",
             "e2_helo_inbound",
+            "e2_para_inbound",
             "e2_insert_failed",
         }
         for name, code in self.raw_engines.items():
