@@ -1,6 +1,8 @@
 param(
     [string]$RepoRoot = "",
-    [string]$WorkshopRoot = "E:\Steam\steamapps\workshop\content\400750\3636883799"
+    [string]$WorkshopRoot = "E:\Steam\steamapps\workshop\content\400750\3636883799",
+    [ValidateSet(0, 1, 2, 3)]
+    [int]$E2TestMode = 0
 )
 
 $ErrorActionPreference = "Stop"
@@ -13,6 +15,13 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
     $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
 }
 $WorkshopRoot = [System.IO.Path]::GetFullPath($WorkshopRoot)
+
+function Set-ExactSingleReplacement {
+    param([string]$Text, [string]$Old, [string]$New, [string]$Label)
+    $count = [regex]::Matches($Text, [regex]::Escape($Old)).Count
+    if ($count -ne 1) { throw "$Label expected exactly one source marker, found $count" }
+    return $Text.Replace($Old, $New)
+}
 
 $branch = (& git -C $RepoRoot branch --show-current 2>$null).Trim()
 if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($branch)) {
@@ -1245,6 +1254,20 @@ foreach ($relative in $files) {
     Write-Host "OK $relative $sourceHash"
 }
 
+$deployedWaves = Join-Path $WorkshopRoot $files[4]
+$deployedWaveCode = [System.IO.File]::ReadAllText($deployedWaves)
+$sourceE2Init = '{"set_i" {var "support_e2_test$"} {op "="} {value 0}}'
+$targetE2Init = '{"set_i" {var "support_e2_test$"} {op "="} {value ' + $E2TestMode + '}}'
+$deployedWaveCode = Set-ExactSingleReplacement $deployedWaveCode $sourceE2Init $targetE2Init 'E2 test override'
+
+if ($E2TestMode -ne 0) {
+    $sourceLegacyInit = '{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}'
+    $targetLegacyInit = '{"set_i" {var "attack_support_air_test$"} {op "="} {value 0}}'
+    $deployedWaveCode = Set-ExactSingleReplacement $deployedWaveCode $sourceLegacyInit $targetLegacyInit 'Legacy E1 air-test override'
+}
+
+[System.IO.File]::WriteAllText($deployedWaves, $deployedWaveCode, [System.Text.UTF8Encoding]::new($false))
+
 # Files this toolchain used to ship and no longer does. Left behind they are dead
 # weight at best; attack_support_probe.inc in particular is the pre-rename wave
 # engine, and a map that still included it would load two wave engines at once.
@@ -1748,6 +1771,19 @@ $botMain = Join-Path $WorkshopRoot $files[1]
 $support = Join-Path $WorkshopRoot $files[2]
 $vars = Join-Path $WorkshopRoot $files[3]
 $waves = Join-Path $WorkshopRoot $files[4]
+$validatedWaveCode = [System.IO.File]::ReadAllText($waves)
+$expectedE2Init = '{"set_i" {var "support_e2_test$"} {op "="} {value ' + $E2TestMode + '}}'
+if ([regex]::Matches($validatedWaveCode, [regex]::Escape($expectedE2Init)).Count -ne 1) {
+    throw "Requested E2 test mode was not written exactly once"
+}
+$expectedLegacyMode = if ($E2TestMode -eq 0) { 1 } else { 0 }
+$expectedLegacyInit = '{"set_i" {var "attack_support_air_test$"} {op "="} {value ' + $expectedLegacyMode + '}}'
+if ([regex]::Matches($validatedWaveCode, [regex]::Escape($expectedLegacyInit)).Count -ne 1) {
+    throw "Legacy E1 air test value is incorrect"
+}
+$sourceWaveHash = (Get-FileHash -LiteralPath $wavesSource -Algorithm SHA256).Hash
+$deployedWaveHash = (Get-FileHash -LiteralPath $waves -Algorithm SHA256).Hash
+Write-Host "E2 test mode: $E2TestMode; source wave hash: $sourceWaveHash; deployed wave hash: $deployedWaveHash"
 $def = Join-Path $WorkshopRoot $files[6]
 $defTpl = Join-Path $WorkshopRoot $files[7]
 $conquest = Join-Path $WorkshopRoot $files[8]

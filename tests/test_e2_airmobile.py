@@ -352,7 +352,20 @@ class E2SequentialComboTests(unittest.TestCase):
         cls.vars = VARS.read_text(encoding="utf-8")
         cls.waves = WAVES.read_text(encoding="utf-8")
         cls.lua = LUA.read_text(encoding="utf-8")
+        cls.deploy = DEPLOY.read_text(encoding="utf-8")
         cls.e2 = block(cls.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== MOTORIZED INSERT")
+
+    def test_deploy_mode_parameter_is_validated_and_defaults_off(self) -> None:
+        self.assertRegex(self.deploy, r"\[ValidateSet\(0,\s*1,\s*2,\s*3\)\]\s*\[int\]\$E2TestMode\s*=\s*0")
+
+    def test_deploy_override_is_exact_target_only_and_validated(self) -> None:
+        self.assertIn("Set-ExactSingleReplacement", self.deploy)
+        self.assertIn("$deployedWaveCode", self.deploy)
+        self.assertIn("[System.IO.File]::WriteAllText($deployedWaves", self.deploy)
+        self.assertIn("Requested E2 test mode was not written exactly once", self.deploy)
+        self.assertIn("Legacy E1 air test value is incorrect", self.deploy)
+        self.assertIn("if ($E2TestMode -ne 0)", self.deploy)
+        self.assertNotIn("WriteAllText($wavesSource", self.deploy)
 
     def test_combo_result_is_declared_initialized_and_mirrored(self) -> None:
         name = "support_e2_combo_helo_fail"
