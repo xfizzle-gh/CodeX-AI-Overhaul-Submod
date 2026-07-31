@@ -36,6 +36,71 @@ jobs:
               line[10:] if line.startswith("          ") else line
               for line in raw.splitlines()
           ) + "\n"
+
+          # The deploy file's marker arrays were expanded after the pinned script was
+          # drafted. Replace that stale exact-string edit with scoped array edits.
+          deploy_start = script.index("# Deploy guards describe the new live contract.")
+          deploy_end = script.index("# Update structural tests to pin the repaired contracts.", deploy_start)
+          deploy_patch = r'''# Deploy guards describe the new live contract.
+          deploy = replace_n(
+              deploy,
+              "    '{Link 0xc203 {0xc200 \"seat1\"}}'\n)",
+              "    '{Link 0xc203 {0xc200 \"seat1\"}}',\n    'support_e2_marker_tpl',\n    '0xc207',\n    '{MID 10016}'\n)",
+              1,
+              'deploy independent marker guard',
+          )
+          required_start = deploy.index('$E2ParaWaveMarkers = @(')
+          required_end = deploy.index(')\n$E2ParaForbiddenMarkers', required_start)
+          para_required = deploy[required_start:required_end]
+          para_required = replace_n(
+              para_required,
+              "    '{distance 4000}',\n",
+              "    '{distance 4000}',\n    '{distance 1500}',\n",
+              1,
+              'deploy required para release radius',
+          )
+          deploy = deploy[:required_start] + para_required + deploy[required_end:]
+
+          forbidden_start = deploy.index('$E2ParaForbiddenMarkers = @(')
+          forbidden_end = deploy.index(')\nforeach', forbidden_start)
+          para_forbidden = deploy[forbidden_start:forbidden_end]
+          para_forbidden = replace_n(
+              para_forbidden,
+              "    '{distance 1500}',\n",
+              "",
+              1,
+              'remove valid release radius from forbidden markers',
+          )
+          deploy = deploy[:forbidden_start] + para_forbidden + deploy[forbidden_end:]
+          deploy = replace_n(
+              deploy,
+              "    '{\"attack_support/e2_para_alive\"',\n",
+              "    '{\"attack_support/e2_para_alive\"',\n    '{\"attack_support/e2_para_takeover\"',\n",
+              1,
+              'deploy takeover trigger guard',
+          )
+
+          '''
+          script = script[:deploy_start] + deploy_patch + script[deploy_end:]
+
+          # Only the release trigger retires 600/4000. The closest-approach tracker
+          # intentionally retains both distances, so the whole para section cannot ban them.
+          ring_start = script.index("new_ring_assert = '''")
+          ring_end = script.index("e2_tests = replace_n(e2_tests, old_ring_assert", ring_start)
+          corrected_ring = r'''new_ring_assert = '''                self.assertEqual(
+                    sorted(int(v) for v in re.findall(r"\{distance (\d+)\}", condition)),
+                    [1500],
+                )
+        # The older 2500-unit shell stays retired. The range tracker still owns
+        # 600/4000, while 1500 is now the release radius.
+        self.assertNotIn("{distance 2500}", self.para)
+        self.assertIn("'{distance 2500}'", self.deploy)
+        self.assertIn("{distance 600}", self.para)
+        self.assertIn("{distance 4000}", self.para)
+        self.assertIn("{distance 1500}", self.para)'''
+          '''
+          script = script[:ring_start] + corrected_ring + script[ring_end:]
+
           Path('/tmp/apply_live_fixes.py').write_text(script, encoding='utf-8')
           subprocess.run(['python', '/tmp/apply_live_fixes.py'], check=True)
           PY
