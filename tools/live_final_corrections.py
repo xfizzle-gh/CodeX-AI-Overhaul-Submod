@@ -55,6 +55,12 @@ e2_tests = replace_once(
     '        self.assertEqual(self.live.count("{tag_add support_e2_pax}"), 4)',
     'update completed delivery count',
 )
+e2_tests = replace_once(
+    e2_tests,
+    '        self.assertEqual(self.waves.count("{tag_add support_e2_pax}"), 3)',
+    '        self.assertEqual(self.waves.count("{tag_add support_e2_pax}"), 4)',
+    'update legacy completed delivery count',
+)
 helo_anchor = '''        self.assertIn("{tag_remove support_e2_helo_pax}", helo)
 
     def test_the_pax_tag_carries_the_literal_1_to_16_switch_and_fails_closed(self) -> None:
