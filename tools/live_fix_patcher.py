@@ -110,25 +110,25 @@ waves = strip_trailing_whitespace(waves)
 '''
 motor_test_replacement = '''motor_tests = replace_once(motor_tests, old_motor, new_motor, 'define motor emit boundary')
 
-old_motor_prefixes = ''' + '"""' + '''        prefixes = {
+old_motor_prefixes = """        prefixes = {
             "attack_support_waves": ("attack_support", "as_motor_band"),
             "defense_support_waves": ("defense_support", "ds_motor_band"),
             "enemy_attack_support": ("enemy_attack", "ea_motor_band"),
             "enemy_defense_support": ("enemy_defense", "ed_motor_band"),
         }
-        for engine, (pfx, band_define) in sorted(prefixes.items()):''' + '"""' + '''
-new_motor_prefixes = ''' + '"""' + '''        prefixes = {
+        for engine, (pfx, band_define) in sorted(prefixes.items()):"""
+new_motor_prefixes = """        prefixes = {
             "attack_support_waves": ("attack_support", "as_motor_band", "attack_support_motor_flag"),
             "defense_support_waves": ("defense_support", "ds_motor_band", "def_sup_motor_flag"),
             "enemy_attack_support": ("enemy_attack", "ea_motor_band", "ea_motor_flag"),
             "enemy_defense_support": ("enemy_defense", "ed_motor_band", "enemy_def_motor_flag"),
         }
-        for engine, (pfx, band_define, objective) in sorted(prefixes.items()):''' + '"""' + '''
+        for engine, (pfx, band_define, objective) in sorted(prefixes.items()):"""
 
 # Limit the telemetry edits to the drive-phase method. The generic flag assertion also
 # appears in a different legacy test and must not inherit this method's objective variable.
 drive_start = motor_tests.index('    def test_the_drive_phase_is_instrumented_in_every_engine')
-drive_end = motor_tests.index('\\n    def ', drive_start + 8)
+drive_end = motor_tests.index('\n    def ', drive_start + 8)
 drive_test = motor_tests[drive_start:drive_end]
 drive_test = replace_once(
     drive_test,
@@ -142,13 +142,13 @@ drive_test = replace_once(
     '                    probe.count("{near_to {ignore_captured_by_user 0} {tag %s}}" % objective), 3',
     'assert dedicated objective in each motor band probe',
 )
-old_contradictory_probe_assert = ''' + '"""' + '''                self.assertNotIn(
+old_contradictory_probe_assert = """                self.assertNotIn(
                     "{near_to {ignore_captured_by_user 0} {tag %s}}"
                     % self.MOTOR_OBJECTIVE[engine][2], probe
-                )''' + '"""' + '''
-new_generic_probe_assert = ''' + '"""' + '''                self.assertNotIn(
+                )"""
+new_generic_probe_assert = """                self.assertNotIn(
                     "{near_to {ignore_captured_by_user 0} {tag flag}}", probe
-                )''' + '"""' + '''
+                )"""
 drive_test = replace_once(
     drive_test,
     old_contradictory_probe_assert,
@@ -168,6 +168,12 @@ motor_tests = replace_once(
     '                self.assertNotIn(flag, probe)',
     '                self.assertEqual(probe.count(flag), 3, flag)',
     'require the dedicated objective three times in the band probe',
+)
+motor_tests = replace_once(
+    motor_tests,
+    '                    probe.count("{near_to {ignore_captured_by_user 0} {tag flag}}"), 3',
+    '                    probe.count("{near_to {ignore_captured_by_user 0} {tag flag}}"), 0',
+    'require the generic flag target to be absent from the dedicated probe',
 )
 
 waves = strip_trailing_whitespace(waves)
