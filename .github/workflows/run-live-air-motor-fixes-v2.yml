@@ -1,0 +1,130 @@
+name: Run scoped live air and motor fixes
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/run-live-air-motor-fixes-v2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'experiment/attack-mate-slot-proof'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/attack-mate-slot-proof
+          fetch-depth: 0
+
+      - name: Recover and correct pinned repair
+        shell: bash
+        run: |
+          awk '
+            /^          ZnJv/ {capture=1}
+            /^          B64$/ {capture=0}
+            capture {sub(/^          /, ""); print}
+          ' .github/workflows/run-live-air-motor-fixes.yml > /tmp/live_fix.b64
+          base64 -d /tmp/live_fix.b64 > /tmp/apply_live_air_motor_fixes.py
+
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('/tmp/apply_live_air_motor_fixes.py')
+          text = path.read_text(encoding='utf-8')
+
+          replacements = [
+              (
+                  '        "attack_support/motor_cleanup",\n    ),',
+                  '        "attack_support/motor_cleanup",\n        "as_finish_motor",\n    ),',
+              ),
+              (
+                  '        "defense_support/motor_cleanup",\n    ),',
+                  '        "defense_support/motor_cleanup",\n        "ds_finish_motor",\n    ),',
+              ),
+              (
+                  '        "enemy_attack/motor_cleanup",\n    ),',
+                  '        "enemy_attack/motor_cleanup",\n        "ea_finish_motor",\n    ),',
+              ),
+              (
+                  '        "enemy_defense/motor_cleanup",\n    ),',
+                  '        "enemy_defense/motor_cleanup",\n        "ed_finish_motor",\n    ),',
+              ),
+              (
+                  'for path, (hull, objective, pax, cleanup_trigger) in motor_files.items():',
+                  'for path, (hull, objective, pax, cleanup_trigger, finisher_name) in motor_files.items():',
+              ),
+          ]
+          for old, new in replacements:
+              if text.count(old) != 1:
+                  raise SystemExit(f'expected one script fragment: {old!r}')
+              text = text.replace(old, new, 1)
+
+          start_token = '    # Scope the foot order to bodies that the emit has actually unlinked.'
+          end_token = '    motor_texts[path] = text'
+          start = text.index(start_token)
+          end = text.index(end_token, start)
+          replacement = """    # Scope the foot order to bodies that the emit has actually unlinked. Work inside
+    # the named finisher because each engine uses different prose before this action.
+    finisher_start = text.index('(define \\"' + finisher_name + '\\"')
+    next_define = text.find('(define \\"', finisher_start + 10)
+    finisher_end = len(text) if next_define < 0 else next_define
+    finisher = text[finisher_start:finisher_end]
+    old_pax_selector = '{selector {ignore_captured_by_user 0} {tag ' + pax + '}}'
+    new_pax_selector = '''{selector
+\\t\\t\\t\\t\\t\\t{source advanced}
+\\t\\t\\t\\t\\t\\t{ignore_captured_by_user 0}
+\\t\\t\\t\\t\\t\\t{group
+\\t\\t\\t\\t\\t\\t\\t{select {tag {tag ''' + pax + '''}}}
+\\t\\t\\t\\t\\t\\t\\t{exclude {state {state linked}} {state {state inactive}} {state {state dead}}}
+\\t\\t\\t\\t\\t\\t}
+\\t\\t\\t\\t\\t}'''
+    finisher = replace_exact(
+        finisher,
+        old_pax_selector,
+        new_pax_selector,
+        1,
+        f'{path}: order only emitted passengers',
+    )
+    text = text[:finisher_start] + finisher + text[finisher_end:]
+
+"""
+          text = text[:start] + replacement + text[end:]
+          path.write_text(text, encoding='utf-8')
+          PY
+
+          python -m py_compile /tmp/apply_live_air_motor_fixes.py
+          python /tmp/apply_live_air_motor_fixes.py
+
+      - name: Install test runner
+        run: python -m pip install pytest
+
+      - name: Run focused and full tests
+        run: |
+          python -m pytest tests/test_e2_airmobile.py -q
+          python -m pytest tests/test_attack_support_slot_proof.py -q -k 'motor or objective or drive_phase or linked'
+          python -m pytest tests/ -q
+          git diff --check
+
+      - name: Commit repairs and remove temporary workflows
+        run: |
+          rm -f .github/workflows/apply-live-air-motor-fixes.yml
+          rm -f .github/workflows/run-live-air-motor-fixes.yml
+          rm -f .github/workflows/run-live-air-motor-fixes-v2.yml
+          rm -f .github/workflows/export-live-debug-branch.yml
+          git config user.name 'OpenAI Codex Agent'
+          git config user.email 'noreply@openai.com'
+          git add resource/map/multi/attack_support_waves.inc \
+                  resource/map/multi/defense_support_waves.inc \
+                  resource/map/multi/enemy_attack_support.inc \
+                  resource/map/multi/enemy_defense_support.inc \
+                  resource/map/multi/faction_support_templates.inc \
+                  tools/deploy_attack_support_probe.ps1 \
+                  tests/test_e2_airmobile.py \
+                  tests/test_attack_support_slot_proof.py \
+                  .github/workflows
+          git commit -m 'Fix live helicopter, paradrop, and motor delivery'
+          git push origin HEAD:experiment/attack-mate-slot-proof
