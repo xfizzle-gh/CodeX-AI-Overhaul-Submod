@@ -4683,22 +4683,22 @@
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_hull" "ally_sup_rusa_p4_hull" "hidden" 0xc106}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p4_crew" "sup_linked" "hidden" 0xc107}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p4_crew" "sup_linked" "hidden" 0xc108}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p2_pax" "hidden" 0xc109}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p2_pax" "hidden" 0xc10a}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p2_pax" "hidden" 0xc10b}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p2_pax" "hidden" 0xc10c}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p3_pax" "hidden" 0xc10d}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p3_pax" "hidden" 0xc10e}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p3_pax" "hidden" 0xc10f}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p3_pax" "hidden" 0xc110}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p3_pax" "hidden" 0xc111}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p3_pax" "hidden" 0xc112}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "hidden" 0xc113}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "hidden" 0xc114}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "hidden" 0xc115}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "hidden" 0xc116}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "hidden" 0xc117}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "hidden" 0xc118}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p2_pax" "sup_linked" "hidden" 0xc109}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p2_pax" "sup_linked" "hidden" 0xc10a}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p2_pax" "sup_linked" "hidden" 0xc10b}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p2_pax" "sup_linked" "hidden" 0xc10c}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p3_pax" "sup_linked" "hidden" 0xc10d}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p3_pax" "sup_linked" "hidden" 0xc10e}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p3_pax" "sup_linked" "hidden" 0xc10f}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p3_pax" "sup_linked" "hidden" 0xc110}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p3_pax" "sup_linked" "hidden" 0xc111}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p3_pax" "sup_linked" "hidden" 0xc112}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "sup_linked" "hidden" 0xc113}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "sup_linked" "hidden" 0xc114}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "sup_linked" "hidden" 0xc115}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "sup_linked" "hidden" 0xc116}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "sup_linked" "hidden" 0xc117}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "sup_linked" "hidden" 0xc118}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_hull" "ally_sup_ukr_p2_hull" "hidden" 0xc119}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p2_crew" "sup_linked" "hidden" 0xc11a}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p2_crew" "sup_linked" "hidden" 0xc11b}
@@ -4708,22 +4708,22 @@
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_hull" "ally_sup_ukr_p4_hull" "hidden" 0xc11f}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p4_crew" "sup_linked" "hidden" 0xc120}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p4_crew" "sup_linked" "hidden" 0xc121}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p2_pax" "hidden" 0xc122}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p2_pax" "hidden" 0xc123}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p2_pax" "hidden" 0xc124}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p2_pax" "hidden" 0xc125}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p3_pax" "hidden" 0xc126}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p3_pax" "hidden" 0xc127}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p3_pax" "hidden" 0xc128}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p3_pax" "hidden" 0xc129}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p3_pax" "hidden" 0xc12a}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p3_pax" "hidden" 0xc12b}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "hidden" 0xc12c}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "hidden" 0xc12d}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "hidden" 0xc12e}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "hidden" 0xc12f}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "hidden" 0xc130}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "hidden" 0xc131}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p2_pax" "sup_linked" "hidden" 0xc122}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p2_pax" "sup_linked" "hidden" 0xc123}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p2_pax" "sup_linked" "hidden" 0xc124}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p2_pax" "sup_linked" "hidden" 0xc125}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p3_pax" "sup_linked" "hidden" 0xc126}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p3_pax" "sup_linked" "hidden" 0xc127}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p3_pax" "sup_linked" "hidden" 0xc128}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p3_pax" "sup_linked" "hidden" 0xc129}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p3_pax" "sup_linked" "hidden" 0xc12a}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p3_pax" "sup_linked" "hidden" 0xc12b}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "sup_linked" "hidden" 0xc12c}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "sup_linked" "hidden" 0xc12d}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "sup_linked" "hidden" 0xc12e}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "sup_linked" "hidden" 0xc12f}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "sup_linked" "hidden" 0xc130}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "sup_linked" "hidden" 0xc131}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_hull" "ally_sup_nato_p2_hull" "hidden" 0xc132}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p2_crew" "sup_linked" "hidden" 0xc133}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p2_crew" "sup_linked" "hidden" 0xc134}
@@ -4733,22 +4733,22 @@
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_hull" "ally_sup_nato_p4_hull" "hidden" 0xc138}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p4_crew" "sup_linked" "hidden" 0xc139}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p4_crew" "sup_linked" "hidden" 0xc13a}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p2_pax" "hidden" 0xc13b}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p2_pax" "hidden" 0xc13c}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p2_pax" "hidden" 0xc13d}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p2_pax" "hidden" 0xc13e}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p3_pax" "hidden" 0xc13f}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p3_pax" "hidden" 0xc140}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p3_pax" "hidden" 0xc141}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p3_pax" "hidden" 0xc142}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p3_pax" "hidden" 0xc143}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p3_pax" "hidden" 0xc144}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "hidden" 0xc145}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "hidden" 0xc146}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "hidden" 0xc147}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "hidden" 0xc148}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "hidden" 0xc149}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "hidden" 0xc14a}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p2_pax" "sup_linked" "hidden" 0xc13b}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p2_pax" "sup_linked" "hidden" 0xc13c}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p2_pax" "sup_linked" "hidden" 0xc13d}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p2_pax" "sup_linked" "hidden" 0xc13e}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p3_pax" "sup_linked" "hidden" 0xc13f}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p3_pax" "sup_linked" "hidden" 0xc140}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p3_pax" "sup_linked" "hidden" 0xc141}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p3_pax" "sup_linked" "hidden" 0xc142}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p3_pax" "sup_linked" "hidden" 0xc143}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p3_pax" "sup_linked" "hidden" 0xc144}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "sup_linked" "hidden" 0xc145}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "sup_linked" "hidden" 0xc146}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "sup_linked" "hidden" 0xc147}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "sup_linked" "hidden" 0xc148}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "sup_linked" "hidden" 0xc149}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "sup_linked" "hidden" 0xc14a}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_hull" "ally_sup_prc_p2_hull" "hidden" 0xc14b}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p2_crew" "sup_linked" "hidden" 0xc14c}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p2_crew" "sup_linked" "hidden" 0xc14d}
@@ -4758,22 +4758,22 @@
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_hull" "ally_sup_prc_p4_hull" "hidden" 0xc151}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p4_crew" "sup_linked" "hidden" 0xc152}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p4_crew" "sup_linked" "hidden" 0xc153}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p2_pax" "hidden" 0xc154}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p2_pax" "hidden" 0xc155}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p2_pax" "hidden" 0xc156}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p2_pax" "hidden" 0xc157}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p3_pax" "hidden" 0xc158}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p3_pax" "hidden" 0xc159}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p3_pax" "hidden" 0xc15a}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p3_pax" "hidden" 0xc15b}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p3_pax" "hidden" 0xc15c}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p3_pax" "hidden" 0xc15d}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p4_pax" "hidden" 0xc15e}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p4_pax" "hidden" 0xc15f}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p4_pax" "hidden" 0xc160}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p4_pax" "hidden" 0xc161}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p4_pax" "hidden" 0xc162}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p4_pax" "hidden" 0xc163}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p2_pax" "sup_linked" "hidden" 0xc154}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p2_pax" "sup_linked" "hidden" 0xc155}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p2_pax" "sup_linked" "hidden" 0xc156}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p2_pax" "sup_linked" "hidden" 0xc157}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p3_pax" "sup_linked" "hidden" 0xc158}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p3_pax" "sup_linked" "hidden" 0xc159}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p3_pax" "sup_linked" "hidden" 0xc15a}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p3_pax" "sup_linked" "hidden" 0xc15b}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p3_pax" "sup_linked" "hidden" 0xc15c}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p3_pax" "sup_linked" "hidden" 0xc15d}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p4_pax" "sup_linked" "hidden" 0xc15e}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p4_pax" "sup_linked" "hidden" 0xc15f}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p4_pax" "sup_linked" "hidden" 0xc160}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p4_pax" "sup_linked" "hidden" 0xc161}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p4_pax" "sup_linked" "hidden" 0xc162}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p4_pax" "sup_linked" "hidden" 0xc163}
 	{Link 0xc101 {0xc100 "driver"}}
 	{Link 0xc102 {0xc100 "commander"}}
 	{Link 0xc104 {0xc103 "driver"}}
@@ -4863,3 +4863,67 @@
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "hidden" 0xc206}
 	{Link 0xc201 {0xc200 "driver"}}
 	{Link 0xc202 {0xc200 "commander"}}
+	{Link 0xc109 {0xc100 "seat1"}}
+	{Link 0xc10a {0xc100 "seat2"}}
+	{Link 0xc10b {0xc100 "seat3"}}
+	{Link 0xc10c {0xc100 "seat4"}}
+	{Link 0xc10d {0xc103 "seat1"}}
+	{Link 0xc10e {0xc103 "seat2"}}
+	{Link 0xc10f {0xc103 "seat3"}}
+	{Link 0xc110 {0xc103 "seat4"}}
+	{Link 0xc111 {0xc103 "seat5"}}
+	{Link 0xc112 {0xc103 "seat6"}}
+	{Link 0xc113 {0xc106 "seat1"}}
+	{Link 0xc114 {0xc106 "seat2"}}
+	{Link 0xc115 {0xc106 "seat3"}}
+	{Link 0xc116 {0xc106 "seat4"}}
+	{Link 0xc117 {0xc106 "seat5"}}
+	{Link 0xc118 {0xc106 "seat6"}}
+	{Link 0xc122 {0xc119 "seat1"}}
+	{Link 0xc123 {0xc119 "seat2"}}
+	{Link 0xc124 {0xc119 "seat3"}}
+	{Link 0xc125 {0xc119 "seat4"}}
+	{Link 0xc126 {0xc11c "seat1"}}
+	{Link 0xc127 {0xc11c "seat2"}}
+	{Link 0xc128 {0xc11c "seat3"}}
+	{Link 0xc129 {0xc11c "seat4"}}
+	{Link 0xc12a {0xc11c "seat5"}}
+	{Link 0xc12b {0xc11c "seat6"}}
+	{Link 0xc12c {0xc11f "seat1"}}
+	{Link 0xc12d {0xc11f "seat2"}}
+	{Link 0xc12e {0xc11f "seat3"}}
+	{Link 0xc12f {0xc11f "seat4"}}
+	{Link 0xc130 {0xc11f "seat5"}}
+	{Link 0xc131 {0xc11f "seat6"}}
+	{Link 0xc13b {0xc132 "seat1"}}
+	{Link 0xc13c {0xc132 "seat2"}}
+	{Link 0xc13d {0xc132 "seat3"}}
+	{Link 0xc13e {0xc132 "seat4"}}
+	{Link 0xc13f {0xc135 "seat1"}}
+	{Link 0xc140 {0xc135 "seat2"}}
+	{Link 0xc141 {0xc135 "seat3"}}
+	{Link 0xc142 {0xc135 "seat4"}}
+	{Link 0xc143 {0xc135 "seat5"}}
+	{Link 0xc144 {0xc135 "seat6"}}
+	{Link 0xc145 {0xc138 "seat1"}}
+	{Link 0xc146 {0xc138 "seat2"}}
+	{Link 0xc147 {0xc138 "seat3"}}
+	{Link 0xc148 {0xc138 "seat4"}}
+	{Link 0xc149 {0xc138 "seat5"}}
+	{Link 0xc14a {0xc138 "seat6"}}
+	{Link 0xc154 {0xc14b "seat1"}}
+	{Link 0xc155 {0xc14b "seat2"}}
+	{Link 0xc156 {0xc14b "seat3"}}
+	{Link 0xc157 {0xc14b "seat4"}}
+	{Link 0xc158 {0xc14e "seat1"}}
+	{Link 0xc159 {0xc14e "seat2"}}
+	{Link 0xc15a {0xc14e "seat3"}}
+	{Link 0xc15b {0xc14e "seat4"}}
+	{Link 0xc15c {0xc14e "seat5"}}
+	{Link 0xc15d {0xc14e "seat6"}}
+	{Link 0xc15e {0xc151 "seat1"}}
+	{Link 0xc15f {0xc151 "seat2"}}
+	{Link 0xc160 {0xc151 "seat3"}}
+	{Link 0xc161 {0xc151 "seat4"}}
+	{Link 0xc162 {0xc151 "seat5"}}
+	{Link 0xc163 {0xc151 "seat6"}}
