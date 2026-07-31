@@ -6,6 +6,7 @@ on:
     paths:
       - .github/workflows/fix-motor-runtime-isolation.yml
       - tools/fix_motor_lifecycle.py
+      - tools/patch_motor_isolation_test.py
 
 permissions:
   contents: write
@@ -24,6 +25,8 @@ jobs:
         run: |
           python -m py_compile tools/fix_motor_lifecycle.py
           python tools/fix_motor_lifecycle.py
+          python -m py_compile tools/patch_motor_isolation_test.py
+          python tools/patch_motor_isolation_test.py
           python -m py_compile tests/test_motor_runtime_isolation.py
           git diff --check
 
@@ -48,6 +51,7 @@ jobs:
           rm -f .github/workflows/inspect-motor-runtime-regressions.yml
           rm -f .github/workflows/fix-motor-runtime-isolation.yml
           rm -f tools/fix_motor_lifecycle.py
+          rm -f tools/patch_motor_isolation_test.py
           git config user.name 'OpenAI Codex Agent'
           git config user.email 'noreply@openai.com'
           git add resource/map/multi/attack_support_waves.inc \
