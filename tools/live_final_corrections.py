@@ -10,6 +10,18 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
     return text.replace(old, new, 1)
 
 
+def normalize_once(text: str, old: str, new: str, label: str) -> str:
+    old_count = text.count(old)
+    new_count = text.count(new)
+    if old_count == 1:
+        return text.replace(old, new, 1)
+    if old_count == 0 and new_count == 1:
+        return text
+    raise RuntimeError(
+        f'{label}: expected one old or one normalized form, found old={old_count}, new={new_count}'
+    )
+
+
 def strip_trailing_whitespace(text: str) -> str:
     had_final_newline = text.endswith('\n')
     cleaned = '\n'.join(line.rstrip() for line in text.splitlines())
@@ -49,13 +61,13 @@ templates = templates.replace(
     1,
 )
 
-e2_tests = replace_once(
+e2_tests = normalize_once(
     e2_tests,
     '        self.assertEqual(self.live.count("{tag_add support_e2_pax}"), 3)',
     '        self.assertEqual(self.live.count("{tag_add support_e2_pax}"), 4)',
     'update completed delivery count',
 )
-e2_tests = replace_once(
+e2_tests = normalize_once(
     e2_tests,
     '        self.assertEqual(self.waves.count("{tag_add support_e2_pax}"), 3)',
     '        self.assertEqual(self.waves.count("{tag_add support_e2_pax}"), 4)',
