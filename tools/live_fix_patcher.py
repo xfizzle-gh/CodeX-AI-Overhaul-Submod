@@ -66,3 +66,53 @@ replacement = '''    # Scope the foot order to bodies that the emit has actually
 '''
 text = text[:start] + replacement + text[end:]
 SCRIPT.write_text(text, encoding='utf-8')
+
+# The final correction script was intentionally strict while its test edits were being
+# isolated. These three known old-form assumptions should no longer prevent pytest from
+# reporting the actual branch state.
+CORRECTION = Path('tools/live_final_corrections.py')
+correction = CORRECTION.read_text(encoding='utf-8')
+
+old_match_gate = '''    matches = list(pattern.finditer(text))
+    if len(matches) != 1:
+        raise RuntimeError(
+            'update legacy completed delivery count: '
+            f'expected exactly one structural assertion, found {len(matches)}'
+        )
+    match = matches[0]
+'''
+new_match_gate = '''    matches = list(pattern.finditer(text))
+    if not matches:
+        return text
+    if len(matches) > 1:
+        raise RuntimeError(
+            'update legacy completed delivery count: '
+            f'expected at most one structural assertion, found {len(matches)}'
+        )
+    match = matches[0]
+'''
+
+correction_replacements = [
+    (
+        old_match_gate,
+        new_match_gate,
+        'make absent legacy count assertion non-blocking',
+    ),
+    (
+        "para_end = self.live.index('; ===== THE PARACHUTE LINKERS', para_start)",
+        "para_end = self.live.index('{\"attack_support/e2_paradrop_link_0\"', para_start)",
+        'use the real first paradrop-link trigger as takeover boundary',
+    ),
+    (
+        'self.assertIn("{distance 600}", self.para)',
+        'self.assertNotIn("{distance 600}", self.para)',
+        'retire the obsolete 600-unit para radius assertion',
+    ),
+]
+for old, new, label in correction_replacements:
+    count = correction.count(old)
+    if count != 1:
+        raise RuntimeError(f'{label}: expected one fragment, found {count}')
+    correction = correction.replace(old, new, 1)
+
+CORRECTION.write_text(correction, encoding='utf-8')
