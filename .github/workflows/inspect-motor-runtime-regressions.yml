@@ -1,0 +1,63 @@
+name: Inspect motor runtime regressions
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/inspect-motor-runtime-regressions.yml
+
+jobs:
+  inspect:
+    if: github.head_ref == 'experiment/attack-mate-slot-proof'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/attack-mate-slot-proof
+          fetch-depth: 0
+      - name: Print exact balanced blocks and linked-order selectors
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def balanced(text, token):
+              start=text.index(token)
+              opener=token[0]
+              closer=')' if opener=='(' else '}'
+              depth=0; quote=False; esc=False
+              for i in range(start,len(text)):
+                  c=text[i]
+                  if quote:
+                      if esc: esc=False
+                      elif c=='\\': esc=True
+                      elif c=='"': quote=False
+                      continue
+                  if c=='"': quote=True
+                  elif c==opener: depth+=1
+                  elif c==closer:
+                      depth-=1
+                      if depth==0: return text[start:i+1]
+              raise RuntimeError(token)
+
+          cases=[
+            ('resource/map/multi/attack_support_waves.inc','(define "as_choose_entry"'),
+            ('resource/map/multi/attack_support_waves.inc','(define "as_finish_motor"'),
+            ('resource/map/multi/enemy_defense_support.inc','(define "ed_finish_motor"'),
+            ('resource/map/multi/attack_support_waves.inc','(define "am_finish_deploy"'),
+          ]
+          for path,token in cases:
+              text=Path(path).read_text(encoding='utf-8-sig')
+              print('\n===== '+path+' :: '+token+' =====')
+              print(balanced(text,token))
+
+          for path in ('resource/map/multi/attack_support_waves.inc','resource/map/multi/enemy_defense_support.inc'):
+              text=Path(path).read_text(encoding='utf-8-sig')
+              print('\n===== ACTIONS TOUCHING MOTOR/GROUP TAGS :: '+path+' =====')
+              for m in re.finditer(r'\{"action".*?\n\s*\}', text, flags=re.S):
+                  block=m.group(0)
+                  if any(k in block for k in ('motor_pax','motor_hull','attack_support_g','enemy_def_g','patrol')):
+                      print(block[:1800])
+                      print('---')
+          PY
