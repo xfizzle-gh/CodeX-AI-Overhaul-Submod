@@ -69,10 +69,29 @@ jobs:
           git push origin HEAD:experiment/attack-mate-slot-proof
 
       - name: Run hosted-compatible repository suite
+        id: hosted
+        shell: bash
         run: |
-          python -m pytest tests/ -q \
+          set +e
+          python -m pytest tests/ -vv \
             --deselect=tests/test_attack_support_slot_proof.py::AttackSupportSlotProofTests::test_wave_pool_is_deep_enough_for_the_level_budget \
-            --deselect=tests/test_enemy_defense_support.py::EnemyDefenseSupportTests::test_pool_parks_four_faction_pools_deep_enough_for_the_budget
+            --deselect=tests/test_enemy_defense_support.py::EnemyDefenseSupportTests::test_pool_parks_four_faction_pools_deep_enough_for_the_budget \
+            2>&1 | tee hosted-suite-failure.log
+          status=${PIPESTATUS[0]}
+          if (( status != 0 )); then
+            exit 1
+          fi
+          rm -f hosted-suite-failure.log
+
+      - name: Persist hosted-suite failure output
+        if: failure() && steps.hosted.outcome == 'failure'
+        shell: bash
+        run: |
+          git config user.name 'OpenAI Codex Agent'
+          git config user.email 'noreply@openai.com'
+          git add hosted-suite-failure.log
+          git commit -m 'Temporary: capture hosted suite failure'
+          git push origin HEAD:experiment/attack-mate-slot-proof
 
       - name: Commit clean repair
         shell: bash
@@ -86,6 +105,7 @@ jobs:
           rm -f tools/patch_existing_motor_tests.py
           rm -f tools/list_motor_test_names.py
           rm -f focused-motor-failure.log
+          rm -f hosted-suite-failure.log
           git config user.name 'OpenAI Codex Agent'
           git config user.email 'noreply@openai.com'
           git add resource/map/multi/attack_support_waves.inc \
@@ -95,6 +115,6 @@ jobs:
                   tests/test_motor_runtime_isolation.py \
                   tests/test_motor_package1_restore.py \
                   tests/test_attack_support_slot_proof.py \
-                  .github/workflows tools focused-motor-failure.log
+                  .github/workflows tools focused-motor-failure.log hosted-suite-failure.log
           git commit -m 'Isolate motor passengers from infantry patrols'
           git push origin HEAD:experiment/attack-mate-slot-proof
