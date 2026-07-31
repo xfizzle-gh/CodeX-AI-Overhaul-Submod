@@ -4232,7 +4232,7 @@
 
 			; ===== TRUE HELICOPTER TRANSPORT: DESCEND, GROUND, EMIT, LIFT =====
 			; Shipped evidence used here:
-			;   * Gostomel routes lower real Mi-8/Mi-17 helicopters with {"air_state"}
+			;   * Gostomel routes lower real Mi-8/Mi-17 helicopters with the air_state command
 			;     before their waypoint-command passenger emit.
 			;   * Code:X helicopter.inc's continuously re-arming altitude_checker writes
 			;     w81_landing only below altitude 5 and removes it again in flight.
