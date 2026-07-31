@@ -1,0 +1,97 @@
+name: Fix deploy faction marker count
+
+on:
+  push:
+    branches:
+      - experiment/attack-mate-slot-proof
+    paths:
+      - .github/workflows/fix-deploy-faction-marker-count.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/attack-mate-slot-proof
+          fetch-depth: 0
+
+      - name: Correct stale faction-pool guards
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("tools/deploy_attack_support_probe.ps1")
+          text = path.read_text(encoding="utf-8")
+          replacements = (
+              (
+                  "# Player-nation pools: 633 prototypes across four factions (incl. rare IFV packages).",
+                  "# Player-nation pools: 634 prototypes across four factions (incl. rare IFV packages and the independent E2 LZ marker).",
+              ),
+              ("if ($factionAble -ne 633) {", "if ($factionAble -ne 634) {"),
+              (
+                  'throw "Faction pool must park 633 prototypes with selection stripped; found $factionAble"',
+                  'throw "Faction pool must park 634 prototypes with selection stripped; found $factionAble"',
+              ),
+              (
+                  "if (($factionMids | Sort-Object -Unique).Count -ne 633) {",
+                  "if (($factionMids | Sort-Object -Unique).Count -ne 634) {",
+              ),
+              (
+                  'throw "Faction pool must carry 633 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"',
+                  'throw "Faction pool must carry 634 unique MIDs; found $(($factionMids | Sort-Object -Unique).Count)"',
+              ),
+              (
+                  "if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able \"-select\"}').Count -ne 633) {",
+                  "if ((Select-String -LiteralPath $factionTarget -SimpleMatch '{Able \"-select\"}').Count -ne 634) {",
+              ),
+              (
+                  'throw "Workshop faction pool is not the 526-prototype player-nation pool"',
+                  'throw "Workshop faction pool is not the 634-prototype pool including the independent E2 LZ marker"',
+              ),
+          )
+          for old, new in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise RuntimeError(f"Expected exactly one stale deploy guard, found {count}: {old}")
+              text = text.replace(old, new, 1)
+          if "633" in text:
+              raise RuntimeError("An unaudited 633 expectation remains in deploy_attack_support_probe.ps1")
+          path.write_text(text, encoding="utf-8")
+
+      - name: Parse PowerShell
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'tools/deploy_attack_support_probe.ps1'),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -ne 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            exit 1
+          }
+
+      - name: Run repository suite
+        shell: bash
+        run: |
+          python -m pip install pytest
+          python -m pytest tests/ -q \
+            --deselect=tests/test_attack_support_slot_proof.py::AttackSupportSlotProofTests::test_wave_pool_is_deep_enough_for_the_level_budget \
+            --deselect=tests/test_enemy_defense_support.py::EnemyDefenseSupportTests::test_pool_parks_four_faction_pools_deep_enough_for_the_budget
+          git diff --check
+
+      - name: Commit repair and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/fix-deploy-faction-marker-count.yml
+          git config user.name 'OpenAI Codex Agent'
+          git config user.email 'noreply@openai.com'
+          git add tools/deploy_attack_support_probe.ps1 .github/workflows
+          git commit -m 'Fix deploy guard for independent E2 marker'
+          git push origin HEAD:experiment/attack-mate-slot-proof
