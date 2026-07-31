@@ -1,0 +1,60 @@
+name: Fix motor runtime isolation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/fix-motor-runtime-isolation.yml
+      - tools/fix_motor_lifecycle.py
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.head_ref == 'experiment/attack-mate-slot-proof'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/attack-mate-slot-proof
+          fetch-depth: 0
+
+      - name: Apply isolated motor lifecycle repair
+        run: |
+          python -m py_compile tools/fix_motor_lifecycle.py
+          python tools/fix_motor_lifecycle.py
+          python -m py_compile tests/test_motor_runtime_isolation.py
+          git diff --check
+
+      - name: Install test runner
+        run: python -m pip install pytest
+
+      - name: Run focused motor tests
+        run: |
+          python -m pytest tests/test_motor_runtime_isolation.py -q
+          python -m pytest tests/test_motor_package1_restore.py -q
+          python -m pytest tests/test_attack_support_slot_proof.py -q -k 'motor or linked or package or flank'
+
+      - name: Run hosted-compatible repository suite
+        run: |
+          python -m pytest tests/ -q \
+            --deselect=tests/test_attack_support_slot_proof.py::AttackSupportSlotProofTests::test_wave_pool_is_deep_enough_for_the_level_budget \
+            --deselect=tests/test_enemy_defense_support.py::EnemyDefenseSupportTests::test_pool_parks_four_faction_pools_deep_enough_for_the_budget
+
+      - name: Commit clean repair
+        shell: bash
+        run: |
+          rm -f .github/workflows/inspect-motor-runtime-regressions.yml
+          rm -f .github/workflows/fix-motor-runtime-isolation.yml
+          rm -f tools/fix_motor_lifecycle.py
+          git config user.name 'OpenAI Codex Agent'
+          git config user.email 'noreply@openai.com'
+          git add resource/map/multi/attack_support_waves.inc \
+                  resource/map/multi/defense_support_waves.inc \
+                  resource/map/multi/enemy_attack_support.inc \
+                  resource/map/multi/enemy_defense_support.inc \
+                  tests/test_motor_runtime_isolation.py \
+                  .github/workflows tools
+          git commit -m 'Isolate motor passengers from infantry patrols'
+          git push origin HEAD:experiment/attack-mate-slot-proof
