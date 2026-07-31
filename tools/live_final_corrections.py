@@ -11,14 +11,30 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
 
 
 def normalize_once(text: str, old: str, new: str, label: str) -> str:
-    old_count = text.count(old)
-    new_count = text.count(new)
-    if old_count == 1:
-        return text.replace(old, new, 1)
-    if old_count == 0 and new_count == 1:
+    candidates = [(old, new)]
+    alternate_old = old.replace(
+        'count("{tag_add support_e2_pax}")',
+        "count('{tag_add support_e2_pax}')",
+    )
+    alternate_new = new.replace(
+        'count("{tag_add support_e2_pax}")',
+        "count('{tag_add support_e2_pax}')",
+    )
+    if alternate_old != old:
+        candidates.append((alternate_old, alternate_new))
+
+    old_hits = [(candidate_old, candidate_new) for candidate_old, candidate_new in candidates if text.count(candidate_old) == 1]
+    if len(old_hits) == 1:
+        candidate_old, candidate_new = old_hits[0]
+        return text.replace(candidate_old, candidate_new, 1)
+
+    normalized_hits = sum(text.count(candidate_new) for _, candidate_new in candidates)
+    if not old_hits and normalized_hits == 1:
         return text
+
+    old_count = sum(text.count(candidate_old) for candidate_old, _ in candidates)
     raise RuntimeError(
-        f'{label}: expected one old or one normalized form, found old={old_count}, new={new_count}'
+        f'{label}: expected one old or one normalized form, found old={old_count}, new={normalized_hits}'
     )
 
 
@@ -94,9 +110,6 @@ takeover_assert = '''        self.assertIn("{tag_remove support_e2_helo_pax}", h
 '''
 e2_tests = replace_once(e2_tests, helo_anchor, takeover_assert, 'pin paratrooper delivery path')
 
-# The base payload also inserts a standalone takeover test. The canonical completed-
-# delivery-path test above now covers the same trigger plus all three exclusion states,
-# ownership, and ordering, so remove the duplicate helper-parser test.
 redundant_takeover_test = '''
 
     def test_landed_paratroopers_are_owned_and_ordered_immediately(self) -> None:
