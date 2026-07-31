@@ -79,6 +79,10 @@ jobs:
                   '        self.assertEqual(len(ids), 633)',
                   '        self.assertEqual(len(ids), 634)',
               ),
+              (
+                  '        self.assertEqual(len(set(ids)), 633)',
+                  '        self.assertEqual(len(set(ids)), 634)',
+              ),
           )
           for old, new in replacements:
               if block.count(old) != 1:
