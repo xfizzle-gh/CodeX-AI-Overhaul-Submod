@@ -1,0 +1,91 @@
+name: Execute final live air and motor repair
+
+on:
+  push:
+    branches:
+      - experiment/attack-mate-slot-proof
+    paths:
+      - .github/workflows/run-live-air-motor-fixes-v5.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/attack-mate-slot-proof
+          fetch-depth: 0
+
+      - name: Recover and run repair payloads
+        shell: bash
+        run: |
+          awk '
+            /^          ZnJv/ {capture=1}
+            /^          B64$/ {capture=0}
+            capture {sub(/^          /, ""); print}
+          ' .github/workflows/run-live-air-motor-fixes.yml > /tmp/live_fix.b64
+          base64 -d /tmp/live_fix.b64 > /tmp/apply_live_air_motor_fixes.py
+
+          awk '
+            /^          ZnJv/ {capture=1}
+            /^          B64$/ {capture=0}
+            capture {sub(/^          /, ""); print}
+          ' .github/workflows/run-live-air-motor-fixes-v2.yml > /tmp/patcher.b64
+          base64 -d /tmp/patcher.b64 > /tmp/patch_repair_script.py
+
+          python -m py_compile /tmp/patch_repair_script.py
+          python /tmp/patch_repair_script.py
+          python -m py_compile /tmp/apply_live_air_motor_fixes.py
+          python /tmp/apply_live_air_motor_fixes.py
+
+      - name: Recover and run final corrections
+        shell: bash
+        run: |
+          awk '
+            /- name: Apply final guard-compatible corrections/ {step=1; next}
+            step && /python - <<'"'"'PY'"'"'/ {capture=1; next}
+            capture && /^          PY$/ {capture=0; exit}
+            capture {sub(/^          /, ""); print}
+          ' .github/workflows/run-live-air-motor-fixes-v4.yml > /tmp/final_corrections.py
+          python -m py_compile /tmp/final_corrections.py
+          python /tmp/final_corrections.py
+
+      - name: Install test runner
+        run: python -m pip install pytest
+
+      - name: Run focused tests
+        run: |
+          python -m pytest tests/test_e2_airmobile.py -q
+          python -m pytest tests/test_attack_support_slot_proof.py -q \
+            -k 'motor or objective or drive_phase or linked or engine_never_clones'
+          git diff --check
+
+      - name: Run full test suite
+        run: python -m pytest tests/ -q
+
+      - name: Commit repairs and remove temporary workflows
+        shell: bash
+        run: |
+          rm -f .github/workflows/apply-live-air-motor-fixes.yml
+          rm -f .github/workflows/run-live-air-motor-fixes.yml
+          rm -f .github/workflows/run-live-air-motor-fixes-v2.yml
+          rm -f .github/workflows/run-live-air-motor-fixes-v3.yml
+          rm -f .github/workflows/run-live-air-motor-fixes-v4.yml
+          rm -f .github/workflows/run-live-air-motor-fixes-v5.yml
+          rm -f .github/workflows/export-live-debug-branch.yml
+          git config user.name 'OpenAI Codex Agent'
+          git config user.email 'noreply@openai.com'
+          git add resource/map/multi/attack_support_waves.inc \
+                  resource/map/multi/defense_support_waves.inc \
+                  resource/map/multi/enemy_attack_support.inc \
+                  resource/map/multi/enemy_defense_support.inc \
+                  resource/map/multi/faction_support_templates.inc \
+                  tools/deploy_attack_support_probe.ps1 \
+                  tests/test_e2_airmobile.py \
+                  tests/test_attack_support_slot_proof.py \
+                  .github/workflows
+          git commit -m 'Fix live helicopter, paradrop, and motor delivery'
+          git push origin HEAD:experiment/attack-mate-slot-proof
