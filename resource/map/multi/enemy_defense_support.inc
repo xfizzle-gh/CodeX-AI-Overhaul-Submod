@@ -3057,14 +3057,7 @@
 				{"set_i" {var "enemy_defense_motor_stage$"} {op "="} {value 4}}
 				{"delay" {time 3}}
 				{"action"
-					{selector
-						{source advanced}
-						{ignore_captured_by_user 0}
-						{group
-							{select {tag {tag enemy_def_motor_pax}}}
-							{exclude {state {state linked}} {state {state inactive}} {state {state dead}}}
-						}
-					}
+					{selector {ignore_captured_by_user 0} {tag enemy_def_motor_pax}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag enemy_def_motor_flag}}
@@ -3117,7 +3110,7 @@
 						{"3.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
 						{"5.cmp_i" {var "enemy_defense_motor_left$"} {op ">"} {value 0}}
-						{"6.entities" {selector {tag ally_sup_rusa_motor_hull}} {count {op ">="} {value 1}}}
+						{"6.entities" {selector {tag ally_sup_rusa_p1_hull}} {count {op ">="} {value 1}}}
 					}
 				}
 				{actions
@@ -3249,7 +3242,7 @@
 						{"3.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 2}}
 						{"4.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
 						{"5.cmp_i" {var "enemy_defense_motor_left$"} {op ">"} {value 0}}
-						{"6.entities" {selector {tag ally_sup_ukr_motor_hull}} {count {op ">="} {value 1}}}
+						{"6.entities" {selector {tag ally_sup_ukr_p1_hull}} {count {op ">="} {value 1}}}
 					}
 				}
 				{actions
@@ -3381,7 +3374,7 @@
 						{"3.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 3}}
 						{"4.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
 						{"5.cmp_i" {var "enemy_defense_motor_left$"} {op ">"} {value 0}}
-						{"6.entities" {selector {tag ally_sup_nato_motor_hull}} {count {op ">="} {value 1}}}
+						{"6.entities" {selector {tag ally_sup_nato_p1_hull}} {count {op ">="} {value 1}}}
 					}
 				}
 				{actions
@@ -3513,7 +3506,7 @@
 						{"3.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 4}}
 						{"4.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
 						{"5.cmp_i" {var "enemy_defense_motor_left$"} {op ">"} {value 0}}
-						{"6.entities" {selector {tag ally_sup_prc_motor_hull}} {count {op ">="} {value 1}}}
+						{"6.entities" {selector {tag ally_sup_prc_p1_hull}} {count {op ">="} {value 1}}}
 					}
 				}
 				{actions
