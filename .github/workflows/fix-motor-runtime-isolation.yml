@@ -72,15 +72,33 @@ jobs:
         id: hosted
         shell: bash
         run: |
-          set +e
-          python -m pytest tests/ -vv \
-            --deselect=tests/test_attack_support_slot_proof.py::AttackSupportSlotProofTests::test_wave_pool_is_deep_enough_for_the_level_budget \
-            --deselect=tests/test_enemy_defense_support.py::EnemyDefenseSupportTests::test_pool_parks_four_faction_pools_deep_enough_for_the_budget \
-            2>&1 | tee hosted-suite-failure.log
-          status=${PIPESTATUS[0]}
-          if (( status != 0 )); then
-            exit 1
-          fi
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          cmd = [
+              sys.executable,
+              "-m",
+              "pytest",
+              "tests/",
+              "-vv",
+              "--tb=long",
+              "--deselect=tests/test_attack_support_slot_proof.py::AttackSupportSlotProofTests::test_wave_pool_is_deep_enough_for_the_level_budget",
+              "--deselect=tests/test_enemy_defense_support.py::EnemyDefenseSupportTests::test_pool_parks_four_faction_pools_deep_enough_for_the_budget",
+          ]
+          result = subprocess.run(
+              cmd,
+              stdout=subprocess.PIPE,
+              stderr=subprocess.STDOUT,
+              text=True,
+              check=False,
+          )
+          report = f"returncode={result.returncode}\ncommand={' '.join(cmd)}\n\n{result.stdout}"
+          Path("hosted-suite-failure.log").write_text(report, encoding="utf-8")
+          print(report)
+          raise SystemExit(result.returncode)
+          PY
           rm -f hosted-suite-failure.log
 
       - name: Persist hosted-suite failure output
