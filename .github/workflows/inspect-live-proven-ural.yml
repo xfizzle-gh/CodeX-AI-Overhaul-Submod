@@ -1,0 +1,64 @@
+name: Inspect live-proven Ural motor path
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/inspect-live-proven-ural.yml
+
+jobs:
+  inspect:
+    if: github.head_ref == 'experiment/attack-mate-slot-proof'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/attack-mate-slot-proof
+          fetch-depth: 0
+      - name: Compare current and live-proven motor structures
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, subprocess
+
+          BASE='9caa7c2c458f04157ecd52dd91e89210af975cf7'
+          paths=[
+            'resource/map/multi/attack_support_waves.inc',
+            'resource/map/multi/enemy_defense_support.inc',
+            'resource/map/multi/faction_support_templates.inc',
+          ]
+          def old(path):
+            return subprocess.check_output(['git','show',f'{BASE}:{path}'], text=True)
+          def trigger_names(text):
+            return sorted(set(re.findall(r'\{"([^"\n]*(?:rusa|motor)[^"\n]*)"', text, flags=re.I)))
+          def defines(text):
+            return sorted(set(re.findall(r'\(define "([^"]*motor[^"]*)"', text, flags=re.I)))
+          for path in paths[:2]:
+            cur=Path(path).read_text(encoding='utf-8')
+            prev=old(path)
+            print(f'=== {path} CURRENT DEFINES ===')
+            print('\n'.join(defines(cur)))
+            print(f'=== {path} BASE DEFINES ===')
+            print('\n'.join(defines(prev)))
+            print(f'=== {path} CURRENT RUSA/MOTOR TRIGGERS ===')
+            print('\n'.join(n for n in trigger_names(cur) if 'rusa' in n.lower() or 'motor' in n.lower()))
+            print(f'=== {path} BASE RUSA/MOTOR TRIGGERS ===')
+            print('\n'.join(n for n in trigger_names(prev) if 'rusa' in n.lower() or 'motor' in n.lower()))
+
+          for label,text in [('CURRENT',Path(paths[2]).read_text(encoding='utf-8')),('BASE',old(paths[2]))]:
+            print(f'=== TEMPLATE {label} RUSA P1 TAG LINES ===')
+            for line in text.splitlines():
+              if 'ally_sup_rusa_p1_' in line or ('{Link ' in line and any(x in line.lower() for x in ('0xc0','0xb0'))):
+                if 'ally_sup_rusa_p1_' in line:
+                  print(line)
+            print(f'=== TEMPLATE {label} RUSA MOTOR LINKS ===')
+            actors={}
+            for m in re.finditer(r'\{(?:Entity|Human) "([^"]+)" (0x[0-9a-fA-F]+)(.*?)\n\s*\}', text, flags=re.S):
+              actors[m.group(2).lower()]=m.group(1)
+            p1_ids=set(re.findall(r'\{Tags [^\n]*"ally_sup_rusa_p1_[^"]+"[^\n]*(0x[0-9a-fA-F]+)\}',text))
+            for line in text.splitlines():
+              m=re.search(r'\{Link (0x[0-9a-fA-F]+) \{(0x[0-9a-fA-F]+) "([^"]+)"\}\}',line)
+              if m and (m.group(1) in p1_ids or m.group(2) in p1_ids):
+                print(line)
+          PY
