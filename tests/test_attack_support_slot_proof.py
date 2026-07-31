@@ -2072,9 +2072,10 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                 for child in sorted(children):
                     self.assertIn('"%s" "hidden" %s}' % (self.LINKED_TAG, child), code)
             total += len(children)
-        # 181 in the faction pools (including all four motor packages, IFV, light vehicle, E2 aircrew) plus the
-        # 8 humvee crew in the original attack pool.
-        self.assertEqual(total, 189)
+        # 197 in the faction pools (all motor packages, IFV, light vehicle, E2 aircrew and
+        # 16 Link-baked helicopter passengers) plus the 8 humvee crew in the
+        # original attack pool.
+        self.assertEqual(total, 205)
 
     def test_files_without_links_carry_no_linked_tag(self) -> None:
         for path in self.UNLINKED_FILES:

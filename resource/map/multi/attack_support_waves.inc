@@ -3610,9 +3610,9 @@
 				{"trigger" {name "attack_support/e2_helo_leg_poll"}}
 			)
 
-			; Stage 50 means "the insert is on the ground and moving". It may only be
-			; reached with a live claimed body to move; an already-set fail code wins so the
-			; entry-standoff fallback still reports its own reason (4).
+			; Stage 50 means "emitted passengers are owned and moving". It may only be
+			; reached after a body receives support_e2_pax on the grounded unload path; an
+			; already-set fail code still wins.
 			;
 			; ===== THE LANDED-EVIDENCE CHECK, KEYED ON THE SAME TAG AS THE TRANSFER =====
 			; This gate used to count support_e2_team through
@@ -4229,6 +4229,93 @@
 				}
 			)
 
+
+			; ===== TRUE HELICOPTER TRANSPORT: DESCEND, GROUND, EMIT, LIFT =====
+			; Shipped evidence used here:
+			;   * Gostomel routes lower real Mi-8/Mi-17 helicopters with {"air_state"}
+			;     before their waypoint-command passenger emit.
+			;   * Code:X helicopter.inc's continuously re-arming altitude_checker writes
+			;     w81_landing only below altitude 5 and removes it again in flight.
+			; The LZ trigger therefore requests altitude 0, but delivery is not credited
+			; until the aircraft itself reports w81_landing. No timed MOVE placement can
+			; satisfy that gate.
+			(define "e2_descend_helo"
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag support_e2_arrival}}
+					{movement {speed sneak}}
+				}
+				{"air_state"
+					{selector {ignore_captured_by_user 0} {tag support_e2_arrival}}
+					{altitude 0}
+				}
+			)
+
+			; Emit only the four linked passenger templates. {crew {tag ...}} is used as
+			; the filter it is in shipped missions, never as a tag assignment. The chosen
+			; named LZ waypoint supplies a ground destination, matching Gostomel's emit.
+			(define "e2_emit_helo_pax"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}}
+								{"emit" {selector {ignore_captured_by_user 0} {tag support_e2_arrival} {type vehicle} {state inhabited}} {waypoint "attack_support_air_b2"} {crew {tag support_e2_helo_pax}} {emit {mode passengers}}}
+							}
+							{"default" {"emit" {selector {ignore_captured_by_user 0} {tag support_e2_arrival} {type vehicle} {state inhabited}} {waypoint "attack_support_air_b1"} {crew {tag support_e2_helo_pax}} {emit {mode passengers}}}}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}}
+								{"emit" {selector {ignore_captured_by_user 0} {tag support_e2_arrival} {type vehicle} {state inhabited}} {waypoint "attack_support_air_a2"} {crew {tag support_e2_helo_pax}} {emit {mode passengers}}}
+							}
+							{"default" {"emit" {selector {ignore_captured_by_user 0} {tag support_e2_arrival} {type vehicle} {state inhabited}} {waypoint "attack_support_air_a1"} {crew {tag support_e2_helo_pax}} {emit {mode passengers}}}}
+						}
+					}
+					{"default" {"emit" {selector {ignore_captured_by_user 0} {tag support_e2_arrival} {type vehicle} {state inhabited}} {waypoint "attack_support_air_b1"} {crew {tag support_e2_helo_pax}} {emit {mode passengers}}}}
+				}
+			)
+
+			; The parked originals remain hidden off-map. Only emitted copies are visible,
+			; so the advanced exclusion is the provenance boundary between the reusable
+			; pool and this delivery.
+			(define "e2_promote_helo_pax"
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group
+							{select {tag {tag support_e2_helo_pax}}}
+							{exclude {tag {tag hidden}}}
+						}
+					}
+					{tag_add support_e2_pax}
+					{tag_add support_e2_team}
+					{tag_add attack_support_src}
+					{tag_remove support_e2_helo_pax}
+					{tag_remove support_e2_tpl}
+					{tag_remove ally_sup_tpl}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+			)
+
+			; Raise the grounded helicopter back to its verified travel altitude before
+			; issuing the off-map route. altitude_checker removes w81_landing as it climbs.
+			(define "e2_lift_helo"
+				{"air_state"
+					{selector {ignore_captured_by_user 0} {tag support_e2_arrival}}
+					{altitude 22}
+				}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag support_e2_arrival}}
+					{movement {speed fast}}
+				}
+			)
+
 			; Exit across the map to the OPPOSITE side's numeric altitude node, so the
 			; aircraft flies through and off rather than turning back over the objective.
 			; 23/24 are the altitude-carrying pair (z in the position, no radius and
@@ -4283,19 +4370,12 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							; The aircraft is CLONED, so the parked hull and its two linked pilots keep
-							; their pool tags and stay parked: an air call-in is repeatable and costs the
-							; pool nothing. Only the four independent troops are consumed, and they are
-							; still delivered by the proven MOVE placement.
+							; The aircraft, pilots and four seat-linked passengers are CLONED as one
+							; reusable transport package. The parked source keeps every pool tag; only
+							; the emitted clone passengers become support units at the grounded LZ.
 							{"entity_state"
 								{selector {source advanced} {group {select {tag {tag support_e2_rusa_helo}}}} {amount 1}}
 								{tag_add support_e2_src}
-							}
-							{"entity_state"
-								{selector {source advanced} {group {select {tag {tag support_e2_rusa_helo_team}}}} {amount 4}}
-								{tag_add support_e2_claim}
-								{tag_add support_e2_team}
-								{tag_remove support_e2_rusa_helo_team}
 							}
 							("e2_choose_flag")
 							; Stage 20 claims "a target has been accepted". The evidence for that claim is
@@ -4304,32 +4384,18 @@
 								{"case"
 									{condition {type entities} {selector {tag support_e2_flag_target}} {count {op ">="} {value 1}}}
 									{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
-									("e2_own_current")
 									{"switch"
 										{"case"
 											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
 											("e2_choose_lz")
 											{"switch"
 												{"case"
-													{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
-													; Both deep pads unsafe: delete the unused helo and deliver the
-													; four claimed troops at the entry standoff. Failure remains honest.
-													("e2_announce_failed")
-													; Stage 40 claims "bodies are being delivered". Evidence: a claimed team.
-													{"switch"
-														{"case"
-															{condition {type entities} {selector {tag support_e2_team}} {count {op ">="} {value 1}}}
-															{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-														}
-														{"default"}
-													}
-													("e2_place_one_entry")
-													("e2_place_one_entry")
-													("e2_place_one_entry")
-													("e2_place_one_entry")
-													("e2_finish_team_or_fail")
-													("e2_complete_cleanup")
-												}
+																	{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
+																	; Both deep pads are unsafe. A true transport does not detach its
+																	; still-linked passengers and fake an insert at the entry edge.
+																	("e2_announce_failed")
+																	("e2_complete_cleanup")
+																}
 												{"default"
 													; Clone + teleport to the numeric air-entry waypoint. That waypoint's own
 													; {commands} block re-tags the arrival, sets its actor state and issues the
@@ -4421,19 +4487,12 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							; The aircraft is CLONED, so the parked hull and its two linked pilots keep
-							; their pool tags and stay parked: an air call-in is repeatable and costs the
-							; pool nothing. Only the four independent troops are consumed, and they are
-							; still delivered by the proven MOVE placement.
+							; The aircraft, pilots and four seat-linked passengers are CLONED as one
+							; reusable transport package. The parked source keeps every pool tag; only
+							; the emitted clone passengers become support units at the grounded LZ.
 							{"entity_state"
 								{selector {source advanced} {group {select {tag {tag support_e2_prc_helo}}}} {amount 1}}
 								{tag_add support_e2_src}
-							}
-							{"entity_state"
-								{selector {source advanced} {group {select {tag {tag support_e2_prc_helo_team}}}} {amount 4}}
-								{tag_add support_e2_claim}
-								{tag_add support_e2_team}
-								{tag_remove support_e2_prc_helo_team}
 							}
 							("e2_choose_flag")
 							; Stage 20 claims "a target has been accepted". The evidence for that claim is
@@ -4442,32 +4501,18 @@
 								{"case"
 									{condition {type entities} {selector {tag support_e2_flag_target}} {count {op ">="} {value 1}}}
 									{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
-									("e2_own_current")
 									{"switch"
 										{"case"
 											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
 											("e2_choose_lz")
 											{"switch"
 												{"case"
-													{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
-													; Both deep pads unsafe: delete the unused helo and deliver the
-													; four claimed troops at the entry standoff. Failure remains honest.
-													("e2_announce_failed")
-													; Stage 40 claims "bodies are being delivered". Evidence: a claimed team.
-													{"switch"
-														{"case"
-															{condition {type entities} {selector {tag support_e2_team}} {count {op ">="} {value 1}}}
-															{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-														}
-														{"default"}
-													}
-													("e2_place_one_entry")
-													("e2_place_one_entry")
-													("e2_place_one_entry")
-													("e2_place_one_entry")
-													("e2_finish_team_or_fail")
-													("e2_complete_cleanup")
-												}
+																	{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
+																	; Both deep pads are unsafe. A true transport does not detach its
+																	; still-linked passengers and fake an insert at the entry edge.
+																	("e2_announce_failed")
+																	("e2_complete_cleanup")
+																}
 												{"default"
 													; Clone + teleport to the numeric air-entry waypoint. That waypoint's own
 													; {commands} block re-tags the arrival, sets its actor state and issues the
@@ -4561,19 +4606,12 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							; The aircraft is CLONED, so the parked hull and its two linked pilots keep
-							; their pool tags and stay parked: an air call-in is repeatable and costs the
-							; pool nothing. Only the four independent troops are consumed, and they are
-							; still delivered by the proven MOVE placement.
+							; The aircraft, pilots and four seat-linked passengers are CLONED as one
+							; reusable transport package. The parked source keeps every pool tag; only
+							; the emitted clone passengers become support units at the grounded LZ.
 							{"entity_state"
 								{selector {source advanced} {group {select {tag {tag support_e2_ukr_helo}}}} {amount 1}}
 								{tag_add support_e2_src}
-							}
-							{"entity_state"
-								{selector {source advanced} {group {select {tag {tag support_e2_ukr_helo_team}}}} {amount 4}}
-								{tag_add support_e2_claim}
-								{tag_add support_e2_team}
-								{tag_remove support_e2_ukr_helo_team}
 							}
 							("e2_choose_flag")
 							; Stage 20 claims "a target has been accepted". The evidence for that claim is
@@ -4582,32 +4620,18 @@
 								{"case"
 									{condition {type entities} {selector {tag support_e2_flag_target}} {count {op ">="} {value 1}}}
 									{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
-									("e2_own_current")
 									{"switch"
 										{"case"
 											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
 											("e2_choose_lz")
 											{"switch"
 												{"case"
-													{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
-													; Both deep pads unsafe: delete the unused helo and deliver the
-													; four claimed troops at the entry standoff. Failure remains honest.
-													("e2_announce_failed")
-													; Stage 40 claims "bodies are being delivered". Evidence: a claimed team.
-													{"switch"
-														{"case"
-															{condition {type entities} {selector {tag support_e2_team}} {count {op ">="} {value 1}}}
-															{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-														}
-														{"default"}
-													}
-													("e2_place_one_entry")
-													("e2_place_one_entry")
-													("e2_place_one_entry")
-													("e2_place_one_entry")
-													("e2_finish_team_or_fail")
-													("e2_complete_cleanup")
-												}
+																	{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
+																	; Both deep pads are unsafe. A true transport does not detach its
+																	; still-linked passengers and fake an insert at the entry edge.
+																	("e2_announce_failed")
+																	("e2_complete_cleanup")
+																}
 												{"default"
 													; Clone + teleport to the numeric air-entry waypoint. That waypoint's own
 													; {commands} block re-tags the arrival, sets its actor state and issues the
@@ -4701,19 +4725,12 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							; The aircraft is CLONED, so the parked hull and its two linked pilots keep
-							; their pool tags and stay parked: an air call-in is repeatable and costs the
-							; pool nothing. Only the four independent troops are consumed, and they are
-							; still delivered by the proven MOVE placement.
+							; The aircraft, pilots and four seat-linked passengers are CLONED as one
+							; reusable transport package. The parked source keeps every pool tag; only
+							; the emitted clone passengers become support units at the grounded LZ.
 							{"entity_state"
 								{selector {source advanced} {group {select {tag {tag support_e2_nato_helo}}}} {amount 1}}
 								{tag_add support_e2_src}
-							}
-							{"entity_state"
-								{selector {source advanced} {group {select {tag {tag support_e2_nato_helo_team}}}} {amount 4}}
-								{tag_add support_e2_claim}
-								{tag_add support_e2_team}
-								{tag_remove support_e2_nato_helo_team}
 							}
 							("e2_choose_flag")
 							; Stage 20 claims "a target has been accepted". The evidence for that claim is
@@ -4722,32 +4739,18 @@
 								{"case"
 									{condition {type entities} {selector {tag support_e2_flag_target}} {count {op ">="} {value 1}}}
 									{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
-									("e2_own_current")
 									{"switch"
 										{"case"
 											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
 											("e2_choose_lz")
 											{"switch"
 												{"case"
-													{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
-													; Both deep pads unsafe: delete the unused helo and deliver the
-													; four claimed troops at the entry standoff. Failure remains honest.
-													("e2_announce_failed")
-													; Stage 40 claims "bodies are being delivered". Evidence: a claimed team.
-													{"switch"
-														{"case"
-															{condition {type entities} {selector {tag support_e2_team}} {count {op ">="} {value 1}}}
-															{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-														}
-														{"default"}
-													}
-													("e2_place_one_entry")
-													("e2_place_one_entry")
-													("e2_place_one_entry")
-													("e2_place_one_entry")
-													("e2_finish_team_or_fail")
-													("e2_complete_cleanup")
-												}
+																	{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
+																	; Both deep pads are unsafe. A true transport does not detach its
+																	; still-linked passengers and fake an insert at the entry edge.
+																	("e2_announce_failed")
+																	("e2_complete_cleanup")
+																}
 												{"default"
 													; Clone + teleport to the numeric air-entry waypoint. That waypoint's own
 													; {commands} block re-tags the arrival, sets its actor state and issues the
@@ -4841,12 +4844,6 @@
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
 						{"3.cmp_i" {var "support_e2_test$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "support_e2_test$"} {op "=="} {value 3}}
-						; Both terms are keyed on the PROVENANCE tag, not on this engine's bookkeeping
-						; tags. support_e2_arrival is written only by the numeric waypoint's own
-						; {commands} block, so it can never reach a parked template and, unlike the
-						; promote step's tags, it provably survives the ownership transfer. Keying the
-						; unload off it is what makes the unload chain independent of the tag loss that
-						; produced fail 10.
 						{"5.entities" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}} {exclude {tag {tag support_e2_lz_done}}}}}}
 						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}} {distance 120}}
 					}
@@ -4855,16 +4852,42 @@
 					{"entity_state" {selector {tag support_e2_arrival}} {tag_add support_e2_lz_done}}
 					("e2_reassert_arrival_helo")
 					("e2_announce_helo")
+					; Stage 35 is a descent in progress. No troop exists on the ground yet.
+					{"set_i" {var "support_e2_stage$"} {op "="} {value 35}}
+					("e2_descend_helo")
+				}
+			}
+
+			; Delivery is credited only after Code:X helicopter.inc reports the aircraft
+			; below its landing threshold. This is the actual land/disembark boundary.
+			{"attack_support/e2_helo_grounded"
+				{condition
+					{expression "1 & 2 & (3 | 4) & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 35}}
+						{"3.cmp_i" {var "support_e2_test$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "support_e2_test$"} {op "=="} {value 3}}
+						{"5.entities" {selector {ignore_captured_by_user 0} {tag support_e2_arrival} {tag w81_landing}} {count {op ">="} {value 1}}}
+						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}} {distance 120}}
+					}
+				}
+				{actions
+					("e2_reassert_arrival_helo")
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-					("e2_place_one")
-					("e2_place_one")
-					("e2_place_one")
-					("e2_place_one")
+					("e2_emit_helo_pax")
+					{"delay" {time 1}}
+					("e2_promote_helo_pax")
 					("e2_finish_team_or_fail")
+					("e2_lift_helo")
+					{"delay" {time 4}}
 					("e2_order_aircraft_exit")
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
 					{"delay" {time 60}}
-					("e2_complete_cleanup")
+					{"switch"
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}} ("e2_complete_cleanup")}
+						{"default" ("e2_fail_and_cleanup")}
+					}
 				}
 			}
 
@@ -4887,13 +4910,17 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}}
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-									{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
-								}
-								{"default"}
-							}
+							{"switch" {"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}} {"set_i" {var "support_e2_fail$"} {op "="} {value 5}}} {"default"}}
+							("e2_order_aircraft_exit")
+							{"delay" {time 10}}
+							("e2_fail_and_cleanup")
+						}
+						{"case"
+							; The aircraft reached the LZ but never crossed the grounded evidence gate.
+							{condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 35}}
+							{"switch" {"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}} {"set_i" {var "support_e2_fail$"} {op "="} {value 5}}} {"default"}}
+							("e2_lift_helo")
+							{"delay" {time 4}}
 							("e2_order_aircraft_exit")
 							{"delay" {time 10}}
 							("e2_fail_and_cleanup")

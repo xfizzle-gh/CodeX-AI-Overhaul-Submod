@@ -159,12 +159,20 @@ $E2HeloWaveMarkers = @('attack_support/e2_helo_prc',
     '(define "e2_prove_park_nato_para"',
     '{"set_i" {var "support_e2_fail$"} {op "="} {value 13}}',
     '{"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 13}}',
-    # The unload chain is armed off the aircraft's ARRIVAL, never off the stage machine:
-    # e2_helo_lz is a near check on the arrived hull and owns stages 40/60, e2_helo_timeout
-    # closes the window and owns fail 5, e2_orphan_sweep is the standing guarantee that no
-    # dispatched clone is ever left flying, and e2_combo_clear retires a leftover claim so
-    # the combo transition cannot be blocked by one.
+    # The arrival trigger opens a bounded descent. The unload trigger may fire only
+    # after the helicopter's own altitude_checker adds w81_landing below five metres.
+    # It then emits the Link-baked passengers, owns/orders them, raises the hull and exits.
     '{"attack_support/e2_helo_lz"',
+    '{"attack_support/e2_helo_grounded"',
+    '{tag support_e2_arrival} {tag w81_landing}',
+    '(define "e2_descend_helo"',
+    '(define "e2_emit_helo_pax"',
+    '(define "e2_promote_helo_pax"',
+    '(define "e2_lift_helo"',
+    '{altitude 0}',
+    '{altitude 22}',
+    '{crew {tag support_e2_helo_pax}}',
+    '{emit {mode passengers}}',
     '{"attack_support/e2_helo_timeout"',
     '{"attack_support/e2_orphan_sweep"',
     '{"attack_support/e2_combo_clear"',
@@ -180,19 +188,27 @@ $E2HeloWaveMarkers = @('attack_support/e2_helo_prc',
     '(define "e2_own_pax"',
     '("e2_own_pax")'
 )
-$E2HeloTemplateMarkers = @('support_e2_prc_helo', '{Altitude 22}')
+$E2HeloTemplateMarkers = @(
+    'support_e2_prc_helo',
+    '{Altitude 22}',
+    '"support_e2_helo_pax"',
+    '{Link 0xb404 {0xb401 "seat1"}}',
+    '{Link 0xb40b {0xb408 "seat1"}}',
+    '{Link 0xb412 {0xb40f "seat1"}}',
+    '{Link 0xc203 {0xc200 "seat1"}}'
+)
 # PRC flies the Mi-171 adaptation (Army Aviation transport), so its helo probe is
 # required, not forbidden. The fixed-wing paradrop stays out per the PRC doctrine note.
 # {clone} moved from FORBIDDEN to REQUIRED, scoped to E2 aircraft dispatch only: it
 # is the base game's own aircraft call-in verb and the reason air call-ins are now
 # repeatable. The general ban still holds everywhere else and is test-pinned there.
-# The superseded flight mechanism is forbidden instead: air_state altitude commands
-# and {"placement"} of an aircraft onto a ground pad.
+# The superseded flight mechanism remains forbidden: runtime MOVE-placement of an
+# aircraft onto a ground pad. Two narrow air_state commands are now required and scoped:
+# altitude 0 inside e2_descend_helo and altitude 22 inside e2_lift_helo.
 $E2HeloForbiddenMarkers = @('attack_support/e2_para_prc', 'support_e2_lz_fpc',
     # The inline arrival window. A leg that false-failed its dispatch-time evidence gate
     # walked away from this delay and left the physical aircraft hovering (2026-07-30).
     '{"delay" {time 40}}',
-    '{"air_state"',
     '("e2_place_aircraft_entry")',
     '("e2_promote_helo")',
     '("e2_promote_para")')
@@ -204,6 +220,27 @@ foreach ($marker in $E2HeloTemplateMarkers) {
 }
 foreach ($marker in $E2HeloForbiddenMarkers) {
     if (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch $marker) { throw "Source wave engine contains forbidden E2 helicopter marker: $marker" }
+}
+# The only runtime altitude writes are the shipped-helicopter descent and lift helpers.
+$sourceWaveCode = [System.IO.File]::ReadAllText($wavesSource)
+if (([regex]::Matches($sourceWaveCode, [regex]::Escape('{"air_state"'))).Count -ne 2) {
+    throw "Source wave engine must contain exactly two scoped E2 air_state commands"
+}
+$sourceDescendStart = $sourceWaveCode.IndexOf('(define "e2_descend_helo"')
+$sourceEmitStart = $sourceWaveCode.IndexOf('(define "e2_emit_helo_pax"', $sourceDescendStart)
+$sourceLiftStart = $sourceWaveCode.IndexOf('(define "e2_lift_helo"')
+$sourceExitStart = $sourceWaveCode.IndexOf('(define "e2_order_aircraft_exit"', $sourceLiftStart)
+if ($sourceDescendStart -lt 0 -or $sourceEmitStart -le $sourceDescendStart -or
+    $sourceLiftStart -lt 0 -or $sourceExitStart -le $sourceLiftStart) {
+    throw "Source wave engine is missing a delimited helicopter descent/lift helper"
+}
+$sourceDescendCode = $sourceWaveCode.Substring($sourceDescendStart, $sourceEmitStart - $sourceDescendStart)
+$sourceLiftCode = $sourceWaveCode.Substring($sourceLiftStart, $sourceExitStart - $sourceLiftStart)
+if (-not $sourceDescendCode.Contains('{"air_state"') -or -not $sourceDescendCode.Contains('{altitude 0}')) {
+    throw "Source e2_descend_helo does not command altitude 0"
+}
+if (-not $sourceLiftCode.Contains('{"air_state"') -or -not $sourceLiftCode.Contains('{altitude 22}')) {
+    throw "Source e2_lift_helo does not restore travel altitude 22"
 }
 $E2ParaWaveMarkers = @(
     '; ===== E2 PARADROP',
@@ -2301,8 +2338,28 @@ if (Select-String -Quiet -LiteralPath $waves -Pattern '^[^;]*\bfpc') {
 foreach ($marker in $E2HeloWaveMarkers) {
     if (-not (Select-String -Quiet -LiteralPath $waves -SimpleMatch $marker)) { throw "Workshop wave engine is missing E2 helicopter marker: $marker" }
 }
+$workshopWaveCode = [System.IO.File]::ReadAllText($waves)
 foreach ($marker in $E2HeloForbiddenMarkers) {
     if (Select-String -Quiet -LiteralPath $waves -SimpleMatch $marker) { throw "Workshop wave engine contains forbidden E2 helicopter marker: $marker" }
+}
+if (([regex]::Matches($workshopWaveCode, [regex]::Escape('{"air_state"'))).Count -ne 2) {
+    throw "Workshop wave engine must contain exactly two scoped E2 air_state commands"
+}
+$workshopDescendStart = $workshopWaveCode.IndexOf('(define "e2_descend_helo"')
+$workshopEmitStart = $workshopWaveCode.IndexOf('(define "e2_emit_helo_pax"', $workshopDescendStart)
+$workshopLiftStart = $workshopWaveCode.IndexOf('(define "e2_lift_helo"')
+$workshopExitStart = $workshopWaveCode.IndexOf('(define "e2_order_aircraft_exit"', $workshopLiftStart)
+if ($workshopDescendStart -lt 0 -or $workshopEmitStart -le $workshopDescendStart -or
+    $workshopLiftStart -lt 0 -or $workshopExitStart -le $workshopLiftStart) {
+    throw "Workshop wave engine is missing a delimited helicopter descent/lift helper"
+}
+$workshopDescendCode = $workshopWaveCode.Substring($workshopDescendStart, $workshopEmitStart - $workshopDescendStart)
+$workshopLiftCode = $workshopWaveCode.Substring($workshopLiftStart, $workshopExitStart - $workshopLiftStart)
+if (-not $workshopDescendCode.Contains('{"air_state"') -or -not $workshopDescendCode.Contains('{altitude 0}')) {
+    throw "Workshop e2_descend_helo does not command altitude 0"
+}
+if (-not $workshopLiftCode.Contains('{"air_state"') -or -not $workshopLiftCode.Contains('{altitude 22}')) {
+    throw "Workshop e2_lift_helo does not restore travel altitude 22"
 }
 foreach ($marker in $E2ParaWaveMarkers) {
     if (-not (Select-String -Quiet -LiteralPath $waves -SimpleMatch $marker)) { throw "Workshop wave engine is missing E2 paradrop marker: $marker" }
@@ -2317,7 +2374,7 @@ for ($i = 0; $i -lt $workshopEngineLines.Length; $i++) {
         throw ("Workshop wave engine decorates a support_e2_ selector with {{state operatable}} on line {0}, which zeroes the match on these units" -f ($i + 1))
     }
 }
-$workshopWaveCode = [System.IO.File]::ReadAllText($waves)
+
 $workshopParaStart = $workshopWaveCode.IndexOf('; ===== E2 PARADROP')
 $workshopParaEnd = $workshopWaveCode.IndexOf('; ===== MOTORIZED INSERT', $workshopParaStart)
 if ($workshopParaStart -lt 0 -or $workshopParaEnd -le $workshopParaStart) { throw "Workshop wave engine is missing E2 paradrop marker: section boundary" }

@@ -3318,6 +3318,18 @@
 	{Link 0xb40a {0xb408 "commander"}}
 	{Link 0xb410 {0xb40f "driver"}}
 	{Link 0xb411 {0xb40f "commander"}}
+	{Link 0xb404 {0xb401 "seat1"}}
+	{Link 0xb405 {0xb401 "seat2"}}
+	{Link 0xb406 {0xb401 "seat3"}}
+	{Link 0xb407 {0xb401 "seat4"}}
+	{Link 0xb40b {0xb408 "seat1"}}
+	{Link 0xb40c {0xb408 "seat2"}}
+	{Link 0xb40d {0xb408 "seat3"}}
+	{Link 0xb40e {0xb408 "seat4"}}
+	{Link 0xb412 {0xb40f "seat1"}}
+	{Link 0xb413 {0xb40f "seat2"}}
+	{Link 0xb414 {0xb40f "seat3"}}
+	{Link 0xb415 {0xb40f "seat4"}}
 	{Link 0xb417 {0xb416 "driver"}}
 	{Link 0xb418 {0xb416 "driver1"}}
 	{Link 0xb419 {0xb416 "driver2"}}
@@ -3818,24 +3830,24 @@
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo" "support_e2_aircraft" "hidden" 0xb401}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_crew" "sup_linked" "hidden" 0xb402}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_crew" "sup_linked" "hidden" 0xb403}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "hidden" 0xb404}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "hidden" 0xb405}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "hidden" 0xb406}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "hidden" 0xb407}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xb404}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xb405}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xb406}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xb407}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo" "support_e2_aircraft" "hidden" 0xb408}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_crew" "sup_linked" "hidden" 0xb409}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_crew" "sup_linked" "hidden" 0xb40a}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "hidden" 0xb40b}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "hidden" 0xb40c}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "hidden" 0xb40d}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "hidden" 0xb40e}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xb40b}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xb40c}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xb40d}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xb40e}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo" "support_e2_aircraft" "hidden" 0xb40f}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_crew" "sup_linked" "hidden" 0xb410}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_crew" "sup_linked" "hidden" 0xb411}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "hidden" 0xb412}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "hidden" 0xb413}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "hidden" 0xb414}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "hidden" 0xb415}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xb412}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xb413}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xb414}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xb415}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para" "support_e2_aircraft" "hidden" 0xb416}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "sup_linked" "hidden" 0xb417}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "sup_linked" "hidden" 0xb418}
@@ -4857,12 +4869,16 @@
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo" "support_e2_aircraft" "hidden" 0xc200}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_crew" "sup_linked" "hidden" 0xc201}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_crew" "sup_linked" "hidden" 0xc202}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "hidden" 0xc203}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "hidden" 0xc204}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "hidden" 0xc205}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "hidden" 0xc206}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xc203}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xc204}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xc205}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "support_e2_helo_pax" "sup_linked" "hidden" 0xc206}
 	{Link 0xc201 {0xc200 "driver"}}
 	{Link 0xc202 {0xc200 "commander"}}
+	{Link 0xc203 {0xc200 "seat1"}}
+	{Link 0xc204 {0xc200 "seat2"}}
+	{Link 0xc205 {0xc200 "seat3"}}
+	{Link 0xc206 {0xc200 "seat4"}}
 	{Link 0xc109 {0xc100 "seat1"}}
 	{Link 0xc10a {0xc100 "seat2"}}
 	{Link 0xc10b {0xc100 "seat3"}}

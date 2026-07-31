@@ -205,10 +205,13 @@ class E2PoolAndStateTests(unittest.TestCase):
             re.search(r'(?s)\{Chassis "airborne"[^}]*\{(Airborne|EngineStarted)\}', live)
         )
         self.assertIsNone(re.search(r'(?s)\{Chassis "helicopter"[^}]*\{AirborneMode', live))
-        # Altitude is snapshot state now; the engine no longer issues an air_state
-        # altitude command at all.
-        self.assertNotIn("{altitude 65}", self.waves)
-        self.assertNotIn('{"air_state"', self.waves)
+        # Fixed-wing altitude remains snapshot state. The only runtime air_state
+        # commands are the helicopter's explicit ground-and-lift pair.
+        live_waves = strip_comments(self.waves)
+        self.assertNotIn("{altitude 65}", live_waves)
+        self.assertEqual(live_waves.count('{"air_state"'), 2)
+        self.assertIn('{altitude 0}', mi_define(live_waves, "e2_descend_helo"))
+        self.assertIn('{altitude 22}', mi_define(live_waves, "e2_lift_helo"))
         self.assertIn("{Altitude 65}", self.tpl)
         # The wheel chassis is only ever named in the explanatory comment, never parked.
         self.assertNotIn('{Chassis "wheel"', live)
@@ -225,13 +228,25 @@ class E2PoolAndStateTests(unittest.TestCase):
             "; sup_linked marks every body",
         )
         expected = [
-            # mi17_b8_rus / mi17_b8_ukr / mi17_b8_rus (NATO): driver, commander
+            # mi17_b8_rus / mi17_b8_ukr / mi17_b8_rus (NATO): crew + seat1..4
             ("0xb402", "0xb401", "driver"),
             ("0xb403", "0xb401", "commander"),
             ("0xb409", "0xb408", "driver"),
             ("0xb40a", "0xb408", "commander"),
             ("0xb410", "0xb40f", "driver"),
             ("0xb411", "0xb40f", "commander"),
+            ("0xb404", "0xb401", "seat1"),
+            ("0xb405", "0xb401", "seat2"),
+            ("0xb406", "0xb401", "seat3"),
+            ("0xb407", "0xb401", "seat4"),
+            ("0xb40b", "0xb408", "seat1"),
+            ("0xb40c", "0xb408", "seat2"),
+            ("0xb40d", "0xb408", "seat3"),
+            ("0xb40e", "0xb408", "seat4"),
+            ("0xb412", "0xb40f", "seat1"),
+            ("0xb413", "0xb40f", "seat2"),
+            ("0xb414", "0xb40f", "seat3"),
+            ("0xb415", "0xb40f", "seat4"),
             # il-76td_para: driver, driver1, driver2, commander, commander1, seat00+
             ("0xb417", "0xb416", "driver"),
             ("0xb418", "0xb416", "driver1"),
@@ -260,9 +275,13 @@ class E2PoolAndStateTests(unittest.TestCase):
         ]
         found = re.findall(r"\{Link (0x[0-9a-f]+) \{(0x[0-9a-f]+) \"([^\"]+)\"\}\}", links)
         self.assertEqual(found, expected)
-        # PRC Mi-171 adaptation, same two crew places.
+        # PRC Mi-171 adaptation, same crew and passenger place table.
         self.assertIn('{Link 0xc201 {0xc200 "driver"}}', self.tpl)
         self.assertIn('{Link 0xc202 {0xc200 "commander"}}', self.tpl)
+        for eid, place in zip(("0xc203", "0xc204", "0xc205", "0xc206"),
+                              ("seat1", "seat2", "seat3", "seat4")):
+            self.assertIn(f'{{Link {eid} {{0xc200 "{place}"}}}}', self.tpl)
+        self.assertEqual(self.tpl.count('"support_e2_helo_pax"'), 16)
         # c130_para declares no seat01, and the Blackhawk-only places are nobody's.
         self.assertNotIn('{0xb420 "seat01"}', self.tpl)
         self.assertNotIn('{0xb428 "seat01"}', self.tpl)
@@ -362,8 +381,11 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
         waypoint's own {commands} block re-tag and order the arrival.
         """
         e2 = block(self.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== E2 PARADROP")
-        self.assertNotIn('{"air_state"', e2)
         self.assertNotIn("{altitude 30}", e2)
+        for faction in ("rusa", "prc", "ukr", "nato"):
+            self.assertNotIn('{"air_state"', mi_block(e2, f'{{"attack_support/e2_helo_{faction}"'))
+        self.assertIn('{altitude 0}', mi_define(e2, "e2_descend_helo"))
+        self.assertIn('{altitude 22}', mi_define(e2, "e2_lift_helo"))
         self.assertNotIn('("e2_place_aircraft_entry")', e2)
         self.assertEqual(e2.count("{drop sensor}"), 4)
         self.assertGreaterEqual(e2.count("{control AI}"), 4)
@@ -451,19 +473,51 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
                 self.assertNotIn(foreign, live)
 
     def test_helicopter_places_four_independent_troops_at_half_second_cadence(self) -> None:
+        """The real insert carries four linked passengers and emits them only after landing."""
         e2 = block(self.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== E2 PARADROP")
-        self.assertIn('(define "e2_place_one"', e2)
-        self.assertIn('{"delay" {time 0.5}}', e2)
-        self.assertIn('{action advance}', e2)
-        self.assertIn('{tag support_e2_flag_target}', e2)
-        self.assertIn('{amount 1}', e2)
-        # The LZ unload is now ONE shared trigger armed off the aircraft's arrival rather
-        # than four inline copies, so the four placements live there and nowhere else.
-        # Each faction leg still keeps its own four entry-standoff placements for fail 4.
-        lz = mi_block(self.waves, '{"attack_support/e2_helo_lz"')
-        self.assertEqual(lz.count('("e2_place_one")'), 4)
-        self.assertEqual(e2.count('("e2_place_one")'), 4)
-        self.assertEqual(e2.count('("e2_place_one_entry")'), 16)
+        emit = mi_define(self.waves, "e2_emit_helo_pax")
+        promote = mi_define(self.waves, "e2_promote_helo_pax")
+        grounded = mi_block(self.waves, '{"attack_support/e2_helo_grounded"')
+
+        # Every side/LZ branch uses the shipped passenger-filter form. The crew tag is
+        # a selector for occupants already linked into seat1..seat4, never a tag writer.
+        self.assertEqual(emit.count('{crew {tag support_e2_helo_pax}}'), 5)
+        self.assertEqual(emit.count('{emit {mode passengers}}'), 5)
+        for side in "ab":
+            for pad in (1, 2):
+                self.assertIn(f'{{waypoint "attack_support_air_{side}{pad}"}}', emit)
+        self.assertNotIn('("e2_place_one")', grounded)
+        self.assertNotIn('("e2_place_one_entry")', grounded)
+
+        # The emitted copies are promoted through one common passenger tag and only
+        # after the grounded receiver has been proven on the arriving helicopter.
+        self.assertIn('{select {tag {tag support_e2_helo_pax}}}', promote)
+        self.assertIn('{exclude {tag {tag hidden}}}', promote)
+        self.assertIn('{tag_add support_e2_pax}', promote)
+        self.assertLess(
+            grounded.index('("e2_emit_helo_pax")'),
+            grounded.index('("e2_promote_helo_pax")'),
+        )
+        self.assertLess(
+            grounded.index('("e2_promote_helo_pax")'),
+            grounded.index('("e2_finish_team_or_fail")'),
+        )
+
+        # Four real seat links exist per faction package, and the old fake placement
+        # chain is absent from every helicopter launch leg.
+        templates = TEMPLATES.read_text(encoding="utf-8")
+        expected_links = {
+            'rusa': ('0xb401', range(0xb404, 0xb408)),
+            'ukr': ('0xb408', range(0xb40b, 0xb40f)),
+            'nato': ('0xb40f', range(0xb412, 0xb416)),
+            'prc': ('0xc200', range(0xc203, 0xc207)),
+        }
+        for faction, (hull, riders) in expected_links.items():
+            for seat, rider in enumerate(riders, start=1):
+                self.assertIn(f'{{Link 0x{rider:x} {{{hull} "seat{seat}"}}}}', templates)
+            launch = mi_block(self.waves, f'{{"attack_support/e2_helo_{faction}"')
+            self.assertNotIn('("e2_place_one")', launch)
+            self.assertNotIn('("e2_place_one_entry")', launch)
 
     def test_helicopter_has_fail_closed_faction_and_bounded_delete(self) -> None:
         e2 = block(self.waves, "; ===== E2 REAL AIR INSERT PROBES =====", "; ===== E2 PARADROP")
@@ -555,60 +609,64 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
         self.assertNotIn('{source advanced}', choose)
 
     def test_arrival_is_pad_anchored_before_any_troop_promotion(self) -> None:
-        """The unload chain hangs off the AIRCRAFT, not off the stage machine.
-
-        Live 2026-07-30: the dispatch-time evidence gate false-failed (fail 10) on a
-        helicopter the player watched fly across the map. The chain used to hang off a
-        {"delay" {time 40}} inside the same action list, so the leg abandoned itself -
-        and the physical clone kept the move order the waypoint {commands} block had
-        given it and hovered over the objective for the rest of the mission, with no
-        unload, no departure and no delete. The near check is now a trigger CONDITION
-        on the arrived, re-tagged aircraft.
-        """
+        """Arrival starts descent; grounded evidence starts the actual unload."""
         lz = mi_block(self.waves, '{"attack_support/e2_helo_lz"')
         condition, actions = lz.split("{actions", 1)
         self.assertIn('{var "user_is_defender$"} {op "=="} {value 0}', condition)
         self.assertIn('{var "support_e2_stage$"} {op "=="} {value 30}', condition)
-        self.assertIn('{units', condition)
-        # PROVENANCE, not bookkeeping. Both terms key on support_e2_arrival, which the
-        # numeric waypoint's own {commands} block writes and which provably survives the
-        # ownership transfer - unlike the promote step's tags, whose loss across that
-        # window is what produced fail 10 on a helicopter the player watched fly. The
-        # tag can never reach a parked template, so the unload stays as narrow as it was.
         self.assertIn('{tag support_e2_arrival}', condition)
-        self.assertNotIn('{tag support_e2_helo}', condition)
         self.assertIn('{near_to', condition)
         self.assertIn('{tag support_e2_lz_marker}', condition)
         self.assertIn('{distance 120}', condition)
-        # The gate that zeroed the match on a live aircraft is gone from the near check.
         self.assertNotIn('{state operatable}', condition)
-        # One-shot per leg: the marker is added before anything else happens.
         self.assertIn('{tag {tag support_e2_lz_done}}', condition)
         self.assertLess(
             actions.index('{tag_add support_e2_lz_done}'),
             actions.index('("e2_announce_helo")'),
         )
-        stage40 = actions.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}')
-        place = actions.index('("e2_place_one")')
-        exit_at = actions.index('("e2_order_aircraft_exit")')
-        stage60 = actions.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}')
-        self.assertLess(stage40, place)
-        self.assertLess(place, exit_at)
-        self.assertLess(exit_at, stage60)
-        self.assertIn('("e2_complete_cleanup")', actions)
+        self.assertLess(
+            actions.index('("e2_announce_helo")'),
+            actions.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 35}}'),
+        )
+        self.assertLess(
+            actions.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 35}}'),
+            actions.index('("e2_descend_helo")'),
+        )
+        self.assertNotIn('("e2_emit_helo_pax")', actions)
+        self.assertNotIn('("e2_order_aircraft_exit")', actions)
 
-        # The timeout owns fail 5, and it too always departs and deletes.
+        grounded = mi_block(self.waves, '{"attack_support/e2_helo_grounded"')
+        g_condition, g_actions = grounded.split("{actions", 1)
+        self.assertIn('{var "support_e2_stage$"} {op "=="} {value 35}', g_condition)
+        self.assertIn('{tag support_e2_arrival} {tag w81_landing}', g_condition)
+        self.assertIn('{near_to', g_condition)
+        self.assertIn('{tag support_e2_lz_marker}', g_condition)
+        self.assertIn('{distance 120}', g_condition)
+        stage40 = g_actions.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}')
+        emit = g_actions.index('("e2_emit_helo_pax")')
+        promote = g_actions.index('("e2_promote_helo_pax")')
+        finish = g_actions.index('("e2_finish_team_or_fail")')
+        lift = g_actions.index('("e2_lift_helo")')
+        exit_at = g_actions.index('("e2_order_aircraft_exit")')
+        stage60 = g_actions.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}')
+        self.assertLess(stage40, emit)
+        self.assertLess(emit, promote)
+        self.assertLess(promote, finish)
+        self.assertLess(finish, lift)
+        self.assertLess(lift, exit_at)
+        self.assertLess(exit_at, stage60)
+        self.assertIn('("e2_complete_cleanup")', g_actions)
+
         timeout = mi_block(self.waves, '{"attack_support/e2_helo_timeout"')
         t_condition, t_actions = timeout.split("{actions", 1)
         self.assertIn('{var "support_e2_stage$"} {op "=="} {value 30}', t_condition)
-        self.assertIn('{var "support_e2_fail$"} {op "="} {value 5}', t_actions)
-        self.assertIn('("e2_order_aircraft_exit")', t_actions)
-        self.assertEqual(t_actions.count('("e2_fail_and_cleanup")'), 1)
+        self.assertEqual(t_actions.count('{var "support_e2_fail$"} {op "="} {value 5}'), 2)
+        self.assertEqual(t_actions.count('("e2_order_aircraft_exit")'), 2)
+        self.assertEqual(t_actions.count('("e2_fail_and_cleanup")'), 2)
+        self.assertIn('("e2_lift_helo")', t_actions)
         self.assertNotIn('("e2_place_one")', t_actions)
         self.assertNotIn('("e2_place_one_entry")', t_actions)
 
-        # And the refusal branch in each faction leg departs and deletes rather than
-        # walking away from a hull that is physically in the air.
         for faction in ("rusa", "ukr", "nato", "prc"):
             helo = mi_block(self.waves, f'{{"attack_support/e2_helo_{faction}"')
             with self.subTest(helo=faction):
@@ -637,15 +695,11 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
             # The whole {"case"} that fail 4 opens, not "up to the next default": the
             # stage-40 write inside it is now itself evidence-gated and carries its own.
             fail4 = mi_block(helo[helo.rindex('{"case"', 0, fail4_at):], '{"case"')
-            self.assertEqual(fail4.count('("e2_place_one_entry")'), 4)
+            self.assertNotIn('("e2_place_one_entry")', fail4)
             self.assertEqual(fail4.count('("e2_complete_cleanup")'), 1)
             self.assertNotIn('("e2_delete_aircraft")', fail4)
             self.assertNotIn('("e2_fail_and_cleanup")', fail4)
-            # Stage 40 claims "bodies are being delivered" and needs a claimed team.
-            stage40 = fail4.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}')
-            gate = fail4[:stage40]
-            self.assertIn('{type entities}', gate)
-            self.assertIn('{tag support_e2_team}', gate)
+            self.assertNotIn('{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}', fail4)
 
     def test_deployer_pins_task3_source_and_workshop_contracts(self) -> None:
         deploy = DEPLOY.read_text(encoding="utf-8")
@@ -1143,48 +1197,44 @@ class E2EvidenceGateTests(unittest.TestCase):
         self.assertIn("{tag support_e2_claim}", fly)
         self.assertIn('("e2_order_aircraft_lz")', fly)
         self.assertIn('{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}', fly)
-        # An earlier code wins: 14 must never be relabelled as 10.
         default = fly.split('{"default"', 1)[1]
         self.assertIn('{var "support_e2_fail$"} {op "=="} {value 0}', default)
         self.assertIn('{"set_i" {var "support_e2_fail$"} {op "="} {value 10}}', default)
-        self.assertLess(
-            default.index('{op "=="} {value 0}'),
-            default.index('{"set_i" {var "support_e2_fail$"} {op "="} {value 10}}'),
-        )
+
+        # Stage 35 is backed by physical arrival at the selected LZ. Stage 40 is
+        # backed by the aircraft's own altitude_checker receiver adding w81_landing.
+        lz = mi_block(self.waves, '{"attack_support/e2_helo_lz"')
+        lz_condition, lz_actions = lz.split("{actions", 1)
+        self.assertIn('{tag support_e2_arrival}', lz_condition)
+        self.assertIn('{tag support_e2_lz_marker}', lz_condition)
+        self.assertIn('{distance 120}', lz_condition)
+        self.assertIn('{"set_i" {var "support_e2_stage$"} {op "="} {value 35}}', lz_actions)
+
+        grounded = mi_block(self.waves, '{"attack_support/e2_helo_grounded"')
+        grounded_condition, grounded_actions = grounded.split("{actions", 1)
+        self.assertIn('{tag support_e2_arrival} {tag w81_landing}', grounded_condition)
+        self.assertIn('{tag support_e2_lz_marker}', grounded_condition)
+        self.assertIn('{distance 120}', grounded_condition)
+        self.assertIn('{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}', grounded_actions)
 
         team = mi_define(self.waves, "e2_finish_team_or_fail")
-        # ===== THE LANDED CHECK COUNTS THE PAX TAG, AND OWNS FIRST (2026-07-31) =====
-        # It used to count support_e2_team through
-        # {exclude {state {state dead}} {state {state inactive}}} and returned ZERO
-        # while the player was looking at four troops standing at the LZ (fail 11).
-        # e2_place_one re-adds support_e2_team to everything it places, so the tag was
-        # certainly present; the state exclusion is the only other term, and it is the
-        # same decoration class that has already zeroed two E2 matches on live units.
         self.assertNotIn("{state operatable}", team)
         self.assertNotIn("{state {state dead}}", team)
         self.assertNotIn("{state {state inactive}}", team)
         self.assertIn('{selector {ignore_captured_by_user 0} {tag support_e2_pax}}', team)
-        # Ownership is transferred on that same tag, before anything is counted or
-        # ordered: no E2 body may be delivered without a transfer.
         self.assertLess(team.index('("e2_own_pax")'), team.index("{type entities}"))
         self.assertIn('("e2_order_team")', team)
         self.assertIn('{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}', team)
         self.assertIn('{"set_i" {var "support_e2_fail$"} {op "="} {value 11}}', team)
 
-        # No helo trigger may set stage 30 or 50 outside those gates any more.
         for faction in ("rusa", "prc", "ukr", "nato"):
             launch = mi_block(self.waves, f'{{"attack_support/e2_helo_{faction}"')
             with self.subTest(helo=faction):
                 self.assertIn('("e2_fly_helo_or_fail")', launch)
-                # One left in the leg: the fail-4 entry standoff. The LZ unload's copy
-                # moved to attack_support/e2_helo_lz with the rest of the chain.
-                self.assertEqual(launch.count('("e2_finish_team_or_fail")'), 1)
-                self.assertNotIn(
-                    '{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}', launch
-                )
-                self.assertNotIn(
-                    '{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}', launch
-                )
+                self.assertNotIn('("e2_finish_team_or_fail")', launch)
+                for stage in (30, 35, 40, 50):
+                    needle = '{"set_i" {var "support_e2_stage$"} {op "="} {value ' + str(stage) + '}}'
+                    self.assertNotIn(needle, launch)
 
     def test_an_earlier_failure_is_never_relabelled_as_a_flight_failure(self) -> None:
         """fail 5 ("never reached the LZ") must not overwrite fail 9/10.
@@ -1200,13 +1250,17 @@ class E2EvidenceGateTests(unittest.TestCase):
             with self.subTest(helo=faction):
                 self.assertNotIn(needle, launch)
         timeout = mi_block(self.waves, '{"attack_support/e2_helo_timeout"')
-        self.assertEqual(timeout.count(needle), 1)
-        guard = timeout[: timeout.index(needle)]
-        guard = guard[guard.rindex('{"case"') :]
-        self.assertIn(
-            '{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}',
-            guard,
-        )
+        self.assertEqual(timeout.count(needle), 2)
+        cursor = 0
+        for _ in range(2):
+            at = timeout.index(needle, cursor)
+            guard = timeout[:at]
+            guard = guard[guard.rindex('{"case"'):]
+            self.assertIn(
+                '{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}',
+                guard,
+            )
+            cursor = at + len(needle)
 
 
 class E2ParkedAirframeProofTests(unittest.TestCase):
@@ -1886,7 +1940,10 @@ class E2NoOrphanAircraftTests(unittest.TestCase):
                     refused.index('("e2_order_aircraft_exit")'),
                     refused.index('("e2_fail_and_cleanup")'),
                 )
-        for name in ("e2_helo_lz", "e2_helo_timeout"):
+        lz = mi_block(self.waves, '{"attack_support/e2_helo_lz"')
+        self.assertIn('("e2_descend_helo")', lz)
+        self.assertNotIn('("e2_order_aircraft_exit")', lz)
+        for name in ("e2_helo_grounded", "e2_helo_timeout"):
             trigger = mi_block(self.waves, f'{{"attack_support/{name}"')
             with self.subTest(trigger=name):
                 self.assertIn('("e2_order_aircraft_exit")', trigger)
@@ -1937,23 +1994,39 @@ class E2NoOrphanAircraftTests(unittest.TestCase):
 
     def test_the_unload_chain_no_longer_hangs_off_the_stage_machine(self) -> None:
         live = strip_comments(self.waves)
-        # The fixed arrival window inside the dispatch action list is gone for good,
-        # and the deploy refuses to ship it back.
         self.assertNotIn('{"delay" {time 40}}', live)
         self.assertIn('{"delay" {time 40}}', DEPLOY.read_text(encoding="utf-8"))
-        # The unload is one trigger, whose CONDITION is the near check on the arrival.
+
         lz = mi_block(self.waves, '{"attack_support/e2_helo_lz"')
-        condition = lz.split("{actions", 1)[0]
+        condition, actions = lz.split("{actions", 1)
         self.assertIn('{"6.near"', condition)
         self.assertIn("{tag support_e2_lz_marker}", condition)
         self.assertIn("{distance 120}", condition)
-        # No faction leg may place at the LZ any more; they only keep the fail-4
-        # entry standoff, which never involves an aircraft.
+        self.assertIn('("e2_descend_helo")', actions)
+        self.assertNotIn('("e2_emit_helo_pax")', actions)
+
+        grounded = mi_block(self.waves, '{"attack_support/e2_helo_grounded"')
+        g_condition, g_actions = grounded.split("{actions", 1)
+        self.assertIn('{tag support_e2_arrival} {tag w81_landing}', g_condition)
+        self.assertLess(
+            g_actions.index('("e2_emit_helo_pax")'),
+            g_actions.index('("e2_promote_helo_pax")'),
+        )
+        self.assertLess(
+            g_actions.index('("e2_promote_helo_pax")'),
+            g_actions.index('("e2_finish_team_or_fail")'),
+        )
+        self.assertLess(
+            g_actions.index('("e2_lift_helo")'),
+            g_actions.index('("e2_order_aircraft_exit")'),
+        )
+
         for faction in ("rusa", "prc", "ukr", "nato"):
             launch = mi_block(self.waves, f'{{"attack_support/e2_helo_{faction}"')
             with self.subTest(helo=faction):
                 self.assertNotIn('("e2_place_one")', launch)
-                self.assertEqual(launch.count('("e2_place_one_entry")'), 4)
+                self.assertNotIn('("e2_place_one_entry")', launch)
+                self.assertNotIn('("e2_emit_helo_pax")', launch)
 
 
 class E2StageEvidenceLedgerTests(unittest.TestCase):
@@ -1980,7 +2053,7 @@ class E2StageEvidenceLedgerTests(unittest.TestCase):
         # release monitors and the stage-30 liveness monitor never armed and the C-130
         # flew the whole map with band 0 and pass 0. All four sit behind an entity
         # proof; test_stage_30_is_only_written_behind_aircraft_evidence pins that.
-        expected = {0: 2, 10: 1, 20: 7, 30: 4, 40: 8, 50: 1, 60: 11, 70: 2}
+        expected = {0: 2, 10: 1, 20: 7, 30: 4, 35: 1, 40: 4, 50: 1, 60: 11, 70: 2}
         for value, count in sorted(expected.items()):
             with self.subTest(stage=value):
                 self.assertEqual(self.live.count(self.write(value)), count)
@@ -2056,20 +2129,21 @@ class E2StageEvidenceLedgerTests(unittest.TestCase):
         # And the order goes out before the stage claims the leg is open.
         self.assertIn('("e2_order_aircraft_lz")', head)
 
-    def test_stage_40_always_has_something_to_deliver(self) -> None:
-        # 4 entry standoffs, each gated on a claimed team; 1 LZ unload, gated on the
-        # aircraft actually being at the LZ; 3 paradrop releases, gated on the band.
+    def test_stage_35_and_40_are_grounded_helicopter_evidence(self) -> None:
         lz = mi_block(self.live, '{"attack_support/e2_helo_lz"')
-        self.assertEqual(lz.count(self.write(40)), 1)
-        self.assertIn("{tag support_e2_lz_marker}", lz.split("{actions", 1)[0])
-        for faction in ("rusa", "prc", "ukr", "nato"):
-            launch = mi_block(self.live, f'{{"attack_support/e2_helo_{faction}"')
-            with self.subTest(helo=faction):
-                self.assertEqual(launch.count(self.write(40)), 1)
-                head = launch[: launch.index(self.write(40))]
-                gate = head[head.rindex('{"case"'):]
-                self.assertIn("{type entities}", gate)
-                self.assertIn("{tag support_e2_team}", gate)
+        self.assertEqual(lz.count(self.write(35)), 1)
+        self.assertLess(lz.index('{"6.near"'), lz.index(self.write(35)))
+        self.assertIn('("e2_descend_helo")', lz)
+
+        grounded = mi_block(self.live, '{"attack_support/e2_helo_grounded"')
+        condition = grounded.split("{actions", 1)[0]
+        self.assertIn('{tag support_e2_arrival} {tag w81_landing}', condition)
+        self.assertIn('{tag support_e2_lz_marker}', condition)
+        self.assertEqual(grounded.count(self.write(40)), 1)
+        self.assertLess(condition.index('w81_landing'), grounded.index(self.write(40)))
+        self.assertLess(grounded.index(self.write(40)), grounded.index('("e2_emit_helo_pax")'))
+
+        # The other three stage-40 writes are the faction-specific para releases.
         for faction in ("rusa", "ukr", "nato"):
             release = mi_block(self.live, f'{{"attack_support/e2_para_release_{faction}"')
             with self.subTest(release=faction):
@@ -2606,9 +2680,9 @@ class E2PassengerOwnershipTests(unittest.TestCase):
     a state decoration on a support_e2_ selector, the class that has already zeroed two
     E2 matches on units that were demonstrably alive.
 
-    support_e2_pax closes both: it is written by the one {"entity_state"} that completes
-    a MOVE placement, it carries the literal 1-16 transfer, and it is what the landed
-    check counts.
+    support_e2_pax closes both: each completed delivery path writes it only after a
+    body exists outside the parked pool, it carries the literal 1-16 transfer, and it
+    is what the landed check counts.
     """
 
     @classmethod
@@ -2617,27 +2691,24 @@ class E2PassengerOwnershipTests(unittest.TestCase):
         cls.live = strip_comments(cls.waves)
         cls.deploy = DEPLOY.read_text(encoding="utf-8")
 
-    def test_the_pax_tag_is_written_only_where_a_body_has_actually_landed(self) -> None:
-        """Both MOVE placements write it, and nothing else in the engine does."""
-        self.assertEqual(self.live.count("{tag_add support_e2_pax}"), 2)
+    def test_the_pax_tag_is_written_only_on_completed_delivery_paths(self) -> None:
+        self.assertEqual(self.live.count("{tag_add support_e2_pax}"), 3)
         for name in ("e2_place_one", "e2_place_one_entry"):
             place = mi_define(self.live, name)
             with self.subTest(place=name):
                 self.assertEqual(place.count("{tag_add support_e2_pax}"), 1)
-                # It lands in the SAME {"entity_state"} that unhides and reactivates the
-                # body, i.e. at the instant the placement is complete - not at claim
-                # time on a parked template.
                 promote = mi_block(
                     place[place.index("{tag_add support_e2_pax}") - 400 :], '{"entity_state"'
                 )
-                self.assertIn("{tag_add support_e2_pax}", promote)
                 self.assertIn("{tag_remove hidden}", promote)
                 self.assertIn("{inactive off}", promote)
-                self.assertIn("{tag_remove support_e2_tpl}", promote)
-                # And the placement verb itself ran before it.
-                self.assertLess(
-                    place.index('{"placement"'), place.index("{tag_add support_e2_pax}")
-                )
+                self.assertLess(place.index('{"placement"'), place.index("{tag_add support_e2_pax}"))
+
+        helo = mi_define(self.live, "e2_promote_helo_pax")
+        self.assertEqual(helo.count("{tag_add support_e2_pax}"), 1)
+        self.assertIn("{select {tag {tag support_e2_helo_pax}}}", helo)
+        self.assertIn("{exclude {tag {tag hidden}}}", helo)
+        self.assertIn("{tag_remove support_e2_helo_pax}", helo)
 
     def test_the_pax_tag_carries_the_literal_1_to_16_switch_and_fails_closed(self) -> None:
         own = mi_define(self.live, "e2_own_pax")
@@ -2661,38 +2732,28 @@ class E2PassengerOwnershipTests(unittest.TestCase):
         self.assertNotRegex(own, r'\{op "="\} \{var ')
 
     def test_no_e2_body_is_delivered_without_an_ownership_transfer(self) -> None:
-        """Every path that places a body ends in e2_finish_team_or_fail, which owns.
-
-        The transfer is not repeated per placement and it is not left to the caller: it
-        is the first statement of the one define both delivery paths funnel through.
-        """
         finish = mi_define(self.live, "e2_finish_team_or_fail")
         self.assertEqual(finish.split("\n")[1].strip(), '("e2_own_pax")')
         self.assertLess(finish.index('("e2_own_pax")'), finish.index('("e2_order_team")'))
-        self.assertLess(
-            finish.index('("e2_own_pax")'),
-            finish.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}'),
-        )
-        # The LZ unload and the entry standoff are the only two placement sites, and
-        # both end in that define.
-        lz = mi_block(self.live, '{"attack_support/e2_helo_lz"')
-        self.assertEqual(lz.count('("e2_place_one")'), 4)
-        self.assertIn('("e2_finish_team_or_fail")', lz)
-        self.assertLess(lz.rindex('("e2_place_one")'), lz.index('("e2_finish_team_or_fail")'))
+
+        grounded = mi_block(self.live, '{"attack_support/e2_helo_grounded"')
+        for marker in ('("e2_emit_helo_pax")', '("e2_promote_helo_pax")',
+                       '("e2_finish_team_or_fail")', '("e2_lift_helo")'):
+            self.assertIn(marker, grounded)
+        self.assertLess(grounded.index('("e2_emit_helo_pax")'),
+                        grounded.index('("e2_promote_helo_pax")'))
+        self.assertLess(grounded.index('("e2_promote_helo_pax")'),
+                        grounded.index('("e2_finish_team_or_fail")'))
+        self.assertLess(grounded.index('("e2_finish_team_or_fail")'),
+                        grounded.index('("e2_lift_helo")'))
+
+        # Unsafe LZs fail closed; linked riders are never detached into a fake insert.
         for faction in ("rusa", "prc", "ukr", "nato"):
             launch = mi_block(self.live, f'{{"attack_support/e2_helo_{faction}"')
             with self.subTest(helo=faction):
-                self.assertEqual(launch.count('("e2_place_one_entry")'), 4)
-                self.assertEqual(launch.count('("e2_finish_team_or_fail")'), 1)
-                self.assertLess(
-                    launch.rindex('("e2_place_one_entry")'),
-                    launch.index('("e2_finish_team_or_fail")'),
-                )
-        # And no placement define transfers ownership itself, so there is exactly one
-        # transfer per insert rather than one per body.
-        for name in ("e2_place_one", "e2_place_one_entry"):
-            with self.subTest(place=name):
-                self.assertNotIn('{"player"', mi_define(self.live, name))
+                self.assertNotIn('("e2_place_one")', launch)
+                self.assertNotIn('("e2_place_one_entry")', launch)
+                self.assertNotIn('("e2_finish_team_or_fail")', launch)
 
     def test_the_landed_check_counts_the_same_tag_and_fail_11_stays_reachable(self) -> None:
         finish = mi_define(self.live, "e2_finish_team_or_fail")
