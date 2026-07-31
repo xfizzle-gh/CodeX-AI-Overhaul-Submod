@@ -143,7 +143,7 @@ ISOLATION_BODY = '''        """Each motor package leaves the shared infantry nam
 
 
 FLANK_BODY = '''        """Normal infantry support is edge-only; mid-map flank pads are retired."""
-        choose = define_body(self.code, "as_choose_entry")
+        choose = define_body(self.waves, "as_choose_entry")
         self.assertNotIn("{type rand}", choose)
         self.assertNotIn("as_announce_flank", choose)
         self.assertNotIn("{value 1}", choose)
@@ -157,6 +157,7 @@ def main() -> None:
         "test_the_emit_still_follows_the_proven_ordering": EMIT_BODY,
         "test_the_band_measures_against_the_flag_the_hull_was_ordered_to": BAND_BODY,
         "test_one_package_cannot_disarm_another": ISOLATION_BODY,
+        "test_choose_entry_rolls_and_guards": FLANK_BODY,
         "test_place_one_addresses_flank_pads": FLANK_BODY,
         "test_other_engines_never_reference_flank_pads": FLANK_BODY,
         "test_deploy_generates_flank_geometry": FLANK_BODY,
