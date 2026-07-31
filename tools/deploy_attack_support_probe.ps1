@@ -144,10 +144,10 @@ $E2HeloWaveMarkers = @('attack_support/e2_helo_prc',
     '{clone}',
     '{approach "safe teleport & rotate"}',
     '{include {tag {tag hidden}}}',
-    '{waypoint "9101"}',
-    '{waypoint "9102"}',
-    '{waypoint "9103"}',
-    '{waypoint "9104"}',
+    '{waypoint "21"}',
+    '{waypoint "22"}',
+    '{waypoint "23"}',
+    '{waypoint "24"}',
     '{"set_i" {var "support_e2_fail$"} {op "="} {value 14}}',
     '{"delete"',
     '(define "e2_prove_park_rusa_helo"',
@@ -168,7 +168,17 @@ $E2HeloWaveMarkers = @('attack_support/e2_helo_prc',
     '{"attack_support/e2_helo_timeout"',
     '{"attack_support/e2_orphan_sweep"',
     '{"attack_support/e2_combo_clear"',
-    'support_e2_lz_done'
+    'support_e2_lz_done',
+    # THE PASSENGERS GET AN OWNER AFTER THEY LAND (2026-07-31). The insert delivered
+    # four troops the player could see and they were UNAFFILIATED white dots, while
+    # the landed check reported fail 11 on those same bodies. e2_own_current runs at
+    # stage 20, on still-hidden parked templates, and was the only transfer the leg
+    # had. support_e2_pax is written by the one {"entity_state"} that completes a MOVE
+    # placement; e2_own_pax is the literal 1-16 transfer taken on it; and the landed
+    # check counts that same tag, so all three facts have one witness.
+    '{tag_add support_e2_pax}',
+    '(define "e2_own_pax"',
+    '("e2_own_pax")'
 )
 $E2HeloTemplateMarkers = @('support_e2_prc_helo', '{Altitude 22}')
 # PRC flies the Mi-171 adaptation (Army Aviation transport), so its helo probe is
@@ -203,9 +213,30 @@ $E2ParaWaveMarkers = @(
     '{"attack_support/e2_para_release_rusa"',
     '{"attack_support/e2_para_release_ukr"',
     '{"attack_support/e2_para_release_nato"',
+    # THE RELEASE IS ONE VERB (2026-07-31). It used to be the effect PLUS an
+    # emit of {mode passengers}. Code:X's own conquest paradrop fires the effect and
+    # nothing else, because open_cargo animates "cargo_open" with `callback` and
+    # {on animation_end "cargo_open"} is what calls drop_desant1/2/3 - the receivers
+    # that actually unlink the seats. The emit pre-empted that cascade and routed the
+    # release down a path the shipped call-in never uses, which is why the drop
+    # produced no canopies. Both emit spellings are now FORBIDDEN in this section.
     '{effect drop_paratrooper}',
-    '{emit',
-    '{mode passengers}',
+    '{"delay" {time 0.1}}',
+    '{"delay" {time 15}}',
+    # THE PARACHUTE LINKERS. A jumper tags itself heli_paradrop<N> and spawns a
+    # "parachute_new" tagged heli_parashute<N>; nothing joins the two until a mission
+    # trigger does, and a census of the fourteen managed maps returns zero
+    # service/paradrop/ triggers. These are those shipped triggers, copied verbatim,
+    # under this engine's own names.
+    '{"attack_support/e2_paradrop_link_0"',
+    '{"attack_support/e2_paradrop_link_7"',
+    '{"attack_support/e2_paradrop_purge_0"',
+    '{"attack_support/e2_paradrop_purge_7"',
+    '{tag heli_paradrop0}',
+    '{tag heli_parashute0}',
+    '{tag heli_paradrop7}',
+    '{tag heli_parashute7}',
+    '{"linker"',
     'paratrooper_need_orders',
     '{"attack_support/e2_para_range"',
     '{"attack_support/e2_para_alive"',
@@ -216,10 +247,21 @@ $E2ParaWaveMarkers = @(
     'support_e2_para_pass$',
     'support_e2_released',
     'support_e2_fail$"} {op "="} {value 6}',
-    'support_e2_fail$"} {op "="} {value 7}'
+    'support_e2_fail$"} {op "="} {value 7}',
+    # THE PARA EXIT EVIDENCE GATE (2026-07-31). The leg walked stage 20 -> 60 -> 70
+    # with e2_para_band 0, e2_para_pass 0 and fail 0 - a drop that never happened,
+    # reported as a clean run. Both exit cases now call this gate, which demands a
+    # recorded release or writes 6.
+    '(define "e2_para_require_release_or_fail"',
+    '("e2_para_require_release_or_fail")'
 )
 $E2ParaForbiddenMarkers = @(
     '{effect drop_paratroopers}',
+    # The emit pairing, in both spellings. Scoped to the E2 PARADROP section only -
+    # the motorised insert's dismount is a different mechanism on a ground hull and
+    # is untouched by this ban.
+    '{"emit"',
+    '{mode passengers}',
     '{distance 1500}',
     '{distance 2500}',
     'waypoint "5004"',
@@ -1767,7 +1809,11 @@ foreach ($mapFile in $mapFiles) {
         '\s*\{"attack_(?:support|mate)_(?:entry|rear|flank|air)[a-z0-9_]*"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}',
         ''
     )
-    foreach ($num in @('9101', '9102', '9103', '9104')) {
+    # Both bands: 21-24 is what this run writes, 9101-9104 is the retired band whose
+    # ids the engine rejected outright ("Can't use waypoint id, it already used" on the
+    # first of them, at load). A map deployed by an earlier run still carries those
+    # blocks, so they have to be stripped here or the crash survives the redeploy.
+    foreach ($num in @('21', '22', '23', '24', '9101', '9102', '9103', '9104')) {
         $text = Remove-NamedWaypointBlock -Text $text -Name $num
     }
     if (-not $text.Contains($waypointsAnchor)) {
@@ -1870,25 +1916,36 @@ foreach ($mapFile in $mapFiles) {
             $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $block)
         }
 
-        # Numeric air waypoints, band 9101-9104. {"actor_to_waypoint"} and the
+        # Numeric air waypoints, band 21-24. {"actor_to_waypoint"} and the
         # {waypoint} order term only accept NUMERIC waypoint names, which is why these
         # cannot use the attack_support_* naming the pads use. Collision sweep across all
         # fourteen managed maps and every .inc: the only numeric waypoint names anywhere
         # in this family are "0" (present on all fourteen) and "1".."6" (factory and
         # train_station only, carrying the base game's own airstrike geometry and its
-        # enemy_air {commands} blocks). None of those is touched, and 9101-9104 is free.
-        #   9101/9102 = air ENTRY for side a/b. z 0 and {radius 800}, exactly the shape
+        # enemy_air {commands} blocks), and the only numeric names any .inc REFERENCES
+        # are "0".."8". None of those is touched, and 21-24 is free.
+        #
+        # The band used to be 9101-9104 and the engine refused to load ANY map that
+        # carried it: "APP_ERROR: Can't use waypoint id, it already used
+        # (eHelperWaypoint.cpp:55)", thrown on the first of the four even though each id
+        # appeared exactly once in the file. A numeric waypoint name is an engine-side
+        # ID, not a label, and the id space is small: across 1035 shipped .mi files on
+        # this machine (vanilla plus every installed workshop mod) the highest numeric
+        # waypoint name in existence is 1000, and nothing in the 9000s appears anywhere.
+        # Ids that large land back on an already-registered slot. Keep this band low -
+        # two digits is inside every range the shipped content demonstrates.
+        #   21/22 = air ENTRY for side a/b. z 0 and {radius 800}, exactly the shape
         #               the base game gives its own air entry nodes: altitude belongs to
         #               the aircraft's parked chassis snapshot, never to the waypoint.
         #               Each carries the {commands} block that runs ON THE ARRIVING
         #               CLONE - re-tag, actor state, first move order, takeoff effect -
         #               which is how the base game defeats "a clone carries no tags".
-        #   9103/9104 = air EXIT for side a/b. Altitude-carrying node shape: z in the
+        #   23/24 = air EXIT for side a/b. Altitude-carrying node shape: z in the
         #               position, no radius, no commands, same as the base game's
         #               mid-route air waypoints. The engine exits across the map to the
         #               OPPOSITE side's node so the aircraft flies through and off.
-        $entryNum = if ($side -eq 'a') { '9101' } else { '9102' }
-        $exitNum = if ($side -eq 'a') { '9103' } else { '9104' }
+        $entryNum = if ($side -eq 'a') { '21' } else { '22' }
+        $exitNum = if ($side -eq 'a') { '23' } else { '24' }
         $nx = $cx * $AirEntryFactor
         $ny = $cy * $AirEntryFactor
         $exitBlock = "`r`n`t`t`t{`"$exitNum`"`r`n`t`t`t`t{position " +
@@ -1993,10 +2050,17 @@ foreach ($mapFile in $mapFiles) {
         }
     }
 
-    foreach ($num in @('9101', '9102', '9103', '9104')) {
+    foreach ($num in @('21', '22', '23', '24')) {
         $n = ([regex]::Matches($text, [regex]::Escape('{"' + $num + '"'))).Count
         if ($n -ne 1) {
             throw "Expected exactly one air waypoint $num in: $mapFile (found $n)"
+        }
+    }
+    # The retired band is a load-time crash, not a cosmetic leftover: a single surviving
+    # 9101-9104 block takes the whole mission down before it ever reaches the lobby.
+    foreach ($num in @('9101', '9102', '9103', '9104')) {
+        if ($text.Contains('{"' + $num + '"')) {
+            throw "Map still carries the retired air waypoint band $num (engine rejects the id): $mapFile"
         }
     }
     # The arriving clone must be re-tagged before it is ordered, or the order selects

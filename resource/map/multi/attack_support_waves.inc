@@ -3530,6 +3530,15 @@
 								{action move}
 								{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
 							}
+							; ...AND OPEN THE RUN-IN. This branch used to order the plane and leave
+							; the stage at 20, which is why the 2026-07-31 run flew a C-130 across the
+							; whole map and dropped nobody: the range poll, all three release monitors
+							; and the stage-30 liveness monitor are ALL gated on stage 30, so none of
+							; them ever armed and e2_para_band/e2_para_pass sat at 0 for the entire
+							; flight. The evidence for the write is the entity proof directly above -
+							; the same reason the helo leg poll opens its leg on a live arrival rather
+							; than failing a healthy hull.
+							{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
 						}
 						{"default"
 						; An earlier code wins: 14 (the clone never arrived) must not be
@@ -3605,24 +3614,29 @@
 			; reached with a live claimed body to move; an already-set fail code wins so the
 			; entry-standoff fallback still reports its own reason (4).
 			;
-			; Corpses genuinely have to be excluded here - "a body exists" is not the same
-			; claim as "a body can walk to the flag" - so this is the ADVANCED group form,
-			; the one e2_place_one and e2_choose_flag already use successfully, never a
-			; simple-selector {state operatable} decoration. support_e2_team is only ever
-			; added together with support_e2_claim and both cleanups strip it, so selecting
-			; on the team tag alone claims nothing extra.
+			; ===== THE LANDED-EVIDENCE CHECK, KEYED ON THE SAME TAG AS THE TRANSFER =====
+			; This gate used to count support_e2_team through
+			; {exclude {state {state dead}} {state {state inactive}}}, and on 2026-07-31 it
+			; returned ZERO while the player was looking at four troops standing at the LZ.
+			; e2_place_one re-adds support_e2_team to every body it places, so the tag was
+			; certainly there; the only other term in that condition is the state exclusion,
+			; which is the same class of decoration that has already zeroed two E2 matches on
+			; units that were demonstrably alive. So the corpse filter is gone and the count
+			; is a BARE TAG count - and it costs nothing, because support_e2_pax is not a
+			; claim marker a corpse could still be carrying from before the drop: it is
+			; written by the one {"entity_state"} that completes a MOVE placement, so
+			; counting it IS counting deliveries.
+			;
+			; Ownership is transferred first, on that same tag. NO E2 BODY MAY BE DELIVERED
+			; WITHOUT AN OWNERSHIP TRANSFER: both delivery paths (the LZ unload and the
+			; entry standoff) end here, so this is the one place that has to guarantee it.
 			(define "e2_finish_team_or_fail"
+				("e2_own_pax")
 				{"switch"
 					{"case"
 						{condition
 							{type entities}
-							{selector
-								{source advanced}
-								{group
-									{select {tag {tag support_e2_team}}}
-									{exclude {state {state dead}} {state {state inactive}}}
-								}
-							}
+							{selector {ignore_captured_by_user 0} {tag support_e2_pax}}
 							{count {op ">="} {value 1}}
 						}
 						("e2_order_team")
@@ -3688,6 +3702,7 @@
 				}
 				{"entity_state" {selector {tag support_e2_claim}} {tag_remove support_e2_claim}}
 				{"entity_state" {selector {tag support_e2_team}} {tag_remove support_e2_team}}
+				{"entity_state" {selector {tag support_e2_pax}} {tag_remove support_e2_pax}}
 				{"entity_state" {selector {tag support_e2_helo}} {tag_remove support_e2_helo}}
 				{"entity_state" {selector {tag support_e2_plane}} {tag_remove support_e2_plane}}
 				{"entity_state" {selector {tag support_e2_released}} {tag_remove support_e2_released}}
@@ -3728,6 +3743,7 @@
 					}
 				}
 				{"entity_state" {selector {tag support_e2_claim}} {tag_remove support_e2_claim}}
+				{"entity_state" {selector {tag support_e2_pax}} {tag_remove support_e2_pax}}
 				{"entity_state" {selector {tag support_e2_helo}} {tag_remove support_e2_helo}}
 				{"entity_state" {selector {tag support_e2_plane}} {tag_remove support_e2_plane}}
 				{"entity_state" {selector {tag support_e2_released}} {tag_remove support_e2_released}}
@@ -3787,6 +3803,46 @@
 				}
 			)
 
+			; ===== THE DELIVERED BODIES GET AN OWNER, AFTER THEY LAND =====
+			; Live 2026-07-31: the helicopter flew its whole route, four troops appeared at
+			; the LZ, and every one of them was an UNAFFILIATED WHITE DOT on the minimap -
+			; while the same run recorded fail 11, "the insert landed no live body". One
+			; defect with two faces: nothing had transferred the passengers.
+			;
+			; e2_own_current runs at stage 20, when the four bodies are still HIDDEN and
+			; INACTIVE parked templates - and it was the only ownership step the insert had.
+			; The proven order in this engine is the opposite one: am_finish_deploy and
+			; as_finish_motor both place first, strip {hidden}/{inactive} second, and only
+			; THEN call am_own_to_support, and those are the paths that have never produced
+			; a neutral body. e2_own_current is kept exactly as it is (it is also the early
+			; fail-8 guard on an unresolved id); this is the transfer that actually lands,
+			; taken on support_e2_pax, which exists only on a body that has been placed and
+			; unhidden.
+			;
+			; Literal 1-16 cases with a fail-closed default: an unresolved id transfers
+			; nothing and records 8 rather than guessing a player.
+			(define "e2_own_pax"
+				{"switch"
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 1}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "1"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 2}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "2"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 3}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "3"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 4}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 5}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 6}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 7}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 8}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 9}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 10}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 11}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 12}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 13}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 14}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 15}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_pax}} {operation set} {player "16"}}}
+					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 8}}}
+				}
+			)
+
 			(define "e2_place_one"
 				{"entity_state"
 					{selector
@@ -3819,6 +3875,14 @@
 					{selector {tag support_e2_place_one}}
 					{tag_add support_e2_team}
 					{tag_add support_e2_placed}
+					; THE PAX TAG. Written at the one instant a body provably exists on the
+					; ground as a delivered unit: by the same {"entity_state"} that takes it out
+					; of {hidden}/{inactive} once the MOVE placement has landed. It is the handle
+					; e2_own_pax transfers ownership on, the handle e2_order_team orders, and the
+					; handle e2_finish_team_or_fail counts - so "this body was delivered", "this
+					; body belongs to the support player" and "this body has an order" are one
+					; fact with one witness instead of three tags that can drift apart.
+					{tag_add support_e2_pax}
 					{tag_add attack_support_src}
 					{tag_remove ally_sup_tpl}
 					{tag_remove support_e2_tpl}
@@ -3859,6 +3923,14 @@
 					{selector {tag support_e2_place_one}}
 					{tag_add support_e2_team}
 					{tag_add support_e2_placed}
+					; THE PAX TAG. Written at the one instant a body provably exists on the
+					; ground as a delivered unit: by the same {"entity_state"} that takes it out
+					; of {hidden}/{inactive} once the MOVE placement has landed. It is the handle
+					; e2_own_pax transfers ownership on, the handle e2_order_team orders, and the
+					; handle e2_finish_team_or_fail counts - so "this body was delivered", "this
+					; body belongs to the support player" and "this body has an order" are one
+					; fact with one witness instead of three tags that can drift apart.
+					{tag_add support_e2_pax}
 					{tag_add attack_support_src}
 					{tag_remove ally_sup_tpl}
 					{tag_remove support_e2_tpl}
@@ -3871,9 +3943,12 @@
 				{"delay" {time 0.5}}
 			)
 
+			; Ordered on the PAX tag, not on support_e2_team. The team tag is added at claim
+			; time on a still-parked template, and e2_place_one removes and re-adds it around
+			; every placement; support_e2_pax exists only on a body that has actually landed.
 			(define "e2_order_team"
 				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag support_e2_team}}
+					{selector {ignore_captured_by_user 0} {tag support_e2_pax}}
 					{control AI}
 					{ai_move {mode enable}}
 					{weapon_prepare on}
@@ -3883,7 +3958,7 @@
 					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
 				}
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag support_e2_team}}
+					{selector {ignore_captured_by_user 0} {tag support_e2_pax}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
@@ -4007,7 +4082,7 @@
 								}
 								{amount 1}
 							}
-							{waypoint "9101"}
+							{waypoint "21"}
 							{clone}
 							{approach "safe teleport & rotate"}
 						}
@@ -4024,7 +4099,7 @@
 								}
 								{amount 1}
 							}
-							{waypoint "9102"}
+							{waypoint "22"}
 							{clone}
 							{approach "safe teleport & rotate"}
 						}
@@ -4040,7 +4115,7 @@
 								}
 								{amount 1}
 							}
-							{waypoint "9102"}
+							{waypoint "22"}
 							{clone}
 							{approach "safe teleport & rotate"}
 						}
@@ -4156,7 +4231,7 @@
 
 			; Exit across the map to the OPPOSITE side's numeric altitude node, so the
 			; aircraft flies through and off rather than turning back over the objective.
-			; 9103/9104 are the altitude-carrying pair (z in the position, no radius and
+			; 23/24 are the altitude-carrying pair (z in the position, no radius and
 			; no commands block) - the same shape the base game gives its mid-route air
 			; nodes. The engine deletes the hull afterwards regardless.
 			;
@@ -4170,17 +4245,17 @@
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
-						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "9103"}}
-						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop orders} {action move} {waypoint "9103"}}
+						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "23"}}
+						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop orders} {action move} {waypoint "23"}}
 					}
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
-						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "9104"}}
-						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop orders} {action move} {waypoint "9104"}}
+						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "24"}}
+						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop orders} {action move} {waypoint "24"}}
 					}
 					{"default"
-						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "9103"}}
-						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop orders} {action move} {waypoint "9103"}}
+						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "23"}}
+						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop orders} {action move} {waypoint "23"}}
 					}
 				}
 			)
@@ -5051,8 +5126,12 @@
 					}
 				}
 				{actions
+					; OFF THE MAP FIRST, DELETE SECOND, and long enough to actually get there.
+					; The transit allowance is the helo leg's 60s - the one the player watched a
+					; helicopter complete on 2026-07-31 - not the 20s that had a C-130 vanish in
+					; mid-map on the same run.
 					("e2_order_aircraft_exit")
-					{"delay" {time 20}}
+					{"delay" {time 60}}
 					{"delete" {selector {ignore_captured_by_user 0} {tag support_e2_arrival} {tag support_e2_leg_done}}}
 					{"entity_state" {selector {tag support_e2_leg_done}} {tag_remove support_e2_arrival}}
 					{"entity_state" {selector {tag support_e2_leg_done}} {tag_remove support_e2_leg_done}}
@@ -5294,6 +5373,41 @@
 				}
 			)
 
+			; ===== THE PARA EXIT EVIDENCE GATE =====
+			; Live 2026-07-31: the para leg walked stage 20 -> 60 -> 70 with
+			; e2_para_band 0, e2_para_pass 0 and fail 0. Nobody jumped, nothing was
+			; recorded, and the ledger read like a clean run. That is the fabricated-success
+			; pattern this project has already banned twice, and it was reachable because
+			; the "the gate refused the run-in" branch wrote stage 60 without writing any
+			; code at all.
+			;
+			; So the para leg may close only with EVIDENCE, and this define is called
+			; immediately before every stage-60 write on the exit path:
+			;   - a RECORDED RELEASE. support_e2_released is written by the release monitor
+			;     before the cargo-bay effect and before the emit, so it exists on every leg
+			;     that actually dropped, and e2_para_settle owns the outcome from there
+			;     (a live jumper near the flag, or fail 7).
+			;   - or a RECORDED FAIL. If neither holds, 6 is written here: "never approached
+			;     the release band" is exactly the true statement about a leg that reached
+			;     its exit with no release to show for it.
+			; An earlier code still wins, so 9/10/14 are never buried under 6.
+			(define "e2_para_require_release_or_fail"
+				{"switch"
+					{"case"
+						{condition {type entities} {selector {tag support_e2_released}} {count {op ">="} {value 1}}}
+					}
+					{"default"
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+								{"set_i" {var "support_e2_fail$"} {op "="} {value 6}}
+							}
+							{"default"}
+						}
+					}
+				}
+			)
+
 			; attack_support/e2_para_landed RETIRED (2026-07-30, clone restructure).
 			; It selected landed jumpers by support_e2_para_pax + support_e2_claim. Under
 			; the clone dispatch the jumpers are copies made by {clone} and carry NONE of
@@ -5360,9 +5474,13 @@
 											("e2_announce_para")
 											{"delay" {time 90}}
 											{"switch"
-												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
-												; Stage still 20 means e2_fly_para_or_fail refused the run-in (fail 10).
-												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} ("e2_para_require_release_or_fail") ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 60}} ("e2_fail_and_cleanup")}
+												; Stage still 20 means e2_fly_para_or_fail refused the run-in - which now
+												; requires that there was no live arrival either, because the branch that
+												; sees one opens the leg. This case used to write stage 60 and NOTHING
+												; else, which is how the 2026-07-31 run reported a clean para leg that
+												; never dropped anyone. It is evidence-gated now like every other exit.
+												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_para_require_release_or_fail") ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 60}} ("e2_fail_and_cleanup")}
 												{"default"}
 											}
 										}
@@ -5434,9 +5552,13 @@
 											("e2_announce_para")
 											{"delay" {time 90}}
 											{"switch"
-												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
-												; Stage still 20 means e2_fly_para_or_fail refused the run-in (fail 10).
-												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} ("e2_para_require_release_or_fail") ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 60}} ("e2_fail_and_cleanup")}
+												; Stage still 20 means e2_fly_para_or_fail refused the run-in - which now
+												; requires that there was no live arrival either, because the branch that
+												; sees one opens the leg. This case used to write stage 60 and NOTHING
+												; else, which is how the 2026-07-31 run reported a clean para leg that
+												; never dropped anyone. It is evidence-gated now like every other exit.
+												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_para_require_release_or_fail") ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 60}} ("e2_fail_and_cleanup")}
 												{"default"}
 											}
 										}
@@ -5508,9 +5630,13 @@
 											("e2_announce_para")
 											{"delay" {time 90}}
 											{"switch"
-												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
-												; Stage still 20 means e2_fly_para_or_fail refused the run-in (fail 10).
-												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} ("e2_para_require_release_or_fail") ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 60}} ("e2_fail_and_cleanup")}
+												; Stage still 20 means e2_fly_para_or_fail refused the run-in - which now
+												; requires that there was no live arrival either, because the branch that
+												; sees one opens the leg. This case used to write stage 60 and NOTHING
+												; else, which is how the 2026-07-31 run reported a clean para leg that
+												; never dropped anyone. It is evidence-gated now like every other exit.
+												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_para_require_release_or_fail") ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 60}} ("e2_fail_and_cleanup")}
 												{"default"}
 											}
 										}
@@ -5525,6 +5651,31 @@
 				}
 			}
 
+			; ===== WHAT THE BAND ACTUALLY MEASURES (corrected 2026-07-31) =====
+			; It reported 0 for an entire overflight the player watched. Two faults, both
+			; in the selector rather than in the rings:
+			;   1. It asked for support_e2_plane AND support_e2_claim on one entity. That is
+			;      the same co-residence the 2026-07-30 helo run proved does not survive the
+			;      ownership transfer, and the 2026-07-31 para run proved it again from the
+			;      other side: e2_fly_para_or_fail's claim-keyed case matched nothing on a
+			;      C-130 that flew the whole map.
+			;   2. It carried a {state "not dead"} decoration - a state decoration on a
+			;      support_e2_ selector, the class that has already zeroed two E2 matches on
+			;      units that were demonstrably alive.
+			; It now uses the ONE near-check shape with a live proof in this file: bare
+			; support_e2_arrival units against a bare tag reference, which is exactly what
+			; attack_support/e2_helo_lz term 6 fired on when the helicopter reached its LZ.
+			;
+			; REFERENCE. support_e2_flag_target is written by e2_choose_flag and is a
+			; precondition of stage 20, so it provably exists for the whole of stage 30 - and
+			; the run-in order itself resolves against it, which is why the plane flew at all.
+			; Only e2_reset_target and the two cleanups take it off.
+			;
+			; UNITS. Map coordinates are DECIMETRES (dcg_[cwa71]_fields spans ~11400 x 6200
+			; units with its two capture points 1530 apart), so the 1000/2000/3000/4000 rings
+			; are 100 m / 200 m / 300 m / 400 m and the outer ring is a fifth of the short
+			; axis of the map - reachable by any run-in that crosses the objective at all.
+			;
 			; Coarse closest-approach tracker for the run-in. SetVar takes integers only, so
 			; the range trend is carried as a band number: 1 = inside 1000, 2 = inside 2000,
 			; 3 = inside 3000, 4 = inside the 4000 outer ring. support_e2_para_range_band$
@@ -5541,7 +5692,7 @@
 					{"case"
 						{condition
 							{type near}
-							{units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state "not dead"}}
+							{units {ignore_captured_by_user 0} {tag support_e2_arrival}}
 							{near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}}
 							{distance 1000}
 						}
@@ -5551,7 +5702,7 @@
 					{"case"
 						{condition
 							{type near}
-							{units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state "not dead"}}
+							{units {ignore_captured_by_user 0} {tag support_e2_arrival}}
 							{near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}}
 							{distance 2000}
 						}
@@ -5566,7 +5717,7 @@
 					{"case"
 						{condition
 							{type near}
-							{units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state "not dead"}}
+							{units {ignore_captured_by_user 0} {tag support_e2_arrival}}
 							{near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}}
 							{distance 3000}
 						}
@@ -5585,7 +5736,7 @@
 					{"case"
 						{condition
 							{type near}
-							{units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state "not dead"}}
+							{units {ignore_captured_by_user 0} {tag support_e2_arrival}}
 							{near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}}
 							{distance 4000}
 						}
@@ -5631,30 +5782,68 @@
 						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
-						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_plane}}} {exclude {tag {tag support_e2_released}}}}}}
-						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state "not dead"}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 4000}}
-						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state "not dead"}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 600}}
+						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}} {exclude {tag {tag support_e2_released}}}}}}
+						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 4000}}
+						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 600}}
 						{"8.cmp_i" {var "support_e2_para_pass$"} {op "=="} {value 1}}
 					}
 				}
 				{actions
-					{"entity_state" {selector {tag support_e2_plane} {tag support_e2_claim}} {tag_add support_e2_released}}
-					; drop_paratrooper is the existence-verified receiver for BOTH airframes: the
-					; Code:X interaction set declares {on "drop_paratrooper"} in its own
-					; "il-76td_para" and "c130_para" groups. What it does there is open the cargo
-					; bay and report the cargobay_opened component - it does NOT unlink the seats.
-					; So the door animation is the effect's job and the actual release is the emit
-					; verb's, which is the same {emit {mode passengers}} the motorised insert
-					; already uses in this engine.
-					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_plane}}}}} {effect drop_paratrooper}}
-					{"delay" {time 1}}
-					{"emit"
-						{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {type vehicle} {state inhabited}}
-						{drop orders}
-						{emit
-							{mode passengers}
-						}
-					}
+					; THE ONE-SHOT GUARD, FIRST. Vanilla makes its release one-shot with a
+					; second tag written AFTER the effect (ai_para_assigned2); this engine has
+					; to write its guard BEFORE, because term 4 of this trigger is the exclude
+					; that stops it re-firing and a trigger tick can fall inside a 0.1s gap.
+					; That is the ONLY deviation from the shipped invocation below.
+					{"entity_state" {selector {tag support_e2_arrival}} {tag_add support_e2_released}}
+					; ===== THE SHIPPED PARADROP CALL-IN, MATCHED VERBATIM (2026-07-31) =====
+					; Code:X own conquest paradrop is the trigger
+					; "[ordos] paratrooper detector script for dcg" in
+					; resource/map/multi/forest_/campaign_capture_the_flag.mi:31963-32127 and
+					; .../bakhmut_1/campaign_capture_the_flag.mi:17293-17384. Its ENTIRE release
+					; is ONE verb - an effect with an advanced {group {select ...}} selector and
+					; {effect drop_paratrooper} - followed by {"delay" {time 0.1}} and a tag swap
+					; that makes it one-shot. There is no second verb of any kind in it. We now
+					; fire exactly that and nothing else.
+					;
+					; WHY ONE VERB IS ENOUGH. The chain the effect starts, read end to end:
+					;   1. {on "drop_paratrooper"} on both airframes (Code:X
+					;      set/interaction_entity/airborne_modern.inc:1629 "il-76td_para",
+					;      :1996 "c130_para", :1692/:1809 the _ai variants) is
+					;      {damage_report "body" "component/cargobay_opened"} + {call "open_cargo"}.
+					;   2. open_cargo (Airborne_M.inc:3645) plays {ani_play "cargo_open" callback}.
+					;      The `callback` keyword is the load-bearing part: it is what makes
+					;      animation_end fire at all.
+					;   3. {on animation_end "cargo_open"} (Airborne_M.inc:3765-3793) branches on
+					;      the cargo-platform tags. Both our airframes remove "place1_busy" on
+					;      spawn, so both take the final else - {call "drop_desant1"}, then
+					;      drop_desant2 and drop_desant3 one and two seconds later.
+					;   4. drop_desantN is the seat unlink: {with_linked_entity "seatNN" {unlink}}
+					;      over seat00-seat15/16-31/32-47 for the il-76td group
+					;      (airborne_modern.inc:139-198) and seat02-seat11/seat12-seat27 for the
+					;      c130 group (:1928-1980). Our pax sit in seat01-seat04 (il-76td_para)
+					;      and seat02-seat05 (c130_para) - inside drop_desant1 on both.
+					;   5. THE CANOPY IS THE JUMPER OWN DOING. A body leaving an "il-76td"/"c130"
+					;      hull above altitude 8 runs human.inc {on board out}
+					;      ("paradrop_crew_member_with_alt_r", Code:X human.inc:1494-1547): it tags
+					;      itself heli_paradrop<N> and SPAWNS a "parachute_new" tagged
+					;      heli_parashute<N>, N a random slot 0-7. Our parked planes sit at
+					;      {Altitude 65}, so the altitude-40 branch is taken. The two entities are
+					;      NOT connected until a mission trigger links them - see the parachute
+					;      linkers further down this file, which is the other half of this fix.
+					;
+					; WHY THE OLD EMIT PAIRING WAS THE DEFECT. It force-unloaded every seat one
+					; second after the effect - before step 2 finished animating, so steps 3 and 4
+					; never ran at all - and it drove the release through a code path the shipped
+					; call-in never uses. The visible result was a plane that opened its bay and
+					; put bodies on the ground with no canopy between.
+					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}}}} {effect drop_paratrooper}}
+					{"delay" {time 0.1}}
+					; LET THE CASCADE RUN BEFORE THE PLANE IS SENT AWAY. eject_troopers staggers
+					; its unlinks from 1.0s to 11.0s after drop_paratroopers, so the departure
+					; order may not be issued on the same tick as the release or the jumpers leave
+					; a plane that is already turning for the exit node. 15s covers the whole
+					; cascade and still sits far inside e2_para_settle's 90s and the 240s long-stop.
+					{"delay" {time 15}}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
 					("e2_order_aircraft_exit")
 					("e2_para_settle")
@@ -5669,30 +5858,68 @@
 						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
-						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_plane}}} {exclude {tag {tag support_e2_released}}}}}}
-						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state "not dead"}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 4000}}
-						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state "not dead"}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 600}}
+						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}} {exclude {tag {tag support_e2_released}}}}}}
+						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 4000}}
+						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 600}}
 						{"8.cmp_i" {var "support_e2_para_pass$"} {op "=="} {value 1}}
 					}
 				}
 				{actions
-					{"entity_state" {selector {tag support_e2_plane} {tag support_e2_claim}} {tag_add support_e2_released}}
-					; drop_paratrooper is the existence-verified receiver for BOTH airframes: the
-					; Code:X interaction set declares {on "drop_paratrooper"} in its own
-					; "il-76td_para" and "c130_para" groups. What it does there is open the cargo
-					; bay and report the cargobay_opened component - it does NOT unlink the seats.
-					; So the door animation is the effect's job and the actual release is the emit
-					; verb's, which is the same {emit {mode passengers}} the motorised insert
-					; already uses in this engine.
-					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_plane}}}}} {effect drop_paratrooper}}
-					{"delay" {time 1}}
-					{"emit"
-						{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {type vehicle} {state inhabited}}
-						{drop orders}
-						{emit
-							{mode passengers}
-						}
-					}
+					; THE ONE-SHOT GUARD, FIRST. Vanilla makes its release one-shot with a
+					; second tag written AFTER the effect (ai_para_assigned2); this engine has
+					; to write its guard BEFORE, because term 4 of this trigger is the exclude
+					; that stops it re-firing and a trigger tick can fall inside a 0.1s gap.
+					; That is the ONLY deviation from the shipped invocation below.
+					{"entity_state" {selector {tag support_e2_arrival}} {tag_add support_e2_released}}
+					; ===== THE SHIPPED PARADROP CALL-IN, MATCHED VERBATIM (2026-07-31) =====
+					; Code:X own conquest paradrop is the trigger
+					; "[ordos] paratrooper detector script for dcg" in
+					; resource/map/multi/forest_/campaign_capture_the_flag.mi:31963-32127 and
+					; .../bakhmut_1/campaign_capture_the_flag.mi:17293-17384. Its ENTIRE release
+					; is ONE verb - an effect with an advanced {group {select ...}} selector and
+					; {effect drop_paratrooper} - followed by {"delay" {time 0.1}} and a tag swap
+					; that makes it one-shot. There is no second verb of any kind in it. We now
+					; fire exactly that and nothing else.
+					;
+					; WHY ONE VERB IS ENOUGH. The chain the effect starts, read end to end:
+					;   1. {on "drop_paratrooper"} on both airframes (Code:X
+					;      set/interaction_entity/airborne_modern.inc:1629 "il-76td_para",
+					;      :1996 "c130_para", :1692/:1809 the _ai variants) is
+					;      {damage_report "body" "component/cargobay_opened"} + {call "open_cargo"}.
+					;   2. open_cargo (Airborne_M.inc:3645) plays {ani_play "cargo_open" callback}.
+					;      The `callback` keyword is the load-bearing part: it is what makes
+					;      animation_end fire at all.
+					;   3. {on animation_end "cargo_open"} (Airborne_M.inc:3765-3793) branches on
+					;      the cargo-platform tags. Both our airframes remove "place1_busy" on
+					;      spawn, so both take the final else - {call "drop_desant1"}, then
+					;      drop_desant2 and drop_desant3 one and two seconds later.
+					;   4. drop_desantN is the seat unlink: {with_linked_entity "seatNN" {unlink}}
+					;      over seat00-seat15/16-31/32-47 for the il-76td group
+					;      (airborne_modern.inc:139-198) and seat02-seat11/seat12-seat27 for the
+					;      c130 group (:1928-1980). Our pax sit in seat01-seat04 (il-76td_para)
+					;      and seat02-seat05 (c130_para) - inside drop_desant1 on both.
+					;   5. THE CANOPY IS THE JUMPER OWN DOING. A body leaving an "il-76td"/"c130"
+					;      hull above altitude 8 runs human.inc {on board out}
+					;      ("paradrop_crew_member_with_alt_r", Code:X human.inc:1494-1547): it tags
+					;      itself heli_paradrop<N> and SPAWNS a "parachute_new" tagged
+					;      heli_parashute<N>, N a random slot 0-7. Our parked planes sit at
+					;      {Altitude 65}, so the altitude-40 branch is taken. The two entities are
+					;      NOT connected until a mission trigger links them - see the parachute
+					;      linkers further down this file, which is the other half of this fix.
+					;
+					; WHY THE OLD EMIT PAIRING WAS THE DEFECT. It force-unloaded every seat one
+					; second after the effect - before step 2 finished animating, so steps 3 and 4
+					; never ran at all - and it drove the release through a code path the shipped
+					; call-in never uses. The visible result was a plane that opened its bay and
+					; put bodies on the ground with no canopy between.
+					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}}}} {effect drop_paratrooper}}
+					{"delay" {time 0.1}}
+					; LET THE CASCADE RUN BEFORE THE PLANE IS SENT AWAY. eject_troopers staggers
+					; its unlinks from 1.0s to 11.0s after drop_paratroopers, so the departure
+					; order may not be issued on the same tick as the release or the jumpers leave
+					; a plane that is already turning for the exit node. 15s covers the whole
+					; cascade and still sits far inside e2_para_settle's 90s and the 240s long-stop.
+					{"delay" {time 15}}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
 					("e2_order_aircraft_exit")
 					("e2_para_settle")
@@ -5707,36 +5934,1598 @@
 						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
-						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_plane}}} {exclude {tag {tag support_e2_released}}}}}}
-						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state "not dead"}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 4000}}
-						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state "not dead"}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 600}}
+						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}} {exclude {tag {tag support_e2_released}}}}}}
+						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 4000}}
+						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 600}}
 						{"8.cmp_i" {var "support_e2_para_pass$"} {op "=="} {value 1}}
 					}
 				}
 				{actions
-					{"entity_state" {selector {tag support_e2_plane} {tag support_e2_claim}} {tag_add support_e2_released}}
-					; drop_paratrooper is the existence-verified receiver for BOTH airframes: the
-					; Code:X interaction set declares {on "drop_paratrooper"} in its own
-					; "il-76td_para" and "c130_para" groups. What it does there is open the cargo
-					; bay and report the cargobay_opened component - it does NOT unlink the seats.
-					; So the door animation is the effect's job and the actual release is the emit
-					; verb's, which is the same {emit {mode passengers}} the motorised insert
-					; already uses in this engine.
-					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_plane}}}}} {effect drop_paratrooper}}
-					{"delay" {time 1}}
-					{"emit"
-						{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {type vehicle} {state inhabited}}
-						{drop orders}
-						{emit
-							{mode passengers}
-						}
-					}
+					; THE ONE-SHOT GUARD, FIRST. Vanilla makes its release one-shot with a
+					; second tag written AFTER the effect (ai_para_assigned2); this engine has
+					; to write its guard BEFORE, because term 4 of this trigger is the exclude
+					; that stops it re-firing and a trigger tick can fall inside a 0.1s gap.
+					; That is the ONLY deviation from the shipped invocation below.
+					{"entity_state" {selector {tag support_e2_arrival}} {tag_add support_e2_released}}
+					; ===== THE SHIPPED PARADROP CALL-IN, MATCHED VERBATIM (2026-07-31) =====
+					; Code:X own conquest paradrop is the trigger
+					; "[ordos] paratrooper detector script for dcg" in
+					; resource/map/multi/forest_/campaign_capture_the_flag.mi:31963-32127 and
+					; .../bakhmut_1/campaign_capture_the_flag.mi:17293-17384. Its ENTIRE release
+					; is ONE verb - an effect with an advanced {group {select ...}} selector and
+					; {effect drop_paratrooper} - followed by {"delay" {time 0.1}} and a tag swap
+					; that makes it one-shot. There is no second verb of any kind in it. We now
+					; fire exactly that and nothing else.
+					;
+					; WHY ONE VERB IS ENOUGH. The chain the effect starts, read end to end:
+					;   1. {on "drop_paratrooper"} on both airframes (Code:X
+					;      set/interaction_entity/airborne_modern.inc:1629 "il-76td_para",
+					;      :1996 "c130_para", :1692/:1809 the _ai variants) is
+					;      {damage_report "body" "component/cargobay_opened"} + {call "open_cargo"}.
+					;   2. open_cargo (Airborne_M.inc:3645) plays {ani_play "cargo_open" callback}.
+					;      The `callback` keyword is the load-bearing part: it is what makes
+					;      animation_end fire at all.
+					;   3. {on animation_end "cargo_open"} (Airborne_M.inc:3765-3793) branches on
+					;      the cargo-platform tags. Both our airframes remove "place1_busy" on
+					;      spawn, so both take the final else - {call "drop_desant1"}, then
+					;      drop_desant2 and drop_desant3 one and two seconds later.
+					;   4. drop_desantN is the seat unlink: {with_linked_entity "seatNN" {unlink}}
+					;      over seat00-seat15/16-31/32-47 for the il-76td group
+					;      (airborne_modern.inc:139-198) and seat02-seat11/seat12-seat27 for the
+					;      c130 group (:1928-1980). Our pax sit in seat01-seat04 (il-76td_para)
+					;      and seat02-seat05 (c130_para) - inside drop_desant1 on both.
+					;   5. THE CANOPY IS THE JUMPER OWN DOING. A body leaving an "il-76td"/"c130"
+					;      hull above altitude 8 runs human.inc {on board out}
+					;      ("paradrop_crew_member_with_alt_r", Code:X human.inc:1494-1547): it tags
+					;      itself heli_paradrop<N> and SPAWNS a "parachute_new" tagged
+					;      heli_parashute<N>, N a random slot 0-7. Our parked planes sit at
+					;      {Altitude 65}, so the altitude-40 branch is taken. The two entities are
+					;      NOT connected until a mission trigger links them - see the parachute
+					;      linkers further down this file, which is the other half of this fix.
+					;
+					; WHY THE OLD EMIT PAIRING WAS THE DEFECT. It force-unloaded every seat one
+					; second after the effect - before step 2 finished animating, so steps 3 and 4
+					; never ran at all - and it drove the release through a code path the shipped
+					; call-in never uses. The visible result was a plane that opened its bay and
+					; put bodies on the ground with no canopy between.
+					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}}}} {effect drop_paratrooper}}
+					{"delay" {time 0.1}}
+					; LET THE CASCADE RUN BEFORE THE PLANE IS SENT AWAY. eject_troopers staggers
+					; its unlinks from 1.0s to 11.0s after drop_paratroopers, so the departure
+					; order may not be issued on the same tick as the release or the jumpers leave
+					; a plane that is already turning for the exit node. 15s covers the whole
+					; cascade and still sits far inside e2_para_settle's 90s and the 240s long-stop.
+					{"delay" {time 15}}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
 					("e2_order_aircraft_exit")
 					("e2_para_settle")
 				}
 			}
 
+
+			; ===== THE PARACHUTE LINKERS (2026-07-31) =====
+			; THE PIECE THAT WAS MISSING, AND THE WHOLE REASON THE DROP PRODUCED NO CANOPIES.
+			;
+			; Nothing in MI ever attaches a jumper to a parachute. When a body with the
+			; able_paradrop link leaves an "il-76td"/"c130" hull above altitude 8, the human's
+			; OWN {on board out} handler (Code:X set/interaction_entity/human.inc:1494-1547)
+			; runs ("paradrop_crew_member_with_alt_r"): it tags the falling man
+			; heli_paradrop<N> and SPAWNS a separate "parachute_new" entity tagged
+			; heli_parashute<N>, where N is a random slot 0-7. The two entities exist side by
+			; side and are NOT connected. The canopy only appears once a MISSION TRIGGER
+			; {"linker"}s them together - and no map this deploy manages had one: a census of
+			; all fourteen dcg_[cwa71]_* maps returns zero "service/paradrop/" triggers.
+			;
+			; The shipped originals are "service/paradrop/0".."/7" plus the "..._" overflow
+			; purge, in Code:X's own conquest maps:
+			;   resource/map/multi/forest_/campaign_capture_the_flag.mi:18461-18640 (slot 0)
+			;   and :18641, :18779, :18917, :19055, :19193, :19331, :19469 (slots 1-7)
+			;   resource/map/multi/bakhmut_1/campaign_capture_the_flag.mi:10162-11026
+			; The bodies below are those triggers copied verbatim - same {autoreset}, same
+			; count "==" 1 / ">" 1 split, same doubled linker+strip+re-arm action list, same
+			; {sort {type entity} {entity {tag ...}}} pairing on both sides of the {"linker"}.
+			;
+			; TWO deliberate differences, and only two:
+			;   1. THE NAMES ARE OURS. The tags are load-bearing and must be exact, because
+			;      human.inc and parachute_new write and read them; the TRIGGER names are not,
+			;      and reusing a shipped trigger name is banned - a map that ever ships
+			;      "service/paradrop/N" would otherwise race this engine for the same chutes.
+			;   2. THE E2 GATE. Terms 1 and 2 keep them inert exactly like every other new
+			;      trigger in this engine: nothing arms at support_e2_test$ == 0, and the para
+			;      leg is mode 2 (the combo transition switches into 2 before the para leg).
+			;
+			; None of this can reach a body that did not just leave one of our own aircraft:
+			; heli_paradrop<N>/heli_parashute<N> are written by the engine's own entity
+			; handlers at the instant of a jump and stripped again the moment the pair is
+			; linked, so there is nothing standing for a later selector to catch.
+			{"attack_support/e2_paradrop_link_0"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop0}
+							}
+							{count
+								{op "=="}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute0}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop0}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop0}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute0}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop0}
+						}
+						{tag_remove heli_paradrop0}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_0"}
+					}
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute0}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop0}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop0}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute0}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop0}
+						}
+						{tag_remove heli_paradrop0}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_0"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_purge_0"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop0}
+							}
+							{count
+								{op ">"}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{tag heli_paradrop0}
+						}
+						{tag_remove heli_paradrop0}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_0"}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop0}
+						}
+						{tag_remove heli_paradrop0}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_0"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_link_1"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop1}
+							}
+							{count
+								{op "=="}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute1}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop1}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop1}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute1}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop1}
+						}
+						{tag_remove heli_paradrop1}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_1"}
+					}
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute1}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop1}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop1}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute1}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop1}
+						}
+						{tag_remove heli_paradrop1}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_1"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_purge_1"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop1}
+							}
+							{count
+								{op ">"}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{tag heli_paradrop1}
+						}
+						{tag_remove heli_paradrop1}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_1"}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop1}
+						}
+						{tag_remove heli_paradrop1}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_1"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_link_2"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop2}
+							}
+							{count
+								{op "=="}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute2}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop2}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop2}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute2}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop2}
+						}
+						{tag_remove heli_paradrop2}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_2"}
+					}
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute2}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop2}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop2}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute2}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop2}
+						}
+						{tag_remove heli_paradrop2}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_2"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_purge_2"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop2}
+							}
+							{count
+								{op ">"}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{tag heli_paradrop2}
+						}
+						{tag_remove heli_paradrop2}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_2"}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop2}
+						}
+						{tag_remove heli_paradrop2}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_2"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_link_3"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop3}
+							}
+							{count
+								{op "=="}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute3}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop3}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop3}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute3}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop3}
+						}
+						{tag_remove heli_paradrop3}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_3"}
+					}
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute3}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop3}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop3}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute3}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop3}
+						}
+						{tag_remove heli_paradrop3}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_3"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_purge_3"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop3}
+							}
+							{count
+								{op ">"}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{tag heli_paradrop3}
+						}
+						{tag_remove heli_paradrop3}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_3"}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop3}
+						}
+						{tag_remove heli_paradrop3}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_3"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_link_4"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop4}
+							}
+							{count
+								{op "=="}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute4}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop4}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop4}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute4}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop4}
+						}
+						{tag_remove heli_paradrop4}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_4"}
+					}
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute4}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop4}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop4}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute4}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop4}
+						}
+						{tag_remove heli_paradrop4}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_4"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_purge_4"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop4}
+							}
+							{count
+								{op ">"}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{tag heli_paradrop4}
+						}
+						{tag_remove heli_paradrop4}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_4"}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop4}
+						}
+						{tag_remove heli_paradrop4}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_4"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_link_5"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop5}
+							}
+							{count
+								{op "=="}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute5}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop5}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop5}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute5}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop5}
+						}
+						{tag_remove heli_paradrop5}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_5"}
+					}
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute5}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop5}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop5}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute5}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop5}
+						}
+						{tag_remove heli_paradrop5}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_5"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_purge_5"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop5}
+							}
+							{count
+								{op ">"}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{tag heli_paradrop5}
+						}
+						{tag_remove heli_paradrop5}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_5"}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop5}
+						}
+						{tag_remove heli_paradrop5}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_5"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_link_6"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop6}
+							}
+							{count
+								{op "=="}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute6}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop6}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop6}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute6}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop6}
+						}
+						{tag_remove heli_paradrop6}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_6"}
+					}
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute6}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop6}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop6}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute6}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop6}
+						}
+						{tag_remove heli_paradrop6}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_6"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_purge_6"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop6}
+							}
+							{count
+								{op ">"}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{tag heli_paradrop6}
+						}
+						{tag_remove heli_paradrop6}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_6"}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop6}
+						}
+						{tag_remove heli_paradrop6}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_6"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_link_7"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop7}
+							}
+							{count
+								{op "=="}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute7}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop7}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop7}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute7}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop7}
+						}
+						{tag_remove heli_paradrop7}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_7"}
+					}
+					{"linker"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_parashute7}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_paradrop7}
+								}
+							}
+							{amount 1
+							}
+						}
+						{entities
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag heli_paradrop7}
+									}
+								}
+								{exclude
+									{state
+										{state linked}
+									}
+								}
+							}
+							{amount 1
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag heli_parashute7}
+								}
+							}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop7}
+						}
+						{tag_remove heli_paradrop7}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_link_7"}
+					}
+				}
+			}
+			{"attack_support/e2_paradrop_purge_7"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.entities"
+							{selector
+								{tag heli_paradrop7}
+							}
+							{count
+								{op ">"}
+								{value 1}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{tag heli_paradrop7}
+						}
+						{tag_remove heli_paradrop7}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_7"}
+					}
+					{"entity_state"
+						{selector
+							{tag heli_paradrop7}
+						}
+						{tag_remove heli_paradrop7}
+					}
+					{"delay"
+						{time 0.01}
+					}
+					{"trigger"
+						{name "attack_support/e2_paradrop_purge_7"}
+					}
+				}
+			}
 			; Drives the closest-approach tracker for as long as stage 30 is open. The
 			; engine arms a trigger once, so the poll re-arms itself explicitly (same shape
 			; as attack_support/e2_para_landed) and stops the moment stage leaves 30 -

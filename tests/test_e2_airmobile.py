@@ -388,8 +388,8 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
         # Without this clause the selector cannot reach a hidden parked template at all.
         self.assertEqual(clone.count("{include {tag {tag hidden}}}"), 3)
         # NUMERIC destinations only: actor_to_waypoint accepts nothing else.
-        self.assertEqual(clone.count('{waypoint "9101"}'), 1)
-        self.assertEqual(clone.count('{waypoint "9102"}'), 2)
+        self.assertEqual(clone.count('{waypoint "21"}'), 1)
+        self.assertEqual(clone.count('{waypoint "22"}'), 2)
         self.assertNotRegex(clone, r'\{waypoint "[a-z_]')
         # The source marker is not a claim: the parked hull keeps its pool tag, which
         # is what makes an aircraft call-in repeatable and pool-free.
@@ -477,11 +477,21 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
         self.assertRegex(e2, r'\{"delay" \{time (?:45|60|75|90)\}\}')
 
     def test_ownership_switch_lists_1_through_16_and_default_has_no_player(self) -> None:
-        e2 = block(self.waves, '(define "e2_own_current"', '(define "e2_place_one"')
-        for player in range(1, 17):
-            self.assertIn(f'{{player "{player}"}}', e2)
-        default = e2.split('{"default"', 1)[1]
-        self.assertNotIn('{player "', default)
+        """Both ownership switches, each read as its own balanced define.
+
+        It used to read the span between e2_own_current and e2_place_one, which was the
+        same thing only for as long as nothing else lived in that gap. e2_own_pax does.
+        """
+        for name in ("e2_own_current", "e2_own_pax"):
+            switch = mi_define(self.waves, name)
+            with self.subTest(define=name):
+                for player in range(1, 17):
+                    self.assertIn(f'{{player "{player}"}}', switch)
+                    self.assertIn(f'{{op "=="}} {{value {player}}}', switch)
+                default = switch.split('{"default"', 1)[1]
+                self.assertNotIn('{player "', default)
+                # Fail-closed: an unresolved id transfers nothing and records 8.
+                self.assertIn('{"set_i" {var "support_e2_fail$"} {op "="} {value 8}}', default)
 
     def test_cleanup_targets_only_the_claimed_aircraft(self) -> None:
         delete = block(self.waves, '(define "e2_delete_aircraft"', '(define "e2_fail_and_cleanup"')
@@ -853,9 +863,21 @@ class E2ParadropLifecycleTests(unittest.TestCase):
             condition = release.split("{actions", 1)[0]
             self.assertIn('{var "support_e2_test$"} {op "=="} {value 2}', condition)
             self.assertIn('{var "support_e2_stage$"} {op "=="} {value 30}', condition)
-            self.assertIn('{tag support_e2_plane}', condition)
-            self.assertIn('{state "not dead"}', condition)
+            # ===== RE-KEYED ONTO THE PROVENANCE TAG (2026-07-31) =====
+            # Every selector in this monitor used to name support_e2_plane +
+            # support_e2_claim, plus a {state "not dead"} decoration. The live run of
+            # 2026-07-31 proved that triple unreadable on the para leg from the other
+            # side: e2_fly_para_or_fail's claim-keyed case matched nothing on a C-130
+            # the player watched fly the whole map, so the leg never even left stage 20.
+            # support_e2_arrival is written by the numeric waypoint's own {commands}
+            # block, exists on the dispatched clone and on nothing else in the mission,
+            # and is what attack_support/e2_helo_lz's near check fired on when the
+            # helicopter reached its LZ - the one near-check shape with a live proof.
+            self.assertNotIn('{tag support_e2_plane}', condition)
+            self.assertNotIn('{tag support_e2_claim}', condition)
+            self.assertNotIn('{state "not dead"}', condition)
             self.assertNotIn('{state operatable}', condition)
+            self.assertIn('{tag support_e2_arrival}', condition)
             self.assertIn('{near_to', condition)
             self.assertIn('{tag support_e2_flag_target}', condition)
             # Widened band: 600-4000, a 3400-unit annulus. The old 1500-2500 shell was
@@ -878,41 +900,91 @@ class E2ParadropLifecycleTests(unittest.TestCase):
             actions = release.split("{actions", 1)[1]
             tagged = actions.index('{tag_add support_e2_released}')
             effect = actions.index('{effect drop_paratrooper}')
-            emit = actions.index('{"emit"', effect)
             stage40 = actions.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}')
             self.assertLess(tagged, effect)
-            self.assertLess(effect, emit)
-            self.assertLess(emit, stage40)
-            # The effect only opens the cargo bay; the emit verb is what unlinks the
-            # seats. Both are addressed at the claimed arrival, never at the parked
-            # original, which must survive for the next call-in.
-            emit_block = mi_block(actions[emit:], '{"emit"')
-            self.assertIn("{tag support_e2_plane}", emit_block)
-            self.assertIn("{tag support_e2_claim}", emit_block)
-            self.assertIn("{type vehicle}", emit_block)
-            self.assertIn("{state inhabited}", emit_block)
-            self.assertIn("{mode passengers}", emit_block)
+            self.assertLess(effect, stage40)
+            # ===== ONE VERB, EXACTLY AS THE SHIPPED CALL-IN FIRES IT (2026-07-31) =====
+            # This block used to pair the effect with an {"emit" {mode passengers}}, on
+            # the belief that drop_paratrooper only opens the cargo bay and that some
+            # other verb therefore had to unlink the seats. The cargo-bay half of that
+            # reading is right; the conclusion was wrong. Code:X's own conquest paradrop
+            # ("[ordos] paratrooper detector script for dcg",
+            # forest_/campaign_capture_the_flag.mi:31963-32127 and
+            # bakhmut_1/campaign_capture_the_flag.mi:17293-17384) fires
+            # {effect drop_paratrooper} and NOTHING ELSE - no emit, no second effect -
+            # because open_cargo plays "cargo_open" with the `callback` keyword
+            # (Airborne_M.inc:3645), and {on animation_end "cargo_open"}
+            # (Airborne_M.inc:3765-3793) is what calls drop_desant1/2/3, which do the
+            # {with_linked_entity "seatNN" {unlink}}. Both our airframes reach that
+            # fall-through branch because both remove "place1_busy" on spawn.
+            # The emit was actively harmful: it force-unloaded the seats one second
+            # after the effect, before the staggered cascade could run.
+            self.assertNotIn('{"emit"', actions)
+            self.assertNotIn("{mode passengers}", actions)
+            # The effect is addressed at the claimed arrival, never at the parked
+            # original which must survive for the next call-in - and in the advanced
+            # {group {select ...}} form the shipped trigger uses.
+            effect_block = mi_block(actions, '{"effect"')
+            self.assertIn("{tag support_e2_arrival}", effect_block)
+            self.assertNotIn("{tag support_e2_plane}", effect_block)
+            self.assertNotIn("{tag support_e2_claim}", effect_block)
+            self.assertNotIn("{state inhabited}", effect_block)
+            self.assertIn("{source advanced}", effect_block)
+            # The shipped 0.1s beat after the effect.
+            self.assertIn('{"delay" {time 0.1}}', actions)
+            # ...and the plane may not be sent away on the same tick as the release:
+            # eject_troopers staggers its unlinks out to 11s after drop_paratroopers.
+            wait = actions.index('{"delay" {time 15}}')
+            self.assertLess(effect, wait)
+            self.assertLess(wait, stage40)
+            self.assertLess(stage40, actions.index('("e2_order_aircraft_exit")'))
             # The pax-tagging route is gone with the claim: a clone's jumpers carry
             # none of this engine's tags, so nothing may pretend to address them.
             self.assertNotIn("support_e2_para_pax", actions)
         # drop_paratrooper (singular) is the receiver Code:X declares for both
         # airframes; drop_paratroopers (plural) belongs to a different prop group.
-        self.assertEqual(self.e2.count('{effect drop_paratrooper}'), 3)
-        self.assertNotIn('{effect drop_paratroopers}', self.e2)
-        self.assertEqual(strip_comments(self.e2).count("{mode passengers}"), 3)
+        live_e2 = strip_comments(self.e2)
+        self.assertEqual(live_e2.count('{effect drop_paratrooper}'), 3)
+        self.assertNotIn('{effect drop_paratroopers}', live_e2)
+        # No emit verb survives anywhere in the E2 paradrop.
+        self.assertEqual(live_e2.count("{mode passengers}"), 0)
+        self.assertNotIn('{"emit"', live_e2)
 
     def test_missed_release_is_fail6_and_cannot_place_passengers(self) -> None:
+        """Both exit cases go through the evidence gate, and both write a code.
+
+        Fail 6 used to be spelled out inline on the stage-30 case only, and the stage-20
+        case wrote no code at all - which is how the 2026-07-31 run walked 20 -> 60 -> 70
+        with band 0, pass 0 and fail 0. The two cases are now identical and both route
+        through e2_para_require_release_or_fail, which is where the literal 6 lives.
+        """
         for faction in ("rusa", "ukr", "nato"):
             launch = mi_block(self.waves, f'{{"attack_support/e2_para_{faction}"')
             timeout = launch.split('("e2_fly_para_or_fail")', 1)[1]
             self.assertRegex(timeout, r'\{"delay" \{time (?:60|75|90)\}\}')
             self.assertIn('{var "support_e2_stage$"} {op "=="} {value 30}', timeout)
-            self.assertIn('{var "support_e2_fail$"} {op "="} {value 6}', timeout)
             self.assertIn('("e2_order_aircraft_exit")', timeout)
             self.assertIn('("e2_fail_and_cleanup")', timeout)
             # And the leg cannot hang at stage 20 when the gate refused the run-in:
             # that branch exits the plane and cleans up, preserving fail 10.
             self.assertIn('{var "support_e2_stage$"} {op "=="} {value 20}', timeout)
+            # Two exit cases, two gate calls, and neither writes stage 60 unguarded.
+            self.assertEqual(timeout.count('("e2_para_require_release_or_fail")'), 2)
+            for case in re.findall(
+                r'\{"case" \{condition \{type cmp_i\} \{var "support_e2_stage\$"\} '
+                r'\{op "=="\} \{value \d+\}\}[^\n]*',
+                timeout,
+            ):
+                with self.subTest(faction=faction, case=case[:64]):
+                    gate = case.index('("e2_para_require_release_or_fail")')
+                    self.assertLess(gate, case.index('{value 60}'))
+                    # Off the map BEFORE the delete, with the helo leg's transit time.
+                    exit_at = case.index('("e2_order_aircraft_exit")')
+                    self.assertLess(exit_at, case.index('("e2_fail_and_cleanup")'))
+                    self.assertIn('{"delay" {time 60}}', case)
+                    self.assertNotIn('{"delay" {time 10}}', case)
+        gate = mi_define(self.waves, "e2_para_require_release_or_fail")
+        self.assertIn('{var "support_e2_fail$"} {op "="} {value 6}', gate)
         self.assertNotIn('("e2_place_one")', self.e2)
         self.assertNotIn('("e2_place_one_entry")', self.e2)
         self.assertNotRegex(self.e2, r'\{"placement"[^}]*support_e2_para_pax')
@@ -1081,13 +1153,20 @@ class E2EvidenceGateTests(unittest.TestCase):
         )
 
         team = mi_define(self.waves, "e2_finish_team_or_fail")
-        self.assertIn("{tag support_e2_team}", team)
-        # Corpses genuinely have to be excluded here, so this is the ADVANCED group form
-        # the rest of the file already uses, never a simple-selector decoration.
+        # ===== THE LANDED CHECK COUNTS THE PAX TAG, AND OWNS FIRST (2026-07-31) =====
+        # It used to count support_e2_team through
+        # {exclude {state {state dead}} {state {state inactive}}} and returned ZERO
+        # while the player was looking at four troops standing at the LZ (fail 11).
+        # e2_place_one re-adds support_e2_team to everything it places, so the tag was
+        # certainly present; the state exclusion is the only other term, and it is the
+        # same decoration class that has already zeroed two E2 matches on live units.
         self.assertNotIn("{state operatable}", team)
-        self.assertIn("{source advanced}", team)
-        self.assertIn("{select {tag {tag support_e2_team}}}", team)
-        self.assertIn("{exclude {state {state dead}} {state {state inactive}}}", team)
+        self.assertNotIn("{state {state dead}}", team)
+        self.assertNotIn("{state {state inactive}}", team)
+        self.assertIn('{selector {ignore_captured_by_user 0} {tag support_e2_pax}}', team)
+        # Ownership is transferred on that same tag, before anything is counted or
+        # ordered: no E2 body may be delivered without a transfer.
+        self.assertLess(team.index('("e2_own_pax")'), team.index("{type entities}"))
         self.assertIn('("e2_order_team")', team)
         self.assertIn('{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}', team)
         self.assertIn('{"set_i" {var "support_e2_fail$"} {op "="} {value 11}}', team)
@@ -1376,7 +1455,12 @@ class E2ParaRunInLivenessTests(unittest.TestCase):
             with self.subTest(para=faction):
                 timeout = launch.split('("e2_fly_para_or_fail")', 1)[1]
                 self.assertIn('{var "support_e2_stage$"} {op "=="} {value 30}', timeout)
-                self.assertIn('{var "support_e2_fail$"} {op "="} {value 6}', timeout)
+                # Fail 6 moved into e2_para_require_release_or_fail, which both exit
+                # cases call - so it is reachable from strictly more paths than before,
+                # never fewer.
+                self.assertIn('("e2_para_require_release_or_fail")', timeout)
+        gate = mi_define(self.waves, "e2_para_require_release_or_fail")
+        self.assertIn('{var "support_e2_fail$"} {op "="} {value 6}', gate)
         # Nothing outside the tracker may grant the release pass, and the tracker only
         # grants it from inside the outer ring - so a run-in that never gets within 4000
         # leaves band 0, pass 0, no release, and the 90s timeout still reports 6.
@@ -1399,16 +1483,24 @@ class E2ParaRunInLivenessTests(unittest.TestCase):
 
 
 class E2NumericWaypointBandTests(unittest.TestCase):
-    """The 9101-9104 air waypoint band: free, deploy-generated, and command-carrying.
+    """The 21-24 air waypoint band: free, deploy-generated, and command-carrying.
 
     {"actor_to_waypoint"} and the {waypoint} order term accept NUMERIC names only, so
     the air nodes cannot use the attack_support_* naming the pads use. That makes a
     collision sweep mandatory rather than cosmetic: the base game's own airstrike
     geometry already occupies "0" on all fourteen managed maps and "1".."6" on two of
     them, complete with its own enemy_air {commands} blocks.
+
+    The band was 9101-9104 until 2026-07-31, when every map in the family failed to
+    load: "Can't use waypoint id, it already used (eHelperWaypoint.cpp:55)", raised on
+    the first of the four even though each id appeared exactly once in the file. A
+    numeric waypoint name is an engine-side id, not a label, and the usable space is
+    small - no shipped .mi anywhere on disk (vanilla or workshop) names a waypoint
+    above 1000. RETIRED_BAND stays asserted-against so the crash cannot come back.
     """
 
-    BAND = ("9101", "9102", "9103", "9104")
+    BAND = ("21", "22", "23", "24")
+    RETIRED_BAND = ("9101", "9102", "9103", "9104")
     MAPS = sorted((ROOT / "resource/map/multi").glob("dcg_[[]cwa71[]]_*/campaign_capture_the_flag.mi"))
 
     @classmethod
@@ -1450,13 +1542,13 @@ class E2NumericWaypointBandTests(unittest.TestCase):
         # nested {commands} block the flat pad regex cannot reach.
         self.assertIn("function Remove-NamedWaypointBlock", deploy)
         self.assertIn(
-            "foreach ($num in @('9101', '9102', '9103', '9104')) {\n"
+            "foreach ($num in @('21', '22', '23', '24', '9101', '9102', '9103', '9104')) {\n"
             "        $text = Remove-NamedWaypointBlock -Text $text -Name $num\n"
             "    }",
             deploy,
         )
-        self.assertIn("$entryNum = if ($side -eq 'a') { '9101' } else { '9102' }", deploy)
-        self.assertIn("$exitNum = if ($side -eq 'a') { '9103' } else { '9104' }", deploy)
+        self.assertIn("$entryNum = if ($side -eq 'a') { '21' } else { '22' }", deploy)
+        self.assertIn("$exitNum = if ($side -eq 'a') { '23' } else { '24' }", deploy)
         # Entry nodes: base-game shape - radius, z 0, and a {commands} block.
         self.assertIn("$AirEntryRadius = 800", deploy)
         self.assertIn('{radius $AirEntryRadius}', deploy)
@@ -1468,6 +1560,27 @@ class E2NumericWaypointBandTests(unittest.TestCase):
         # And it verifies its own output, exactly once per node per map.
         self.assertIn("Expected exactly one air waypoint $num in", deploy)
         self.assertIn("Expected exactly two air-entry command blocks in", deploy)
+        # A map deployed before the renumber still carries the retired band, and one
+        # surviving block is a load-time crash - so the deploy both strips it and
+        # refuses to sign off on a map that still has it.
+        self.assertIn("Map still carries the retired air waypoint band $num", deploy)
+
+    def test_band_stays_inside_the_engine_usable_id_range(self) -> None:
+        """A numeric waypoint name is an engine id, and the id space is small.
+
+        9101-9104 crashed every map at load with eHelperWaypoint's "id already used"
+        even though each id was written exactly once. Nothing shipped - vanilla or any
+        installed workshop mod - names a waypoint above 1000, so the band has to stay
+        well inside that. Two digits keeps it inside the range vanilla exercises
+        routinely rather than at the edge of what happens to be observed.
+        """
+        for numeric in self.BAND:
+            with self.subTest(name=numeric):
+                self.assertLess(int(numeric), 1000)
+        for numeric in self.RETIRED_BAND:
+            with self.subTest(retired=numeric):
+                self.assertNotIn(f'{{waypoint "{numeric}"}}', self.waves)
+                self.assertNotIn("'" + numeric + "' } else", self.deploy)
 
     def test_waypoint_command_block_retags_before_it_orders(self) -> None:
         """A clone carries no tags, so the re-tag has to come first.
@@ -1667,20 +1780,34 @@ class E2SelectorDecorationTests(unittest.TestCase):
                 self.assertNotIn("{state operatable}", gate)
                 self.assertIn("{type entities}", gate)
                 self.assertIn('{count {op ">="} {value 1}}', gate)
-        # The one gate that genuinely has to exclude corpses uses the advanced group.
+        # The landed check is a BARE TAG count on support_e2_pax - see
+        # test_flight_and_landing_stages_need_a_live_entity for why the corpse filter
+        # had to go: it returned zero on four troops the player could see.
         team = mi_define(code, "e2_finish_team_or_fail")
-        self.assertIn("{exclude {state {state dead}} {state {state inactive}}}", team)
-        # The near checks keep their corpse exclusion in the proven "not dead" spelling.
-        for name in ("e2_para_range_poll", "e2_para_settle"):
-            probe = mi_define(code, name)
-            with self.subTest(probe=name):
-                self.assertNotIn("{state operatable}", probe)
-                self.assertIn('{state "not dead"}', probe)
+        self.assertIn('{selector {ignore_captured_by_user 0} {tag support_e2_pax}}', team)
+        self.assertNotIn("{state ", team)
+        # NO STATE DECORATION SURVIVES ON A support_e2_ NEAR CHECK (2026-07-31). The
+        # band tracker carried {state "not dead"} on top of an unreadable tag pair and
+        # read 0 for an entire overflight. Its units selector is now the bare provenance
+        # tag, the one shape attack_support/e2_helo_lz proved live.
+        poll = mi_define(code, "e2_para_range_poll")
+        self.assertNotIn("{state ", poll)
+        self.assertEqual(poll.count("{tag support_e2_arrival}"), 4)
+        self.assertNotIn("{tag support_e2_plane}", poll)
         for faction in ("rusa", "ukr", "nato"):
             release = mi_block(code, f'{{"attack_support/e2_para_release_{faction}"')
             with self.subTest(release=faction):
-                self.assertNotIn("{state operatable}", release)
-                self.assertIn('{state "not dead"}', release)
+                self.assertNotIn("{state ", release)
+                self.assertNotIn("{tag support_e2_plane}", release)
+        # e2_para_settle keeps "not dead": its near check addresses CE's own
+        # paratrooper_need_orders jumpers, ordinary live map units, not a support_e2_
+        # entity - the same carve-out as the {tag _bot} proximity guard.
+        settle = mi_define(code, "e2_para_settle")
+        self.assertNotIn("{state operatable}", settle)
+        self.assertEqual(settle.count('{state "not dead"}'), 2)
+        for line in settle.splitlines():
+            if '{state "not dead"}' in line:
+                self.assertIn("{tag paratrooper_need_orders}", line)
         alive = mi_block(code, '{"attack_support/e2_para_alive"')
         self.assertNotIn("{state operatable}", alive)
 
@@ -1737,7 +1864,7 @@ class E2NoOrphanAircraftTests(unittest.TestCase):
         self.assertEqual(exit_order.count('{"action"'), 6)
         self.assertEqual(exit_order.count("{tag support_e2_arrival}"), 3)
         self.assertEqual(exit_order.count("{tag support_e2_claim}"), 3)
-        for waypoint in ('{waypoint "9103"}', '{waypoint "9104"}'):
+        for waypoint in ('{waypoint "23"}', '{waypoint "24"}'):
             self.assertIn(waypoint, exit_order)
 
     def test_the_arrival_tag_is_only_ever_written_by_the_waypoint(self) -> None:
@@ -1846,11 +1973,14 @@ class E2StageEvidenceLedgerTests(unittest.TestCase):
         return '{"set_i" {var "support_e2_stage$"} {op "="} {value %d}}' % value
 
     def test_the_ledger_totals_are_exact(self) -> None:
-        # 30 is written three times now: the two flight gates, plus the bounded
-        # flight-leg poll's exhausted-bound branch, which opens the leg on a LIVE
-        # ARRIVAL rather than failing a healthy aircraft. All three sit behind an
-        # entity proof; test_stage_30_is_only_written_behind_aircraft_evidence pins that.
-        expected = {0: 2, 10: 1, 20: 7, 30: 3, 40: 8, 50: 1, 60: 11, 70: 2}
+        # 30 is written four times now: the claim-keyed case of each flight gate, the
+        # bounded helo leg poll's exhausted-bound branch, and (added 2026-07-31) the
+        # LIVE-ARRIVAL branch of e2_fly_para_or_fail, which used to order the plane at
+        # the objective and leave the stage at 20 - so the range tracker, all three
+        # release monitors and the stage-30 liveness monitor never armed and the C-130
+        # flew the whole map with band 0 and pass 0. All four sit behind an entity
+        # proof; test_stage_30_is_only_written_behind_aircraft_evidence pins that.
+        expected = {0: 2, 10: 1, 20: 7, 30: 4, 40: 8, 50: 1, 60: 11, 70: 2}
         for value, count in sorted(expected.items()):
             with self.subTest(stage=value):
                 self.assertEqual(self.live.count(self.write(value)), count)
@@ -1880,12 +2010,26 @@ class E2StageEvidenceLedgerTests(unittest.TestCase):
                     self.assertIn("{tag support_e2_flag_target}", head)
 
     def test_stage_30_is_only_written_by_the_two_flight_gates(self) -> None:
-        for name in ("e2_fly_helo_or_fail", "e2_fly_para_or_fail"):
+        # The helo gate writes 30 once (its claim-keyed case); the para gate writes it
+        # twice - the claim-keyed case AND the live-arrival interlock branch, which
+        # orders the plane off the provenance tag and must open the leg for the same
+        # reason the helo poll's exhausted bound does: a healthy flying aircraft that
+        # cannot progress is worse than one that fails.
+        for name, writes in (("e2_fly_helo_or_fail", 1), ("e2_fly_para_or_fail", 2)):
             gate = mi_define(self.live, name)
             with self.subTest(gate=name):
-                self.assertEqual(gate.count(self.write(30)), 1)
+                self.assertEqual(gate.count(self.write(30)), writes)
                 proof = gate.index("{type entities}")
                 self.assertLess(proof, gate.index(self.write(30)))
+                # Every write is preceded by an entity proof AND by the order that
+                # makes the stage true; neither is a bare timer.
+                at = 0
+                for _ in range(writes):
+                    at = gate.index(self.write(30), at)
+                    head = gate[:at]
+                    self.assertIn("{type entities}", head)
+                    self.assertRegex(head, r'\{"action"|\("e2_order_aircraft_lz"\)')
+                    at += 1
         for family, factions in (("helo", ("rusa", "prc", "ukr", "nato")),
                                  ("para", ("rusa", "ukr", "nato"))):
             for faction in factions:
@@ -2442,3 +2586,457 @@ class E2ParaDispatchFloorTests(unittest.TestCase):
         self.assertNotIn("support_e2_fail$", actions)
         self.assertNotIn("{tag_add", actions)
         self.assertNotIn('{"delete"', actions)
+
+
+class E2PassengerOwnershipTests(unittest.TestCase):
+    """The four inserted troops belong to the support player, and are counted as such.
+
+    LIVE 2026-07-31, fields, NATO attack, combo mode. The helicopter leg ran end to end
+    - flew, arrived, emitted, exited, deleted, all watched - and left FOUR UNAFFILIATED
+    TROOPS at the LZ: white minimap dots, nobody's units. The same leg walked stage
+    30 -> 60 recording fail 11, "the insert landed no live body", about bodies the
+    player was looking at.
+
+    One defect, two faces. The insert's only ownership step was e2_own_current, which
+    runs at stage 20 - when the four bodies are still HIDDEN, INACTIVE parked templates.
+    Every delivery path in this engine that has never produced a neutral body does the
+    opposite: am_finish_deploy and as_finish_motor both place, then strip
+    {hidden}/{inactive}, and only THEN transfer. And the landed check counted
+    support_e2_team through {exclude {state {state dead}} {state {state inactive}}} -
+    a state decoration on a support_e2_ selector, the class that has already zeroed two
+    E2 matches on units that were demonstrably alive.
+
+    support_e2_pax closes both: it is written by the one {"entity_state"} that completes
+    a MOVE placement, it carries the literal 1-16 transfer, and it is what the landed
+    check counts.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.waves = WAVES.read_text(encoding="utf-8")
+        cls.live = strip_comments(cls.waves)
+        cls.deploy = DEPLOY.read_text(encoding="utf-8")
+
+    def test_the_pax_tag_is_written_only_where_a_body_has_actually_landed(self) -> None:
+        """Both MOVE placements write it, and nothing else in the engine does."""
+        self.assertEqual(self.live.count("{tag_add support_e2_pax}"), 2)
+        for name in ("e2_place_one", "e2_place_one_entry"):
+            place = mi_define(self.live, name)
+            with self.subTest(place=name):
+                self.assertEqual(place.count("{tag_add support_e2_pax}"), 1)
+                # It lands in the SAME {"entity_state"} that unhides and reactivates the
+                # body, i.e. at the instant the placement is complete - not at claim
+                # time on a parked template.
+                promote = mi_block(
+                    place[place.index("{tag_add support_e2_pax}") - 400 :], '{"entity_state"'
+                )
+                self.assertIn("{tag_add support_e2_pax}", promote)
+                self.assertIn("{tag_remove hidden}", promote)
+                self.assertIn("{inactive off}", promote)
+                self.assertIn("{tag_remove support_e2_tpl}", promote)
+                # And the placement verb itself ran before it.
+                self.assertLess(
+                    place.index('{"placement"'), place.index("{tag_add support_e2_pax}")
+                )
+
+    def test_the_pax_tag_carries_the_literal_1_to_16_switch_and_fails_closed(self) -> None:
+        own = mi_define(self.live, "e2_own_pax")
+        for player in range(1, 17):
+            with self.subTest(player=player):
+                self.assertIn(
+                    '{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} '
+                    '{value %d}} {"player" {selector {ignore_captured_by_user 0} '
+                    '{tag support_e2_pax}} {operation set} {player "%d"}}}' % (player, player),
+                    own,
+                )
+        # No range comparison, no var-to-var fold, no computed player id.
+        self.assertEqual(own.count('{op "=="}'), 16)
+        self.assertNotIn('{op ">"}', own)
+        self.assertNotIn('{op ">="}', own)
+        # Fail-closed: the default transfers nothing and records the unresolved id.
+        default = own.split('{"default"', 1)[1]
+        self.assertNotIn('{player "', default)
+        self.assertIn('{"set_i" {var "support_e2_fail$"} {op "="} {value 8}}', default)
+        # SetVar integers only.
+        self.assertNotRegex(own, r'\{op "="\} \{var ')
+
+    def test_no_e2_body_is_delivered_without_an_ownership_transfer(self) -> None:
+        """Every path that places a body ends in e2_finish_team_or_fail, which owns.
+
+        The transfer is not repeated per placement and it is not left to the caller: it
+        is the first statement of the one define both delivery paths funnel through.
+        """
+        finish = mi_define(self.live, "e2_finish_team_or_fail")
+        self.assertEqual(finish.split("\n")[1].strip(), '("e2_own_pax")')
+        self.assertLess(finish.index('("e2_own_pax")'), finish.index('("e2_order_team")'))
+        self.assertLess(
+            finish.index('("e2_own_pax")'),
+            finish.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}'),
+        )
+        # The LZ unload and the entry standoff are the only two placement sites, and
+        # both end in that define.
+        lz = mi_block(self.live, '{"attack_support/e2_helo_lz"')
+        self.assertEqual(lz.count('("e2_place_one")'), 4)
+        self.assertIn('("e2_finish_team_or_fail")', lz)
+        self.assertLess(lz.rindex('("e2_place_one")'), lz.index('("e2_finish_team_or_fail")'))
+        for faction in ("rusa", "prc", "ukr", "nato"):
+            launch = mi_block(self.live, f'{{"attack_support/e2_helo_{faction}"')
+            with self.subTest(helo=faction):
+                self.assertEqual(launch.count('("e2_place_one_entry")'), 4)
+                self.assertEqual(launch.count('("e2_finish_team_or_fail")'), 1)
+                self.assertLess(
+                    launch.rindex('("e2_place_one_entry")'),
+                    launch.index('("e2_finish_team_or_fail")'),
+                )
+        # And no placement define transfers ownership itself, so there is exactly one
+        # transfer per insert rather than one per body.
+        for name in ("e2_place_one", "e2_place_one_entry"):
+            with self.subTest(place=name):
+                self.assertNotIn('{"player"', mi_define(self.live, name))
+
+    def test_the_landed_check_counts_the_same_tag_and_fail_11_stays_reachable(self) -> None:
+        finish = mi_define(self.live, "e2_finish_team_or_fail")
+        self.assertIn('{selector {ignore_captured_by_user 0} {tag support_e2_pax}}', finish)
+        self.assertIn('{count {op ">="} {value 1}}', finish)
+        # BARE TAG. No state decoration in any spelling: the advanced exclude form is
+        # what returned zero on four visible troops.
+        self.assertNotIn("{state ", finish)
+        self.assertNotIn("{source advanced}", finish)
+        # Fail 11 is still the outcome when nothing landed, and an earlier code wins.
+        default = finish.split('{"default"', 1)[1]
+        self.assertIn('{var "support_e2_fail$"} {op "=="} {value 0}', default)
+        self.assertIn('{"set_i" {var "support_e2_fail$"} {op "="} {value 11}}', default)
+        self.assertLess(
+            default.index('{op "=="} {value 0}'),
+            default.index('{"set_i" {var "support_e2_fail$"} {op "="} {value 11}}'),
+        )
+        # Stage 50 is behind the count, never beside it.
+        self.assertLess(
+            finish.index('{count {op ">="} {value 1}}'),
+            finish.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}'),
+        )
+
+    def test_the_pax_tag_is_ordered_and_retired_with_the_leg(self) -> None:
+        order = mi_define(self.live, "e2_order_team")
+        # AI control and the advance order both address the delivered bodies.
+        self.assertEqual(order.count("{tag support_e2_pax}"), 2)
+        self.assertNotIn("{tag support_e2_team}", order)
+        self.assertIn("{control AI}", order)
+        self.assertIn("{action advance}", order)
+        self.assertIn("{tag support_e2_flag_target}", order)
+        # Both cleanups strip it, so a second leg starts from an empty pax set.
+        for name in ("e2_fail_and_cleanup", "e2_complete_cleanup"):
+            body = mi_define(self.live, name)
+            with self.subTest(cleanup=name):
+                self.assertIn(
+                    '{"entity_state" {selector {tag support_e2_pax}} '
+                    '{tag_remove support_e2_pax}}',
+                    body,
+                )
+        self.assertEqual(self.live.count("{tag_remove support_e2_pax}"), 2)
+        # The pool tag support_e2_<faction>_para_pax is a different string and none of
+        # this touches it.
+        self.assertNotIn("{tag_add support_e2_para_pax}", self.live)
+
+    def test_the_deploy_pins_the_pax_machinery(self) -> None:
+        for marker in ("'{tag_add support_e2_pax}'", '\'(define "e2_own_pax"\'',
+                       "'(\"e2_own_pax\")'"):
+            self.assertIn(marker, self.deploy)
+
+
+class E2ParaExitEvidenceTests(unittest.TestCase):
+    """The para leg may not close without a release or a reason, and may not vanish.
+
+    LIVE 2026-07-31, test 2. Stage 10 -> 20 at 04:53 (the C-130 dispatched and the
+    player watched it fly), -> 60 at 06:25, -> 70, with e2_para_band 0 and
+    e2_para_pass 0 for the WHOLE flight and fail 0 at the end. Nobody jumped, the plane
+    disappeared in mid-map, and the ledger read like a clean run.
+
+    Three faults, all closed here:
+      1. e2_fly_para_or_fail's live-arrival branch ordered the plane at the objective
+         and left the stage at 20. The range tracker, all three release monitors and the
+         stage-30 liveness monitor are every one of them gated on stage 30, so none of
+         them ever armed - which is exactly what band 0 / pass 0 for a whole overflight
+         looks like from the log.
+      2. The stage-20 exit case wrote stage 60 and no code at all.
+      3. The exit allowed 10 seconds between "fly off the map" and the delete.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.waves = WAVES.read_text(encoding="utf-8")
+        cls.live = strip_comments(cls.waves)
+        cls.deploy = DEPLOY.read_text(encoding="utf-8")
+        # The section markers are comments, so the slice is taken on the raw text and
+        # the comments are stripped afterwards.
+        cls.para = strip_comments(
+            block(cls.waves, "; ===== E2 PARADROP", "; ===== MOTORIZED INSERT")
+        )
+
+    def test_the_run_in_opens_on_a_live_arrival_instead_of_stalling_at_stage_20(self) -> None:
+        gate = mi_define(self.live, "e2_fly_para_or_fail")
+        interlock = gate.split('{"default"', 1)[1]
+        # The live-arrival branch: advanced exclude form on the provenance tag, an order
+        # off that same tag, and then the stage.
+        self.assertIn("{select {tag {tag support_e2_arrival}}}", interlock)
+        self.assertIn("{exclude {state {state dead}} {state {state inactive}}}", interlock)
+        order = interlock.index('{"action"')
+        stage = interlock.index('{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}')
+        self.assertLess(interlock.index("{select {tag {tag support_e2_arrival}}}"), order)
+        self.assertLess(order, stage)
+        # Fail 10 stays reachable, and only from the branch with no live arrival.
+        self.assertIn('{"set_i" {var "support_e2_fail$"} {op "="} {value 10}}', interlock)
+        self.assertLess(
+            stage, interlock.index('{"set_i" {var "support_e2_fail$"} {op "="} {value 10}}')
+        )
+
+    def test_every_para_exit_is_evidence_gated(self) -> None:
+        gate = mi_define(self.live, "e2_para_require_release_or_fail")
+        # Either a recorded release...
+        self.assertIn(
+            '{condition {type entities} {selector {tag support_e2_released}} '
+            '{count {op ">="} {value 1}}}',
+            gate,
+        )
+        # ...or a code, and an earlier code still wins over 6.
+        self.assertIn('{var "support_e2_fail$"} {op "=="} {value 0}', gate)
+        self.assertIn('{"set_i" {var "support_e2_fail$"} {op "="} {value 6}}', gate)
+        self.assertLess(
+            gate.index('{op "=="} {value 0}'),
+            gate.index('{"set_i" {var "support_e2_fail$"} {op "="} {value 6}}'),
+        )
+        # It never writes a stage of its own: the caller keeps that, one term later.
+        self.assertNotIn("support_e2_stage$", gate)
+        # Called once per exit case: three factions, two cases each.
+        self.assertEqual(self.para.count('("e2_para_require_release_or_fail")'), 6)
+
+    def test_no_para_stage_60_is_written_without_evidence(self) -> None:
+        """Enumerate every stage-60 write on the para path and name its witness."""
+        write60 = '{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}'
+        sites = []
+        at = 0
+        while True:
+            at = self.para.find(write60, at)
+            if at < 0:
+                break
+            sites.append(at)
+            at += 1
+        # 6 dispatch exits (3 factions x 2 cases), 3 in e2_para_settle (its two
+        # jumper-near proofs and its fail-7 branch), 1 in e2_para_alive.
+        self.assertEqual(len(sites), 10)
+        for at in sites:
+            head = self.para[max(0, at - 900) : at]
+            with self.subTest(at=at):
+                self.assertRegex(
+                    head,
+                    r'\("e2_para_require_release_or_fail"\)'
+                    r'|\{tag paratrooper_need_orders\}'
+                    r'|\{"set_i" \{var "support_e2_fail\$"\} \{op "="\} \{value 7\}\}'
+                    r'|\{"set_i" \{var "support_e2_fail\$"\} \{op "="\} \{value 9\}\}',
+                )
+        # And stage 70 is only ever the two cleanups, both of which are reached only
+        # from a gated 60 or from a fail path.
+        write70 = '{"set_i" {var "support_e2_stage$"} {op "="} {value 70}}'
+        self.assertNotIn(write70, self.para)
+        self.assertEqual(self.live.count(write70), 2)
+
+    def test_fail_6_and_fail_7_both_stay_reachable(self) -> None:
+        self.assertIn(
+            '{"set_i" {var "support_e2_fail$"} {op "="} {value 6}}',
+            mi_define(self.live, "e2_para_require_release_or_fail"),
+        )
+        settle = mi_define(self.live, "e2_para_settle")
+        self.assertIn('{"set_i" {var "support_e2_fail$"} {op "="} {value 7}}', settle)
+        # 7 is the no-survivor branch and it routes to the failure cleanup, never the
+        # completion one.
+        tail = settle[settle.index('{"set_i" {var "support_e2_fail$"} {op "="} {value 7}}') :]
+        self.assertIn('("e2_fail_and_cleanup")', tail)
+        self.assertNotIn('("e2_complete_cleanup")', tail)
+
+    def test_the_para_exit_routes_off_map_before_any_delete(self) -> None:
+        """Order to the numeric exit waypoint first, then delete after the transit.
+
+        The C-130 vanished in mid-map because the exit allowed 10 seconds. The transit
+        allowance is now the helo leg's 60 - the one the player watched a helicopter
+        complete on the same run.
+        """
+        exit_order = mi_define(self.live, "e2_order_aircraft_exit")
+        for numeric in ('{waypoint "23"}', '{waypoint "24"}'):
+            self.assertIn(numeric, exit_order)
+        for faction in ("rusa", "ukr", "nato"):
+            launch = mi_block(self.live, f'{{"attack_support/e2_para_{faction}"')
+            timeout = launch.split('("e2_fly_para_or_fail")', 1)[1]
+            with self.subTest(para=faction):
+                self.assertEqual(timeout.count('("e2_order_aircraft_exit")'), 2)
+                self.assertEqual(timeout.count('{"delay" {time 60}}'), 2)
+                self.assertNotIn('{"delay" {time 10}}', timeout)
+                for case in timeout.split('{"case"')[1:]:
+                    if '("e2_order_aircraft_exit")' not in case:
+                        continue
+                    self.assertLess(
+                        case.index('("e2_order_aircraft_exit")'),
+                        case.index('{"delay" {time 60}}'),
+                    )
+                    self.assertLess(
+                        case.index('{"delay" {time 60}}'), case.index('("e2_fail_and_cleanup")')
+                    )
+        # The release path already orders the exit before e2_para_settle's 90s delete.
+        for faction in ("rusa", "ukr", "nato"):
+            release = mi_block(self.live, f'{{"attack_support/e2_para_release_{faction}"')
+            actions = release.split("{actions", 1)[1]
+            with self.subTest(release=faction):
+                self.assertLess(
+                    actions.index('("e2_order_aircraft_exit")'),
+                    actions.index('("e2_para_settle")'),
+                )
+        settle = mi_define(self.live, "e2_para_settle")
+        self.assertLess(
+            settle.index('{"delay" {time 90}}'), settle.index('("e2_delete_aircraft")')
+        )
+        # And the last-resort sweep gets the same transit allowance, not 20 seconds.
+        sweep = mi_block(self.live, '{"attack_support/e2_orphan_sweep"')
+        actions = sweep.split("{actions", 1)[1]
+        self.assertLess(
+            actions.index('("e2_order_aircraft_exit")'), actions.index('{"delay" {time 60}}')
+        )
+        self.assertLess(actions.index('{"delay" {time 60}}'), actions.index('{"delete"'))
+        self.assertNotIn('{"delay" {time 20}}', actions)
+
+    def test_the_band_metric_names_a_reference_that_exists_at_sample_time(self) -> None:
+        """Provenance tag for the aircraft, flag-target tag for the reference.
+
+        The old metric asked for support_e2_plane AND support_e2_claim on one entity -
+        the co-residence this file already records as not surviving the ownership
+        transfer, and which the 2026-07-31 run re-proved from the other side when
+        e2_fly_para_or_fail's claim-keyed case matched nothing on a flying C-130. It
+        also carried a {state "not dead"} decoration. Both are gone; the shape is now
+        the one attack_support/e2_helo_lz term 6 fired on live.
+        """
+        poll = mi_define(self.live, "e2_para_range_poll")
+        self.assertEqual(poll.count("{type near}"), 4)
+        self.assertEqual(
+            poll.count('{units {ignore_captured_by_user 0} {tag support_e2_arrival}}'), 4
+        )
+        self.assertEqual(
+            poll.count('{near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}}'), 4
+        )
+        self.assertNotIn("{tag support_e2_plane}", poll)
+        self.assertNotIn("{tag support_e2_claim}", poll)
+        self.assertNotIn("{state ", poll)
+        # The reference is written by e2_choose_flag, is a precondition of stage 20 on
+        # every para leg, and is only ever cleared by the reset and the two cleanups -
+        # so it provably exists for the whole of stage 30, which is when the poll runs.
+        self.assertIn(
+            "{tag_add support_e2_flag_target}", mi_define(self.live, "e2_choose_flag")
+        )
+        self.assertEqual(self.live.count("{tag_remove support_e2_flag_target}"), 3)
+        for name in ("e2_reset_target", "e2_fail_and_cleanup", "e2_complete_cleanup"):
+            with self.subTest(clears=name):
+                self.assertIn(
+                    "{tag_remove support_e2_flag_target}", mi_define(self.live, name)
+                )
+        # And the same live shape drives the helo unload, which is where it was proven.
+        lz = mi_block(self.live, '{"attack_support/e2_helo_lz"').split("{actions", 1)[0]
+        self.assertIn('{units {ignore_captured_by_user 0} {tag support_e2_arrival}}', lz)
+
+    def test_the_band_rings_are_in_map_decimetres(self) -> None:
+        """1000/2000/3000/4000 units = 100/200/300/400 m on an ~11400 x 6200 map.
+
+        Map coordinates are DECIMETRES - this repo's own live-tuned finding, the same
+        one that corrected the motorised band. The outer ring is a fifth of the short
+        axis of dcg_[cwa71]_fields, so any run-in that crosses the objective at all
+        enters it; band 0 therefore means "never came near", which is what fail 6 says.
+        """
+        poll = mi_define(self.live, "e2_para_range_poll")
+        rings = [int(v) for v in re.findall(r"\{distance (\d+)\}", poll)]
+        self.assertEqual(rings, [1000, 2000, 3000, 4000])
+        # Tightest first, so the first matching case is the true band.
+        self.assertEqual(rings, sorted(rings))
+        # The release monitors' own rings sit inside the tracker's outer ring.
+        for faction in ("rusa", "ukr", "nato"):
+            condition = mi_block(
+                self.live, f'{{"attack_support/e2_para_release_{faction}"'
+            ).split("{actions", 1)[0]
+            with self.subTest(release=faction):
+                self.assertEqual(
+                    sorted(int(v) for v in re.findall(r"\{distance (\d+)\}", condition)),
+                    [600, 4000],
+                )
+        # The retired shell is still banned in both directions.
+        for retired in ("{distance 1500}", "{distance 2500}"):
+            self.assertNotIn(retired, self.para)
+            self.assertIn("'%s'" % retired, self.deploy)
+
+    def test_the_release_monitors_address_the_dispatched_clone(self) -> None:
+        for faction in ("rusa", "ukr", "nato"):
+            release = mi_block(self.live, f'{{"attack_support/e2_para_release_{faction}"')
+            condition, actions = release.split("{actions", 1)
+            with self.subTest(release=faction):
+                # One-shot, on the provenance tag, excluded once released.
+                self.assertIn(
+                    '{selector {source advanced} {group {select {tag {tag support_e2_arrival}}} '
+                    '{exclude {tag {tag support_e2_released}}}}}',
+                    condition,
+                )
+                self.assertIn(
+                    '{"entity_state" {selector {tag support_e2_arrival}} '
+                    '{tag_add support_e2_released}}',
+                    actions,
+                )
+                # The release is ONE effect on the provenance handle, never on the parked
+                # original - which must survive for the next call-in. The {"emit"} that
+                # used to follow it is gone: it force-unloaded the seats before
+                # {on animation_end "cargo_open"} could run drop_desant1/2/3, and a
+                # passenger who leaves by emit rather than by the seat unlink never
+                # reaches the parachute path at all.
+                self.assertIn(
+                    '{"effect" {selector {source advanced} {group '
+                    '{select {tag {tag support_e2_arrival}}}}} {effect drop_paratrooper}}',
+                    actions,
+                )
+                self.assertNotIn('{"emit"', actions)
+                self.assertNotIn("{mode passengers}", actions)
+                self.assertNotIn("support_e2_tpl", actions)
+
+    def test_the_deploy_pins_the_para_exit_gate(self) -> None:
+        for marker in ('\'(define "e2_para_require_release_or_fail"\'',
+                       "'(\"e2_para_require_release_or_fail\")'"):
+            self.assertIn(marker, self.deploy)
+
+    def test_delimiters_are_balanced_in_every_file_this_pass_touched(self) -> None:
+        for path in (
+            "resource/map/multi/attack_support_waves.inc",
+            "resource/map/multi/dcg_vars.inc",
+            "resource/map/multi/faction_support_templates.inc",
+        ):
+            code = strip_comments((ROOT / path).read_text(encoding="utf-8"))
+            with self.subTest(file=path):
+                self.assertEqual(code.count("{"), code.count("}"))
+                self.assertEqual(code.count("("), code.count(")"))
+
+    def test_the_whole_pass_stays_inert_at_test_mode_zero(self) -> None:
+        """Nothing added here can act unless a leg is actually running."""
+        init = block(self.live, '{"attack_support/init"', '{"attack_support/clock"')
+        self.assertIn('{var "support_e2_test$"} {op "="} {value 0}', init)
+        for value in (1, 2, 3):
+            self.assertNotIn('{var "support_e2_test$"} {op "="} {value %d}' % value, init)
+        # The two new defines are called only from inside gated triggers - they are
+        # never armed as triggers of their own.
+        for name in ("e2_own_pax", "e2_para_require_release_or_fail"):
+            with self.subTest(define=name):
+                self.assertNotIn('{"attack_support/%s"' % name, self.live)
+                self.assertNotIn('{"trigger" {name "attack_support/%s"}}' % name, self.live)
+        # e2_para_require_release_or_fail only reads state - it touches nothing.
+        gate = mi_define(self.live, "e2_para_require_release_or_fail")
+        self.assertNotIn("{tag_add", gate)
+        self.assertNotIn("{tag_remove", gate)
+        self.assertNotIn('{"delete"', gate)
+        self.assertNotIn('{"placement"', gate)
+        # Every para trigger is still mode-gated on test 2.
+        for faction in ("rusa", "ukr", "nato"):
+            for family in ("e2_para_%s", "e2_para_release_%s"):
+                condition = mi_block(
+                    self.live, '{"attack_support/%s"' % (family % faction)
+                ).split("{actions", 1)[0]
+                with self.subTest(trigger=family % faction):
+                    self.assertIn('{var "support_e2_test$"} {op "=="} {value 2}', condition)
