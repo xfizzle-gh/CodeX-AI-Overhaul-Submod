@@ -1,0 +1,67 @@
+name: Run live air and motor fixes
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/run-live-air-motor-fixes.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'experiment/attack-mate-slot-proof'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/attack-mate-slot-proof
+          fetch-depth: 0
+
+      - name: Execute pinned repair script
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import textwrap
+
+          workflow = Path('.github/workflows/apply-live-air-motor-fixes.yml').read_text(encoding='utf-8')
+          start_marker = "          python - <<'PY'\n"
+          end_marker = "\n          PY\n"
+          start = workflow.index(start_marker) + len(start_marker)
+          end = workflow.index(end_marker, start)
+          script = textwrap.dedent(workflow[start:end])
+          Path('/tmp/apply_live_fixes.py').write_text(script, encoding='utf-8')
+          subprocess.run(['python', '/tmp/apply_live_fixes.py'], check=True)
+          PY
+
+      - name: Install test runner
+        run: python -m pip install pytest
+
+      - name: Run focused and full tests
+        run: |
+          python -m pytest tests/test_e2_airmobile.py -q
+          python -m pytest tests/test_attack_support_slot_proof.py -q -k 'motor or objective or drive_phase or linked'
+          python -m pytest tests/ -q
+          git diff --check
+
+      - name: Commit repairs and remove temporary workflows
+        run: |
+          rm -f .github/workflows/apply-live-air-motor-fixes.yml
+          rm -f .github/workflows/run-live-air-motor-fixes.yml
+          rm -f .github/workflows/export-live-debug-branch.yml
+          git config user.name 'OpenAI Codex Agent'
+          git config user.email 'noreply@openai.com'
+          git add resource/map/multi/attack_support_waves.inc \
+                  resource/map/multi/defense_support_waves.inc \
+                  resource/map/multi/enemy_attack_support.inc \
+                  resource/map/multi/enemy_defense_support.inc \
+                  resource/map/multi/faction_support_templates.inc \
+                  tools/deploy_attack_support_probe.ps1 \
+                  tests/test_e2_airmobile.py \
+                  tests/test_attack_support_slot_proof.py \
+                  .github/workflows
+          git commit -m 'Fix live helicopter, paradrop, and motor delivery'
+          git push origin HEAD:experiment/attack-mate-slot-proof
