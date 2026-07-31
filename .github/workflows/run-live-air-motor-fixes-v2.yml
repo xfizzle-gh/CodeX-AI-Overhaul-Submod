@@ -37,6 +37,20 @@ jobs:
         run: |
           python -m py_compile tools/live_fix_patcher.py tools/live_final_corrections.py
           python tools/live_fix_patcher.py
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('tools/live_final_corrections.py')
+          text = path.read_text(encoding='utf-8')
+          bad = "drive_end = motor_tests.index('\n    def ', drive_start + 8)"
+          good = "drive_end = motor_tests.index(chr(10) + '    def ', drive_start + 8)"
+          if text.count(bad) != 1:
+              raise RuntimeError(
+                  f'generated drive boundary: expected 1 malformed form, found {text.count(bad)}'
+              )
+          path.write_text(text.replace(bad, good, 1), encoding='utf-8')
+          PY
+          python -m py_compile tools/live_final_corrections.py
           python -m py_compile /tmp/apply_live_air_motor_fixes.py
           python /tmp/apply_live_air_motor_fixes.py
           python tools/live_final_corrections.py
