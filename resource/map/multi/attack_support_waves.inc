@@ -3241,6 +3241,116 @@
 
 			; Both tags are required: support_e2_aircraft also exists on unclaimed parked
 			; templates, which must never be deleted by another package's cleanup.
+			; ===== E2 EVIDENCE GATES =====
+			; A stage may only advance on proof that the entity that stage talks about
+			; actually exists. Every gate below counts CLAIMED entities; none of them is a
+			; timer. The live defect these close: a claim that returned nothing still walked
+			; the whole ladder to stage 70, and every action in between silently no-opped, so
+			; the run reported a clean flight that no player ever saw.
+			;
+			; Fail codes (stable - append only, never renumber):
+			;   1  faction/mode switch fell through: army has no package of this kind
+			;   2  child trigger claimed nothing (stage still 10 one second after dispatch)
+			;   3  no active flag to fly at
+			;   4  both deep LZ pads unsafe (helo leg falls back to the entry standoff)
+			;   5  helo never reached the LZ inside the arrival window
+			;   6  para plane never released its jumpers inside the window
+			;   7  no paratrooper survived the landing
+			;   8  owner id unresolved, so the package could not be transferred
+			;   9  the claim produced no aircraft at all
+			;   10 the claimed aircraft was not operatable when the flight leg began
+			;   11 the insert landed no live body
+			;   12 faction army still unresolved at dispatch
+			(define "e2_prove_helo_claim"
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft} {tag support_e2_claim}}
+							{count {op ">="} {value 1}}
+						}
+					}
+					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 9}}}
+				}
+			)
+
+			(define "e2_prove_para_claim"
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}}
+							{count {op ">="} {value 1}}
+						}
+					}
+					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 9}}}
+				}
+			)
+
+			; Only a live claimed helicopter may open the flight leg. Without this the
+			; {"action" move} had no target, the 40s window expired and the run blamed the
+			; flight (fail 5) for an aircraft that was never there.
+			(define "e2_fly_helo_or_fail"
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft} {tag support_e2_claim} {state operatable}}
+							{count {op ">="} {value 1}}
+						}
+						("e2_order_aircraft_lz")
+						{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+					}
+					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 10}}}
+				}
+			)
+
+			(define "e2_fly_para_or_fail"
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim} {state operatable}}
+							{count {op ">="} {value 1}}
+						}
+						{"action"
+							{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}}
+							{drop orders}
+							{action move}
+							{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
+						}
+						{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+					}
+					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 10}}}
+				}
+			)
+
+			; Stage 50 means "the insert is on the ground and moving". It may only be
+			; reached with a live claimed body to move; an already-set fail code wins so the
+			; entry-standoff fallback still reports its own reason (4).
+			(define "e2_finish_team_or_fail"
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector {ignore_captured_by_user 0} {tag support_e2_team} {tag support_e2_claim} {type human} {state operatable}}
+							{count {op ">="} {value 1}}
+						}
+						("e2_order_team")
+						{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+					}
+					{"default"
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+								{"set_i" {var "support_e2_fail$"} {op "="} {value 11}}
+							}
+							{"default"}
+						}
+					}
+				}
+			)
+
 			(define "e2_delete_aircraft"
 				{"delete" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}}}
 			)
@@ -3602,6 +3712,7 @@
 						{tag_add support_e2_team}
 						{tag_remove support_e2_rusa_helo_team}
 					}
+					("e2_prove_helo_claim")
 					("e2_choose_flag")
 					{"switch"
 						{"case"
@@ -3623,8 +3734,7 @@
 											("e2_place_one_entry")
 											("e2_place_one_entry")
 											("e2_place_one_entry")
-											("e2_order_team")
-											{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+											("e2_finish_team_or_fail")
 											("e2_complete_cleanup")
 										}
 										{"default"
@@ -3641,9 +3751,9 @@
 												{control AI}
 												{movement {speed fast}}
 											}
-											("e2_order_aircraft_lz")
-											{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
-											; Time-based primary arrival window for the flight proof.
+											; Evidence gate: a live claimed helicopter, or fail 10 and no flight leg.
+											("e2_fly_helo_or_fail")
+											; Arrival window for the flight proof; the near check below is the proof.
 											{"delay" {time 40}}
 											{"switch"
 												{"case"
@@ -3659,15 +3769,21 @@
 													("e2_place_one")
 													("e2_place_one")
 													("e2_place_one")
-													("e2_order_team")
-													{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+													("e2_finish_team_or_fail")
 													("e2_order_aircraft_exit")
 													{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
 													{"delay" {time 60}}
 													("e2_complete_cleanup")
 												}
 												{"default"
-													{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+													; Only blame the flight when nothing earlier already failed.
+													{"switch"
+														{"case"
+															{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+															{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+														}
+														{"default"}
+													}
 													("e2_order_aircraft_exit")
 													{"delay" {time 10}}
 													("e2_fail_and_cleanup")
@@ -3720,6 +3836,7 @@
 						{tag_add support_e2_team}
 						{tag_remove support_e2_prc_helo_team}
 					}
+					("e2_prove_helo_claim")
 					("e2_choose_flag")
 					{"switch"
 						{"case"
@@ -3741,8 +3858,7 @@
 											("e2_place_one_entry")
 											("e2_place_one_entry")
 											("e2_place_one_entry")
-											("e2_order_team")
-											{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+											("e2_finish_team_or_fail")
 											("e2_complete_cleanup")
 										}
 										{"default"
@@ -3759,9 +3875,9 @@
 												{control AI}
 												{movement {speed fast}}
 											}
-											("e2_order_aircraft_lz")
-											{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
-											; Time-based primary arrival window for the flight proof.
+											; Evidence gate: a live claimed helicopter, or fail 10 and no flight leg.
+											("e2_fly_helo_or_fail")
+											; Arrival window for the flight proof; the near check below is the proof.
 											{"delay" {time 40}}
 											{"switch"
 												{"case"
@@ -3777,15 +3893,21 @@
 													("e2_place_one")
 													("e2_place_one")
 													("e2_place_one")
-													("e2_order_team")
-													{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+													("e2_finish_team_or_fail")
 													("e2_order_aircraft_exit")
 													{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
 													{"delay" {time 60}}
 													("e2_complete_cleanup")
 												}
 												{"default"
-													{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+													; Only blame the flight when nothing earlier already failed.
+													{"switch"
+														{"case"
+															{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+															{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+														}
+														{"default"}
+													}
 													("e2_order_aircraft_exit")
 													{"delay" {time 10}}
 													("e2_fail_and_cleanup")
@@ -3840,6 +3962,7 @@
 						{tag_add support_e2_team}
 						{tag_remove support_e2_ukr_helo_team}
 					}
+					("e2_prove_helo_claim")
 					("e2_choose_flag")
 					{"switch"
 						{"case"
@@ -3861,8 +3984,7 @@
 											("e2_place_one_entry")
 											("e2_place_one_entry")
 											("e2_place_one_entry")
-											("e2_order_team")
-											{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+											("e2_finish_team_or_fail")
 											("e2_complete_cleanup")
 										}
 										{"default"
@@ -3879,9 +4001,9 @@
 												{control AI}
 												{movement {speed fast}}
 											}
-											("e2_order_aircraft_lz")
-											{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
-											; Time-based primary arrival window for the flight proof.
+											; Evidence gate: a live claimed helicopter, or fail 10 and no flight leg.
+											("e2_fly_helo_or_fail")
+											; Arrival window for the flight proof; the near check below is the proof.
 											{"delay" {time 40}}
 											{"switch"
 												{"case"
@@ -3897,15 +4019,21 @@
 													("e2_place_one")
 													("e2_place_one")
 													("e2_place_one")
-													("e2_order_team")
-													{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+													("e2_finish_team_or_fail")
 													("e2_order_aircraft_exit")
 													{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
 													{"delay" {time 60}}
 													("e2_complete_cleanup")
 												}
 												{"default"
-													{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+													; Only blame the flight when nothing earlier already failed.
+													{"switch"
+														{"case"
+															{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+															{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+														}
+														{"default"}
+													}
 													("e2_order_aircraft_exit")
 													{"delay" {time 10}}
 													("e2_fail_and_cleanup")
@@ -3960,6 +4088,7 @@
 						{tag_add support_e2_team}
 						{tag_remove support_e2_nato_helo_team}
 					}
+					("e2_prove_helo_claim")
 					("e2_choose_flag")
 					{"switch"
 						{"case"
@@ -3981,8 +4110,7 @@
 											("e2_place_one_entry")
 											("e2_place_one_entry")
 											("e2_place_one_entry")
-											("e2_order_team")
-											{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+											("e2_finish_team_or_fail")
 											("e2_complete_cleanup")
 										}
 										{"default"
@@ -3999,9 +4127,9 @@
 												{control AI}
 												{movement {speed fast}}
 											}
-											("e2_order_aircraft_lz")
-											{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
-											; Time-based primary arrival window for the flight proof.
+											; Evidence gate: a live claimed helicopter, or fail 10 and no flight leg.
+											("e2_fly_helo_or_fail")
+											; Arrival window for the flight proof; the near check below is the proof.
 											{"delay" {time 40}}
 											{"switch"
 												{"case"
@@ -4017,15 +4145,21 @@
 													("e2_place_one")
 													("e2_place_one")
 													("e2_place_one")
-													("e2_order_team")
-													{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
+													("e2_finish_team_or_fail")
 													("e2_order_aircraft_exit")
 													{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
 													{"delay" {time 60}}
 													("e2_complete_cleanup")
 												}
 												{"default"
-													{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+													; Only blame the flight when nothing earlier already failed.
+													{"switch"
+														{"case"
+															{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+															{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+														}
+														{"default"}
+													}
 													("e2_order_aircraft_exit")
 													{"delay" {time 10}}
 													("e2_fail_and_cleanup")
@@ -4051,6 +4185,9 @@
 					; PLA Army Aviation transport (Mi-171 adaptation). PRC has no fixed-wing
 					; call-in per its doctrine note, so it routes here but not in the para switch.
 					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 4}} {"trigger" {name "attack_support/e2_helo_prc"}}}
+					; 12 keeps "army not published yet" apart from "this army has no such
+					; package" (1, e.g. PRC has no fixed-wing call-in by doctrine).
+					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 0}} {"set_i" {var "support_e2_fail$"} {op "="} {value 12}} ("e2_fail_and_cleanup")}
 					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 1}} ("e2_fail_and_cleanup")}
 				}
 			)
@@ -4060,13 +4197,20 @@
 					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 1}} {"trigger" {name "attack_support/e2_para_rusa"}}}
 					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 2}} {"trigger" {name "attack_support/e2_para_ukr"}}}
 					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 3}} {"trigger" {name "attack_support/e2_para_nato"}}}
+					; 12 keeps "army not published yet" apart from "this army has no such
+					; package" (1, e.g. PRC has no fixed-wing call-in by doctrine).
+					{"case" {condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 0}} {"set_i" {var "support_e2_fail$"} {op "="} {value 12}} ("e2_fail_and_cleanup")}
 					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 1}} ("e2_fail_and_cleanup")}
 				}
 			)
 
+			; Term 7 is why no aircraft ever flew: faction_support_army$ is published by
+			; the faction resolve about half a minute into the mission, but the dispatcher
+			; armed within the first few seconds and read 0. Both by_army switches then took
+			; their default, failed the leg and cleaned up before a single hull was claimed.
 			{"attack_support/e2_dispatch"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7"}
 					{terms
 						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 						{"2.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}
@@ -4074,6 +4218,7 @@
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
 						{"5.cmp_i" {var "support_e2_stage$"} {op "=="} {value 0}}
 						{"6.cmp_i" {var "support_e2_test$"} {op ">"} {value 0}}
+						{"7.cmp_i" {var "faction_support_army$"} {op ">"} {value 0}}
 					}
 				}
 				{actions
@@ -4123,7 +4268,25 @@
 					}
 				}
 				{actions
-					{"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {var "support_e2_fail$"}}
+					; SetVar takes integers only. The var-to-var copy that used to stand here
+					; never landed, so the helo leg reported combo_helo_fail 0 whatever it did -
+					; a fabricated success. Fold the code through literal cases instead.
+					{"switch"
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 0}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 1}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 1}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 2}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 2}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 3}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 3}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 4}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 5}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 5}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 6}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 6}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 7}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 7}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 8}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 8}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 9}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 9}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 10}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 10}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 11}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 11}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 12}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 12}}}
+						{"default" {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 99}}}
+					}
 					{"set_i" {var "support_e2_fail$"} {op "="} {value 0}}
 					{"set_i" {var "support_e2_test$"} {op "="} {value 2}}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 0}}
@@ -4286,6 +4449,7 @@
 					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_rusa_para}}}} {amount 1}} {tag_add support_e2_claim} {tag_add support_e2_plane} {tag_remove support_e2_rusa_para}}
 					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_rusa_para_crew}}}} {amount 5}} {tag_add support_e2_claim} {tag_remove support_e2_rusa_para_crew}}
 					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_rusa_para_pax}}}} {amount 4}} {tag_add support_e2_claim} {tag_remove support_e2_rusa_para_pax}}
+					("e2_prove_para_claim")
 					("e2_choose_flag")
 					{"switch"
 						{"case"
@@ -4299,17 +4463,14 @@
 									("e2_place_aircraft_entry")
 									{"air_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {altitude 65}}
 									{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop sensor} {control AI} {movement {speed fast}}}
-									{"action"
-										{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}}
-										{drop orders}
-										{action move}
-										{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
-									}
-									{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+									; Evidence gate: a live claimed transport, or fail 10 and no run-in.
+									("e2_fly_para_or_fail")
 									("e2_announce_para")
 									{"delay" {time 90}}
 									{"switch"
 										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+										; Stage still 20 means e2_fly_para_or_fail refused the run-in (fail 10).
+										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
 										{"default"}
 									}
 								}
@@ -4341,6 +4502,7 @@
 					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_ukr_para}}}} {amount 1}} {tag_add support_e2_claim} {tag_add support_e2_plane} {tag_remove support_e2_ukr_para}}
 					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_ukr_para_crew}}}} {amount 3}} {tag_add support_e2_claim} {tag_remove support_e2_ukr_para_crew}}
 					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_ukr_para_pax}}}} {amount 4}} {tag_add support_e2_claim} {tag_remove support_e2_ukr_para_pax}}
+					("e2_prove_para_claim")
 					("e2_choose_flag")
 					{"switch"
 						{"case"
@@ -4354,17 +4516,14 @@
 									("e2_place_aircraft_entry")
 									{"air_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {altitude 65}}
 									{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop sensor} {control AI} {movement {speed fast}}}
-									{"action"
-										{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}}
-										{drop orders}
-										{action move}
-										{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
-									}
-									{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+									; Evidence gate: a live claimed transport, or fail 10 and no run-in.
+									("e2_fly_para_or_fail")
 									("e2_announce_para")
 									{"delay" {time 90}}
 									{"switch"
 										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+										; Stage still 20 means e2_fly_para_or_fail refused the run-in (fail 10).
+										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
 										{"default"}
 									}
 								}
@@ -4396,6 +4555,7 @@
 					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_nato_para}}}} {amount 1}} {tag_add support_e2_claim} {tag_add support_e2_plane} {tag_remove support_e2_nato_para}}
 					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_nato_para_crew}}}} {amount 3}} {tag_add support_e2_claim} {tag_remove support_e2_nato_para_crew}}
 					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_nato_para_pax}}}} {amount 4}} {tag_add support_e2_claim} {tag_remove support_e2_nato_para_pax}}
+					("e2_prove_para_claim")
 					("e2_choose_flag")
 					{"switch"
 						{"case"
@@ -4409,17 +4569,14 @@
 									("e2_place_aircraft_entry")
 									{"air_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {altitude 65}}
 									{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop sensor} {control AI} {movement {speed fast}}}
-									{"action"
-										{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}}
-										{drop orders}
-										{action move}
-										{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
-									}
-									{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+									; Evidence gate: a live claimed transport, or fail 10 and no run-in.
+									("e2_fly_para_or_fail")
 									("e2_announce_para")
 									{"delay" {time 90}}
 									{"switch"
 										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+										; Stage still 20 means e2_fly_para_or_fail refused the run-in (fail 10).
+										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
 										{"default"}
 									}
 								}
