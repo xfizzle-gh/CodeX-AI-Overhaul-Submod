@@ -4,6 +4,21 @@ import re
 import unittest
 from pathlib import Path
 
+def _mi_define(text: str, name: str) -> str:
+    """Return the balanced (define "<name>" ...) form, including nested calls."""
+    marker = f'(define "{name}"'
+    start = text.index(marker)
+    depth = 0
+    for pos in range(start, len(text)):
+        if text[pos] == "(":
+            depth += 1
+        elif text[pos] == ")":
+            depth -= 1
+            if depth == 0:
+                return text[start : pos + 1]
+    raise AssertionError(f"unbalanced MI define: {name}")
+
+
 ROOT = Path(__file__).resolve().parents[1]
 GAME_SET = ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set"
 BOT_MAIN = ROOT / "resource/script/multiplayer/bot.main.lua"
@@ -825,10 +840,12 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         # Main + flank + airmobile LZ placement sites (count drifts with default branches).
         self.assertGreaterEqual(code.count('{"placement"'), 20)
         for point in (1, 2, 3):
-            # E2 aircraft placement plus its explicit fail-4 infantry fallback
-            # add two point-1 branches on a and four on b (including defaults).
-            expected_a = 3 if point == 1 else 1
-            expected_b = 6 if point == 1 else 2
+            # E2 no longer PLACES an aircraft onto a ground entry pad - it clones and
+            # teleports it to a numeric air waypoint - so the aircraft's own point-1
+            # branches are gone. What is left on point 1 is E2's fail-4 infantry
+            # standoff fallback plus the ordinary wave placements.
+            expected_a = 2 if point == 1 else 1
+            expected_b = 4 if point == 1 else 2
             self.assertEqual(
                 code.count('{target_waypoint "attack_support_entry_a%d"}' % point), expected_a
             )
@@ -958,11 +975,22 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
     def test_engine_never_clones_and_never_decorates_the_pool_selector(self) -> None:
         code = self.code
-        # NO CLONING. Three promote designs (runtime tag, gamezone, player-0
-        # identity) each matched zero freshly created entities: a new entity's
-        # provenance is invisible to every selector we can express here. The pool
-        # originals are MOVED instead, so they keep the tags we put on them.
-        self.assertNotIn("{clone}", code)
+        # NO CLONING, with ONE scoped exception. Three promote designs (runtime tag,
+        # gamezone, player-0 identity) each matched zero freshly created entities: a
+        # new entity's provenance is invisible to every selector we can express here,
+        # so ground units are MOVED and keep the tags we put on them.
+        #
+        # The exception is E2 AIRCRAFT DISPATCH, and only that: the base game's own
+        # aircraft call-in clones a hidden parked template to a numeric waypoint whose
+        # {commands} block then re-tags the arrival. That solves exactly the provenance
+        # problem above, and it is the only place a clone's identity is recoverable.
+        # Strip that one define and the general ban must still hold, unchanged.
+        e2_clone = _mi_define(code, "e2_clone_aircraft")
+        self.assertEqual(e2_clone.count("{clone}"), 3)
+        self.assertIn('{approach "safe teleport & rotate"}', e2_clone)
+        self.assertIn("{include {tag {tag hidden}}}", e2_clone)
+        code_no_e2_clone = code.replace(e2_clone, "")
+        self.assertNotIn("{clone}", code_no_e2_clone)
         self.assertNotIn('{zone {zone "gamezone"}}', code)
         self.assertNotIn('{player "0"}', code)
         # {zone "gamezone"} is allowed only inside player-facing {"talk"} selectors
@@ -981,7 +1009,10 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         self.assertNotIn("{prop {prop human}}", code)
         self.assertNotIn("{include {prop human}}", code)
         self.assertNotIn("{state {state operatable}}", code)
-        self.assertNotIn("{include", code)
+        # {include ...} is likewise allowed ONLY in the E2 clone dispatch, where
+        # {include {tag {tag hidden}}} is what lets the selector reach a hidden parked
+        # template at all - the base game's own dispatch carries the same clause.
+        self.assertNotIn("{include", code_no_e2_clone)
         self.assertIn("{group {select {tag {tag attack_support_deploy}}}}", code)
 
         # fpc1..fpc5 tags are absent from one of the fourteen maps entirely, which
@@ -1799,6 +1830,309 @@ class AttackSupportMotorizedInsertTests(unittest.TestCase):
         """11 bodies is the widest batch (hull + 2 crew + 8 baked riders)."""
         placer = define_body(self.waves, "am_place_at_entry")
         self.assertGreaterEqual(placer.count('("am_place_one")'), 11)
+
+
+class LinkedBodyPlacementTests(unittest.TestCase):
+    """A {Link}-baked body must never be {"placement"}d on its own.
+
+    The live defect this closes: a claimed motorized package is eleven bodies -
+    hull, two crew and eight riders - and the per-body placement define teleported
+    every one of them to the same entry pad. The links survived (the emit still
+    produced eight dismounts at the flag) but each rider's world transform had been
+    overwritten with that one pad point, so all eight rendered clipped into the
+    driver position until the emit handed them a fresh one. The seat names were
+    never the problem; the placement primitive was. Fix: tag every {Link} child
+    "sup_linked" and exclude that tag from every engine's per-body selector, so the
+    hull is placed and the link carries its occupants.
+    """
+
+    LINKED_TAG = "sup_linked"
+    # The per-body placement define of each engine, keyed by engine file.
+    PLACE_ONE = {
+        "attack_support_waves": "am_place_one",
+        "defense_support_waves": "ds_place_one",
+        "enemy_attack_support": "ea_place_one",
+        "enemy_defense_support": "ed_place_one",
+    }
+    # Template files that carry {Link} lines and therefore carry the tag.
+    LINKED_FILES = (
+        "resource/map/multi/faction_support_templates.inc",
+        "resource/map/multi/attack_support_templates.inc",
+    )
+    # Template files deliberately WITHOUT links - nothing to tag, and a link
+    # appearing there later must be a deliberate decision, not a silent one.
+    UNLINKED_FILES = (
+        "resource/map/multi/enemy_defense_templates.inc",
+        "resource/map/multi/flag_props_templates.inc",
+    )
+
+    # ---- verified seat tables, read off the entity defs (recon 2026-07-30) ----
+    # ural            Code:X entity/codx_vehicle/rus/car/ural/ural.def
+    # ural_vsu        Code:X entity/codx_vehicle/ukr/car/ural_vsu/ural_vsu.def
+    # fmtv            Code:X entity/codx_vehicle/nato/car/fmtv/fmtv.def
+    # shaanxi_...     West-81 entity/-vehicle/prc/car/shaanxi_sx2190_passenger/
+    # All four expose driver + commander from ("crew_2_human") and at least ten
+    # numbered passenger places, so eight riders always fit: there is no overflow
+    # case and no reason to park a rider unlinked.
+    MOTOR_HULLS = ("ural", "ural_vsu", "fmtv", "shaanxi_sx2190_passenger")
+    CREW_PLACES = ("driver", "commander")
+    PAX_PLACES = tuple("seat%d" % n for n in range(1, 9))
+    # Places each hull actually owns. We use the first eight of each.
+    HULL_SEAT_COUNT = {
+        "ural": 10,
+        "ural_vsu": 10,
+        "fmtv": 12,
+        "shaanxi_sx2190_passenger": 15,
+    }
+    # TRAP 1: fmtv declares place seat12 but its model carries bones seat01..seat11
+    # only, so seat12 has no bone. Never link a body there.
+    FMTV_BONELESS_PLACE = "seat12"
+    # TRAP 2: the SX2190's bones are offset by one - place seatN sits on bone
+    # seat<N-1>, zero padded, so place seat1 is bone seat00. The other three trucks
+    # are 1:1 (place seat1 -> bone seat01).
+    SHAANXI_BONE_OFFSET = 1
+    # TRAP 3: the SX2190's passenger placer group is PLURAL. The other three use the
+    # singular. Anything that addresses the group by name has to fold on the hull.
+    SHAANXI_PLACER_GROUP = "passengers"
+    TRUCK_PLACER_GROUP = "passenger"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.raw = {
+            path: (ROOT / path).read_text(encoding="utf-8") for path in cls.LINKED_FILES
+        }
+        cls.code = {path: strip_comments(text) for path, text in cls.raw.items()}
+        cls.engines = {
+            name: strip_comments(
+                (ROOT / ("resource/map/multi/%s.inc" % name)).read_text(encoding="utf-8")
+            )
+            for name in ENGINES
+        }
+        cls.vars = VARS.read_text(encoding="utf-8")
+        cls.lua = ATTACK_SUPPORT.read_text(encoding="utf-8")
+
+    @staticmethod
+    def links(code: str):
+        """(child, parent, place) for every {Link} line, in file order."""
+        return re.findall(
+            r'\{Link (0x[0-9a-f]+) \{(0x[0-9a-f]+) "([^"]+)"\}\}', code
+        )
+
+    @staticmethod
+    def tagged(code: str, tag: str):
+        """Ids whose {Tags ...} line carries `tag`."""
+        out = set()
+        for m in re.finditer(r"\{Tags ([^}]*?)(0x[0-9a-f]+)\}", code):
+            if tag in re.findall(r'"([^"]+)"', m.group(1)):
+                out.add(m.group(2))
+        return out
+
+    # --------------------------------------------------- the verified seat table
+
+    def test_motor_packages_use_the_verified_seat_places(self) -> None:
+        """Crew ride driver/commander; the eight riders ride seat1..seat8.
+
+        This is the table read off the four entity defs, pinned so a future edit
+        cannot quietly move a rider onto a place the hull does not have.
+        """
+        code = self.code["resource/map/multi/faction_support_templates.inc"]
+        entities = dict(
+            (eid, name)
+            for name, eid in re.findall(r'\{Entity "([^"]+)" (0x[0-9a-f]+)', code)
+        )
+        by_hull = {}
+        for child, hull, place in self.links(code):
+            by_hull.setdefault(hull, []).append(place)
+
+        # The p1 motor packages: the only hulls carrying eight seatN riders.
+        motor_hulls = {
+            hull: entities[hull]
+            for hull, places in by_hull.items()
+            if set(self.PAX_PLACES) <= set(places)
+        }
+        self.assertEqual(
+            sorted(motor_hulls.values()), sorted(self.MOTOR_HULLS), motor_hulls
+        )
+        for hull, name in sorted(motor_hulls.items()):
+            with self.subTest(hull=name):
+                places = by_hull[hull]
+                # Exactly ten links: two crew places and eight seats, no repeats.
+                self.assertEqual(len(places), len(set(places)), places)
+                self.assertEqual(
+                    tuple(places), self.CREW_PLACES + self.PAX_PLACES, places
+                )
+                # Every seat used is within the places the hull actually declares.
+                for n in range(1, 9):
+                    self.assertLessEqual(n, self.HULL_SEAT_COUNT[name])
+
+    def test_fmtv_never_uses_the_place_with_no_bone(self) -> None:
+        """fmtv declares seat12 but its model has no seat12 bone (only ..seat11)."""
+        self.assertEqual(self.FMTV_BONELESS_PLACE, "seat12")
+        self.assertNotIn(self.FMTV_BONELESS_PLACE, self.PAX_PLACES)
+        for path, code in self.code.items():
+            for _child, _hull, place in self.links(code):
+                self.assertNotEqual(place, self.FMTV_BONELESS_PLACE, path)
+
+    def test_shaanxi_traps_are_recorded(self) -> None:
+        """Two SX2190 quirks that will bite the next reader of these seat names.
+
+        Neither is expressible in the .inc - a {Link} names the PLACE, and the
+        place names are the same seat1..seat8 as every other truck - so they are
+        pinned here as constants instead of being rediscovered the hard way.
+        """
+        # Bone offset: place seatN sits on bone seat<N-1>, zero padded.
+        self.assertEqual(self.SHAANXI_BONE_OFFSET, 1)
+        self.assertEqual("seat%02d" % (1 - self.SHAANXI_BONE_OFFSET), "seat00")
+        self.assertEqual("seat%02d" % (8 - self.SHAANXI_BONE_OFFSET), "seat07")
+        # Placer group is plural on the SX2190 and singular on the other three.
+        self.assertEqual(self.SHAANXI_PLACER_GROUP, "passengers")
+        self.assertEqual(self.TRUCK_PLACER_GROUP, "passenger")
+        self.assertNotEqual(self.SHAANXI_PLACER_GROUP, self.TRUCK_PLACER_GROUP)
+        # Nothing in our own MI addresses a placer group by name; if that ever
+        # changes it has to fold on the hull, so the plural cannot be assumed away.
+        for name, code in self.engines.items():
+            self.assertNotIn("{group %s}" % self.TRUCK_PLACER_GROUP, code, name)
+            self.assertNotIn("{group %s}" % self.SHAANXI_PLACER_GROUP, code, name)
+
+    # ------------------------------------------------------ the sup_linked tag
+
+    def test_sup_linked_marks_exactly_the_link_children(self) -> None:
+        """Derived from the {Link} table, never hand-kept.
+
+        Every child of a {Link} carries the tag, no other id does, and the parents
+        (the hulls) never carry it - a hull is what the engine still has to place.
+        """
+        total = 0
+        for path in self.LINKED_FILES:
+            code = self.code[path]
+            children = {child for child, _hull, _place in self.links(code)}
+            parents = {hull for _child, hull, _place in self.links(code)}
+            with self.subTest(file=path):
+                self.assertTrue(children)
+                # A hull is never itself linked into something else.
+                self.assertFalse(children & parents)
+                self.assertEqual(self.tagged(code, self.LINKED_TAG), children)
+                # Tag order: inserted immediately before "hidden", tags kept.
+                for child in sorted(children):
+                    self.assertIn('"%s" "hidden" %s}' % (self.LINKED_TAG, child), code)
+            total += len(children)
+        # 117 in the faction pools (motor, IFV, light vehicle, E2 aircrew) plus the
+        # 8 humvee crew in the original attack pool.
+        self.assertEqual(total, 125)
+
+    def test_files_without_links_carry_no_linked_tag(self) -> None:
+        for path in self.UNLINKED_FILES:
+            code = strip_comments((ROOT / path).read_text(encoding="utf-8"))
+            with self.subTest(file=path):
+                self.assertEqual(self.links(code), [])
+                self.assertNotIn(self.LINKED_TAG, code)
+
+    def test_sup_linked_is_permanent(self) -> None:
+        """No engine may clear it: a rider is baked in for the whole mission."""
+        for path in sorted(ROOT.joinpath("resource").rglob("*")):
+            if path.suffix.lower() not in (".inc", ".lua", ".mi", ".set"):
+                continue
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            if self.LINKED_TAG not in text:
+                continue
+            with self.subTest(file=str(path.relative_to(ROOT))):
+                self.assertNotIn("{tag_remove %s}" % self.LINKED_TAG, text)
+
+    def test_every_engine_excludes_linked_bodies_from_per_body_placement(self) -> None:
+        clause = "{exclude {tag {tag %s}}}" % self.LINKED_TAG
+        for engine, define in sorted(self.PLACE_ONE.items()):
+            with self.subTest(engine=engine):
+                body = define_body(self.engines[engine], define)
+                self.assertIn(clause, body)
+                # It sits in the advanced-group selector that picks the next body,
+                # beside the already-placed exclusion - not somewhere downstream.
+                self.assertIn("{source advanced}", body)
+                head = body[: body.index("{amount 1}")]
+                self.assertIn(clause, head)
+                # And the placement primitive is still MOVE, never a clone.
+                self.assertIn('{"placement"', body)
+                self.assertNotIn("{clone", body)
+
+    def test_a_claimed_package_still_has_a_body_to_place(self) -> None:
+        """The hull is never a {Link} child, so it is never excluded.
+
+        If it ever became one the whole package would be filtered out of the
+        placement selector and the truck would stay parked at its corner.
+        """
+        code = self.code["resource/map/multi/faction_support_templates.inc"]
+        children = {child for child, _hull, _place in self.links(code)}
+        hulls = set()
+        for m in re.finditer(r"\{Tags ([^}]*?)(0x[0-9a-f]+)\}", code):
+            for tag in re.findall(r'"([^"]+)"', m.group(1)):
+                if re.fullmatch(r"ally_sup_\w+?_p\d_hull", tag):
+                    hulls.add(m.group(2))
+        self.assertEqual(len(hulls), 16, sorted(hulls))
+        self.assertFalse(hulls & children)
+        self.assertFalse(hulls & self.tagged(code, self.LINKED_TAG))
+
+    # -------------------------------------------------- motorized stage mirror
+
+    def test_motor_stage_is_declared_written_reset_and_mirrored(self) -> None:
+        """A truck dispatched but never seen has to be decidable from game.log.
+
+        motor_left says the budget moved; motor_stage says how far that dispatch
+        got. 1 claimed, 2 placed/promoted, 3 driving to the flag, 4 emitted - so a
+        stall is readable as the stage it stopped at, with no on-screen debug.
+        """
+        mirror = self.lua[self.lua.index("local function mirrorEngineState()"):]
+        mirror = mirror[: mirror.index("\nend")]
+        stages = {
+            "attack_support_waves": "attack_support_motor_stage",
+            "defense_support_waves": "defense_support_motor_stage",
+            "enemy_attack_support": "enemy_attack_motor_stage",
+            "enemy_defense_support": "enemy_defense_motor_stage",
+        }
+        for engine, var in sorted(stages.items()):
+            code = self.engines[engine]
+            with self.subTest(engine=engine):
+                self.assertIn('{"%s"}' % var, self.vars)
+                # Reset in init, beside the other motor vars.
+                init = code[: code.index('{"set_i" {var "%s$"} {op "="} {value 1}}' % var)]
+                self.assertIn('{"set_i" {var "%s$"} {op "="} {value 0}}' % var, init)
+                self.assertEqual(
+                    code.count('{"set_i" {var "%s$"} {op "="} {value 0}}' % var), 1
+                )
+                # One claim write per faction trigger, right where the budget drops.
+                self.assertEqual(
+                    code.count('{"set_i" {var "%s$"} {op "="} {value 1}}' % var), 4
+                )
+                # Placed / driving / emitted are written once each, in the shared
+                # motorized finisher, in that order.
+                seen = []
+                for n in (2, 3, 4):
+                    write = '{"set_i" {var "%s$"} {op "="} {value %d}}' % (var, n)
+                    self.assertEqual(code.count(write), 1, n)
+                    seen.append(code.index(write))
+                self.assertEqual(seen, sorted(seen))
+                # Integers only, and log-only: never gated on the debug toggle.
+                self.assertNotIn('{var "%s$"} {op "+"}' % var, code)
+                self.assertNotIn('{var "%s$"} {op "-"}' % var, code)
+                # Mirrored to game.log by the attack support slot, in the per-engine
+                # mirror line rather than the single-sided motor block.
+                self.assertIn('readVar("%s")' % var, mirror)
+                # The budget counter is mirrored beside it, per engine.
+                self.assertIn('readVar("%s")' % var.replace("_stage", "_left"), mirror)
+        # All four quadrants, not just the friendly attack one.
+        self.assertEqual(mirror.count('"motor_stage"'), 4)
+        self.assertEqual(mirror.count('"motor_left"'), 4)
+
+    # --------------------------------------------------------- delimiter balance
+
+    def test_delimiters_are_balanced(self) -> None:
+        touched = list(self.LINKED_FILES) + [
+            "resource/map/multi/%s.inc" % name for name in ENGINES
+        ] + ["resource/map/multi/dcg_vars.inc"]
+        for path in touched:
+            code = strip_comments((ROOT / path).read_text(encoding="utf-8"))
+            with self.subTest(file=path):
+                self.assertEqual(code.count("{"), code.count("}"))
+                self.assertEqual(code.count("("), code.count(")"))
+        self.assertEqual(self.lua.count("("), self.lua.count(")"))
 
 
 if __name__ == "__main__":

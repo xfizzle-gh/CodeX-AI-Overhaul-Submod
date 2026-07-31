@@ -99,6 +99,8 @@
 			{"support_e2_combo_helo_fail"}
 			{"support_e2_lz"}
 			{"support_e2_flag"}
+			{"support_e2_para_range_band"}
+			{"support_e2_para_pass"}
 			{"enemy_attack_motor_first"}
 			{"attack_support_motor_first"}
 			{"attack_support_motor_pkg"}
@@ -109,3 +111,7 @@
 			{"defense_support_motor_left"}
 			{"defense_support_motor_pkg"}
 			{"defense_support_motor_first"}
+			{"attack_support_motor_stage"}
+			{"defense_support_motor_stage"}
+			{"enemy_attack_motor_stage"}
+			{"enemy_defense_motor_stage"}

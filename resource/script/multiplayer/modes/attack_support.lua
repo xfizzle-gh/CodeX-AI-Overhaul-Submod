@@ -126,7 +126,13 @@ local function mirrorMotor()
 		"e2_fail", readVar("support_e2_fail"),
 		"e2_combo_helo_fail", readVar("support_e2_combo_helo_fail"),
 		"e2_lz", readVar("support_e2_lz"),
-		"e2_flag", readVar("support_e2_flag"))
+		"e2_flag", readVar("support_e2_flag"),
+		-- Para run-in telemetry: range_band is the tightest coarse band the plane
+		-- reached (1 closest .. 4 outer ring, 0 never inside it) and pass is the
+		-- bounded closest-approach release grant. Together they separate "never
+		-- approached" (band 0, fail 6) from "approached and still did not drop".
+		"e2_para_band", readVar("support_e2_para_range_band"),
+		"e2_para_pass", readVar("support_e2_para_pass"))
 end
 
 local state = {
@@ -196,6 +202,12 @@ end
 -- whether each engine armed, how far into its budget it is, and which faction pool the
 -- friendly waves are drawing from. This slot is loaded on every campaign_capture_the_flag
 -- mission, attack or defence, so all four quadrants report from the same place.
+--
+-- Each engine also reports its motorized truck insert: motor_left is the remaining
+-- package budget and motor_stage is how far the last dispatch got -
+--   0 idle  1 claimed  2 placed/promoted  3 driving to the flag  4 passengers emitted
+-- so a truck that was dispatched but never seen is decidable from game.log alone
+-- (motor_left dropped but motor_stage stuck at 1 = claimed and never placed, and so on).
 local MIRROR_QUANTS = 200
 
 local function mirrorEngineState()
@@ -204,21 +216,29 @@ local function mirrorEngineState()
 	emit("mirror", "attack_support",
 		"armed", readVar("attack_support_armed"),
 		"wave_num", readVar("attack_support_wave_num"),
-		"waves_left", readVar("attack_support_waves_left"))
+		"waves_left", readVar("attack_support_waves_left"),
+		"motor_left", readVar("attack_support_motor_left"),
+		"motor_stage", readVar("attack_support_motor_stage"))
 	emit("mirror", "enemy_defense",
 		"armed", readVar("enemy_defense_armed"),
 		"wave_num", readVar("enemy_defense_wave_num"),
 		"waves_left", readVar("enemy_defense_waves_left"),
 		"garrison_place", readVar("enemy_defense_place"),
-		"garrison_group", readVar("enemy_defense_group"))
+		"garrison_group", readVar("enemy_defense_group"),
+		"motor_left", readVar("enemy_defense_motor_left"),
+		"motor_stage", readVar("enemy_defense_motor_stage"))
 	emit("mirror", "defense_support",
 		"armed", readVar("defense_support_armed"),
 		"wave_num", readVar("defense_support_wave_num"),
-		"waves_left", readVar("defense_support_waves_left"))
+		"waves_left", readVar("defense_support_waves_left"),
+		"motor_left", readVar("defense_support_motor_left"),
+		"motor_stage", readVar("defense_support_motor_stage"))
 	emit("mirror", "enemy_attack",
 		"armed", readVar("enemy_attack_armed"),
 		"wave_num", readVar("enemy_attack_wave_num"),
-		"waves_left", readVar("enemy_attack_waves_left"))
+		"waves_left", readVar("enemy_attack_waves_left"),
+		"motor_left", readVar("enemy_attack_motor_left"),
+		"motor_stage", readVar("enemy_attack_motor_stage"))
 end
 
 local function onGameStart()
