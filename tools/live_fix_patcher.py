@@ -68,8 +68,7 @@ text = text[:start] + replacement + text[end:]
 SCRIPT.write_text(text, encoding='utf-8')
 
 # The final correction script was intentionally strict while its test edits were being
-# isolated. These three known old-form assumptions should no longer prevent pytest from
-# reporting the actual branch state.
+# isolated. Patch its known old-form assumptions before it runs against the repaired tree.
 CORRECTION = Path('tools/live_final_corrections.py')
 correction = CORRECTION.read_text(encoding='utf-8')
 
@@ -92,6 +91,19 @@ new_match_gate = '''    matches = list(pattern.finditer(text))
     match = matches[0]
 '''
 
+post_repair_anchor = '''e2_tests = normalize_legacy_waves_count(e2_tests)
+
+helo_anchor ='''
+post_repair_replacement = '''e2_tests = normalize_legacy_waves_count(e2_tests)
+e2_tests = replace_once(
+    e2_tests,
+    '        self.assertIn("{distance 600}", self.para)',
+    '        self.assertNotIn("{distance 600}", self.para)',
+    'retire the obsolete 600-unit para radius assertion',
+)
+
+helo_anchor ='''
+
 correction_replacements = [
     (
         old_match_gate,
@@ -104,9 +116,9 @@ correction_replacements = [
         'use the real first paradrop-link trigger as takeover boundary',
     ),
     (
-        'self.assertIn("{distance 600}", self.para)',
-        'self.assertNotIn("{distance 600}", self.para)',
-        'retire the obsolete 600-unit para radius assertion',
+        post_repair_anchor,
+        post_repair_replacement,
+        'apply the obsolete radius test correction after base repair',
     ),
 ]
 for old, new, label in correction_replacements:
