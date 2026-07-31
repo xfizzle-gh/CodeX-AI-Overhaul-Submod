@@ -42,10 +42,31 @@ jobs:
         run: python -m pip install pytest
 
       - name: Run focused motor tests
+        id: focused
+        shell: bash
         run: |
-          python -m pytest tests/test_motor_runtime_isolation.py -q
-          python -m pytest tests/test_motor_package1_restore.py -q
-          python -m pytest tests/test_attack_support_slot_proof.py -q -k 'motor or linked or package or flank'
+          set +e
+          : > focused-motor-failure.log
+          python -m pytest tests/test_motor_runtime_isolation.py -vv 2>&1 | tee -a focused-motor-failure.log
+          s1=${PIPESTATUS[0]}
+          python -m pytest tests/test_motor_package1_restore.py -vv 2>&1 | tee -a focused-motor-failure.log
+          s2=${PIPESTATUS[0]}
+          python -m pytest tests/test_attack_support_slot_proof.py -vv -k 'motor or linked or package or flank' 2>&1 | tee -a focused-motor-failure.log
+          s3=${PIPESTATUS[0]}
+          if (( s1 != 0 || s2 != 0 || s3 != 0 )); then
+            exit 1
+          fi
+          rm -f focused-motor-failure.log
+
+      - name: Persist focused failure output
+        if: failure() && steps.focused.outcome == 'failure'
+        shell: bash
+        run: |
+          git config user.name 'OpenAI Codex Agent'
+          git config user.email 'noreply@openai.com'
+          git add focused-motor-failure.log
+          git commit -m 'Temporary: capture focused motor failure'
+          git push origin HEAD:experiment/attack-mate-slot-proof
 
       - name: Run hosted-compatible repository suite
         run: |
@@ -64,6 +85,7 @@ jobs:
           rm -f tools/patch_package1_restore_test.py
           rm -f tools/patch_existing_motor_tests.py
           rm -f tools/list_motor_test_names.py
+          rm -f focused-motor-failure.log
           git config user.name 'OpenAI Codex Agent'
           git config user.email 'noreply@openai.com'
           git add resource/map/multi/attack_support_waves.inc \
@@ -73,6 +95,6 @@ jobs:
                   tests/test_motor_runtime_isolation.py \
                   tests/test_motor_package1_restore.py \
                   tests/test_attack_support_slot_proof.py \
-                  .github/workflows tools
+                  .github/workflows tools focused-motor-failure.log
           git commit -m 'Isolate motor passengers from infantry patrols'
           git push origin HEAD:experiment/attack-mate-slot-proof
