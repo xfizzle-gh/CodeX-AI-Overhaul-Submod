@@ -7,6 +7,7 @@ on:
       - .github/workflows/fix-motor-runtime-isolation.yml
       - tools/fix_motor_lifecycle.py
       - tools/patch_motor_isolation_test.py
+      - tools/patch_existing_motor_tests.py
 
 permissions:
   contents: write
@@ -27,7 +28,10 @@ jobs:
           python tools/fix_motor_lifecycle.py
           python -m py_compile tools/patch_motor_isolation_test.py
           python tools/patch_motor_isolation_test.py
+          python -m py_compile tools/patch_existing_motor_tests.py
+          python tools/patch_existing_motor_tests.py
           python -m py_compile tests/test_motor_runtime_isolation.py
+          python -m py_compile tests/test_attack_support_slot_proof.py
           git diff --check
 
       - name: Install test runner
@@ -52,6 +56,7 @@ jobs:
           rm -f .github/workflows/fix-motor-runtime-isolation.yml
           rm -f tools/fix_motor_lifecycle.py
           rm -f tools/patch_motor_isolation_test.py
+          rm -f tools/patch_existing_motor_tests.py
           git config user.name 'OpenAI Codex Agent'
           git config user.email 'noreply@openai.com'
           git add resource/map/multi/attack_support_waves.inc \
@@ -59,6 +64,7 @@ jobs:
                   resource/map/multi/enemy_attack_support.inc \
                   resource/map/multi/enemy_defense_support.inc \
                   tests/test_motor_runtime_isolation.py \
+                  tests/test_attack_support_slot_proof.py \
                   .github/workflows tools
           git commit -m 'Isolate motor passengers from infantry patrols'
           git push origin HEAD:experiment/attack-mate-slot-proof
