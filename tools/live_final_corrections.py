@@ -10,6 +10,12 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
     return text.replace(old, new, 1)
 
 
+def strip_trailing_whitespace(text: str) -> str:
+    had_final_newline = text.endswith('\n')
+    cleaned = '\n'.join(line.rstrip() for line in text.splitlines())
+    return cleaned + ('\n' if had_final_newline else '')
+
+
 waves_path = Path('resource/map/multi/attack_support_waves.inc')
 templates_path = Path('resource/map/multi/faction_support_templates.inc')
 e2_tests_path = Path('tests/test_e2_airmobile.py')
@@ -106,6 +112,8 @@ new_motor = '''                # The reference tag is the same tag the advance o
                 target = block_at(body, body.index("{target", advance))
 '''
 motor_tests = replace_once(motor_tests, old_motor, new_motor, 'define motor emit boundary')
+
+waves = strip_trailing_whitespace(waves)
 
 waves_path.write_text(waves, encoding='utf-8')
 templates_path.write_text(templates, encoding='utf-8')
