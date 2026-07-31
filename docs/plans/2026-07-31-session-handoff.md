@@ -98,6 +98,39 @@ An Opus agent was mid-pass on Defects A–D (uncommitted edits to
   first, then motor (C+D), serialized because both touch
   attack_support_waves.inc.
 
+## Update (2026-07-31, later): air-leg sub-pass DONE in working tree (uncommitted)
+
+Suite at 281 passed / 1524 subtests with these in the tree. Root causes proven:
+
+- **Defect A closed**: the 4-man helo team was MOVE-placed by `e2_place_one`
+  with ownership (`e2_own_current`) run at stage 20 — BEFORE placement, while
+  the bodies were still hidden/inactive templates. Every proven path places →
+  unhides → THEN owns; E2 did it backwards → player-0 white dots. Fix: new
+  `support_e2_pax` tag written by the placement itself + `e2_own_pax` literal
+  1–16 switch (fail-closed → fail 8); landed check now counts bare
+  `support_e2_pax`. Fail 11 was a state decoration zeroing the selector —
+  third live proof of that landmine.
+- **`{"emit"} {crew {tag X}}` is a FILTER, not a tag-assigner** — proven from
+  vanilla `1941_12_tikhvin/0.mi:32284` and Code:X `dcg_script.inc:13362`
+  (both name map-authored tags on pre-existing occupants). Never rely on it
+  to tag.
+- **Defect B closed**: para stage stuck at 20 on the interlock branch — every
+  release monitor was stage-30-gated, so none ever armed (band 0 explained);
+  the range poll also used dead tag co-residence + a banned state decoration.
+  Re-keyed on bare `support_e2_arrival` vs `support_e2_flag_target`; new
+  `e2_para_require_release_or_fail` gates every exit (release recorded or
+  fail 6); off-map transit delay 60 s before any delete (orphan sweep too).
+- **Helo teams are NOT aboard the helicopters** (Link census: helos link only
+  driver+commander; the planes DO link pax into seats). The in-flight
+  land-and-disembark task therefore Link-bakes the teams into `seat1..seat4`
+  (mi17 place names) so they ride the clone, then lands via a mechanism
+  extracted from shipped sources (Code:X `interaction_entity/helicopter.inc`
+  has takeoff/landing receivers + an altitude_checker; Gostomel 3261086933
+  `gostomel/9.mi` lands real Mi-8s). Paradrop must match the vanilla
+  call-in's invocation (`drop_paratrooper` receiver alone only opens the
+  cargo bay). CE eject covers `seat1..seat9`/`seat01..seat20` only — keep pax
+  inside that range.
+
 ## Parked (do not touch without user say-so)
 
 - Woodland crash (was the 910x id collision — likely resolved by the 21–24
