@@ -33,7 +33,7 @@ waves = replace_once(waves, decorated_marker, bare_marker, 'replace decorated ma
 
 templates = replace_once(
     templates,
-    '{Tags "ally_sup_tpl" "support_e2_marker_tpl" "hidden" 0xc207}',
+    '{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_marker_tpl" "hidden" 0xc207}',
     '{Tags "support_e2_marker_tpl" 0xc207}',
     'isolate marker tag and remove hidden state',
 )
