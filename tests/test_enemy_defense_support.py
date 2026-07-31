@@ -1041,7 +1041,7 @@ class EnemyDefenseSupportTests(unittest.TestCase):
             '(include "../enemy_defense_templates.inc")',
             "Expected exactly one enemy-defence include in",
             "Expected exactly one enemy-defence templates include in",
-            "Expected 19 enemy_defense triggers",
+            "Expected 25 enemy_defense triggers",
             "enemy_defense triggers carry the user_is_defender",
             "must park 184 prototypes",
             '{"enemy_defense/init"',
