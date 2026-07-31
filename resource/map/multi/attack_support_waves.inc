@@ -1371,6 +1371,16 @@
 					{"set_i" {var "support_e2_flag$"} {op "="} {value 0}}
 					{"set_i" {var "support_e2_para_range_band$"} {op "="} {value 0}}
 					{"set_i" {var "support_e2_para_pass$"} {op "="} {value 0}}
+					; "This leg is over" is ONE fact with ONE writer (e2_mark_leg_done). The
+					; orphan sweep reads it as a tag on the aircraft, the combo transition reads
+					; it as this var. Both start cleared.
+					{"set_i" {var "support_e2_leg_done$"} {op "="} {value 0}}
+					; Bounded-attempt counters for the flight-leg poll and the arrival long-stop.
+					{"set_i" {var "support_e2_air_try$"} {op "="} {value 0}}
+					{"set_i" {var "support_e2_air_age$"} {op "="} {value 0}}
+					; Match clock, one step per 10 seconds. 18 = 180s, the para dispatch floor.
+					{"set_i" {var "support_e2_clock_t$"} {op "="} {value 0}}
+					{"trigger" {name "attack_support/e2_clock"}}
 					{"set_i" {var "attack_support_busy$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_next_ok$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
@@ -3414,6 +3424,28 @@
 			; gate genuinely has to exclude corpses it uses the advanced
 			; {group {select ...} {exclude {state {state dead}} {state {state inactive}}}}
 			; form, which is proven in this file, never a selector decoration.
+			; ===== THE LIVE-ARRIVAL INTERLOCK (2026-07-30, THIRD LIVE PROOF) =====
+			; A HEALTHY FLYING AIRCRAFT IS UN-FAILABLE. The run that forced this rule: the
+			; player watched the clone spawn and fly, and the mirror still reported fail 10
+			; from the {"default"} branch below. e2_prove_arrival had already passed, so the
+			; arrival existed - what stopped holding was the CO-RESIDENCE of the three
+			; lifecycle tags on it. Independent evidence for the same loss is recorded a few
+			; hundred lines down, on e2_order_aircraft_exit: "the claim-keyed order matched
+			; nothing and the aircraft never left the objective", where the claim-keyed
+			; selector is {tag support_e2_aircraft} {tag support_e2_claim} - two of these
+			; same three tags - while the arrival-keyed order, on the tag the numeric
+			; waypoint's own {commands} block wrote, did match. So the tags this engine adds
+			; across the promote/own window are the ones that do not survive; the waypoint's
+			; own tag does.
+			;
+			; Three things follow, and all three are implemented:
+			;   1. The lifecycle tags are RE-ASSERTED off support_e2_arrival after the
+			;      ownership transfer and after the {"actor_state"} step, not only before.
+			;   2. The gate is sampled by a bounded, self-re-arming POLL rather than once.
+			;   3. No "the aircraft is not there" code (9, 10, 14) may be written while an
+			;      entity carrying support_e2_arrival exists and is not dead. Liveness is
+			;      expressed with the ADVANCED exclude form that is proven in this file,
+			;      never a simple-selector state decoration.
 			(define "e2_fly_helo_or_fail"
 				{"switch"
 					{"case"
@@ -3426,14 +3458,34 @@
 						{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
 					}
 					{"default"
-					; An earlier code wins: 14 (the clone never arrived) must not be
-					; overwritten by 10 ("the aircraft was not operatable").
 					{"switch"
 						{"case"
-							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							{"set_i" {var "support_e2_fail$"} {op "="} {value 10}}
+							; A live arrival exists: this leg has a real aircraft in the air and
+							; may not be failed, whatever the bookkeeping tags say. The poll
+							; re-arms and tries again.
+							{condition
+								{type entities}
+								{selector
+									{source advanced}
+									{group
+										{select {tag {tag support_e2_arrival}}}
+										{exclude {state {state dead}} {state {state inactive}}}
+									}
+								}
+								{count {op ">="} {value 1}}
+							}
 						}
-						{"default"}
+						{"default"
+						; An earlier code wins: 14 (the clone never arrived) must not be
+						; overwritten by 10 ("the aircraft was not operatable").
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+								{"set_i" {var "support_e2_fail$"} {op "="} {value 10}}
+							}
+							{"default"}
+						}
+					}
 					}
 				}
 				}
@@ -3456,17 +3508,97 @@
 						{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
 					}
 					{"default"
-					; An earlier code wins: 14 (the clone never arrived) must not be
-					; overwritten by 10 ("the aircraft was not operatable").
 					{"switch"
 						{"case"
-							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							{"set_i" {var "support_e2_fail$"} {op "="} {value 10}}
+							; Same interlock as the helo gate: a live transport is un-failable.
+							{condition
+								{type entities}
+								{selector
+									{source advanced}
+									{group
+										{select {tag {tag support_e2_arrival}}}
+										{exclude {state {state dead}} {state {state inactive}}}
+									}
+								}
+								{count {op ">="} {value 1}}
+							}
+							; The plane is real and flying; order it at the objective off the
+							; provenance tag, which no promote step can take away.
+							{"action"
+								{selector {ignore_captured_by_user 0} {tag support_e2_arrival}}
+								{drop orders}
+								{action move}
+								{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
+							}
 						}
-						{"default"}
+						{"default"
+						; An earlier code wins: 14 (the clone never arrived) must not be
+						; overwritten by 10 ("the aircraft was not operatable").
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+								{"set_i" {var "support_e2_fail$"} {op "="} {value 10}}
+							}
+							{"default"}
+						}
+					}
 					}
 				}
 				}
+			)
+
+			; The lifecycle tags, re-asserted off the ONE handle that provably survives the
+			; ownership transfer: support_e2_arrival, written by the numeric waypoint's own
+			; {commands} block. This is the same shape as as_finish_motor's re-assert of
+			; attack_support_deploy from the package's own marks before ownership and AI
+			; control are set - the fix that stopped trucks being left neutral and motionless.
+			(define "e2_reassert_arrival_helo"
+				{"entity_state"
+					{selector {tag support_e2_arrival}}
+					{tag_add support_e2_helo}
+					{tag_add support_e2_aircraft}
+					{tag_add support_e2_claim}
+					{tag_add attack_support_src}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+			)
+
+			(define "e2_reassert_arrival_plane"
+				{"entity_state"
+					{selector {tag support_e2_arrival}}
+					{tag_add support_e2_plane}
+					{tag_add support_e2_aircraft}
+					{tag_add support_e2_claim}
+					{tag_add attack_support_src}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+			)
+
+			; ===== THE ONE DEFINITION OF "THIS LEG IS OVER" =====
+			; Written by, and only by, the paths that genuinely end a leg: both cleanups
+			; (which every completion, timeout and real failure routes through) and the
+			; combo leftover-retirement. It is published twice on purpose, because the two
+			; readers can only see one form each:
+			;   - as a TAG on the aircraft, for the orphan sweep, which has no way to ask
+			;     "is this particular hull's leg finished" other than off the hull itself;
+			;   - as a VAR, for the combo transition, which has to know the helo leg is over
+			;     at a moment when the aircraft has already been deleted.
+			; The global stage variable is NOT that fact: stage reaches 70 on the combo
+			; transition too, and keying the sweep on it deleted a healthy mid-mission
+			; aircraft in the 2026-07-30 run.
+			(define "e2_mark_leg_done"
+				{"entity_state" {selector {tag support_e2_arrival}} {tag_add support_e2_leg_done}}
+				{"set_i" {var "support_e2_leg_done$"} {op "="} {value 1}}
+			)
+
+			(define "e2_arm_helo_leg"
+				{"trigger" {name "attack_support/e2_helo_leg_poll"}}
 			)
 
 			; Stage 50 means "the insert is on the ground and moving". It may only be
@@ -3525,9 +3657,35 @@
 			)
 
 			(define "e2_fail_and_cleanup"
+				; The leg is genuinely over: mark it BEFORE the delete, so that if the delete
+				; does not take, the hull is left carrying its own terminal marker and the
+				; orphan sweep can retire it.
+				("e2_mark_leg_done")
 				("e2_delete_aircraft")
 				{"entity_state" {selector {tag support_e2_src}} {tag_remove support_e2_src}}
-				{"entity_state" {selector {tag support_e2_arrival}} {tag_remove support_e2_arrival}}
+				; The provenance tag is the orphan sweep's ONLY handle on a dispatched clone.
+				; Stripping it unconditionally would blind the sweep to exactly the hull it
+				; exists for - one that survived the delete above. So it is stripped only when
+				; nothing live is still carrying it; otherwise the hull keeps it, keeps the
+				; terminal marker set moments ago, and the sweep retires it.
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector
+								{source advanced}
+								{group
+									{select {tag {tag support_e2_arrival}}}
+									{exclude {state {state dead}} {state {state inactive}}}
+								}
+							}
+							{count {op ">="} {value 1}}
+						}
+					}
+					{"default"
+						{"entity_state" {selector {tag support_e2_arrival}} {tag_remove support_e2_arrival}}
+					}
+				}
 				{"entity_state" {selector {tag support_e2_claim}} {tag_remove support_e2_claim}}
 				{"entity_state" {selector {tag support_e2_team}} {tag_remove support_e2_team}}
 				{"entity_state" {selector {tag support_e2_helo}} {tag_remove support_e2_helo}}
@@ -3543,9 +3701,32 @@
 			)
 
 			(define "e2_complete_cleanup"
+				("e2_mark_leg_done")
 				("e2_delete_aircraft")
 				{"entity_state" {selector {tag support_e2_src}} {tag_remove support_e2_src}}
-				{"entity_state" {selector {tag support_e2_arrival}} {tag_remove support_e2_arrival}}
+				; The provenance tag is the orphan sweep's ONLY handle on a dispatched clone.
+				; Stripping it unconditionally would blind the sweep to exactly the hull it
+				; exists for - one that survived the delete above. So it is stripped only when
+				; nothing live is still carrying it; otherwise the hull keeps it, keeps the
+				; terminal marker set moments ago, and the sweep retires it.
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector
+								{source advanced}
+								{group
+									{select {tag {tag support_e2_arrival}}}
+									{exclude {state {state dead}} {state {state inactive}}}
+								}
+							}
+							{count {op ">="} {value 1}}
+						}
+					}
+					{"default"
+						{"entity_state" {selector {tag support_e2_arrival}} {tag_remove support_e2_arrival}}
+					}
+				}
 				{"entity_state" {selector {tag support_e2_claim}} {tag_remove support_e2_claim}}
 				{"entity_state" {selector {tag support_e2_helo}} {tag_remove support_e2_helo}}
 				{"entity_state" {selector {tag support_e2_plane}} {tag_remove support_e2_plane}}
@@ -3886,6 +4067,10 @@
 					{impregnability disabled}
 					{discovered on}
 				}
+				; Both bounded counters belong to ONE arrival: the flight-leg poll's attempt
+				; count and the long-stop's age. A new aircraft starts both at zero.
+				{"set_i" {var "support_e2_air_try$"} {op "="} {value 0}}
+				{"set_i" {var "support_e2_air_age$"} {op "="} {value 0}}
 			)
 
 			(define "e2_own_arrival"
@@ -3935,6 +4120,12 @@
 				{"entity_state" {selector {tag support_e2_arrival}} {tag_add support_e2_plane}}
 			)
 
+			; Each case issues the LZ order TWICE, against two different selectors, for the
+			; same reason e2_order_aircraft_exit and e2_delete_aircraft each sweep twice: the
+			; helo-keyed order is this engine's own bookkeeping and the arrival-keyed order is
+			; the provenance backstop that no promote step and no ownership transfer can take
+			; away. Re-issuing the same {drop orders} {action move} to the same waypoint is
+			; idempotent.
 			(define "e2_order_aircraft_lz"
 				{"switch"
 					{"case"
@@ -3943,8 +4134,9 @@
 							{"case"
 								{condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}}
 								{"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_b2"}}
+								{"action" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop orders} {action move} {waypoint "attack_support_air_b2"}}
 							}
-							{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_b1"}}}
+							{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_b1"}} {"action" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop orders} {action move} {waypoint "attack_support_air_b1"}}}
 						}
 					}
 					{"case"
@@ -3953,11 +4145,12 @@
 							{"case"
 								{condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}}
 								{"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_a2"}}
+								{"action" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop orders} {action move} {waypoint "attack_support_air_a2"}}
 							}
-							{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_a1"}}}
+							{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_a1"}} {"action" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop orders} {action move} {waypoint "attack_support_air_a1"}}}
 						}
 					}
-					{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_b1"}}}
+					{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_air_b1"}} {"action" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop orders} {action move} {waypoint "attack_support_air_b1"}}}
 				}
 			)
 
@@ -4078,11 +4271,26 @@
 														{control AI}
 														{movement {speed fast}}
 													}
+													; RE-ASSERT AFTER THE OWNERSHIP TRANSFER, not only before it. e2_promote_arrival
+													; ran before ("e2_own_arrival") and before the {"actor_state"} step, and the
+													; 2026-07-30 run proves its tags did not survive that window: the claim-keyed
+													; selectors matched nothing on a helicopter the player watched fly, while the
+													; arrival tag the numeric waypoint wrote still matched. So the lifecycle tags
+													; are written again here, off that surviving handle.
+													("e2_reassert_arrival_helo")
 													; The clone was tagged by the waypoint {commands} block and re-tagged twice
 													; since; give the tags a tick to become readable before anything reads them.
 													{"delay" {time 0.5}}
 													; Evidence gate: a claimed helicopter, or fail 10 and no flight leg.
 													("e2_fly_helo_or_fail")
+													; ONE SAMPLE IS NOT EVIDENCE. If the first read misses, the leg is not failed:
+													; attack_support/e2_helo_leg_poll re-asserts the tags and re-reads them, up to a
+													; bounded number of attempts, and opens the flight leg as soon as the evidence is
+													; co-resident. Only an exhausted bound with NO live arrival may write fail 10.
+													("e2_arm_helo_leg")
+													; Long enough for the whole bounded poll (20 attempts at 0.5s) plus trigger
+													; latency to conclude one way or the other before this list judges the leg.
+													{"delay" {time 25}}
 													{"switch"
 														{"case"
 															{condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}}
@@ -4201,11 +4409,26 @@
 														{control AI}
 														{movement {speed fast}}
 													}
+													; RE-ASSERT AFTER THE OWNERSHIP TRANSFER, not only before it. e2_promote_arrival
+													; ran before ("e2_own_arrival") and before the {"actor_state"} step, and the
+													; 2026-07-30 run proves its tags did not survive that window: the claim-keyed
+													; selectors matched nothing on a helicopter the player watched fly, while the
+													; arrival tag the numeric waypoint wrote still matched. So the lifecycle tags
+													; are written again here, off that surviving handle.
+													("e2_reassert_arrival_helo")
 													; The clone was tagged by the waypoint {commands} block and re-tagged twice
 													; since; give the tags a tick to become readable before anything reads them.
 													{"delay" {time 0.5}}
 													; Evidence gate: a claimed helicopter, or fail 10 and no flight leg.
 													("e2_fly_helo_or_fail")
+													; ONE SAMPLE IS NOT EVIDENCE. If the first read misses, the leg is not failed:
+													; attack_support/e2_helo_leg_poll re-asserts the tags and re-reads them, up to a
+													; bounded number of attempts, and opens the flight leg as soon as the evidence is
+													; co-resident. Only an exhausted bound with NO live arrival may write fail 10.
+													("e2_arm_helo_leg")
+													; Long enough for the whole bounded poll (20 attempts at 0.5s) plus trigger
+													; latency to conclude one way or the other before this list judges the leg.
+													{"delay" {time 25}}
 													{"switch"
 														{"case"
 															{condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}}
@@ -4326,11 +4549,26 @@
 														{control AI}
 														{movement {speed fast}}
 													}
+													; RE-ASSERT AFTER THE OWNERSHIP TRANSFER, not only before it. e2_promote_arrival
+													; ran before ("e2_own_arrival") and before the {"actor_state"} step, and the
+													; 2026-07-30 run proves its tags did not survive that window: the claim-keyed
+													; selectors matched nothing on a helicopter the player watched fly, while the
+													; arrival tag the numeric waypoint wrote still matched. So the lifecycle tags
+													; are written again here, off that surviving handle.
+													("e2_reassert_arrival_helo")
 													; The clone was tagged by the waypoint {commands} block and re-tagged twice
 													; since; give the tags a tick to become readable before anything reads them.
 													{"delay" {time 0.5}}
 													; Evidence gate: a claimed helicopter, or fail 10 and no flight leg.
 													("e2_fly_helo_or_fail")
+													; ONE SAMPLE IS NOT EVIDENCE. If the first read misses, the leg is not failed:
+													; attack_support/e2_helo_leg_poll re-asserts the tags and re-reads them, up to a
+													; bounded number of attempts, and opens the flight leg as soon as the evidence is
+													; co-resident. Only an exhausted bound with NO live arrival may write fail 10.
+													("e2_arm_helo_leg")
+													; Long enough for the whole bounded poll (20 attempts at 0.5s) plus trigger
+													; latency to conclude one way or the other before this list judges the leg.
+													{"delay" {time 25}}
 													{"switch"
 														{"case"
 															{condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}}
@@ -4451,11 +4689,26 @@
 														{control AI}
 														{movement {speed fast}}
 													}
+													; RE-ASSERT AFTER THE OWNERSHIP TRANSFER, not only before it. e2_promote_arrival
+													; ran before ("e2_own_arrival") and before the {"actor_state"} step, and the
+													; 2026-07-30 run proves its tags did not survive that window: the claim-keyed
+													; selectors matched nothing on a helicopter the player watched fly, while the
+													; arrival tag the numeric waypoint wrote still matched. So the lifecycle tags
+													; are written again here, off that surviving handle.
+													("e2_reassert_arrival_helo")
 													; The clone was tagged by the waypoint {commands} block and re-tagged twice
 													; since; give the tags a tick to become readable before anything reads them.
 													{"delay" {time 0.5}}
 													; Evidence gate: a claimed helicopter, or fail 10 and no flight leg.
 													("e2_fly_helo_or_fail")
+													; ONE SAMPLE IS NOT EVIDENCE. If the first read misses, the leg is not failed:
+													; attack_support/e2_helo_leg_poll re-asserts the tags and re-reads them, up to a
+													; bounded number of attempts, and opens the flight leg as soon as the evidence is
+													; co-resident. Only an exhausted bound with NO live arrival may write fail 10.
+													("e2_arm_helo_leg")
+													; Long enough for the whole bounded poll (20 attempts at 0.5s) plus trigger
+													; latency to conclude one way or the other before this list judges the leg.
+													{"delay" {time 25}}
 													{"switch"
 														{"case"
 															{condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}}
@@ -4513,12 +4766,19 @@
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
 						{"3.cmp_i" {var "support_e2_test$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "support_e2_test$"} {op "=="} {value 3}}
-						{"5.entities" {selector {source advanced} {group {select {tag {tag support_e2_helo}}} {exclude {tag {tag support_e2_lz_done}}}}}}
-						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}} {distance 120}}
+						; Both terms are keyed on the PROVENANCE tag, not on this engine's bookkeeping
+						; tags. support_e2_arrival is written only by the numeric waypoint's own
+						; {commands} block, so it can never reach a parked template and, unlike the
+						; promote step's tags, it provably survives the ownership transfer. Keying the
+						; unload off it is what makes the unload chain independent of the tag loss that
+						; produced fail 10.
+						{"5.entities" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}} {exclude {tag {tag support_e2_lz_done}}}}}}
+						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}} {distance 120}}
 					}
 				}
 				{actions
-					{"entity_state" {selector {tag support_e2_helo}} {tag_add support_e2_lz_done}}
+					{"entity_state" {selector {tag support_e2_arrival}} {tag_add support_e2_lz_done}}
+					("e2_reassert_arrival_helo")
 					("e2_announce_helo")
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
 					("e2_place_one")
@@ -4568,26 +4828,234 @@
 				}
 			}
 
-			; LAST-RESORT ORPHAN SWEEP. Nothing above may leave an aircraft in the sky, but
-			; this is the guarantee rather than the intention: any dispatched clone still
-			; carrying support_e2_arrival once the leg is over is ordered off the map and
-			; deleted. support_e2_arrival is written only by the numeric waypoint's own
-			; {commands} block, so this can never reach a parked template. It re-arms itself,
-			; so it stands for the whole mission.
-			{"attack_support/e2_orphan_sweep"
+			; ===== THE BOUNDED FLIGHT-LEG POLL =====
+			; The gate that wrote fail 10 on a healthy flying helicopter was a ONE-SHOT sample
+			; taken 0.5s after an ownership transfer that the tags did not survive. This is the
+			; same gate, re-read: it re-asserts the lifecycle tags off support_e2_arrival and
+			; re-samples, up to support_e2_air_try$ = 20 attempts at 0.5s each, and opens the
+			; flight leg the moment the evidence is co-resident.
+			;
+			; The bound is not a licence to fail. When it is exhausted the poll asks the only
+			; question that actually matters - is there a live aircraft in the sky - in the
+			; ADVANCED exclude form proven in this file, and if there is, the leg is OPENED,
+			; because a healthy flying helicopter must be un-failable. Fail 10 is reachable only
+			; from the branch where the bound is exhausted AND nothing carrying support_e2_arrival
+			; is alive - the one state in which "the aircraft was not there" is a true statement.
+			{"attack_support/e2_helo_leg_poll"
 				{condition
-					{expression "1 & 2 & 3"}
+					{expression "1 & 2 & (3 | 4) & 5"}
 					{terms
 						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
-						{"2.cmp_i" {var "support_e2_stage$"} {op ">="} {value 70}}
-						{"3.entities" {selector {tag support_e2_arrival}} {count {op ">="} {value 1}}}
+						; Stage 20 is "a target is accepted and the aircraft has been dispatched".
+						; The moment the leg opens, stage leaves 20 and this poll stops.
+						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 20}}
+						{"3.cmp_i" {var "support_e2_test$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "support_e2_test$"} {op "=="} {value 3}}
+						{"5.entities" {selector {tag support_e2_arrival}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					("e2_reassert_arrival_helo")
+					{"delay" {time 0.5}}
+					("e2_fly_helo_or_fail")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}}
+							; The leg is open. The attempt counter belongs to one arrival only.
+							{"set_i" {var "support_e2_air_try$"} {op "="} {value 0}}
+						}
+						{"default"
+							{"set_i" {var "support_e2_air_try$"} {op "+"} {value 1}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_e2_air_try$"} {op "<"} {value 20}}
+									{"trigger" {name "attack_support/e2_helo_leg_poll"}}
+								}
+								{"default"
+									{"switch"
+										{"case"
+											{condition
+												{type entities}
+												{selector
+													{source advanced}
+													{group
+														{select {tag {tag support_e2_arrival}}}
+														{exclude {state {state dead}} {state {state inactive}}}
+													}
+												}
+												{count {op ">="} {value 1}}
+											}
+											; The bookkeeping tags never became readable, but there IS an
+											; aircraft in the air. That is the evidence that counts: open the
+											; leg rather than fail a healthy hull. e2_order_aircraft_lz issues
+											; its move arrival-keyed as well as helo-keyed, so the order lands
+											; whatever the bookkeeping tags did.
+											("e2_order_aircraft_lz")
+											{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
+											{"set_i" {var "support_e2_air_try$"} {op "="} {value 0}}
+										}
+										{"default"
+											; Bound exhausted and nothing alive carries the provenance tag.
+											; Only here is "the aircraft was not there" a true statement. An
+											; earlier code still wins.
+											{"switch"
+												{"case"
+													{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+													{"set_i" {var "support_e2_fail$"} {op "="} {value 10}}
+												}
+												{"default"}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			; ===== THE HARD INTERLOCK =====
+			; A HEALTHY FLYING AIRCRAFT IS UN-FAILABLE, enforced as a standing trigger rather
+			; than trusted to every call site. The three codes it retires are exactly the codes
+			; that ASSERT THE AIRCRAFT IS NOT THERE - 9 ("the claim produced no aircraft"),
+			; 10 ("the claimed aircraft was not operatable") and 14 ("the clone never arrived").
+			; Each is a factual claim about the world, and each is false whenever an entity
+			; carrying support_e2_arrival exists and is not dead. So while such an entity exists
+			; and its own leg has not been marked terminal, those three codes are cleared
+			; wherever they came from.
+			;
+			; It deliberately does NOT touch the outcome codes (4 both pads unsafe, 5 never
+			; reached the LZ, 6 never released, 7 no survivor, 11 no live body). Those say
+			; nothing about the hull's existence, they are written only after the leg has been
+			; ordered off the map, and erasing them would fabricate a success - the exact class
+			; of lie this whole evidence ladder exists to prevent.
+			;
+			; Liveness is the ADVANCED {group {select ...}} {exclude {state {state dead}}
+			; {state {state inactive}}} form proven in this file. Never a simple-selector state
+			; decoration: that spelling is what zeroed the match and produced fail 10 in the
+			; first place, and the deploy bans it on every support_e2_ selector.
+			{"attack_support/e2_fail_interlock"
+				{condition
+					{expression "1 & (2 | 5 | 6) & 3 & !4"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_fail$"} {op "=="} {value 9}}
+						{"5.cmp_i" {var "support_e2_fail$"} {op "=="} {value 10}}
+						{"6.cmp_i" {var "support_e2_fail$"} {op "=="} {value 14}}
+						{"3.entities" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}} {exclude {state {state dead}} {state {state inactive}}}}} {count {op ">="} {value 1}}}
+						; ...and this aircraft's own leg has not been declared over yet.
+						{"4.entities" {selector {tag support_e2_arrival} {tag support_e2_leg_done}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "support_e2_fail$"} {op "="} {value 0}}
+					{"delay" {time 1}}
+					{"trigger" {name "attack_support/e2_fail_interlock"}}
+				}
+			}
+
+			; ===== THE ARRIVAL LONG-STOP =====
+			; The guarantee that no aircraft is ever left flying forever, keyed to THAT
+			; AIRCRAFT'S OWN LEG rather than to the global stage variable. The stage var is not
+			; a statement about a hull: it reaches 70 on the combo transition too, which is how
+			; the previous sweep came to delete a healthy mid-mission helicopter.
+			;
+			; This polls in 20s steps and counts only CONSECUTIVE observations of an arrival
+			; whose leg is still un-terminated; a leg that ends resets the count, because the
+			; terminal marker is then present. 12 consecutive steps is 240 seconds - longer than
+			; the longest legitimate leg in this system (helo: a 60s arrival window plus a 60s
+			; post-unload cleanup; para: 90s plus a 29s survivor window plus 10s) - after which
+			; the leg is declared over and the orphan sweep below retires the hull.
+			{"attack_support/e2_arrival_longstop"
+				{condition
+					{expression "1 & 2 & !3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.entities" {selector {tag support_e2_arrival}} {count {op ">="} {value 1}}}
+						{"3.entities" {selector {tag support_e2_arrival} {tag support_e2_leg_done}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"delay" {time 20}}
+					{"switch"
+						{"case"
+							; The leg ended during the step: nothing to long-stop.
+							{condition {type entities} {selector {tag support_e2_arrival} {tag support_e2_leg_done}} {count {op ">="} {value 1}}}
+							{"set_i" {var "support_e2_air_age$"} {op "="} {value 0}}
+						}
+						{"case"
+							{condition {type entities} {selector {tag support_e2_arrival}} {count {op ">="} {value 1}}}
+							{"set_i" {var "support_e2_air_age$"} {op "+"} {value 1}}
+						}
+						{"default" {"set_i" {var "support_e2_air_age$"} {op "="} {value 0}}}
+					}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_air_age$"} {op ">="} {value 12}}
+							("e2_mark_leg_done")
+							{"set_i" {var "support_e2_air_age$"} {op "="} {value 0}}
+						}
+						{"default"}
+					}
+					{"trigger" {name "attack_support/e2_arrival_longstop"}}
+				}
+			}
+
+			; ===== THE MATCH CLOCK =====
+			; SetVar takes integers only, so elapsed time is carried the way this engine already
+			; carries it everywhere else: as a counted step, one per fixed {"delay"}. Same shape
+			; as as_finish_motor's drive clock (attack_support_motor_drive_t$, one step per 7
+			; real seconds) and the same self-re-arming loop as attack_support/clock and
+			; attack_support/e2_para_range. One step per 10 seconds, armed once by
+			; attack_support/init, so support_e2_clock_t$ >= 18 reads "at least 180 seconds of
+			; match time have passed". No float timer and nothing to publish from Lua.
+			{"attack_support/e2_clock"
+				{condition
+					{expression "1 & 2"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "attack_support_armed$"} {op "=="} {value 1}}
+					}
+				}
+				{actions
+					{"delay" {time 10}}
+					{"set_i" {var "support_e2_clock_t$"} {op "+"} {value 1}}
+					{"trigger" {name "attack_support/e2_clock"}}
+				}
+			}
+
+			; LAST-RESORT ORPHAN SWEEP. Nothing above may leave an aircraft in the sky, but
+			; this is the guarantee rather than the intention: any dispatched clone whose OWN
+			; LEG has reached a terminal state is ordered off the map and deleted.
+			;
+			; IT KEYS ON THE TERMINAL MARKER, NEVER ON THE GLOBAL STAGE VARIABLE. It used to
+			; fire on support_e2_stage$ >= 70 plus the mere presence of an arrival - and stage
+			; reaches 70 on the combo transition, while the helo leg's aircraft was still alive
+			; and mid-mission. Live 2026-07-30: it deleted a healthy in-flight helicopter and
+			; the player watched it be replaced by the paratrooper spawn. A stage number is a
+			; statement about the ENGINE; support_e2_leg_done is a statement about THIS HULL,
+			; written only by e2_mark_leg_done, which only the paths that genuinely end a leg
+			; call: both cleanups (every completion, timeout and real failure routes through one
+			; of them), the combo leftover retirement, and the arrival long-stop above.
+			;
+			; Both tags are required. support_e2_arrival is written only by the numeric
+			; waypoint's own {commands} block, so this can never reach a parked template; the
+			; terminal marker is what stops it reaching a live one. It re-arms itself, so it
+			; stands for the whole mission.
+			{"attack_support/e2_orphan_sweep"
+				{condition
+					{expression "1 & 2"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.entities" {selector {tag support_e2_arrival} {tag support_e2_leg_done}} {count {op ">="} {value 1}}}
 					}
 				}
 				{actions
 					("e2_order_aircraft_exit")
 					{"delay" {time 20}}
-					{"delete" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}}}
-					{"entity_state" {selector {tag support_e2_arrival}} {tag_remove support_e2_arrival}}
+					{"delete" {selector {ignore_captured_by_user 0} {tag support_e2_arrival} {tag support_e2_leg_done}}}
+					{"entity_state" {selector {tag support_e2_leg_done}} {tag_remove support_e2_arrival}}
+					{"entity_state" {selector {tag support_e2_leg_done}} {tag_remove support_e2_leg_done}}
 					{"trigger" {name "attack_support/e2_orphan_sweep"}}
 				}
 			}
@@ -4644,6 +5112,12 @@
 				}
 				{actions
 					{"set_i" {var "support_e2_fail$"} {op "="} {value 0}}
+					; "The leg is over" belongs to ONE leg. Clearing it here is what stops the
+					; para leg inheriting the helo leg's terminal marker, and it is the same
+					; reason the fail code is cleared on the line above.
+					{"set_i" {var "support_e2_leg_done$"} {op "="} {value 0}}
+					{"set_i" {var "support_e2_air_try$"} {op "="} {value 0}}
+					{"set_i" {var "support_e2_air_age$"} {op "="} {value 0}}
 					; Reserve atomically before explicit child-trigger dispatch.
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 10}}
 					{"switch"
@@ -4678,14 +5152,33 @@
 				}
 			}
 
+			; ===== THE PARA LEG DISPATCHES AT THE 3-MINUTE MARK, AND NEVER PREEMPTS =====
+			; Two new terms, both tightening. Terms 3 and 4 are unchanged pins.
+			;
+			;   5. THE HELO LEG IS ACTUALLY OVER. support_e2_leg_done$ is the var half of
+			;      the same terminal marker the orphan sweep reads off the hull, written by
+			;      the one define e2_mark_leg_done, so "the leg is over" has exactly one
+			;      definition in this engine. The stage variable alone was never that
+			;      statement: it reaches 70 on this very transition.
+			;   6. THE 180-SECOND FLOOR. support_e2_clock_t$ counts one step per 10 seconds
+			;      from attack_support/e2_clock, so >= 18 is >= 180 seconds of match time.
+			;      SetVar takes integers only; this is the same counted-step form the
+			;      motorised drive clock already uses.
+			;
+			; The clock is a FLOOR ON THE PARA DISPATCH, never a ceiling on the helo leg:
+			; nothing here interrupts a live helo leg, and if that leg is still flying at
+			; 180s its insert and exit run to completion while the para leg waits. Both
+			; terms are standing conditions, so the transition fires on whichever lands last.
 			{"attack_support/e2_combo_transition"
 				{condition
-					{expression "1 & 2 & !3 & 4"}
+					{expression "1 & 2 & !3 & 4 & 5 & 6"}
 					{terms
 						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 3}}
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 70}}
 						{"3.entities" {selector {tag support_e2_claim}}}
 						{"4.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"5.cmp_i" {var "support_e2_leg_done$"} {op "=="} {value 1}}
+						{"6.cmp_i" {var "support_e2_clock_t$"} {op ">="} {value 18}}
 					}
 				}
 				{actions
@@ -4711,6 +5204,9 @@
 						{"default" {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 99}}}
 					}
 					{"set_i" {var "support_e2_fail$"} {op "="} {value 0}}
+					; The helo leg's terminal marker has been consumed by the condition above;
+					; leg two starts without it. e2_dispatch asserts the same reset.
+					{"set_i" {var "support_e2_leg_done$"} {op "="} {value 0}}
 					{"set_i" {var "support_e2_test$"} {op "="} {value 2}}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 0}}
 					; The dispatcher fires once; resetting stage alone will not re-arm it.
@@ -4737,6 +5233,9 @@
 					}
 				}
 				{actions
+					; Retiring a leftover IS ending that leg, so it goes through the one
+					; definition of "over" like every other terminal path.
+					("e2_mark_leg_done")
 					("e2_order_aircraft_exit")
 					{"delay" {time 10}}
 					("e2_delete_aircraft")
@@ -4851,6 +5350,11 @@
 											("e2_promote_arrival")
 											("e2_own_arrival")
 											{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop sensor} {control AI} {movement {speed fast}}}
+											; RE-ASSERT AFTER THE OWNERSHIP TRANSFER. Same window, same loss, same fix as the
+											; helo leg: the promote step ran before ("e2_own_arrival") and before the
+											; {"actor_state"} step, and its tags did not survive it. support_e2_arrival did.
+											("e2_reassert_arrival_plane")
+											{"delay" {time 0.5}}
 											; Evidence gate: a live claimed transport, or fail 10 and no run-in.
 											("e2_fly_para_or_fail")
 											("e2_announce_para")
@@ -4920,6 +5424,11 @@
 											("e2_promote_arrival")
 											("e2_own_arrival")
 											{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop sensor} {control AI} {movement {speed fast}}}
+											; RE-ASSERT AFTER THE OWNERSHIP TRANSFER. Same window, same loss, same fix as the
+											; helo leg: the promote step ran before ("e2_own_arrival") and before the
+											; {"actor_state"} step, and its tags did not survive it. support_e2_arrival did.
+											("e2_reassert_arrival_plane")
+											{"delay" {time 0.5}}
 											; Evidence gate: a live claimed transport, or fail 10 and no run-in.
 											("e2_fly_para_or_fail")
 											("e2_announce_para")
@@ -4989,6 +5498,11 @@
 											("e2_promote_arrival")
 											("e2_own_arrival")
 											{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop sensor} {control AI} {movement {speed fast}}}
+											; RE-ASSERT AFTER THE OWNERSHIP TRANSFER. Same window, same loss, same fix as the
+											; helo leg: the promote step ran before ("e2_own_arrival") and before the
+											; {"actor_state"} step, and its tags did not survive it. support_e2_arrival did.
+											("e2_reassert_arrival_plane")
+											{"delay" {time 0.5}}
 											; Evidence gate: a live claimed transport, or fail 10 and no run-in.
 											("e2_fly_para_or_fail")
 											("e2_announce_para")
@@ -5259,12 +5773,19 @@
 			; without a live aircraft, and fail 6 is left to mean only "never approached".
 			{"attack_support/e2_para_alive"
 				{condition
-					{expression "1 & 2 & 3 & !4"}
+					{expression "1 & 2 & 3 & !4 & !5"}
 					{terms
 						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
 						{"3.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
 						{"4.entities" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {count {op ">="} {value 1}}}
+						; THE LIVE-ARRIVAL INTERLOCK, as a condition term. Term 4 is a bookkeeping
+						; question and the 2026-07-30 run proved those tags can stop being
+						; co-resident on an aircraft that is demonstrably flying. Term 5 is the
+						; question about the world, on the provenance tag the numeric waypoint
+						; wrote, in the advanced exclude form. While a live arrival exists this
+						; monitor cannot fire at all, so neither 9 nor 10 can be written under it.
+						{"5.entities" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}} {exclude {state {state dead}} {state {state inactive}}}}} {count {op ">="} {value 1}}}
 					}
 				}
 				{actions
@@ -5288,17 +5809,31 @@
 			; Truck + linked crew/pax place at entry, drive toward flag, emit passengers,
 			; pax advance, truck holds. Cap attack_support_motor_left$=1. All four factions.
 			; Truck-to-objective distance the moment before the passengers come out, as a
-			; bounded integer band: 1 = inside 60, 2 = inside 150, 3 = inside 400, 0 = further
-			; out than that (or no hull left to measure). SetVar takes integers only, so the
-			; distance is carried as a band number and never as a coordinate. Together with
-			; attack_support_motor_drive_t$ this settles "did the truck actually drive?" from game.log
-			; alone: drive_t 4 with band 0 is a hull that never left the pad.
+			; bounded integer band: 1 = inside 600, 2 = inside 1500, 3 = inside 4000,
+			; 0 = further out than that (or no hull left to measure). SetVar takes integers
+			; only, so the distance is carried as a band number and never as a coordinate.
+			; Together with attack_support_motor_drive_t$ this settles "did the truck actually
+			; drive?" from game.log alone: drive_t 4 with band 0 is a hull that never left the pad.
+			;
+			; UNITS (corrected 2026-07-30). Map coordinates are DECIMETRES - the same finding
+			; that widened the E2 para release band, and independently checked here against
+			; dcg_[cwa71]_fields: the map spans about 11400 x 6200 units, its two capture points
+			; sit 1530 units apart and the entry pads carry {radius 150}. The bands used to read
+			; 60/150/400, i.e. 6 m / 15 m / 40 m, and an entry pad is roughly 5000 units from the
+			; nearest flag - so band 0 was the only outcome a real drive could ever produce, on
+			; every engine, and it reported 0 on a Q4 drive the user watched succeed. The rings
+			; are now 600/1500/4000 units = 60 m / 150 m / 400 m, which is what the numbers above
+			; always meant, and band 0 once again means "barely left the pad".
+			;
+			; REFERENCE TAG (corrected 2026-07-30). This measures against the flag the hull was
+			; actually ordered to - the motor path's own attack_support_motor_flag - not the
+			; shared wave-flag tag the infantry path re-points on every wave.
 			(define "as_motor_band"
 				{"set_i" {var "attack_support_motor_band$"} {op "="} {value 0}}
 				{"switch"
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag attack_support_motor_hull}} {near_to {ignore_captured_by_user 0} {tag attack_support_flag1}} {distance 60}} {"set_i" {var "attack_support_motor_band$"} {op "="} {value 1}}}
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag attack_support_motor_hull}} {near_to {ignore_captured_by_user 0} {tag attack_support_flag1}} {distance 150}} {"set_i" {var "attack_support_motor_band$"} {op "="} {value 2}}}
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag attack_support_motor_hull}} {near_to {ignore_captured_by_user 0} {tag attack_support_flag1}} {distance 400}} {"set_i" {var "attack_support_motor_band$"} {op "="} {value 3}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag attack_support_motor_hull}} {near_to {ignore_captured_by_user 0} {tag attack_support_motor_flag}} {distance 600}} {"set_i" {var "attack_support_motor_band$"} {op "="} {value 1}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag attack_support_motor_hull}} {near_to {ignore_captured_by_user 0} {tag attack_support_motor_flag}} {distance 1500}} {"set_i" {var "attack_support_motor_band$"} {op "="} {value 2}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag attack_support_motor_hull}} {near_to {ignore_captured_by_user 0} {tag attack_support_motor_flag}} {distance 4000}} {"set_i" {var "attack_support_motor_band$"} {op "="} {value 3}}}
 					{"default"}
 				}
 			)
@@ -5315,6 +5850,11 @@
 					}
 					{tag_add attack_support_src}
 					{tag_remove attack_support_tpl}
+					; The motorized packages come out of faction_support_templates.inc, whose
+					; prototypes are parked under ally_sup_tpl - not the attack_support_tpl the
+					; infantry pool uses. Q3 and Q4 already strip the right one; this path only
+					; stripped the infantry marker, so a dispatched truck kept a template tag.
+					{tag_remove ally_sup_tpl}
 					{tag_remove hidden}
 					{inactive off}
 					{impregnability disabled}
@@ -5352,10 +5892,22 @@
 				{"set_i" {var "attack_support_motor_drive_t$"} {op "="} {value 0}}
 				{"set_i" {var "attack_support_motor_band$"} {op "="} {value 0}}
 				{"delay" {time 0.25}}
-				; Pick one active flag as the approach objective.
+				; Pick one active flag as the approach objective, into a MOTOR-ONLY tag.
+				;
+				; This used to be attack_support_flag1 - the generic wave-flag tag that
+				; am_finish_deploy (the infantry path of this same engine) clears at the top of
+				; every wave and only re-points about 1.3s later. Nothing serialises the two:
+				; infantry waves run off the wave ladder and trucks off attack_support/motor_clock,
+				; four of each per mission. An infantry finisher that starts inside this pick's
+				; window leaves the tag empty, the advance order below resolves to nothing, and
+				; the hull is left with no order at all - crew seated, drive clock running, emit
+				; firing on schedule, truck stationary. The pax order 31s later was exposed for
+				; that entire span and would follow whichever flag the last infantry wave picked.
+				; Q2 (def_sup_motor_flag) and Q4 (enemy_def_motor_flag) already own a dedicated
+				; tag; this is the same shared-tag collision class as the deploy-tag race.
 				{"entity_state"
-					{selector {tag attack_support_flag1}}
-					{tag_remove attack_support_flag1}
+					{selector {tag attack_support_motor_flag}}
+					{tag_remove attack_support_motor_flag}
 				}
 				{"entity_state"
 					{selector
@@ -5367,7 +5919,7 @@
 						{sort {type shuffle}}
 						{amount 1}
 					}
-					{tag_add attack_support_flag1}
+					{tag_add attack_support_motor_flag}
 				}
 				{"delay" {time 0.1}}
 				; Truck drives toward the flag (standoff handled by emit after travel delay).
@@ -5375,7 +5927,7 @@
 					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
 					{drop orders}
 					{action advance}
-					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
+					{target {ignore_captured_by_user 0} {tag attack_support_motor_flag}}
 				}
 				{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 3}}
 				; DRIVE CLOCK. The 28s standoff is unchanged - it is the live-proven sequence
@@ -5407,12 +5959,13 @@
 				}
 				{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 4}}
 				{"delay" {time 3}}
-				; Pax advance on foot; truck holds.
+				; Pax advance on foot; truck holds. Same motor-only objective the hull drove at,
+				; so the dismounts finish the approach instead of chasing the infantry's flag.
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag attack_support_motor_pax}}
 					{drop orders}
 					{action advance}
-					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
+					{target {ignore_captured_by_user 0} {tag attack_support_motor_flag}}
 				}
 				; Driver leaves the field instead of idling: drive for waypoint "0" and the
 				; cleanup trigger below removes the hull 45s later, wreck included.

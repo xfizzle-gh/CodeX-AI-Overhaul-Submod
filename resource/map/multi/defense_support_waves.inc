@@ -4191,17 +4191,24 @@
 			)
 
 			; Truck-to-objective distance the moment before the passengers come out, as a
-			; bounded integer band: 1 = inside 60, 2 = inside 150, 3 = inside 400, 0 = further
-			; out than that (or no hull left to measure). SetVar takes integers only, so the
-			; distance is carried as a band number and never as a coordinate. Together with
-			; defense_support_motor_drive_t$ this settles "did the truck actually drive?" from game.log
-			; alone: drive_t 4 with band 0 is a hull that never left the pad.
+			; bounded integer band: 1 = inside 600, 2 = inside 1500, 3 = inside 4000,
+			; 0 = further out than that (or no hull left to measure). SetVar takes integers
+			; only, so the distance is carried as a band number and never as a coordinate.
+			; Together with defense_support_motor_drive_t$ this settles "did the truck actually
+			; drive?" from game.log alone: drive_t 4 with band 0 is a hull that never left the pad.
+			;
+			; UNITS (corrected 2026-07-30). Map coordinates are DECIMETRES, so the old
+			; 60/150/400 rings were 6 m / 15 m / 40 m and an entry pad sits roughly 5000 units
+			; from the nearest flag - band 0 was the only outcome a real drive could produce,
+			; and it duly reported 0 on a Q4 drive the user watched succeed. 600/1500/4000
+			; units = 60 m / 150 m / 400 m, which is what the bands always meant.
+			; The reference is the motor path's own flag tag: the flag this hull was ordered to.
 			(define "ds_motor_band"
 				{"set_i" {var "defense_support_motor_band$"} {op "="} {value 0}}
 				{"switch"
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag def_sup_motor_hull}} {near_to {ignore_captured_by_user 0} {tag def_sup_motor_flag}} {distance 60}} {"set_i" {var "defense_support_motor_band$"} {op "="} {value 1}}}
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag def_sup_motor_hull}} {near_to {ignore_captured_by_user 0} {tag def_sup_motor_flag}} {distance 150}} {"set_i" {var "defense_support_motor_band$"} {op "="} {value 2}}}
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag def_sup_motor_hull}} {near_to {ignore_captured_by_user 0} {tag def_sup_motor_flag}} {distance 400}} {"set_i" {var "defense_support_motor_band$"} {op "="} {value 3}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag def_sup_motor_hull}} {near_to {ignore_captured_by_user 0} {tag def_sup_motor_flag}} {distance 600}} {"set_i" {var "defense_support_motor_band$"} {op "="} {value 1}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag def_sup_motor_hull}} {near_to {ignore_captured_by_user 0} {tag def_sup_motor_flag}} {distance 1500}} {"set_i" {var "defense_support_motor_band$"} {op "="} {value 2}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag def_sup_motor_hull}} {near_to {ignore_captured_by_user 0} {tag def_sup_motor_flag}} {distance 4000}} {"set_i" {var "defense_support_motor_band$"} {op "="} {value 3}}}
 					{"default"}
 				}
 			)

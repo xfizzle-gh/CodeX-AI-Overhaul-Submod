@@ -388,7 +388,20 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         body = lua[lua.index("local function mirrorEngineState()") :]
         body = body[: body.index("\nend\n")]
         calls = body.split('emit("mirror", ')
-        self.assertEqual(len(calls), 6, "expected the header line plus four engines")
+        self.assertEqual(
+            len(calls), 7, "expected the header line, the E2 leg line and four engines"
+        )
+        # The E2 leg lifecycle. leg_done is the var half of the terminal marker the
+        # orphan sweep reads as a tag off the aircraft, so a run can be read back
+        # without guessing whether a leg ended or an aircraft was simply abandoned.
+        leg = next(c for c in calls if c.startswith('"e2_leg",'))
+        for label, var in (
+            ("leg_done", "support_e2_leg_done"),
+            ("air_try", "support_e2_air_try"),
+            ("air_age", "support_e2_air_age"),
+            ("clock_t", "support_e2_clock_t"),
+        ):
+            self.assertIn('"%s", readVar("%s")' % (label, var), leg)
         for engine, extra in (
             ("attack_support", ()),
             (
@@ -1896,6 +1909,49 @@ class LinkedBodyPlacementTests(unittest.TestCase):
     SHAANXI_PLACER_GROUP = "passengers"
     TRUCK_PLACER_GROUP = "passenger"
 
+    # The motorized insert of each engine, as the tags its own sequence runs on:
+    #   engine -> (var prefix, hull tag, OBJECTIVE tag, pax tag, band define, finisher)
+    # The objective tag is the load-bearing entry. Q2 and Q4 shipped with a dedicated,
+    # motor-only tag; Q1 and Q3 ordered against the engine's generic wave-flag tag
+    # (attack_support_flag1 / ea_flag1), which the same engine's infantry finisher clears
+    # at the top of every wave and only re-points about a second later. Nothing
+    # serialises the two - infantry runs off the wave ladder, trucks off motor_clock -
+    # so an infantry finisher landing in that window left the advance order with an empty
+    # target and the hull with no order at all: crew seated, drive clock running, emit on
+    # schedule, truck stationary. All four are dedicated now.
+    MOTOR_OBJECTIVE = {
+        "attack_support_waves": (
+            "attack_support", "attack_support_motor_hull",
+            "attack_support_motor_flag", "attack_support_motor_pax",
+            "as_motor_band", "as_finish_motor"),
+        "defense_support_waves": (
+            "defense_support", "def_sup_motor_hull",
+            "def_sup_motor_flag", "def_sup_motor_pax",
+            "ds_motor_band", "ds_finish_motor"),
+        "enemy_attack_support": (
+            "enemy_attack", "ea_motor_hull",
+            "ea_motor_flag", "ea_motor_pax",
+            "ea_motor_band", "ea_finish_motor"),
+        "enemy_defense_support": (
+            "enemy_defense", "enemy_def_motor_hull",
+            "enemy_def_motor_flag", "enemy_def_motor_pax",
+            "ed_motor_band", "ed_finish_motor"),
+    }
+    # The generic wave-flag tags of the two engines that HAVE an infantry scatter path.
+    # They stay in the file - the infantry finisher owns them - but no motor code may
+    # read or write one. Q2 and Q4 have none: their infantry paths garrison at the
+    # enemy_def_af*/def_sup_af* pads instead, which is why their motor paths were born
+    # with a dedicated objective tag and never carried this defect.
+    SHARED_WAVE_FLAGS = {
+        "attack_support_waves": ("attack_support_flag1", "attack_support_flag2",
+                                 "attack_support_flag3"),
+        "enemy_attack_support": ("ea_flag1", "ea_flag2", "ea_flag3"),
+    }
+    # The template tag each engine's motorized promote step must strip. The packages all
+    # come out of faction_support_templates.inc, whose prototypes are parked under
+    # ally_sup_tpl - not the attack_support_tpl the Q1 infantry pool uses.
+    MOTOR_TEMPLATE_TAG = "ally_sup_tpl"
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.raw = {
@@ -2133,11 +2189,20 @@ class LinkedBodyPlacementTests(unittest.TestCase):
           <engine>_motor_drive_t  0 -> 4, one step per 7s of the standoff that actually
                                   elapsed. An emit at drive_t < 4 proves the delay did
                                   not run.
-          <engine>_motor_band     the hull's distance to its objective at the instant
-                                  before the emit: 1 inside 60, 2 inside 150, 3 inside
-                                  400, 0 further out. drive_t 4 with band 0 proves the
-                                  hull never moved.
+          <engine>_motor_band     the hull's distance to the flag it was ordered to at
+                                  the instant before the emit: 1 inside 600, 2 inside
+                                  1500, 3 inside 4000, 0 further out. drive_t 4 with
+                                  band 0 proves the hull never moved.
         The total standoff is unchanged at 28 seconds, which is the live-proven value.
+
+        RINGS (tightened 2026-07-30). The bands first shipped as 60/150/400 and reported
+        0 on every engine, including a Q4 drive the user watched succeed - so the metric
+        could not distinguish a stationary truck from a moving one, which is exactly the
+        question it exists to answer. Map coordinates are DECIMETRES (the same finding
+        that widened the E2 para release band): 60/150/400 units is 6 m / 15 m / 40 m,
+        and an entry pad sits roughly 5000 units from the nearest flag, so no real drive
+        could ever land inside them. The rings are the decimetre spellings of the metre
+        distances the comment always claimed.
         """
         mirror = self.lua[self.lua.index("local function mirrorEngineState()"):]
         mirror = mirror[: mirror.index("\nend")]
@@ -2195,11 +2260,15 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                 self.assertIn('("%s")' % band_define, standoff)
                 probe = define_body(code, band_define)
                 self.assertEqual(probe.count("{type near}"), 3)
-                for value, distance in ((1, 60), (2, 150), (3, 400)):
+                for value, distance in ((1, 600), (2, 1500), (3, 4000)):
                     self.assertIn(
                         '{"set_i" {var "%s$"} {op "="} {value %d}}' % (band, value), probe
                     )
                     self.assertIn("{distance %d}" % distance, probe)
+                # The metre-scale spellings are gone: a ring of 60 units is 6 metres and
+                # nothing this engine dispatches ever gets that close before the emit.
+                for stale in (60, 150, 400):
+                    self.assertNotIn("{distance %d}" % stale, probe)
                 # Both are mirrored to game.log beside the stage they disambiguate.
                 self.assertIn('readVar("%s")' % drive, mirror)
                 self.assertIn('readVar("%s")' % band, mirror)
@@ -2221,22 +2290,16 @@ class LinkedBodyPlacementTests(unittest.TestCase):
         regression. What this pins is the ordering they sit in: ownership and AI
         control, then a LIVE flag, then the advance order, then the standoff, then the
         dismount - and the pax order after that.
+
+        Scoped to the motorized finisher (2026-07-30). It used to run against the whole
+        engine file, which let Q1's "{ai_move {mode enable}}" resolve to the infantry
+        finisher hundreds of lines earlier and its objective tag resolve to the infantry
+        wave's flag - so the ordering held while the truck's own sequence was wrong.
         """
-        prefixes = {
-            "attack_support_waves": (
-                "attack_support", "attack_support_motor_hull",
-                "attack_support_flag1", "attack_support_motor_pax"),
-            "defense_support_waves": (
-                "defense_support", "def_sup_motor_hull",
-                "def_sup_motor_flag", "def_sup_motor_pax"),
-            "enemy_attack_support": (
-                "enemy_attack", "ea_motor_hull", "ea_flag1", "ea_motor_pax"),
-            "enemy_defense_support": (
-                "enemy_defense", "enemy_def_motor_hull",
-                "enemy_def_motor_flag", "enemy_def_motor_pax"),
-        }
-        for engine, (pfx, hull, flag, pax) in sorted(prefixes.items()):
-            code = self.engines[engine]
+        for engine, (pfx, hull, flag, pax, _band, finisher) in sorted(
+            self.MOTOR_OBJECTIVE.items()
+        ):
+            code = define_body(self.engines[engine], finisher)
             with self.subTest(engine=engine):
                 control = code.index("{ai_move {mode enable}}")
                 pick = code.index("{tag_add %s}" % flag)
@@ -2262,8 +2325,110 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                 self.assertIn("{mode passengers}", emit_block)
                 # The objective the truck drives at is a LIVE flag: a mission activates
                 # only some of a map's capture points, and a truck sent at a dead one
-                # just drives and parks there.
+                # just drives and parks there. The exclusion sits on the truck's own
+                # pick, inside its own finisher - not on some earlier wave's.
                 self.assertIn("{exclude {state {state inactive}}}", code[:pick])
+
+    def test_the_motor_objective_tag_is_dedicated_in_every_engine(self) -> None:
+        """The flag a truck is ordered to is written by the motorized path and nothing else.
+
+        Live run 2026-07-30, NATO on a human-ATTACK mission: the Q1 truck reached stage 4
+        with drive_t 4 and never moved. Q4 - the same sequence, live-proven - drove and
+        emitted correctly on the same missions. The divergence is this tag. Q1 picked its
+        objective into attack_support_flag1 and Q3 into ea_flag1, the generic wave-flag
+        tags their own infantry finishers (am_finish_deploy / ea_finish) clear at the top
+        of EVERY wave and only re-point about a second later. The advance order sits 0.1s
+        after the pick and the pax order 31s after it, and nothing serialises the two
+        paths, so an infantry wave landing in that hole resolves the order against an
+        empty target: the hull is left with no order at all, which is indistinguishable
+        from a truck that was never told to drive. Same class as the deploy-tag collision.
+
+        The pin: each engine's objective tag appears ONLY inside that engine's motorized
+        finisher and its band probe, and the motorized finisher names no generic wave flag.
+        """
+        for engine, cfg in sorted(self.MOTOR_OBJECTIVE.items()):
+            _pfx, _hull, flag, _pax, band_define, finisher = cfg
+            code = self.engines[engine]
+            body = define_body(code, finisher)
+            probe = define_body(code, band_define)
+            with self.subTest(engine=engine):
+                # Dedicated: every occurrence in the engine is in one of those two forms.
+                self.assertEqual(
+                    code.count(flag), body.count(flag) + probe.count(flag), flag
+                )
+                # Cleared then re-picked by the motorized path itself, once each.
+                self.assertEqual(body.count("{tag_remove %s}" % flag), 1)
+                self.assertEqual(body.count("{tag_add %s}" % flag), 1)
+                # And used as the target of exactly two orders: the hull, then the pax.
+                self.assertEqual(
+                    body.count(
+                        "{target {ignore_captured_by_user 0} {tag %s}}" % flag
+                    ),
+                    2,
+                )
+                # The pick is a shuffled draw from the LIVE flags only, in the advanced
+                # form - never a simple selector carrying a state decoration, which this
+                # repo has twice watched match nothing at all.
+                pick = body.index("{tag_add %s}" % flag)
+                selector = body[body.rindex('{"entity_state"', 0, pick):pick]
+                self.assertIn("{select {tag {tag flag}}}", selector)
+                self.assertIn("{exclude {state {state inactive}}}", selector)
+                self.assertIn("{sort {type shuffle}}", selector)
+                self.assertIn("{amount 1}", selector)
+                self.assertNotIn("{state operatable}", body)
+                self.assertNotIn("{state operatable}", probe)
+                # No generic wave flag is named anywhere in the motorized path.
+                for shared in self.SHARED_WAVE_FLAGS.get(engine, ()):
+                    self.assertNotIn(shared, body, shared)
+                    self.assertNotIn(shared, probe, shared)
+                # The promote step strips the template tag the motor packages actually
+                # carry. Q1 stripped only the infantry pool's marker, so a dispatched
+                # truck kept a parked-prototype tag it should have shed.
+                head = body[: body.index("{tag_add %s}" % flag)]
+                self.assertIn("{tag_remove %s}" % self.MOTOR_TEMPLATE_TAG, head)
+
+    def test_the_band_measures_against_the_flag_the_hull_was_ordered_to(self) -> None:
+        """band$ is only readable if its reference is the truck's own objective.
+
+        It reported 0 on Q4 while the user watched that truck drive to its flag, and 0 on
+        the stalled Q1 truck - so it separated nothing. Two things were wrong. The rings
+        were metre-scale on a decimetre map (pinned above), and on Q1/Q3 the near_to tag
+        was the shared wave flag, which by the time the band is sampled - 28s after the
+        pick - is whatever flag the last infantry wave chose, not the one this hull was
+        sent at. Both halves of the probe now name the motor path's own tags.
+        """
+        for engine, cfg in sorted(self.MOTOR_OBJECTIVE.items()):
+            _pfx, hull, flag, _pax, band_define, finisher = cfg
+            code = self.engines[engine]
+            probe = define_body(code, band_define)
+            body = define_body(code, finisher)
+            with self.subTest(engine=engine):
+                # Three rings, each measuring the same pair: this hull, this objective.
+                self.assertEqual(
+                    probe.count(
+                        "{units {ignore_captured_by_user 0} {tag %s}}" % hull
+                    ),
+                    3,
+                )
+                self.assertEqual(
+                    probe.count(
+                        "{near_to {ignore_captured_by_user 0} {tag %s}}" % flag
+                    ),
+                    3,
+                )
+                # Bare-tag selectors on both sides of the measurement: no simple-selector
+                # state decoration, no {include {prop human}} - a truck is not a human.
+                self.assertNotIn("{prop human}", probe)
+                self.assertNotIn("{type human}", probe)
+                # The reference tag is the same tag the advance order targeted.
+                advance = body.index("{action advance}")
+                target = block_at(body, body.index("{target", advance))
+                self.assertIn("{tag %s}" % flag, target)
+                # Sampled at the last moment before the emit, and nowhere else.
+                self.assertEqual(body.count('("%s")' % band_define), 1)
+                self.assertLess(
+                    body.index('("%s")' % band_define), body.index('{"emit"')
+                )
 
     def test_one_package_cannot_disarm_another(self) -> None:
         """The shared deploy tag is re-asserted, and released only per package.

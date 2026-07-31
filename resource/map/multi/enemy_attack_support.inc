@@ -1236,17 +1236,23 @@
 			; ===== MOTORIZED INSERT (cmd 19) — parity with attack_support =====
 			; Claims ally_sup_*_motor packages (parked always; attack_support inert here).
 			; Truck-to-objective distance the moment before the passengers come out, as a
-			; bounded integer band: 1 = inside 60, 2 = inside 150, 3 = inside 400, 0 = further
-			; out than that (or no hull left to measure). SetVar takes integers only, so the
-			; distance is carried as a band number and never as a coordinate. Together with
-			; enemy_attack_motor_drive_t$ this settles "did the truck actually drive?" from game.log
-			; alone: drive_t 4 with band 0 is a hull that never left the pad.
+			; bounded integer band: 1 = inside 600, 2 = inside 1500, 3 = inside 4000,
+			; 0 = further out than that (or no hull left to measure). SetVar takes integers
+			; only, so the distance is carried as a band number and never as a coordinate.
+			; Together with enemy_attack_motor_drive_t$ this settles "did the truck actually
+			; drive?" from game.log alone: drive_t 4 with band 0 is a hull that never left the pad.
+			;
+			; UNITS (corrected 2026-07-30). Map coordinates are DECIMETRES, so the old
+			; 60/150/400 rings were 6 m / 15 m / 40 m and an entry pad sits roughly 5000 units
+			; from the nearest flag - band 0 was the only outcome a real drive could produce.
+			; 600/1500/4000 units = 60 m / 150 m / 400 m, which is what the bands always meant.
+			; The reference is the motor path's own flag tag: the flag this hull was ordered to.
 			(define "ea_motor_band"
 				{"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 0}}
 				{"switch"
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag ea_motor_hull}} {near_to {ignore_captured_by_user 0} {tag ea_flag1}} {distance 60}} {"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 1}}}
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag ea_motor_hull}} {near_to {ignore_captured_by_user 0} {tag ea_flag1}} {distance 150}} {"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 2}}}
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag ea_motor_hull}} {near_to {ignore_captured_by_user 0} {tag ea_flag1}} {distance 400}} {"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 3}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag ea_motor_hull}} {near_to {ignore_captured_by_user 0} {tag ea_motor_flag}} {distance 600}} {"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 1}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag ea_motor_hull}} {near_to {ignore_captured_by_user 0} {tag ea_motor_flag}} {distance 1500}} {"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 2}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag ea_motor_hull}} {near_to {ignore_captured_by_user 0} {tag ea_motor_flag}} {distance 4000}} {"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 3}}}
 					{"default"}
 				}
 			)
@@ -1300,9 +1306,17 @@
 				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 0}}
 				{"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 0}}
 				{"delay" {time 0.25}}
+				; One active flag, shuffled fresh per truck, into a MOTOR-ONLY tag.
+				;
+				; This used to be ea_flag1 - the generic wave-flag tag ea_finish (the infantry
+				; path of this same engine) clears at the top of every wave and only re-points
+				; about a second later. Nothing serialises the two, so an infantry finisher that
+				; starts inside this pick's window leaves the tag empty and the advance order
+				; below resolves to nothing: the hull is left with no order at all, which reads
+				; from outside as a truck that never moved. Q2 and Q4 already own a dedicated tag.
 				{"entity_state"
-					{selector {tag ea_flag1}}
-					{tag_remove ea_flag1}
+					{selector {tag ea_motor_flag}}
+					{tag_remove ea_motor_flag}
 				}
 				{"entity_state"
 					{selector
@@ -1314,14 +1328,14 @@
 						{sort {type shuffle}}
 						{amount 1}
 					}
-					{tag_add ea_flag1}
+					{tag_add ea_motor_flag}
 				}
 				{"delay" {time 0.1}}
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
 					{drop orders}
 					{action advance}
-					{target {ignore_captured_by_user 0} {tag ea_flag1}}
+					{target {ignore_captured_by_user 0} {tag ea_motor_flag}}
 				}
 				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 3}}
 				; DRIVE CLOCK. The 28s standoff is unchanged - it is the live-proven sequence
@@ -1352,11 +1366,13 @@
 				}
 				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 4}}
 				{"delay" {time 3}}
+				; Same motor-only objective the hull drove at, so the dismounts finish the
+				; approach instead of chasing whichever flag the last infantry wave picked.
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
 					{drop orders}
 					{action advance}
-					{target {ignore_captured_by_user 0} {tag ea_flag1}}
+					{target {ignore_captured_by_user 0} {tag ea_motor_flag}}
 				}
 				; Driver leaves the field instead of idling: drive for waypoint "0" and the
 				; cleanup trigger below removes the hull 45s later, wreck included.

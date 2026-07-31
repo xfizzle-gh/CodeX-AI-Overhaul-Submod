@@ -222,6 +222,21 @@ local MIRROR_QUANTS = 200
 local function mirrorEngineState()
 	emit("mirror", "q", state.quant,
 		"faction_support_army", readVar("faction_support_army"))
+	-- E2 LEG LIFECYCLE. The four values that make a leg readable after the fact:
+	--   e2_leg_done  1 = this leg reached a terminal state. It is the var half of the
+	--                same marker the orphan sweep reads as a tag off the aircraft, so
+	--                "the leg is over" has one definition, and it is the combo
+	--                transition's precondition for entering the para leg.
+	--   e2_air_try   attempts spent by the bounded flight-leg poll (20 = exhausted).
+	--   e2_air_age   consecutive 20s steps an un-terminated arrival has been observed
+	--                by the long-stop (12 = 240s, when it declares the leg over).
+	--   e2_clock_t   match clock, one step per 10 real seconds. 18 = the 180s floor
+	--                the para dispatch waits for.
+	emit("mirror", "e2_leg",
+		"leg_done", readVar("support_e2_leg_done"),
+		"air_try", readVar("support_e2_air_try"),
+		"air_age", readVar("support_e2_air_age"),
+		"clock_t", readVar("support_e2_clock_t"))
 	emit("mirror", "attack_support",
 		"armed", readVar("attack_support_armed"),
 		"wave_num", readVar("attack_support_wave_num"),

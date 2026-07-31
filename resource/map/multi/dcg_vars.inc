@@ -101,6 +101,10 @@
 			{"support_e2_flag"}
 			{"support_e2_para_range_band"}
 			{"support_e2_para_pass"}
+			{"support_e2_leg_done"}
+			{"support_e2_air_try"}
+			{"support_e2_air_age"}
+			{"support_e2_clock_t"}
 			{"enemy_attack_motor_first"}
 			{"attack_support_motor_first"}
 			{"attack_support_motor_pkg"}

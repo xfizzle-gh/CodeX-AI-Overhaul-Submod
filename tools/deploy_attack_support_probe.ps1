@@ -594,8 +594,9 @@ foreach ($marker in @(
     # truck drove for 28s then dropped its passengers" from "the passengers appeared at
     # the pad", because 3 -> 4 looks the same either way. drive_t counts the standoff
     # seconds that actually elapsed (0 -> 4, one step per 7s) and band is the hull's
-    # distance to its objective at the instant before the emit (1 inside 60, 2 inside
-    # 150, 3 inside 400, 0 further out). drive_t 4 with band 0 is a truck that never moved.
+    # distance to the flag it was ordered to at the instant before the emit (1 inside 600,
+    # 2 inside 1500, 3 inside 4000, 0 further out - map coordinates are decimetres, so those
+    # rings are 60 m / 150 m / 400 m). drive_t 4 with band 0 is a truck that never moved.
     '{"attack_support_motor_drive_t"}',
     '{"defense_support_motor_drive_t"}',
     '{"enemy_attack_motor_drive_t"}',
