@@ -1,0 +1,50 @@
+name: Fix E2 air-state guard count
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.head_ref == 'experiment/attack-mate-slot-proof' || github.ref_name == 'experiment/attack-mate-slot-proof'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/attack-mate-slot-proof
+          fetch-depth: 0
+      - name: Remove comment false positive
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('resource/map/multi/attack_support_waves.inc')
+          s = p.read_text()
+          old = '* Gostomel routes lower real Mi-8/Mi-17 helicopters with {"air_state"}'
+          new = '* Gostomel routes lower real Mi-8/Mi-17 helicopters with the air_state command'
+          if s.count(old) != 1:
+              raise SystemExit(f'expected one comment marker, found {s.count(old)}')
+          s = s.replace(old, new)
+          if s.count('{"air_state"') != 2:
+              raise SystemExit(f'expected two executable air_state blocks, found {s.count(chr(123)+chr(34)+"air_state"+chr(34))}')
+          p.write_text(s)
+          PY
+          git diff --check
+      - name: Run focused E2 tests
+        run: |
+          python -m pip install pytest
+          python -m pytest tests/test_e2_airmobile.py -q -k 'air_state or helicopter or deploy'
+      - name: Commit fix and remove helper
+        shell: bash
+        run: |
+          rm -f .github/workflows/agent-fix-air-state-guard.yml
+          git config user.name 'OpenAI Codex Agent'
+          git config user.email 'noreply@openai.com'
+          git add resource/map/multi/attack_support_waves.inc .github/workflows
+          git commit -m 'Fix helicopter air-state deployment guard'
+          git push origin HEAD:experiment/attack-mate-slot-proof
