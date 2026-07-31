@@ -89,6 +89,8 @@ jobs:
           print(json.dumps({'links_added':len(new),'packages':report},indent=2))
           PY
           python /tmp/convert_motor.py
+      - name: Install test runner
+        run: python -m pip install pytest
       - name: Run focused structural tests
         run: python -m pytest tests/test_attack_support_slot_proof.py -q -k 'sup_linked or motor or package or link'
       - name: Remove temporary workflows and commit
@@ -96,6 +98,7 @@ jobs:
         run: |
           rm -f .github/workflows/agent-repo-export.yml
           rm -f .github/workflows/agent-apply-motor.yml
+          rm -f .github/workflows/agent-apply-helicopter.yml
           git config user.name 'OpenAI Codex Agent'
           git config user.email 'noreply@openai.com'
           git add resource/map/multi/faction_support_templates.inc tests/test_attack_support_slot_proof.py .github/workflows
