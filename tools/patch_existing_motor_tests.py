@@ -108,7 +108,7 @@ def flank_method(signature: str) -> str:
 
 def replace_method(text: str, method_name: str, renderer) -> tuple[str, bool]:
     pattern = re.compile(
-        rf"(?m)^    def {re.escape(method_name)}\([^\n]*\):[^\n]*$"
+        rf"(?m)^    def {re.escape(method_name)}\([^\n]*\)[^\n]*:$"
     )
     match = pattern.search(text)
     if not match:
