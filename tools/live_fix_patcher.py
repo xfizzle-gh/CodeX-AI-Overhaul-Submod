@@ -124,18 +124,26 @@ new_motor_prefixes = ''' + '"""' + '''        prefixes = {
             "enemy_defense_support": ("enemy_defense", "ed_motor_band", "enemy_def_motor_flag"),
         }
         for engine, (pfx, band_define, objective) in sorted(prefixes.items()):''' + '"""' + '''
-motor_tests = replace_once(
-    motor_tests,
+
+# Limit the telemetry edits to the drive-phase method. The generic flag assertion also
+# appears in a different legacy test and must not inherit this method's objective variable.
+drive_start = motor_tests.index('    def test_the_drive_phase_is_instrumented_in_every_engine')
+drive_end = motor_tests.index('\\n    def ', drive_start + 8)
+drive_test = motor_tests[drive_start:drive_end]
+drive_test = replace_once(
+    drive_test,
     old_motor_prefixes,
     new_motor_prefixes,
     'bind each telemetry probe to its dedicated objective',
 )
-motor_tests = replace_once(
-    motor_tests,
+drive_test = replace_once(
+    drive_test,
     '                    probe.count("{near_to {ignore_captured_by_user 0} {tag flag}}"), 3',
     '                    probe.count("{near_to {ignore_captured_by_user 0} {tag %s}}" % objective), 3',
     'assert dedicated objective in each motor band probe',
 )
+motor_tests = motor_tests[:drive_start] + drive_test + motor_tests[drive_end:]
+
 motor_tests = replace_once(
     motor_tests,
     '                self.assertEqual(code.count(flag), body.count(flag), flag)',
