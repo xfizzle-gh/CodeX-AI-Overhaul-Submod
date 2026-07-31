@@ -1345,7 +1345,7 @@ class AttackSupportSlotProofTests(unittest.TestCase):
             # checked by the deploy, or the faction waves reference nothing.
             "resource\\map\\multi\\faction_support_templates.inc",
             '(include "../faction_support_templates.inc")',
-            "must park 633 prototypes",
+            "must park 634 prototypes",
             '{"attack_support_air_left"}',
             '{"attack_support_air_test"}',
             "attack_support_air_",

@@ -313,7 +313,7 @@ class E2PoolAndStateTests(unittest.TestCase):
         self.assertIn("West-81", self.tpl)
         for key in ("e2_helo_inbound", "e2_para_inbound", "e2_insert_failed"):
             self.assertIn(f'msgctxt "mission/multi/support/{key}"', self.pot)
-        for marker in ("must park 633 prototypes", "support_e2_test", "support_e2_para_pax", "ce_ai_logic_triggers.inc"):
+        for marker in ("must park 634 prototypes", "support_e2_test", "support_e2_para_pax", "ce_ai_logic_triggers.inc"):
             self.assertIn(marker, self.deploy)
 
 class E2CeIsolationTests(unittest.TestCase):
