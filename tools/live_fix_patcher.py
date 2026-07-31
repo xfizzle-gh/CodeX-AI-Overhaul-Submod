@@ -142,6 +142,19 @@ drive_test = replace_once(
     '                    probe.count("{near_to {ignore_captured_by_user 0} {tag %s}}" % objective), 3',
     'assert dedicated objective in each motor band probe',
 )
+old_contradictory_probe_assert = ''' + '"""' + '''                self.assertNotIn(
+                    "{near_to {ignore_captured_by_user 0} {tag %s}}"
+                    % self.MOTOR_OBJECTIVE[engine][2], probe
+                )''' + '"""' + '''
+new_generic_probe_assert = ''' + '"""' + '''                self.assertNotIn(
+                    "{near_to {ignore_captured_by_user 0} {tag flag}}", probe
+                )''' + '"""' + '''
+drive_test = replace_once(
+    drive_test,
+    old_contradictory_probe_assert,
+    new_generic_probe_assert,
+    'reject only the generic flag target in the dedicated probe',
+)
 motor_tests = motor_tests[:drive_start] + drive_test + motor_tests[drive_end:]
 
 motor_tests = replace_once(
@@ -149,6 +162,12 @@ motor_tests = replace_once(
     '                self.assertEqual(code.count(flag), body.count(flag), flag)',
     '                self.assertEqual(code.count(flag), body.count(flag) + probe.count(flag), flag)',
     'count the dedicated objective in finisher and probe',
+)
+motor_tests = replace_once(
+    motor_tests,
+    '                self.assertNotIn(flag, probe)',
+    '                self.assertEqual(probe.count(flag), 3, flag)',
+    'require the dedicated objective three times in the band probe',
 )
 
 waves = strip_trailing_whitespace(waves)
