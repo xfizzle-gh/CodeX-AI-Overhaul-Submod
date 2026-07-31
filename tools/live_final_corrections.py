@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 
@@ -18,15 +19,7 @@ def normalize_once(text: str, old: str, new: str, label: str) -> str:
         if pair not in candidates:
             candidates.append(pair)
 
-    # Accept the exact modern assertion, the older local-variable form, and either
-    # Python quote style around the MI token. Still require exactly one assertion.
     add_candidate(old, new)
-    if 'self.waves.' in old:
-        add_candidate(
-            old.replace('self.waves.', 'waves.'),
-            new.replace('self.waves.', 'waves.'),
-        )
-
     for candidate_old, candidate_new in list(candidates):
         add_candidate(
             candidate_old.replace(
@@ -56,6 +49,26 @@ def normalize_once(text: str, old: str, new: str, label: str) -> str:
     raise RuntimeError(
         f'{label}: expected one old or one normalized form, found old={old_count}, new={normalized_hits}'
     )
+
+
+def normalize_legacy_waves_count(text: str) -> str:
+    pattern = re.compile(
+        r'(?m)^(?P<indent>\s*)self\.assertEqual\('
+        r'(?P<owner>self\.)?waves\.count\('
+        r'(?P<quote>[\'\"])\{tag_add support_e2_pax\}(?P=quote)\), '
+        r'(?P<count>[34])\)(?P<trailing>\s*)$'
+    )
+    matches = list(pattern.finditer(text))
+    if len(matches) != 1:
+        raise RuntimeError(
+            'update legacy completed delivery count: '
+            f'expected exactly one structural assertion, found {len(matches)}'
+        )
+    match = matches[0]
+    if match.group('count') == '4':
+        return text
+    start, end = match.span('count')
+    return text[:start] + '4' + text[end:]
 
 
 def strip_trailing_whitespace(text: str) -> str:
@@ -103,12 +116,8 @@ e2_tests = normalize_once(
     '        self.assertEqual(self.live.count("{tag_add support_e2_pax}"), 4)',
     'update completed delivery count',
 )
-e2_tests = normalize_once(
-    e2_tests,
-    '        self.assertEqual(self.waves.count("{tag_add support_e2_pax}"), 3)',
-    '        self.assertEqual(self.waves.count("{tag_add support_e2_pax}"), 4)',
-    'update legacy completed delivery count',
-)
+e2_tests = normalize_legacy_waves_count(e2_tests)
+
 helo_anchor = '''        self.assertIn("{tag_remove support_e2_helo_pax}", helo)
 
     def test_the_pax_tag_carries_the_literal_1_to_16_switch_and_fails_closed(self) -> None:
