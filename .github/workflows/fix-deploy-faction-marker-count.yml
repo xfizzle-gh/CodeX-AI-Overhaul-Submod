@@ -30,8 +30,8 @@ jobs:
         run: |
           from pathlib import Path
 
-          path = Path("tools/deploy_attack_support_probe.ps1")
-          text = path.read_text(encoding="utf-8")
+          deploy_path = Path("tools/deploy_attack_support_probe.ps1")
+          deploy = deploy_path.read_text(encoding="utf-8")
           replacements = (
               (
                   "# Player-nation pools: 633 prototypes across four factions (incl. rare IFV packages).",
@@ -60,13 +60,22 @@ jobs:
               ),
           )
           for old, new in replacements:
-              count = text.count(old)
+              count = deploy.count(old)
               if count != 1:
                   raise RuntimeError(f"Expected exactly one stale deploy guard, found {count}: {old}")
-              text = text.replace(old, new, 1)
-          if "633" in text:
+              deploy = deploy.replace(old, new, 1)
+          if "633" in deploy:
               raise RuntimeError("An unaudited 633 expectation remains in deploy_attack_support_probe.ps1")
-          path.write_text(text, encoding="utf-8")
+          deploy_path.write_text(deploy, encoding="utf-8")
+
+          test_path = Path("tests/test_e2_airmobile.py")
+          test = test_path.read_text(encoding="utf-8")
+          old = 'for marker in ("must park 633 prototypes", "support_e2_test", "support_e2_para_pax", "ce_ai_logic_triggers.inc"):'
+          new = 'for marker in ("must park 634 prototypes", "support_e2_test", "support_e2_para_pax", "ce_ai_logic_triggers.inc"):'
+          count = test.count(old)
+          if count != 1:
+              raise RuntimeError(f"Expected exactly one stale E2 deploy assertion, found {count}")
+          test_path.write_text(test.replace(old, new, 1), encoding="utf-8")
 
       - name: Parse PowerShell
         shell: pwsh
@@ -98,6 +107,6 @@ jobs:
           rm -f .github/workflows/fix-deploy-faction-marker-count.yml
           git config user.name 'OpenAI Codex Agent'
           git config user.email 'noreply@openai.com'
-          git add tools/deploy_attack_support_probe.ps1 .github/workflows
+          git add tools/deploy_attack_support_probe.ps1 tests/test_e2_airmobile.py .github/workflows
           git commit -m 'Fix deploy guard for independent E2 marker'
           git push origin HEAD:experiment/attack-mate-slot-proof
