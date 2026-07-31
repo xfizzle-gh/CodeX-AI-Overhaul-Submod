@@ -28,12 +28,7 @@ FILES = {
 FACTIONS = ("rusa", "ukr", "nato", "prc")
 
 
-def balanced_block(text: str, token: str) -> tuple[int, int, str]:
-    start = text.index(token)
-    opener = token[0]
-    if opener not in "({":
-        raise RuntimeError(f"unsupported block token: {token}")
-    closer = ")" if opener == "(" else "}"
+def balanced_from(text: str, start: int, opener: str, closer: str) -> tuple[int, str]:
     depth = 0
     quoted = False
     escaped = False
@@ -54,8 +49,18 @@ def balanced_block(text: str, token: str) -> tuple[int, int, str]:
         elif char == closer:
             depth -= 1
             if depth == 0:
-                return start, index + 1, text[start : index + 1]
-    raise RuntimeError(f"unbalanced block: {token}")
+                return index + 1, text[start : index + 1]
+    raise RuntimeError(f"unbalanced block at offset {start}")
+
+
+def balanced_block(text: str, token: str) -> tuple[int, int, str]:
+    start = text.index(token)
+    opener = token[0]
+    if opener not in "({":
+        raise RuntimeError(f"unsupported block token: {token}")
+    closer = ")" if opener == "(" else "}"
+    end, current = balanced_from(text, start, opener, closer)
+    return start, end, current
 
 
 def replace_block(text: str, token: str, transform) -> str:
@@ -67,23 +72,29 @@ def replace_block(text: str, token: str, transform) -> str:
 
 
 def restore_finisher(block: str, path: str, finisher_name: str, pax_tag: str) -> str:
-    pattern = re.compile(
-        r"\{selector\s*\n\s*\{source advanced\}\s*\n"
-        r"\s*\{ignore_captured_by_user 0\}\s*\n"
-        r"\s*\{group\s*\n"
-        r"\s*\{select \{tag \{tag "
-        + re.escape(pax_tag)
-        + r"\}\}\}\s*\n"
-        r"\s*\{exclude \{state \{state linked\}\} \{state \{state inactive\}\} \{state \{state dead\}\}\s*\n"
-        r"\s*\}\s*\n\s*\}"
+    witness = f"{{select {{tag {{tag {pax_tag}}}}}}"
+    witness_at = block.index(witness)
+    selector_start = block.rfind("{selector", 0, witness_at)
+    if selector_start < 0:
+        raise RuntimeError(f"{path}:{finisher_name}: no enclosing pax selector")
+    selector_end, selector = balanced_from(block, selector_start, "{", "}")
+    required = (
+        "{source advanced}",
+        "{ignore_captured_by_user 0}",
+        witness,
+        "{state {state linked}}",
+        "{state {state inactive}}",
+        "{state {state dead}}",
     )
-    replacement = f"{{selector {{ignore_captured_by_user 0}} {{tag {pax_tag}}}}}"
-    changed, count = pattern.subn(replacement, block)
-    if count != 1:
+    missing = [marker for marker in required if marker not in selector]
+    if missing:
         raise RuntimeError(
-            f"{path}:{finisher_name}: expected one advanced pax selector, found {count}"
+            f"{path}:{finisher_name}: unexpected pax selector, missing {missing}"
         )
-    return changed
+    if block.find(witness, selector_end) >= 0:
+        raise RuntimeError(f"{path}:{finisher_name}: multiple advanced pax selectors")
+    replacement = f"{{selector {{ignore_captured_by_user 0}} {{tag {pax_tag}}}}}"
+    return block[:selector_start] + replacement + block[selector_end:]
 
 
 def pin_trigger_to_package1(block: str, path: str, faction: str, trigger: str) -> str:
