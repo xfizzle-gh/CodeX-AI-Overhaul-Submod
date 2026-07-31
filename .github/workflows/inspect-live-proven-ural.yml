@@ -15,17 +15,11 @@ jobs:
         with:
           ref: experiment/attack-mate-slot-proof
           fetch-depth: 0
-      - name: Diff exact live-proven motor blocks
+      - name: Print exact current Ural motor selectors
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          import difflib, subprocess
-
-          BASE='9caa7c2c458f04157ecd52dd91e89210af975cf7'
-
-          def old(path):
-              return subprocess.check_output(['git','show',f'{BASE}:{path}'], text=True)
 
           def balanced(text, token, opener='(', closer=')'):
               start=text.index(token)
@@ -53,20 +47,13 @@ jobs:
               raise RuntimeError(token)
 
           cases=[
-              ('resource/map/multi/attack_support_waves.inc','(define "as_finish_motor"'),
+              ('resource/map/multi/attack_support_waves.inc','(define "as_poke_faction_motor"'),
               ('resource/map/multi/attack_support_waves.inc','{"attack_support/ally_rusa_motor"'),
-              ('resource/map/multi/enemy_defense_support.inc','(define "ed_finish_motor"'),
+              ('resource/map/multi/enemy_defense_support.inc','(define "ed_poke_motor"'),
               ('resource/map/multi/enemy_defense_support.inc','{"enemy_defense/rusa_motor"'),
           ]
           for path,token in cases:
-              cur=balanced(Path(path).read_text(encoding='utf-8'),token)
-              prev=balanced(old(path),token)
+              text=Path(path).read_text(encoding='utf-8')
               print(f'\n===== {path} :: {token} =====')
-              if cur==prev:
-                  print('IDENTICAL')
-                  continue
-              print(''.join(difflib.unified_diff(
-                  prev.splitlines(True),cur.splitlines(True),
-                  fromfile=f'{BASE}:{token}',tofile=f'CURRENT:{token}',n=4
-              )))
+              print(balanced(text,token))
           PY
