@@ -75,6 +75,29 @@ An Opus agent was mid-pass on Defects A–D (uncommitted edits to
 - **D — motor band metric always 0** even on perfect drives (after the
   600/1500/4000 decimetre fix). Fix the reference or replace the metric.
 
+## Latest findings (2026-07-31 fields run, log-decoded — newest evidence)
+
+- Helo leg: stage 30→60 with fail 11; the 4 troops at the LZ were the
+  MOVE-placed team, unowned (player 0, white minimap dots). Fail 11 is a false
+  negative — the landed check cannot see neutral troops. One ownership fix
+  closes both.
+- Para leg: stage 20→60→70 with band 0, pass 0, fail 0 — plane visibly flew
+  for minutes, never dropped, deleted MID-MAP. Release detector never armed
+  (check its position reference + units, decimetre trap), exit path is not
+  evidence-gated (fail 6/7 must be reachable), delete must follow an off-map
+  exit like the helo leg does.
+- Trucks: #1 both sides did full claim→place→drive(~30s)→emit. Packages 2–4
+  never board their loose pax (troops stand at spawn, later chase the truck);
+  convert them to package 1's Link-baked seated riders. Trucks spawn facing
+  off-map. motor band metric still reads 0 even on perfect drives after the
+  unit fix — reference or mechanism still wrong.
+- CAVEAT for the pax fix: `{"emit"} {crew {tag ...}}` may be a FILTER (selects
+  which occupants to emit), not a tag-assigner — verify against shipped usage
+  before relying on it for tagging.
+- Working agent (mid-pass at time of writing) split the work: air legs (A+B)
+  first, then motor (C+D), serialized because both touch
+  attack_support_waves.inc.
+
 ## Parked (do not touch without user say-so)
 
 - Woodland crash (was the 910x id collision — likely resolved by the 21–24
