@@ -14,46 +14,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: experiment/attack-mate-slot-proof
-          fetch-depth: 0
-      - name: Print exact current Ural motor selectors
+      - name: Locate exact Ural motor source lines
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          def balanced(text, token, opener='(', closer=')'):
-              start=text.index(token)
-              depth=0
-              quote=False
-              escape=False
-              for i in range(start,len(text)):
-                  c=text[i]
-                  if quote:
-                      if escape:
-                          escape=False
-                      elif c=='\\':
-                          escape=True
-                      elif c=='"':
-                          quote=False
-                      continue
-                  if c=='"':
-                      quote=True
-                  elif c==opener:
-                      depth+=1
-                  elif c==closer:
-                      depth-=1
-                      if depth==0:
-                          return text[start:i+1]
-              raise RuntimeError(token)
-
-          cases=[
-              ('resource/map/multi/attack_support_waves.inc','(define "as_poke_faction_motor"'),
-              ('resource/map/multi/attack_support_waves.inc','{"attack_support/ally_rusa_motor"'),
-              ('resource/map/multi/enemy_defense_support.inc','(define "ed_poke_motor"'),
-              ('resource/map/multi/enemy_defense_support.inc','{"enemy_defense/rusa_motor"'),
-          ]
-          for path,token in cases:
-              text=Path(path).read_text(encoding='utf-8')
-              print(f'\n===== {path} :: {token} =====')
-              print(balanced(text,token))
-          PY
+          grep -n '"attack_support/ally_rusa_motor"' resource/map/multi/attack_support_waves.inc
+          grep -n '"enemy_defense/rusa_motor"' resource/map/multi/enemy_defense_support.inc
+          grep -n '(define "as_finish_motor"' resource/map/multi/attack_support_waves.inc
+          grep -n '(define "ed_finish_motor"' resource/map/multi/enemy_defense_support.inc
