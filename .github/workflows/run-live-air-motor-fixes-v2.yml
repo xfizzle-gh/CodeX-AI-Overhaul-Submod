@@ -57,7 +57,7 @@ jobs:
 
           # The dedicated helicopter LZ marker is a parked Player-0, unselectable body,
           # but intentionally does not carry ally_sup_tpl or hidden. Update only the
-          # aggregate entity, player, and entity-ID counts in the faction-pool guard.
+          # aggregate entity, player, entity-ID, and MID counts in the faction-pool guard.
           python - <<'PY'
           from pathlib import Path
 
@@ -82,6 +82,10 @@ jobs:
               (
                   '        self.assertEqual(len(set(ids)), 633)',
                   '        self.assertEqual(len(set(ids)), 634)',
+              ),
+              (
+                  '        self.assertEqual(len(set(mids)), 633)',
+                  '        self.assertEqual(len(set(mids)), 634)',
               ),
           )
           for old, new in replacements:
