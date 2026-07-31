@@ -1,5 +1,6 @@
 name: Finalize live air and motor repair
 
+# Final retry after diagnostic isolation.
 on:
   pull_request:
     branches:
