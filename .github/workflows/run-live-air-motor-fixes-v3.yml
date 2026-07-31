@@ -1,0 +1,119 @@
+name: Capture live air and motor repair tests
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/run-live-air-motor-fixes-v3.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-test:
+    if: github.head_ref == 'experiment/attack-mate-slot-proof'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/attack-mate-slot-proof
+          fetch-depth: 0
+
+      - name: Recover and run the proven repair payload
+        shell: bash
+        run: |
+          awk '
+            /^          ZnJv/ {capture=1}
+            /^          B64$/ {capture=0}
+            capture {sub(/^          /, ""); print}
+          ' .github/workflows/run-live-air-motor-fixes.yml > /tmp/live_fix.b64
+          base64 -d /tmp/live_fix.b64 > /tmp/apply_live_air_motor_fixes.py
+
+          awk '
+            /^          ZnJv/ {capture=1}
+            /^          B64$/ {capture=0}
+            capture {sub(/^          /, ""); print}
+          ' .github/workflows/run-live-air-motor-fixes-v2.yml > /tmp/patcher.b64
+          base64 -d /tmp/patcher.b64 > /tmp/patch_repair_script.py
+
+          python -m py_compile /tmp/patch_repair_script.py
+          python /tmp/patch_repair_script.py
+          python -m py_compile /tmp/apply_live_air_motor_fixes.py
+          python /tmp/apply_live_air_motor_fixes.py
+
+      - name: Install test runner
+        run: python -m pip install pytest
+
+      - name: Run tests with separate diagnostics
+        id: tests
+        shell: bash
+        run: |
+          set +e
+          python -m pytest tests/test_e2_airmobile.py -x -vv > e2-tests.log 2>&1
+          e2_status=$?
+
+          python -m pytest tests/test_attack_support_slot_proof.py -x -vv \
+            -k 'motor or objective or drive_phase or linked' > motor-tests.log 2>&1
+          motor_status=$?
+
+          python -m pytest tests/ -x -vv > full-tests.log 2>&1
+          full_status=$?
+
+          git diff --check > diff-check.log 2>&1
+          diff_status=$?
+
+          printf 'e2=%s\nmotor=%s\nfull=%s\ndiff=%s\n' \
+            "$e2_status" "$motor_status" "$full_status" "$diff_status" \
+            | tee test-status.txt
+
+          echo '===== E2 TAIL ====='
+          tail -n 120 e2-tests.log
+          echo '===== MOTOR TAIL ====='
+          tail -n 120 motor-tests.log
+          echo '===== FULL TAIL ====='
+          tail -n 160 full-tests.log
+          echo '===== DIFF CHECK ====='
+          cat diff-check.log
+
+          if [ "$e2_status" -ne 0 ] || [ "$motor_status" -ne 0 ] || \
+             [ "$full_status" -ne 0 ] || [ "$diff_status" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Upload diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-air-motor-test-diagnostics
+          path: |
+            test-status.txt
+            e2-tests.log
+            motor-tests.log
+            full-tests.log
+            diff-check.log
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Commit repairs and remove temporary workflows
+        if: success()
+        shell: bash
+        run: |
+          rm -f .github/workflows/apply-live-air-motor-fixes.yml
+          rm -f .github/workflows/run-live-air-motor-fixes.yml
+          rm -f .github/workflows/run-live-air-motor-fixes-v2.yml
+          rm -f .github/workflows/run-live-air-motor-fixes-v3.yml
+          rm -f .github/workflows/export-live-debug-branch.yml
+          git config user.name 'OpenAI Codex Agent'
+          git config user.email 'noreply@openai.com'
+          git add resource/map/multi/attack_support_waves.inc \
+                  resource/map/multi/defense_support_waves.inc \
+                  resource/map/multi/enemy_attack_support.inc \
+                  resource/map/multi/enemy_defense_support.inc \
+                  resource/map/multi/faction_support_templates.inc \
+                  tools/deploy_attack_support_probe.ps1 \
+                  tests/test_e2_airmobile.py \
+                  tests/test_attack_support_slot_proof.py \
+                  .github/workflows
+          git commit -m 'Fix live helicopter, paradrop, and motor delivery'
+          git push origin HEAD:experiment/attack-mate-slot-proof
