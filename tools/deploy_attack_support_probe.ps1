@@ -106,11 +106,29 @@ foreach ($source in @($gameSetSource, $botMainSource, $supportSource, $varsSourc
 }
 $ceSourceHashes = @($ceMapSource, $ceScriptSource) | ForEach-Object { (Get-FileHash -LiteralPath $_ -Algorithm SHA256).Hash }
 if ($ceSourceHashes[0] -ne $ceSourceHashes[1]) { throw "Source CE ai_logic mirrors are not byte-identical" }
-foreach ($marker in @('{"support_e2_test"}', '{"support_e2_stage"}', '{"support_e2_fail"}', '{"support_e2_lz"}', '{"support_e2_flag"}')) {
+foreach ($marker in @('{"support_e2_test"}', '{"support_e2_stage"}', '{"support_e2_fail"}', '{"support_e2_lz"}', '{"support_e2_flag"}', '{"support_e2_para_range_band"}', '{"support_e2_para_pass"}')) {
     if (-not (Select-String -Quiet -LiteralPath $varsSource -SimpleMatch $marker)) { throw "Source dcg_vars.inc is missing E2 state: $marker" }
 }
-foreach ($marker in @('{Entity "mi17_b8_rus"', '{Entity "mi17_b8_ukr"', '{Entity "uh-60m_blackhawk_mg"', '{Entity "il-76td_para"', '{Entity "c130_para"', 'support_e2_para_pax', '{Chassis "helicopter"')) {
+foreach ($marker in @('{Entity "mi17_b8_rus"', '{Entity "mi17_b8_ukr"', '{Entity "il-76td_para"', '{Entity "c130_para"', 'support_e2_para_pax', '{Chassis "helicopter"', '{Chassis "airborne"', '{AirborneMode 1}', '{ChassisManager', '{Current "airborne"}', '{Current "helicopter"}', '{DisableObstacles}')) {
     if (-not (Select-String -Quiet -LiteralPath $factionTplSource -SimpleMatch $marker)) { throw "Source faction pool is missing E2 marker: $marker" }
+}
+# The two airborne-chassis families use two DIFFERENT state vocabularies and the
+# previous pass mixed them, which is the most likely reason the parked planes never
+# instantiated. A census of every {Chassis} block in the installed stack splits
+# cleanly: 1523 airborne blocks all use {AirborneMode 1} and none uses {Airborne} or
+# {EngineStarted}; 58 helicopter blocks all use {Airborne}+{EngineStarted} and none
+# uses {AirborneMode}. Forbid the invented crossover in either direction.
+$factionTplText = [System.IO.File]::ReadAllText($factionTplSource)
+if ($factionTplText -match '(?s)\{Chassis "airborne"[^\}]*\{(Airborne|EngineStarted)\}') {
+    throw "Source faction pool writes helicopter-family chassis state on an airborne chassis"
+}
+if ($factionTplText -match '(?s)\{Chassis "helicopter"[^\}]*\{AirborneMode') {
+    throw "Source faction pool writes airborne-family chassis state on a helicopter chassis"
+}
+# The Blackhawk is blocked pending an instantiation proof (fail code 13 decides it) and
+# must not creep back into a live pool. The commented record above it is not an {Entity}.
+if (Select-String -Quiet -LiteralPath $factionTplSource -SimpleMatch '{Entity "uh-60m_blackhawk_mg"') {
+    throw "Source faction pool parks the unproven uh-60m_blackhawk_mg airframe"
 }
 foreach ($key in @('mission/multi/support/e2_helo_inbound', 'mission/multi/support/e2_para_inbound', 'mission/multi/support/e2_insert_failed')) {
     if (-not (Select-String -Quiet -LiteralPath (Join-Path $RepoRoot $files[13]) -SimpleMatch "msgctxt `"$key`"")) { throw "Source support_events.pot is missing msgctxt $key" }
@@ -121,14 +139,40 @@ $E2HeloWaveMarkers = @('attack_support/e2_helo_prc',
     '{"attack_support/e2_helo_rusa"',
     '{"attack_support/e2_helo_ukr"',
     '{"attack_support/e2_helo_nato"',
-    '{"air_state"',
     'support_e2_lz',
-    '{"delete"'
+    '(define "e2_clone_aircraft"',
+    '{clone}',
+    '{approach "safe teleport & rotate"}',
+    '{include {tag {tag hidden}}}',
+    '{waypoint "9101"}',
+    '{waypoint "9102"}',
+    '{waypoint "9103"}',
+    '{waypoint "9104"}',
+    '{"set_i" {var "support_e2_fail$"} {op "="} {value 14}}',
+    '{"delete"',
+    '(define "e2_prove_park_rusa_helo"',
+    '(define "e2_prove_park_ukr_helo"',
+    '(define "e2_prove_park_nato_helo"',
+    '(define "e2_prove_park_prc_helo"',
+    '(define "e2_prove_park_rusa_para"',
+    '(define "e2_prove_park_ukr_para"',
+    '(define "e2_prove_park_nato_para"',
+    '{"set_i" {var "support_e2_fail$"} {op "="} {value 13}}',
+    '{"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 13}}'
 )
 $E2HeloTemplateMarkers = @('support_e2_prc_helo', '{Altitude 22}')
 # PRC flies the Mi-171 adaptation (Army Aviation transport), so its helo probe is
 # required, not forbidden. The fixed-wing paradrop stays out per the PRC doctrine note.
-$E2HeloForbiddenMarkers = @('attack_support/e2_para_prc', '{clone}', 'support_e2_lz_fpc')
+# {clone} moved from FORBIDDEN to REQUIRED, scoped to E2 aircraft dispatch only: it
+# is the base game's own aircraft call-in verb and the reason air call-ins are now
+# repeatable. The general ban still holds everywhere else and is test-pinned there.
+# The superseded flight mechanism is forbidden instead: air_state altitude commands
+# and {"placement"} of an aircraft onto a ground pad.
+$E2HeloForbiddenMarkers = @('attack_support/e2_para_prc', 'support_e2_lz_fpc',
+    '{"air_state"',
+    '("e2_place_aircraft_entry")',
+    '("e2_promote_helo")',
+    '("e2_promote_para")')
 foreach ($marker in $E2HeloWaveMarkers) {
     if (-not (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch $marker)) { throw "Source wave engine is missing E2 helicopter marker: $marker" }
 }
@@ -146,24 +190,34 @@ $E2ParaWaveMarkers = @(
     '{"attack_support/e2_para_release_rusa"',
     '{"attack_support/e2_para_release_ukr"',
     '{"attack_support/e2_para_release_nato"',
-    '{"attack_support/e2_para_landed"',
     '{effect drop_paratrooper}',
-    '{tag_add paratrooper}',
-    '{tag_add ignore_spawn_logic}',
-    '{distance 1500}',
-    '{distance 2500}',
+    '{emit',
+    '{mode passengers}',
+    'paratrooper_need_orders',
+    '{"attack_support/e2_para_range"',
+    '{"attack_support/e2_para_alive"',
+    '(define "e2_para_range_poll"',
+    '{distance 600}',
+    '{distance 4000}',
+    'support_e2_para_range_band$',
+    'support_e2_para_pass$',
     'support_e2_released',
     'support_e2_fail$"} {op "="} {value 6}',
     'support_e2_fail$"} {op "="} {value 7}'
 )
 $E2ParaForbiddenMarkers = @(
     '{effect drop_paratroopers}',
+    '{distance 1500}',
+    '{distance 2500}',
     'waypoint "5004"',
     'waypoint "5005"',
     'waypoint "5006"',
     '{"placement" {selector {tag support_e2_para_pax}',
     '("e2_place_one")',
-    '("e2_place_one_entry")'
+    '("e2_place_one_entry")',
+    '("e2_place_aircraft_entry")',
+    '{"air_state"',
+    'support_e2_landed'
 )
 foreach ($marker in $E2ParaWaveMarkers) {
     if (-not (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch $marker)) { throw "Source wave engine is missing E2 paradrop marker: $marker" }
@@ -655,8 +709,42 @@ foreach ($banned in @('{include {prop human}}', '{prop {prop human}}', '{state {
 if (Select-String -Quiet -LiteralPath $wavesSource -Pattern '^[^;]*\bfpc') {
     throw "Source wave engine still targets fpc* capture points. Those tags are absent from outback entirely; address capture points as {tag flag}"
 }
-if (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch '{clone}') {
-    throw "Source wave engine still clones. Three promote designs failed to match a cloned entity; a new entity's provenance is invisible to selectors on this engine. Move the originals instead"
+# {clone} stays banned for every ground unit: three promote designs failed to match a
+# cloned entity because a new entity's provenance is invisible to selectors here, and
+# MOVE placement of the originals is the house rule that fixed it. The ONE exception is
+# E2 aircraft dispatch, which follows the base game's own aircraft call-in verbatim -
+# {"actor_to_waypoint"} ... {clone} {approach "safe teleport & rotate"} to a numeric
+# waypoint whose {commands} block re-tags the arrival. That re-tag is precisely what
+# defeats the invisible-provenance problem, and it is why the exception is safe.
+# The guard is therefore NARROWED, not lifted: every {clone} in the engine must sit
+# inside (define "e2_clone_aircraft"), and at least one must.
+$wavesLines = Get-Content -LiteralPath $wavesSource
+$cloneDefineStart = -1
+$cloneDefineEnd = -1
+$cloneDefineIndent = ''
+for ($i = 0; $i -lt $wavesLines.Count; $i++) {
+    if ($cloneDefineStart -lt 0) {
+        if ($wavesLines[$i] -match '^(\s*)\(define "e2_clone_aircraft"') {
+            $cloneDefineStart = $i
+            $cloneDefineIndent = $Matches[1]
+        }
+    } elseif ($wavesLines[$i].TrimEnd() -eq ($cloneDefineIndent + ')')) {
+        $cloneDefineEnd = $i
+        break
+    }
+}
+if ($cloneDefineStart -lt 0 -or $cloneDefineEnd -lt 0) {
+    throw "Source wave engine has no delimited (define ""e2_clone_aircraft"") block, so the {clone} exception cannot be scoped"
+}
+$cloneInside = 0
+for ($i = 0; $i -lt $wavesLines.Count; $i++) {
+    if ($wavesLines[$i] -notmatch '\{clone\}') { continue }
+    if ($wavesLines[$i] -match '^\s*;') { continue }
+    if ($i -gt $cloneDefineStart -and $i -lt $cloneDefineEnd) { $cloneInside++; continue }
+    throw "Source wave engine clones outside (define ""e2_clone_aircraft"") at line $($i + 1). A cloned ground unit's provenance is invisible to selectors on this engine. Move the originals instead"
+}
+if ($cloneInside -lt 1) {
+    throw "Source wave engine's e2_clone_aircraft no longer clones, so the base game's aircraft call-in is not in use"
 }
 if (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch '{zone {zone "gamezone"}}') {
     throw "Source wave engine separates entities by zone. allied_support_entry is a waypoint, not a zone, and is NOT inside gamezone"
@@ -1339,6 +1427,45 @@ $eaInclude = '(include "../enemy_attack_support.inc")'
 # reading a silent zero, so the conversion step below rewrites it into this include.
 $varsInclude = '(include "../dcg_vars.inc")'
 $waypointsAnchor = "`t`t{waypoints"
+# The numeric air waypoints carry a nested {commands} block, so the flat regex used for
+# the named pads cannot strip them. Brace-match instead, and strip every copy - the
+# generator is self-healing exactly like the pad generator: remove whatever the previous
+# run wrote, then rebuild from the repo centroid.
+function Remove-NamedWaypointBlock {
+    param([string]$Text, [string]$Name)
+    $key = '{"' + $Name + '"'
+    while ($true) {
+        $i = $Text.IndexOf($key)
+        if ($i -lt 0) { break }
+        $depth = 0
+        $j = $i
+        while ($j -lt $Text.Length) {
+            $c = $Text[$j]
+            if ($c -eq '{') { $depth++ }
+            elseif ($c -eq '}') { $depth--; if ($depth -eq 0) { break } }
+            $j++
+        }
+        if ($depth -ne 0) { throw "Unbalanced waypoint block: $Name" }
+        $start = $i
+        while ($start -gt 0 -and ("`t", ' ', "`r", "`n") -contains $Text[$start - 1]) { $start-- }
+        $Text = $Text.Substring(0, $start) + $Text.Substring($j + 1)
+    }
+    return $Text
+}
+# Air entry/exit nodes sit PAST the spawn line, so an aircraft teleported in has the
+# whole map to run in over. 1.15 x the spawn centroid puts them just inside the map
+# edge - the maps span ~19000 units and the spawn centroids sit near +-8200, so 1.15
+# lands around +-9400, which is the same relationship the base game uses (its own air
+# entry nodes sit at ~+-9900 on a map of the same size). A larger factor would put the
+# teleport target off the terrain entirely.
+$AirEntryFactor = 1.15
+# Altitude carried by the numeric EXIT nodes, in the same units the base game's own
+# mid-route air waypoints use (163/180/172-class values on its maps).
+$AirCruiseZ = 170.0
+# Radius of the numeric ENTRY nodes: the base game gives its air entry waypoints
+# {radius 800}, which is what makes a teleported clone count as "arrived" and run the
+# node's {commands} block.
+$AirEntryRadius = 800
 $entryName = '{"attack_support_entry_'
 # Side of the entry triangle, in map units. Map coordinates are decimetres on this
 # family: a pair of sandbag heaps ~5m apart sits ~52 units apart, the entry pads carry
@@ -1553,6 +1680,9 @@ foreach ($mapFile in $mapFiles) {
         '\s*\{"attack_(?:support|mate)_(?:entry|rear|flank|air)[a-z0-9_]*"\s*\r?\n\s*\{position [^}]*\}\s*\r?\n\s*\{radius \d+\}\s*\r?\n\s*\}',
         ''
     )
+    foreach ($num in @('9101', '9102', '9103', '9104')) {
+        $text = Remove-NamedWaypointBlock -Text $text -Name $num
+    }
     if (-not $text.Contains($waypointsAnchor)) {
         throw "Map is missing the waypoints anchor: $mapFile"
     }
@@ -1653,6 +1783,84 @@ foreach ($mapFile in $mapFiles) {
             $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $block)
         }
 
+        # Numeric air waypoints, band 9101-9104. {"actor_to_waypoint"} and the
+        # {waypoint} order term only accept NUMERIC waypoint names, which is why these
+        # cannot use the attack_support_* naming the pads use. Collision sweep across all
+        # fourteen managed maps and every .inc: the only numeric waypoint names anywhere
+        # in this family are "0" (present on all fourteen) and "1".."6" (factory and
+        # train_station only, carrying the base game's own airstrike geometry and its
+        # enemy_air {commands} blocks). None of those is touched, and 9101-9104 is free.
+        #   9101/9102 = air ENTRY for side a/b. z 0 and {radius 800}, exactly the shape
+        #               the base game gives its own air entry nodes: altitude belongs to
+        #               the aircraft's parked chassis snapshot, never to the waypoint.
+        #               Each carries the {commands} block that runs ON THE ARRIVING
+        #               CLONE - re-tag, actor state, first move order, takeoff effect -
+        #               which is how the base game defeats "a clone carries no tags".
+        #   9103/9104 = air EXIT for side a/b. Altitude-carrying node shape: z in the
+        #               position, no radius, no commands, same as the base game's
+        #               mid-route air waypoints. The engine exits across the map to the
+        #               OPPOSITE side's node so the aircraft flies through and off.
+        $entryNum = if ($side -eq 'a') { '9101' } else { '9102' }
+        $exitNum = if ($side -eq 'a') { '9103' } else { '9104' }
+        $nx = $cx * $AirEntryFactor
+        $ny = $cy * $AirEntryFactor
+        $exitBlock = "`r`n`t`t`t{`"$exitNum`"`r`n`t`t`t`t{position " +
+            ("{0:F2} {1:F2} {2:F2}" -f $nx, $ny, $AirCruiseZ) +
+            "}`r`n`t`t`t}"
+        $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $exitBlock)
+        $entryBlock = "`r`n`t`t`t{`"$entryNum`"`r`n`t`t`t`t{position " +
+            ("{0:F2} {1:F2} 0.00" -f $nx, $ny) +
+            "}`r`n`t`t`t`t{radius $AirEntryRadius}`r`n" +
+            "`t`t`t`t{commands`r`n" +
+            "`t`t`t`t`t{`"entity_state`"`r`n" +
+            "`t`t`t`t`t`t{tag_add support_e2_arrival}`r`n" +
+            "`t`t`t`t`t}`r`n" +
+            "`t`t`t`t`t{`"delay`"`r`n" +
+            "`t`t`t`t`t`t{time 0.2}`r`n" +
+            "`t`t`t`t`t}`r`n" +
+            "`t`t`t`t`t{`"actor_state`"`r`n" +
+            "`t`t`t`t`t`t{selector`r`n" +
+            "`t`t`t`t`t`t`t{source standart}`r`n" +
+            "`t`t`t`t`t`t`t{ignore_captured_by_user 0}`r`n" +
+            "`t`t`t`t`t`t`t{tag support_e2_arrival}`r`n" +
+            "`t`t`t`t`t`t}`r`n" +
+            "`t`t`t`t`t`t{control AI}`r`n" +
+            "`t`t`t`t`t`t{fire_mode return}`r`n" +
+            "`t`t`t`t`t`t{movement`r`n" +
+            "`t`t`t`t`t`t`t{speed fast}`r`n" +
+            "`t`t`t`t`t`t}`r`n" +
+            "`t`t`t`t`t}`r`n" +
+            "`t`t`t`t`t{`"delay`"`r`n" +
+            "`t`t`t`t`t`t{time 0.2}`r`n" +
+            "`t`t`t`t`t}`r`n" +
+            "`t`t`t`t`t{`"action`"`r`n" +
+            "`t`t`t`t`t`t{selector`r`n" +
+            "`t`t`t`t`t`t`t{source standart}`r`n" +
+            "`t`t`t`t`t`t`t{ignore_captured_by_user 0}`r`n" +
+            "`t`t`t`t`t`t`t{tag support_e2_arrival}`r`n" +
+            "`t`t`t`t`t`t}`r`n" +
+            "`t`t`t`t`t`t{drop orders}`r`n" +
+            "`t`t`t`t`t`t{action move}`r`n" +
+            "`t`t`t`t`t`t{target`r`n" +
+            "`t`t`t`t`t`t`t{ignore_captured_by_user 0}`r`n" +
+            "`t`t`t`t`t`t`t{amount 1}`r`n" +
+            "`t`t`t`t`t`t`t{tag support_e2_flag_target}`r`n" +
+            "`t`t`t`t`t`t}`r`n" +
+            "`t`t`t`t`t}`r`n" +
+            "`t`t`t`t`t{`"delay`"`r`n" +
+            "`t`t`t`t`t`t{time 0.1}`r`n" +
+            "`t`t`t`t`t}`r`n" +
+            "`t`t`t`t`t{`"effect`"`r`n" +
+            "`t`t`t`t`t`t{selector`r`n" +
+            "`t`t`t`t`t`t`t{source standart}`r`n" +
+            "`t`t`t`t`t`t`t{ignore_captured_by_user 0}`r`n" +
+            "`t`t`t`t`t`t`t{tag support_e2_arrival}`r`n" +
+            "`t`t`t`t`t`t}`r`n" +
+            "`t`t`t`t`t`t{effect takeoff_load}`r`n" +
+            "`t`t`t`t`t}`r`n" +
+            "`t`t`t`t}`r`n`t`t`t}"
+        $text = $text.Replace($waypointsAnchor, $waypointsAnchor + $entryBlock)
+
         # The legacy single-pad name, kept as an alias of point 1 rather than migrated
         # away: the enemy-defence patrol and roam {action move} orders still address it,
         # and those are orders rather than placements, so they want one stable point.
@@ -1698,6 +1906,27 @@ foreach ($mapFile in $mapFiles) {
         }
     }
 
+    foreach ($num in @('9101', '9102', '9103', '9104')) {
+        $n = ([regex]::Matches($text, [regex]::Escape('{"' + $num + '"'))).Count
+        if ($n -ne 1) {
+            throw "Expected exactly one air waypoint $num in: $mapFile (found $n)"
+        }
+    }
+    # The arriving clone must be re-tagged before it is ordered, or the order selects
+    # nothing: that is the whole point of the {commands} block.
+    $n = ([regex]::Matches($text, [regex]::Escape('{tag_add support_e2_arrival}'))).Count
+    if ($n -ne 2) {
+        throw "Expected exactly two air-entry command blocks in: $mapFile (found $n)"
+    }
+    $n = ([regex]::Matches($text, [regex]::Escape('{effect takeoff_load}'))).Count
+    if ($n -lt 2) {
+        throw "Air-entry command blocks lost their arrival effect in: $mapFile (found $n)"
+    }
+    # The base game's own airstrike chain survives on two of these maps. Our namespace
+    # must never collide with it.
+    if ([regex]::IsMatch($text, '\{tag_add support_e2_arrival\}[\s\S]{0,400}enemy_air')) {
+        throw "Air-entry command block collides with the base airstrike chain in: $mapFile"
+    }
     if ([regex]::IsMatch($text, '\{"attack_support_entry"')) {
         throw "Map still carries the superseded single-sided attack_support_entry: $mapFile"
     }
@@ -1885,8 +2114,35 @@ if (-not (Select-String -Quiet -LiteralPath $waves -SimpleMatch '{"trigger" {nam
 if (-not (Select-String -Quiet -LiteralPath $waves -SimpleMatch 'ATTACK SUPPORT NEAR CAP DEFER')) {
     throw "Workshop wave engine is missing the live-unit cap defer"
 }
-if (Select-String -Quiet -LiteralPath $waves -SimpleMatch '{clone}') {
-    throw "Workshop wave engine still clones instead of moving the pool originals"
+# Mirror of the source-side scoping: ground units still may not clone, E2 aircraft
+# dispatch may, and only from inside its own define. See the note at the source guard.
+$deployedWavesLines = Get-Content -LiteralPath $waves
+$dCloneStart = -1
+$dCloneEnd = -1
+$dCloneIndent = ''
+for ($i = 0; $i -lt $deployedWavesLines.Count; $i++) {
+    if ($dCloneStart -lt 0) {
+        if ($deployedWavesLines[$i] -match '^(\s*)\(define "e2_clone_aircraft"') {
+            $dCloneStart = $i
+            $dCloneIndent = $Matches[1]
+        }
+    } elseif ($deployedWavesLines[$i].TrimEnd() -eq ($dCloneIndent + ')')) {
+        $dCloneEnd = $i
+        break
+    }
+}
+if ($dCloneStart -lt 0 -or $dCloneEnd -lt 0) {
+    throw "Workshop wave engine has no delimited (define ""e2_clone_aircraft"") block, so the {clone} exception cannot be scoped"
+}
+$dCloneInside = 0
+for ($i = 0; $i -lt $deployedWavesLines.Count; $i++) {
+    if ($deployedWavesLines[$i] -notmatch '\{clone\}') { continue }
+    if ($deployedWavesLines[$i] -match '^\s*;') { continue }
+    if ($i -gt $dCloneStart -and $i -lt $dCloneEnd) { $dCloneInside++; continue }
+    throw "Workshop wave engine clones outside (define ""e2_clone_aircraft"") at line $($i + 1), instead of moving the pool originals"
+}
+if ($dCloneInside -lt 1) {
+    throw "Workshop wave engine's e2_clone_aircraft no longer clones, so the base game's aircraft call-in is not in use"
 }
 if (Select-String -Quiet -LiteralPath $waves -Pattern '^[^;]*\bfpc') {
     throw "Workshop wave engine still targets fpc* capture points"
@@ -1958,12 +2214,16 @@ foreach ($marker in @(
     '"ally_sup_nato_assault"',
     '{Entity "fennek"',
     '{Entity "humvee_m2hb_ukr"',
-    '{Entity "mi17_b8_rus"', '{Entity "mi17_b8_ukr"', '{Entity "uh-60m_blackhawk_mg"',
-    '{Entity "il-76td_para"', '{Entity "c130_para"', 'support_e2_para_pax', '{Chassis "helicopter"'
+    '{Entity "mi17_b8_rus"', '{Entity "mi17_b8_ukr"',
+    '{Entity "il-76td_para"', '{Entity "c130_para"', 'support_e2_para_pax',
+    '{Chassis "helicopter"', '{Chassis "airborne"'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $factionTarget -SimpleMatch $marker)) {
         throw "Workshop faction pool is missing marker: $marker"
     }
+}
+if (Select-String -Quiet -LiteralPath $factionTarget -SimpleMatch '{Entity "uh-60m_blackhawk_mg"') {
+    throw "Workshop faction pool parks the unproven uh-60m_blackhawk_mg airframe"
 }
 foreach ($banned in @('{clone}', '{include {prop human}}', '{state {state operatable}}', 'allied_support')) {
     if (Select-String -Quiet -LiteralPath $factionTarget -SimpleMatch $banned) {

@@ -174,7 +174,7 @@ Use this exact inventory; the four helicopter-team humans are independent (no li
 |---|---|---|
 | `0xb401`-`0xb407` / `9800`-`9806` | RUSA helo | `mi17_b8_rus`; 2x `rus_pliot` linked `driver`,`commander`; `106vdv_squadlead`,`106vdv_mg`,2x `106vdv_rifleman` independent |
 | `0xb408`-`0xb40e` / `9807`-`9813` | UKR helo | `mi17_b8_ukr`; 2x `ukr_pilot` linked `driver`,`commander`; `ukr13_squadlead`,`ukr13_lmg`,2x `ukr13_rifleman` independent |
-| `0xb40f`-`0xb415` / `9814`-`9820` | NATO helo | `uh-60m_blackhawk_mg`; 2x `nato_pilot` linked `driver`,`commander`; `82nd_squadlead`,`82nd_mg`,2x `82nd_rifleman` independent |
+| `0xb40f`-`0xb415` / `9814`-`9820` | NATO helo | `mi17_b8_rus` (**superseded 2026-07-30**: was `uh-60m_blackhawk_mg`, now blocked pending a parked-actor instantiation proof — fail code 13 decides it; see the E2 airframe findings in `docs/plans/2026-07-30-allied-support-expansion.md`); 2x `nato_pilot` linked `driver`,`commander`; `82nd_squadlead`,`82nd_mg`,2x `82nd_rifleman` independent |
 | `0xb416`-`0xb41f` / `9821`-`9830` | RUSA para | `il-76td_para`; 5x `rus_pliot` linked `driver`,`driver1`,`driver2`,`commander`,`commander1`; payload linked `seat01`-`seat04` |
 | `0xb420`-`0xb427` / `9831`-`9838` | UKR para | `c130_para`; 3x `ukr_pilot` linked `driver`,`driver2`,`commander`; payload linked `seat02`-`seat05` |
 | `0xb428`-`0xb42f` / `9839`-`9846` | NATO para | `c130_para`; 3x `nato_pilot` linked `driver`,`driver2`,`commander`; payload linked `seat02`-`seat05` |

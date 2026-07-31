@@ -2896,10 +2896,64 @@
 	{Link 0xb3ca {0xb3c1 "seat7"}}
 	{Link 0xb3cb {0xb3c1 "seat8"}}
 
-; ===== E2 AIR PACKAGE POOLS (default-off; West-81 supplies UH-60/C-130) =====
+; ===== E2 AIR PACKAGE POOLS (default-off; West-81 supplies the C-130/Il-76) =====
 ; IDs 0xb401-0xb42f, MIDs 9800-9846, y=-36800.
+; Airframe sourcing, recon-verified 2026-07-30 - do NOT re-derive the old
+; "NATO = West-81, everyone else = Code:X" asymmetry, it was wrong:
+;   * both paradrop planes are West-81 - il-76td_para is -vehicle/sov/airborne/il-76td/
+;     and c130_para is -vehicle/csa/airborne/c130/, both members of West-81's
+;     -vehicle.pak. RUSA, UKR and NATO all fly a West-81 plane on the para leg, so a
+;     para-leg defect is universal, never faction-specific.
+;   * every E2 helicopter is now the Code:X mi17_b8 airframe (see the NATO note below).
+;
+; ===== CANONICAL PARKED-AIRCRAFT SNAPSHOT (editor-written, evidence-derived) =====
+; A parked aircraft is a STATE SNAPSHOT, and the two airborne chassis families use two
+; DIFFERENT state vocabularies. Mixing them is what kept these hulls on the ground.
+; The evidence is a census of every {Chassis "..."} block in every .mi/.inc shipped by
+; this stack (base maps, Code:X, and the other installed packs), which splits cleanly:
+;
+;   {Chassis "airborne"}    1523 blocks, ALL of them {AirborneMode 1} + {Altitude N}.
+;                           ZERO carry {Airborne} or {EngineStarted}. Paired with an
+;                           explicit sibling {ChassisManager {Current "airborne"}}
+;                           (1486 occurrences) and preceded by {DisableObstacles}.
+;                           Reference: the base game's own parked airstrike planes.
+;   {Chassis "helicopter"}   58 blocks, ALL of them bare {Airborne} + {EngineStarted}
+;                           (+ {Altitude ~22}). ZERO carry {AirborneMode}.
+;                           Reference: Code:X's own gostomel maps, e.g. the parked
+;                           mil_mi17_mg_rus_2 hull - the same Mi-17 family we fly.
+;
+; So the helicopter snapshot this pool already shipped was CORRECT and stays; only the
+; three fixed-wing hulls were written in the wrong vocabulary and are converted below.
+; Both families now also carry the explicit {ChassisManager} sibling and
+; {DisableObstacles}: helicopter.ext already defaults ChassisManager to "helicopter",
+; so the sibling is a no-op restatement of intent, while Airborne_M.ext defaults it to
+; "wheel" and the planes genuinely need the override. {DisableObstacles} is what every
+; editor-written PARKED (hidden, off-map) aircraft carries; these hulls are parked 5
+; units apart in a single row, which is exactly the case it exists for.
+; Positions stay 2D - no z component - because that is what the editor writes; altitude
+; is the chassis snapshot's job, never the position's.
+;
+; uh-60m_blackhawk_mg VERDICT (still blocked - the canonical form does NOT unblock it):
+; the helicopter snapshot above is the one it already carried, so nothing about the
+; corrected recipe changes its situation and no new evidence is available without
+; another live run. Fail code 13 remains the discriminator. Detail below.
+; uh-60m_blackhawk_mg VERDICT (blocked pending an instantiation proof): its West-81 def
+; is helicopter-chassis-compatible - it includes /properties/helicopter.ext, declares
+; {PatherID "helicopter"}, {targetClass "helicopter"}, {ObstacleId "helicopter" "in_air"}
+; and its own {Chassis "helicopter" {Locomotion ("locomotion_transport")}}, so the park
+; snapshot below was valid for it - and the def demonstrably LOADED at map parse (it
+; emitted the same two /properties/helicopter.ext pivot-bone lines mi17_b8_rus emits,
+; i.e. through the same Code:X helicopter.ext). What was never proved is that the parked
+; ACTOR instantiated: unlike mi17_b8_rus / mi17_b8_ukr / shaanxi_sx2190_passenger /
+; bmp2_* / m2a3 it produced no [0x0 actor] line, and the live NATO helo claim came back
+; empty (e2_combo_helo_fail 9) even though the trigger's own pool counts passed. NATO is
+; therefore on the Code:X mi17_b8_rus hull, which is the one airframe with a live actor
+; instantiation proof; the Blackhawk stays out of every live pool. Fail code 13 decides
+; it: 13 = the parked airframe was absent at dispatch, 9 = it existed and the claim
+; selector still did not take it.
 	{Entity "mi17_b8_rus" 0xb401
 		{Position -9000 -36800}
+		{DisableObstacles}
 		{Player 0}
 		{MID 9800}
 		{Able "-select"}
@@ -2907,6 +2961,9 @@
 			{Airborne}
 			{EngineStarted}
 			{Altitude 22}
+		}
+		{ChassisManager
+			{Current "helicopter"}
 		}
 	}
 	{Human "mp/rusa/2022s/rus_pliot" 0xb402
@@ -2947,6 +3004,7 @@
 	}
 	{Entity "mi17_b8_ukr" 0xb408
 		{Position -8965 -36800}
+		{DisableObstacles}
 		{Player 0}
 		{MID 9807}
 		{Able "-select"}
@@ -2954,6 +3012,9 @@
 			{Airborne}
 			{EngineStarted}
 			{Altitude 22}
+		}
+		{ChassisManager
+			{Current "helicopter"}
 		}
 	}
 	{Human "mp/ukr/2022s/ukr_pilot" 0xb409
@@ -2992,8 +3053,14 @@
 		{MID 9813}
 		{Able "-select"}
 	}
-	{Entity "uh-60m_blackhawk_mg" 0xb40f
+	; NATO helo hull: Code:X mi17_b8_rus, the only E2 airframe with a live parked-actor
+	; instantiation proof. NATO pilot breeds and the 82nd team are unchanged, so this
+	; package is now structurally identical to the rusa/ukr ones - which is exactly the
+	; discriminator the next live run needs. Its crew places (driver, commander) match
+	; the links below unchanged.
+	{Entity "mi17_b8_rus" 0xb40f
 		{Position -8930 -36800}
+		{DisableObstacles}
 		{Player 0}
 		{MID 9814}
 		{Able "-select"}
@@ -3001,6 +3068,9 @@
 			{Airborne}
 			{EngineStarted}
 			{Altitude 22}
+		}
+		{ChassisManager
+			{Current "helicopter"}
 		}
 	}
 	{Human "mp/nato/2022s/nato_pilot" 0xb410
@@ -3039,11 +3109,28 @@
 		{MID 9820}
 		{Able "-select"}
 	}
+	; Fixed-wing park snapshot, in the AIRBORNE-family vocabulary (see the census in the
+	; section header): {AirborneMode 1} + {Altitude 65} + an explicit sibling
+	; {ChassisManager {Current "airborne"}}. The previous form borrowed the HELICOPTER
+	; family's {Airborne}/{EngineStarted} tokens, which appear on zero of the 1523
+	; airborne-chassis blocks in this stack - that is the most likely reason nothing
+	; instantiated. properties/Airborne_M.ext declares both {Chassis "wheel"} and
+	; {Chassis "airborne"} with {chassisManager {current "wheel"}}, so the override is
+	; load-bearing; the two para defs themselves also set it, and restating it here
+	; matches what the editor writes. Altitude 65 is the value both para defs declare.
 	{Entity "il-76td_para" 0xb416
 		{Position -8895 -36800}
+		{DisableObstacles}
 		{Player 0}
 		{MID 9821}
 		{Able "-select"}
+		{Chassis "airborne"
+			{AirborneMode 1}
+			{Altitude 65}
+		}
+		{ChassisManager
+			{Current "airborne"}
+		}
 	}
 	{Human "mp/rusa/2022s/rus_pliot" 0xb417
 		{Position -8890 -36800}
@@ -3101,9 +3188,17 @@
 	}
 	{Entity "c130_para" 0xb420
 		{Position -8845 -36800}
+		{DisableObstacles}
 		{Player 0}
 		{MID 9831}
 		{Able "-select"}
+		{Chassis "airborne"
+			{AirborneMode 1}
+			{Altitude 65}
+		}
+		{ChassisManager
+			{Current "airborne"}
+		}
 	}
 	{Human "mp/ukr/2022s/ukr_pilot" 0xb421
 		{Position -8840 -36800}
@@ -3149,9 +3244,17 @@
 	}
 	{Entity "c130_para" 0xb428
 		{Position -8805 -36800}
+		{DisableObstacles}
 		{Player 0}
 		{MID 9839}
 		{Able "-select"}
+		{Chassis "airborne"
+			{AirborneMode 1}
+			{Altitude 65}
+		}
+		{ChassisManager
+			{Current "airborne"}
+		}
 	}
 	{Human "mp/nato/2022s/nato_pilot" 0xb429
 		{Position -8800 -36800}
@@ -3197,6 +3300,18 @@
 	}
 
 ; ----- E2 CREW + PARATROOPER LINKS -----
+; Verified place tables, read off each airframe's own crew.ext. A {Link} to a place the
+; def does not declare is silently dropped and the body is left standing at the park
+; position, so these names are never invented - they are transcribed:
+;   mi17_b8_rus / mi17_b8_ukr : driver, commander, seat1..seat12 (bones seat01..)
+;   uh-60m_blackhawk_mg       : driver, commander, gunner1, gunner2, seat03..seat14
+;                               (NO seat01/seat02) - retained for the record only; the
+;                               airframe is not in any live pool.
+;   c130_para                 : crew driver, driver2, commander (linkbone == place);
+;                               passengers seat02..seat20+
+;   il-76td_para              : crew driver, driver1, driver2, commander, commander1;
+;                               passengers seat00..seat30+ (drop_paratrooper ejects
+;                               seats 1-20 only, so seat00 and seat21+ stay unused)
 	{Link 0xb402 {0xb401 "driver"}}
 	{Link 0xb403 {0xb401 "commander"}}
 	{Link 0xb409 {0xb408 "driver"}}
@@ -3227,6 +3342,13 @@
 	{Link 0xb42e {0xb428 "seat04"}}
 	{Link 0xb42f {0xb428 "seat05"}}
 
+; sup_linked marks every body that is {Link}-baked into a hull above. It is carried by
+; the crew and the riders, never by a hull, and it is PERSISTENT - no engine removes it.
+; The four wave engines exclude it from their per-body {"placement"} selector: a linked
+; body must never be teleported on its own. Placing it individually overwrote its world
+; transform with the pad point and every occupant rendered clipped into the driver
+; position until {emit {mode passengers}} handed it a fresh one. Place the hull; the
+; link carries its occupants. Derived from the {Link} table, never hand-kept.
 ; ===== TAGS =====
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb200}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_line" "hidden" 0xb201}
@@ -3491,14 +3613,14 @@
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_manpad" "hidden" 0xb304}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_manpad" "hidden" 0xb305}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh1" "hidden" 0xb306}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh1" "hidden" 0xb307}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh1" "hidden" 0xb308}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh1" "sup_linked" "hidden" 0xb307}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh1" "sup_linked" "hidden" 0xb308}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh2" "hidden" 0xb309}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh2" "hidden" 0xb30a}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh2" "hidden" 0xb30b}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh2" "sup_linked" "hidden" 0xb30a}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh2" "sup_linked" "hidden" 0xb30b}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh3" "hidden" 0xb30c}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh3" "hidden" 0xb30d}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh3" "hidden" 0xb30e}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh3" "sup_linked" "hidden" 0xb30d}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_veh" "ally_sup_ukr_veh3" "sup_linked" "hidden" 0xb30e}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_recon" "hidden" 0xb30f}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_recon" "hidden" 0xb310}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_recon" "hidden" 0xb311}
@@ -3602,39 +3724,39 @@
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_manpad" "hidden" 0xb373}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_manpad" "hidden" 0xb374}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh1" "hidden" 0xb375}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh1" "hidden" 0xb376}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh1" "hidden" 0xb377}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh1" "sup_linked" "hidden" 0xb376}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh1" "sup_linked" "hidden" 0xb377}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh2" "hidden" 0xb378}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh2" "hidden" 0xb379}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh2" "hidden" 0xb37a}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh2" "sup_linked" "hidden" 0xb379}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh2" "sup_linked" "hidden" 0xb37a}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "hidden" 0xb380}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "hidden" 0xb381}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "hidden" 0xb382}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "hidden" 0xb383}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "sup_linked" "hidden" 0xb381}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "sup_linked" "hidden" 0xb382}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "sup_linked" "hidden" 0xb383}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv_inf" "hidden" 0xb384}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv_inf" "hidden" 0xb385}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv_inf" "hidden" 0xb386}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv_inf" "hidden" 0xb387}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv" "ally_sup_ukr_ifv1" "hidden" 0xb388}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv" "ally_sup_ukr_ifv1" "hidden" 0xb389}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv" "ally_sup_ukr_ifv1" "hidden" 0xb38a}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv" "ally_sup_ukr_ifv1" "hidden" 0xb38b}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv" "ally_sup_ukr_ifv1" "sup_linked" "hidden" 0xb389}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv" "ally_sup_ukr_ifv1" "sup_linked" "hidden" 0xb38a}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv" "ally_sup_ukr_ifv1" "sup_linked" "hidden" 0xb38b}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv_inf" "hidden" 0xb38c}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv_inf" "hidden" 0xb38d}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv_inf" "hidden" 0xb38e}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_ifv_inf" "hidden" 0xb38f}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv" "ally_sup_prc_ifv1" "hidden" 0xb390}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv" "ally_sup_prc_ifv1" "hidden" 0xb391}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv" "ally_sup_prc_ifv1" "hidden" 0xb392}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv" "ally_sup_prc_ifv1" "hidden" 0xb393}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv" "ally_sup_prc_ifv1" "sup_linked" "hidden" 0xb391}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv" "ally_sup_prc_ifv1" "sup_linked" "hidden" 0xb392}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv" "ally_sup_prc_ifv1" "sup_linked" "hidden" 0xb393}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv_inf" "hidden" 0xb394}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv_inf" "hidden" 0xb395}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv_inf" "hidden" 0xb396}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_ifv_inf" "hidden" 0xb397}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "hidden" 0xb398}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "hidden" 0xb399}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "hidden" 0xb39a}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "hidden" 0xb39b}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "sup_linked" "hidden" 0xb399}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "sup_linked" "hidden" 0xb39a}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "sup_linked" "hidden" 0xb39b}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv_inf" "hidden" 0xb39c}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv_inf" "hidden" 0xb39d}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv_inf" "hidden" 0xb39e}
@@ -3648,98 +3770,98 @@
 ; (0xc1 band) park their dismounts loose, so packages 2/3/4 split the sixteen loose
 ; bodies 4/6/6. Dismounts per faction are unchanged at 24.
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_hull" "ally_sup_rusa_p1_hull" "hidden" 0xb3a0}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p1_crew" "hidden" 0xb3a1}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p1_crew" "hidden" 0xb3a2}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "hidden" 0xb3a3}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "hidden" 0xb3a4}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "hidden" 0xb3a5}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "hidden" 0xb3a6}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "hidden" 0xb3a7}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "hidden" 0xb3a8}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "hidden" 0xb3a9}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "hidden" 0xb3aa}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p1_crew" "sup_linked" "hidden" 0xb3a1}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p1_crew" "sup_linked" "hidden" 0xb3a2}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "sup_linked" "hidden" 0xb3a3}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "sup_linked" "hidden" 0xb3a4}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "sup_linked" "hidden" 0xb3a5}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "sup_linked" "hidden" 0xb3a6}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "sup_linked" "hidden" 0xb3a7}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "sup_linked" "hidden" 0xb3a8}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "sup_linked" "hidden" 0xb3a9}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p1_pax" "sup_linked" "hidden" 0xb3aa}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_hull" "ally_sup_ukr_p1_hull" "hidden" 0xb3ab}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p1_crew" "hidden" 0xb3ac}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p1_crew" "hidden" 0xb3ad}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "hidden" 0xb3ae}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "hidden" 0xb3af}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "hidden" 0xb3b0}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "hidden" 0xb3b1}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "hidden" 0xb3b2}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "hidden" 0xb3b3}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "hidden" 0xb3b4}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "hidden" 0xb3b5}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p1_crew" "sup_linked" "hidden" 0xb3ac}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p1_crew" "sup_linked" "hidden" 0xb3ad}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "sup_linked" "hidden" 0xb3ae}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "sup_linked" "hidden" 0xb3af}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "sup_linked" "hidden" 0xb3b0}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "sup_linked" "hidden" 0xb3b1}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "sup_linked" "hidden" 0xb3b2}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "sup_linked" "hidden" 0xb3b3}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "sup_linked" "hidden" 0xb3b4}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p1_pax" "sup_linked" "hidden" 0xb3b5}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_hull" "ally_sup_nato_p1_hull" "hidden" 0xb3b6}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p1_crew" "hidden" 0xb3b7}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p1_crew" "hidden" 0xb3b8}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "hidden" 0xb3b9}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "hidden" 0xb3ba}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "hidden" 0xb3bb}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "hidden" 0xb3bc}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "hidden" 0xb3bd}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "hidden" 0xb3be}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "hidden" 0xb3bf}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "hidden" 0xb3c0}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p1_crew" "sup_linked" "hidden" 0xb3b7}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p1_crew" "sup_linked" "hidden" 0xb3b8}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "sup_linked" "hidden" 0xb3b9}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "sup_linked" "hidden" 0xb3ba}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "sup_linked" "hidden" 0xb3bb}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "sup_linked" "hidden" 0xb3bc}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "sup_linked" "hidden" 0xb3bd}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "sup_linked" "hidden" 0xb3be}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "sup_linked" "hidden" 0xb3bf}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p1_pax" "sup_linked" "hidden" 0xb3c0}
 
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_hull" "ally_sup_prc_p1_hull" "hidden" 0xb3c1}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p1_crew" "hidden" 0xb3c2}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p1_crew" "hidden" 0xb3c3}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "hidden" 0xb3c4}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "hidden" 0xb3c5}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "hidden" 0xb3c6}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "hidden" 0xb3c7}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "hidden" 0xb3c8}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "hidden" 0xb3c9}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "hidden" 0xb3ca}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "hidden" 0xb3cb}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p1_crew" "sup_linked" "hidden" 0xb3c2}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p1_crew" "sup_linked" "hidden" 0xb3c3}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "sup_linked" "hidden" 0xb3c4}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "sup_linked" "hidden" 0xb3c5}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "sup_linked" "hidden" 0xb3c6}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "sup_linked" "hidden" 0xb3c7}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "sup_linked" "hidden" 0xb3c8}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "sup_linked" "hidden" 0xb3c9}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "sup_linked" "hidden" 0xb3ca}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p1_pax" "sup_linked" "hidden" 0xb3cb}
 
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo" "support_e2_aircraft" "hidden" 0xb401}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_crew" "hidden" 0xb402}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_crew" "hidden" 0xb403}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_crew" "sup_linked" "hidden" 0xb402}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_crew" "sup_linked" "hidden" 0xb403}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "hidden" 0xb404}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "hidden" 0xb405}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "hidden" 0xb406}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_helo_team" "hidden" 0xb407}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo" "support_e2_aircraft" "hidden" 0xb408}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_crew" "hidden" 0xb409}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_crew" "hidden" 0xb40a}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_crew" "sup_linked" "hidden" 0xb409}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_crew" "sup_linked" "hidden" 0xb40a}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "hidden" 0xb40b}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "hidden" 0xb40c}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "hidden" 0xb40d}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_helo_team" "hidden" 0xb40e}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo" "support_e2_aircraft" "hidden" 0xb40f}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_crew" "hidden" 0xb410}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_crew" "hidden" 0xb411}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_crew" "sup_linked" "hidden" 0xb410}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_crew" "sup_linked" "hidden" 0xb411}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "hidden" 0xb412}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "hidden" 0xb413}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "hidden" 0xb414}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_helo_team" "hidden" 0xb415}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para" "support_e2_aircraft" "hidden" 0xb416}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "hidden" 0xb417}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "hidden" 0xb418}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "hidden" 0xb419}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "hidden" 0xb41a}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "hidden" 0xb41b}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_pax" "support_e2_para_pax" "hidden" 0xb41c}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_pax" "support_e2_para_pax" "hidden" 0xb41d}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_pax" "support_e2_para_pax" "hidden" 0xb41e}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_pax" "support_e2_para_pax" "hidden" 0xb41f}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "sup_linked" "hidden" 0xb417}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "sup_linked" "hidden" 0xb418}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "sup_linked" "hidden" 0xb419}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "sup_linked" "hidden" 0xb41a}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_crew" "sup_linked" "hidden" 0xb41b}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_pax" "support_e2_para_pax" "sup_linked" "hidden" 0xb41c}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_pax" "support_e2_para_pax" "sup_linked" "hidden" 0xb41d}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_pax" "support_e2_para_pax" "sup_linked" "hidden" 0xb41e}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_rusa_para_pax" "support_e2_para_pax" "sup_linked" "hidden" 0xb41f}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para" "support_e2_aircraft" "hidden" 0xb420}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_crew" "hidden" 0xb421}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_crew" "hidden" 0xb422}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_crew" "hidden" 0xb423}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_pax" "support_e2_para_pax" "hidden" 0xb424}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_pax" "support_e2_para_pax" "hidden" 0xb425}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_pax" "support_e2_para_pax" "hidden" 0xb426}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_pax" "support_e2_para_pax" "hidden" 0xb427}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_crew" "sup_linked" "hidden" 0xb421}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_crew" "sup_linked" "hidden" 0xb422}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_crew" "sup_linked" "hidden" 0xb423}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_pax" "support_e2_para_pax" "sup_linked" "hidden" 0xb424}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_pax" "support_e2_para_pax" "sup_linked" "hidden" 0xb425}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_pax" "support_e2_para_pax" "sup_linked" "hidden" 0xb426}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_ukr_para_pax" "support_e2_para_pax" "sup_linked" "hidden" 0xb427}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para" "support_e2_aircraft" "hidden" 0xb428}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_crew" "hidden" 0xb429}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_crew" "hidden" 0xb42a}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_crew" "hidden" 0xb42b}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "hidden" 0xb42c}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "hidden" 0xb42d}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "hidden" 0xb42e}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "hidden" 0xb42f}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_crew" "sup_linked" "hidden" 0xb429}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_crew" "sup_linked" "hidden" 0xb42a}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_crew" "sup_linked" "hidden" 0xb42b}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "sup_linked" "hidden" 0xb42c}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "sup_linked" "hidden" 0xb42d}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "sup_linked" "hidden" 0xb42e}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_nato_para_pax" "support_e2_para_pax" "sup_linked" "hidden" 0xb42f}
 
 ; ===== FLAG-WEAPON CREW TOP-UP (Phase 4 crewed rewrite, 2026-07-30) =====
 ; defense_support_waves.inc crews each flag emplacement with two bodies from this
@@ -4553,14 +4675,14 @@
 		{Able "-select"}
 	}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_hull" "ally_sup_rusa_p2_hull" "hidden" 0xc100}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p2_crew" "hidden" 0xc101}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p2_crew" "hidden" 0xc102}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p2_crew" "sup_linked" "hidden" 0xc101}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p2_crew" "sup_linked" "hidden" 0xc102}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_hull" "ally_sup_rusa_p3_hull" "hidden" 0xc103}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p3_crew" "hidden" 0xc104}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p3_crew" "hidden" 0xc105}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p3_crew" "sup_linked" "hidden" 0xc104}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p3_crew" "sup_linked" "hidden" 0xc105}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_hull" "ally_sup_rusa_p4_hull" "hidden" 0xc106}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p4_crew" "hidden" 0xc107}
-	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p4_crew" "hidden" 0xc108}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p4_crew" "sup_linked" "hidden" 0xc107}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_crew" "ally_sup_rusa_p4_crew" "sup_linked" "hidden" 0xc108}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p2_pax" "hidden" 0xc109}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p2_pax" "hidden" 0xc10a}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p2_pax" "hidden" 0xc10b}
@@ -4578,14 +4700,14 @@
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "hidden" 0xc117}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_motor" "ally_sup_rusa_motor_pax" "ally_sup_rusa_p4_pax" "hidden" 0xc118}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_hull" "ally_sup_ukr_p2_hull" "hidden" 0xc119}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p2_crew" "hidden" 0xc11a}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p2_crew" "hidden" 0xc11b}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p2_crew" "sup_linked" "hidden" 0xc11a}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p2_crew" "sup_linked" "hidden" 0xc11b}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_hull" "ally_sup_ukr_p3_hull" "hidden" 0xc11c}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p3_crew" "hidden" 0xc11d}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p3_crew" "hidden" 0xc11e}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p3_crew" "sup_linked" "hidden" 0xc11d}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p3_crew" "sup_linked" "hidden" 0xc11e}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_hull" "ally_sup_ukr_p4_hull" "hidden" 0xc11f}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p4_crew" "hidden" 0xc120}
-	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p4_crew" "hidden" 0xc121}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p4_crew" "sup_linked" "hidden" 0xc120}
+	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_crew" "ally_sup_ukr_p4_crew" "sup_linked" "hidden" 0xc121}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p2_pax" "hidden" 0xc122}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p2_pax" "hidden" 0xc123}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p2_pax" "hidden" 0xc124}
@@ -4603,14 +4725,14 @@
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "hidden" 0xc130}
 	{Tags "ally_sup_tpl" "ally_sup_ukr" "ally_sup_ukr_motor" "ally_sup_ukr_motor_pax" "ally_sup_ukr_p4_pax" "hidden" 0xc131}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_hull" "ally_sup_nato_p2_hull" "hidden" 0xc132}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p2_crew" "hidden" 0xc133}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p2_crew" "hidden" 0xc134}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p2_crew" "sup_linked" "hidden" 0xc133}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p2_crew" "sup_linked" "hidden" 0xc134}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_hull" "ally_sup_nato_p3_hull" "hidden" 0xc135}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p3_crew" "hidden" 0xc136}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p3_crew" "hidden" 0xc137}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p3_crew" "sup_linked" "hidden" 0xc136}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p3_crew" "sup_linked" "hidden" 0xc137}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_hull" "ally_sup_nato_p4_hull" "hidden" 0xc138}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p4_crew" "hidden" 0xc139}
-	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p4_crew" "hidden" 0xc13a}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p4_crew" "sup_linked" "hidden" 0xc139}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_crew" "ally_sup_nato_p4_crew" "sup_linked" "hidden" 0xc13a}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p2_pax" "hidden" 0xc13b}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p2_pax" "hidden" 0xc13c}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p2_pax" "hidden" 0xc13d}
@@ -4628,14 +4750,14 @@
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "hidden" 0xc149}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_motor" "ally_sup_nato_motor_pax" "ally_sup_nato_p4_pax" "hidden" 0xc14a}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_hull" "ally_sup_prc_p2_hull" "hidden" 0xc14b}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p2_crew" "hidden" 0xc14c}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p2_crew" "hidden" 0xc14d}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p2_crew" "sup_linked" "hidden" 0xc14c}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p2_crew" "sup_linked" "hidden" 0xc14d}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_hull" "ally_sup_prc_p3_hull" "hidden" 0xc14e}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p3_crew" "hidden" 0xc14f}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p3_crew" "hidden" 0xc150}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p3_crew" "sup_linked" "hidden" 0xc14f}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p3_crew" "sup_linked" "hidden" 0xc150}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_hull" "ally_sup_prc_p4_hull" "hidden" 0xc151}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p4_crew" "hidden" 0xc152}
-	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p4_crew" "hidden" 0xc153}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p4_crew" "sup_linked" "hidden" 0xc152}
+	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_crew" "ally_sup_prc_p4_crew" "sup_linked" "hidden" 0xc153}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p2_pax" "hidden" 0xc154}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p2_pax" "hidden" 0xc155}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_motor" "ally_sup_prc_motor_pax" "ally_sup_prc_p2_pax" "hidden" 0xc156}
@@ -4683,6 +4805,7 @@
 ; IDs 0xc200-0xc206, MIDs 10009-10015, y=-37400.
 	{Entity "mi17_b8_rus" 0xc200
 		{Position -9000 -37400}
+		{DisableObstacles}
 		{Player 0}
 		{MID 10009}
 		{Able "-select"}
@@ -4690,6 +4813,9 @@
 			{Airborne}
 			{EngineStarted}
 			{Altitude 22}
+		}
+		{ChassisManager
+			{Current "helicopter"}
 		}
 	}
 	{Human "mp/prc/2022s/pla_crew" 0xc201
@@ -4729,8 +4855,8 @@
 		{Able "-select"}
 	}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo" "support_e2_aircraft" "hidden" 0xc200}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_crew" "hidden" 0xc201}
-	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_crew" "hidden" 0xc202}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_crew" "sup_linked" "hidden" 0xc201}
+	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_crew" "sup_linked" "hidden" 0xc202}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "hidden" 0xc203}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "hidden" 0xc204}
 	{Tags "ally_sup_tpl" "support_e2_tpl" "support_e2_prc_helo_team" "hidden" 0xc205}

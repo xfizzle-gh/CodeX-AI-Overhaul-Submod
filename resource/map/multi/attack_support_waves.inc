@@ -259,6 +259,10 @@
 						{group
 							{select {tag {tag attack_support_deploy}}}
 							{exclude {tag {tag attack_support_placed}}}
+							; A {Link}-baked crew/rider is carried by its hull. Teleporting it on its own
+							; overwrites its world transform with the pad point and it renders clipped into
+							; the driver seat until it emits. Place the hull only.
+							{exclude {tag {tag sup_linked}}}
 						}
 						{amount 1}
 					}
@@ -1351,6 +1355,7 @@
 					{"set_i" {var "attack_support_motor_left$"} {op "="} {value 4}}
 					{"set_i" {var "attack_support_motor_pkg$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_motor_first$"} {op "="} {value 0}}
+					{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_air_left$"} {op "="} {value 2}}
 					; DAY-2 TEST default ON. Set value 0 to restore production airmobile schedule only.
 					{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}
@@ -1362,6 +1367,8 @@
 					{"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 0}}
 					{"set_i" {var "support_e2_lz$"} {op "="} {value 0}}
 					{"set_i" {var "support_e2_flag$"} {op "="} {value 0}}
+					{"set_i" {var "support_e2_para_range_band$"} {op "="} {value 0}}
+					{"set_i" {var "support_e2_para_pass$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_busy$"} {op "="} {value 1}}
 					{"set_i" {var "attack_support_next_ok$"} {op "="} {value 0}}
 					{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}
@@ -3211,6 +3218,9 @@
 				{"entity_state" {selector {tag support_e2_flag_target}} {tag_remove support_e2_flag_target}}
 				{"set_i" {var "support_e2_flag$"} {op "="} {value 0}}
 				{"set_i" {var "support_e2_lz$"} {op "="} {value 0}}
+				; Closest-approach tracker state belongs to one run-in only.
+				{"set_i" {var "support_e2_para_range_band$"} {op "="} {value 0}}
+				{"set_i" {var "support_e2_para_pass$"} {op "="} {value 0}}
 			)
 
 			(define "e2_announce_helo"
@@ -3261,33 +3271,129 @@
 			;   10 the claimed aircraft was not operatable when the flight leg began
 			;   11 the insert landed no live body
 			;   12 faction army still unresolved at dispatch
-			(define "e2_prove_helo_claim"
+			;   13 the parked airframe was absent at dispatch: this package's own pool
+			;      tag and support_e2_aircraft never intersected on one live entity, so
+			;      there was nothing for the claim selector to take
+			;   14 the clone never arrived: {"actor_to_waypoint"} ... {clone} produced no
+			;      entity for the destination waypoint's {commands} block to tag
+			;
+			; 13 vs 9 is the discriminator for an airframe whose def loads but whose parked
+			; actor may never instantiate: 13 means the entity was never there, 9 means it
+			; was there and the claim selector still did not take it. The probes below run
+			; BEFORE any claim, which is the only point at which the two are separable.
+			(define "e2_prove_park_rusa_helo"
 				{"switch"
 					{"case"
 						{condition
 							{type entities}
-							{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft} {tag support_e2_claim}}
+							{selector {ignore_captured_by_user 0} {tag support_e2_rusa_helo} {tag support_e2_aircraft}}
 							{count {op ">="} {value 1}}
 						}
 					}
-					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 9}}}
+					{"default"
+						{"set_i" {var "support_e2_fail$"} {op "="} {value 13}}
+						("e2_fail_and_cleanup")
+					}
 				}
 			)
 
-			(define "e2_prove_para_claim"
+			(define "e2_prove_park_ukr_helo"
 				{"switch"
 					{"case"
 						{condition
 							{type entities}
-							{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}}
+							{selector {ignore_captured_by_user 0} {tag support_e2_ukr_helo} {tag support_e2_aircraft}}
 							{count {op ">="} {value 1}}
 						}
 					}
-					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 9}}}
+					{"default"
+						{"set_i" {var "support_e2_fail$"} {op "="} {value 13}}
+						("e2_fail_and_cleanup")
+					}
 				}
 			)
 
-			; Only a live claimed helicopter may open the flight leg. Without this the
+			(define "e2_prove_park_nato_helo"
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector {ignore_captured_by_user 0} {tag support_e2_nato_helo} {tag support_e2_aircraft}}
+							{count {op ">="} {value 1}}
+						}
+					}
+					{"default"
+						{"set_i" {var "support_e2_fail$"} {op "="} {value 13}}
+						("e2_fail_and_cleanup")
+					}
+				}
+			)
+
+			(define "e2_prove_park_prc_helo"
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector {ignore_captured_by_user 0} {tag support_e2_prc_helo} {tag support_e2_aircraft}}
+							{count {op ">="} {value 1}}
+						}
+					}
+					{"default"
+						{"set_i" {var "support_e2_fail$"} {op "="} {value 13}}
+						("e2_fail_and_cleanup")
+					}
+				}
+			)
+
+			(define "e2_prove_park_rusa_para"
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector {ignore_captured_by_user 0} {tag support_e2_rusa_para} {tag support_e2_aircraft}}
+							{count {op ">="} {value 1}}
+						}
+					}
+					{"default"
+						{"set_i" {var "support_e2_fail$"} {op "="} {value 13}}
+						("e2_fail_and_cleanup")
+					}
+				}
+			)
+
+			(define "e2_prove_park_ukr_para"
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector {ignore_captured_by_user 0} {tag support_e2_ukr_para} {tag support_e2_aircraft}}
+							{count {op ">="} {value 1}}
+						}
+					}
+					{"default"
+						{"set_i" {var "support_e2_fail$"} {op "="} {value 13}}
+						("e2_fail_and_cleanup")
+					}
+				}
+			)
+
+			(define "e2_prove_park_nato_para"
+				{"switch"
+					{"case"
+						{condition
+							{type entities}
+							{selector {ignore_captured_by_user 0} {tag support_e2_nato_para} {tag support_e2_aircraft}}
+							{count {op ">="} {value 1}}
+						}
+					}
+					{"default"
+						{"set_i" {var "support_e2_fail$"} {op "="} {value 13}}
+						("e2_fail_and_cleanup")
+					}
+				}
+			)
+
+; Only a live claimed helicopter may open the flight leg. Without this the
 			; {"action" move} had no target, the 40s window expired and the run blamed the
 			; flight (fail 5) for an aircraft that was never there.
 			(define "e2_fly_helo_or_fail"
@@ -3301,7 +3407,17 @@
 						("e2_order_aircraft_lz")
 						{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
 					}
-					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 10}}}
+					{"default"
+					; An earlier code wins: 14 (the clone never arrived) must not be
+					; overwritten by 10 ("the aircraft was not operatable").
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+							{"set_i" {var "support_e2_fail$"} {op "="} {value 10}}
+						}
+						{"default"}
+					}
+				}
 				}
 			)
 
@@ -3321,7 +3437,17 @@
 						}
 						{"set_i" {var "support_e2_stage$"} {op "="} {value 30}}
 					}
-					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 10}}}
+					{"default"
+					; An earlier code wins: 14 (the clone never arrived) must not be
+					; overwritten by 10 ("the aircraft was not operatable").
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+							{"set_i" {var "support_e2_fail$"} {op "="} {value 10}}
+						}
+						{"default"}
+					}
+				}
 				}
 			)
 
@@ -3357,9 +3483,13 @@
 
 			(define "e2_fail_and_cleanup"
 				("e2_delete_aircraft")
+				{"entity_state" {selector {tag support_e2_src}} {tag_remove support_e2_src}}
+				{"entity_state" {selector {tag support_e2_arrival}} {tag_remove support_e2_arrival}}
 				{"entity_state" {selector {tag support_e2_claim}} {tag_remove support_e2_claim}}
 				{"entity_state" {selector {tag support_e2_team}} {tag_remove support_e2_team}}
 				{"entity_state" {selector {tag support_e2_helo}} {tag_remove support_e2_helo}}
+				{"entity_state" {selector {tag support_e2_plane}} {tag_remove support_e2_plane}}
+				{"entity_state" {selector {tag support_e2_released}} {tag_remove support_e2_released}}
 				{"entity_state" {selector {tag support_e2_lz_marker}} {tag_remove support_e2_lz_marker}}
 				{"entity_state" {selector {tag support_e2_place_one}} {tag_remove support_e2_place_one}}
 				{"entity_state" {selector {tag support_e2_placed}} {tag_remove support_e2_placed}}
@@ -3370,8 +3500,12 @@
 
 			(define "e2_complete_cleanup"
 				("e2_delete_aircraft")
+				{"entity_state" {selector {tag support_e2_src}} {tag_remove support_e2_src}}
+				{"entity_state" {selector {tag support_e2_arrival}} {tag_remove support_e2_arrival}}
 				{"entity_state" {selector {tag support_e2_claim}} {tag_remove support_e2_claim}}
 				{"entity_state" {selector {tag support_e2_helo}} {tag_remove support_e2_helo}}
+				{"entity_state" {selector {tag support_e2_plane}} {tag_remove support_e2_plane}}
+				{"entity_state" {selector {tag support_e2_released}} {tag_remove support_e2_released}}
 				{"entity_state" {selector {tag support_e2_lz_marker}} {tag_remove support_e2_lz_marker}}
 				{"entity_state" {selector {tag support_e2_place_one}} {tag_remove support_e2_place_one}}
 				{"entity_state" {selector {tag support_e2_placed}} {tag_remove support_e2_placed}}
@@ -3607,11 +3741,101 @@
 				}
 			)
 
-			(define "e2_promote_helo"
+			; ===== E2 AIRCRAFT DISPATCH: CLONE + TELEPORT + WAYPOINT COMMANDS =====
+			; This is the base game's OWN aircraft call-in recipe, adopted verbatim in
+			; shape. Three parts, and all three are required:
+			;
+			;   1. {"actor_to_waypoint"} with {source advanced}, an {include {tag {tag
+			;      hidden}}} clause (without it the selector cannot reach a hidden parked
+			;      template at all), {amount 1}, a NUMERIC {waypoint}, {clone} and
+			;      {approach "safe teleport & rotate"}.
+			;   2. The destination waypoint's own {commands} block, which the deploy
+			;      generator writes into every managed map. It runs ON THE ARRIVING ACTOR
+			;      and is how the base game defeats "a clone carries none of the parked
+			;      template's tags": it re-tags the arrival, sets its actor state and
+			;      issues the first move order.
+			;   3. This engine then promotes and refines what the commands block tagged.
+			;
+			; {clone} is banned everywhere else in this repo by the marching orders and
+			; the ban is test-pinned. It is authorised for E2 AIRCRAFT DISPATCH ONLY, on
+			; the base game's own evidence. Nothing else in resource/ may use it.
+			;
+			; The consequence worth stating: the parked originals are never consumed, so
+			; every aircraft call-in is repeatable and aircraft cost the pool nothing. The
+			; only budgeted part of an E2 insert is the infantry it delivers.
+			;
+			; support_e2_src marks the ONE parked hull this dispatch will copy. It is not
+			; a claim: the hull keeps its pool tag and stays parked. Cleared immediately
+			; after the clone so a later dispatch starts from a clean pool.
+			(define "e2_clone_aircraft"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+						{"actor_to_waypoint"
+							{selector
+								{source advanced}
+								{ignore_captured_by_user 0}
+								{group
+									{select {tag {tag support_e2_src}}}
+									{include {tag {tag hidden}}}
+								}
+								{amount 1}
+							}
+							{waypoint "9101"}
+							{clone}
+							{approach "safe teleport & rotate"}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+						{"actor_to_waypoint"
+							{selector
+								{source advanced}
+								{ignore_captured_by_user 0}
+								{group
+									{select {tag {tag support_e2_src}}}
+									{include {tag {tag hidden}}}
+								}
+								{amount 1}
+							}
+							{waypoint "9102"}
+							{clone}
+							{approach "safe teleport & rotate"}
+						}
+					}
+					{"default"
+						{"actor_to_waypoint"
+							{selector
+								{source advanced}
+								{ignore_captured_by_user 0}
+								{group
+									{select {tag {tag support_e2_src}}}
+									{include {tag {tag hidden}}}
+								}
+								{amount 1}
+							}
+							{waypoint "9102"}
+							{clone}
+							{approach "safe teleport & rotate"}
+						}
+					}
+				}
+				{"delay" {time 1}}
+				{"entity_state" {selector {tag support_e2_src}} {tag_remove support_e2_src}}
+			)
+
+			; The arrival is whatever the waypoint {commands} block tagged. It is a fresh
+			; entity: it is NOT hidden, it is NOT a template and it carries no pool tag,
+			; so promotion is only about ownership and the engine's own bookkeeping tags.
+			(define "e2_promote_arrival"
 				{"entity_state"
-					{selector {tag support_e2_helo}}
+					{selector {tag support_e2_arrival}}
+					{tag_add support_e2_claim}
+					{tag_add support_e2_aircraft}
+					{tag_add attack_support_src}
 					{tag_remove ally_sup_tpl}
 					{tag_remove support_e2_tpl}
+					{tag_remove support_e2_src}
 					{tag_remove hidden}
 					{inactive off}
 					{impregnability disabled}
@@ -3619,20 +3843,51 @@
 				}
 			)
 
-			(define "e2_place_aircraft_entry"
+			(define "e2_own_arrival"
+				{"switch"
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 1}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "1"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 2}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "2"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 3}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "3"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 4}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 5}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 6}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 7}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 8}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 9}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 10}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 11}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 12}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 13}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 14}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 15}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {operation set} {player "16"}}}
+					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 8}}}
+				}
+			)
+
+			; Fail 14 = the clone never arrived: actor_to_waypoint produced nothing the
+			; waypoint {commands} block could tag. That is distinct from 13 (the parked
+			; hull was absent before the dispatch) and from 9 (an arrival existed but the
+			; leg selector did not take it).
+			(define "e2_prove_arrival"
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
-						{"placement" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {target_waypoint "attack_support_entry_b1"}}
+						{condition
+							{type entities}
+							{selector {ignore_captured_by_user 0} {tag support_e2_arrival}}
+							{count {op ">="} {value 1}}
+						}
 					}
-					{"case"
-						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
-						{"placement" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {target_waypoint "attack_support_entry_a1"}}
-					}
-					{"default"
-						{"placement" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {target_waypoint "attack_support_entry_b1"}}
-					}
+					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 14}}}
 				}
+			)
+
+			(define "e2_arrival_is_helo"
+				{"entity_state" {selector {tag support_e2_arrival}} {tag_add support_e2_helo}}
+			)
+
+			(define "e2_arrival_is_plane"
+				{"entity_state" {selector {tag support_e2_arrival}} {tag_add support_e2_plane}}
 			)
 
 			(define "e2_order_aircraft_lz"
@@ -3661,17 +3916,22 @@
 				}
 			)
 
+			; Exit across the map to the OPPOSITE side's numeric altitude node, so the
+			; aircraft flies through and off rather than turning back over the objective.
+			; 9103/9104 are the altitude-carrying pair (z in the position, no radius and
+			; no commands block) - the same shape the base game gives its mid-route air
+			; nodes. The engine deletes the hull afterwards regardless.
 			(define "e2_order_aircraft_exit"
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
-						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_entry_b1"}}
+						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "9103"}}
 					}
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
-						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_entry_a1"}}
+						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "9104"}}
 					}
-					{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}} {drop orders} {action move} {waypoint "attack_support_entry_b1"}}}
+					{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "9103"}}}
 				}
 			)
 
@@ -3693,109 +3953,113 @@
 					}
 				}
 				{actions
-					; Consume one parked hull, both linked pilots, and four independent troops.
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag support_e2_rusa_helo}}}} {amount 1}}
-						{tag_add support_e2_claim}
-						{tag_add support_e2_helo}
-						{tag_remove support_e2_rusa_helo}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag support_e2_rusa_helo_crew}}}} {amount 2}}
-						{tag_add support_e2_claim}
-						{tag_add support_e2_helo}
-						{tag_remove support_e2_rusa_helo_crew}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag support_e2_rusa_helo_team}}}} {amount 4}}
-						{tag_add support_e2_claim}
-						{tag_add support_e2_team}
-						{tag_remove support_e2_rusa_helo_team}
-					}
-					("e2_prove_helo_claim")
-					("e2_choose_flag")
+					("e2_prove_park_rusa_helo")
+					; Nothing may be claimed until the parked airframe is proved present.
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
-							("e2_own_current")
+							; The aircraft is CLONED, so the parked hull and its two linked pilots keep
+							; their pool tags and stay parked: an air call-in is repeatable and costs the
+							; pool nothing. Only the four independent troops are consumed, and they are
+							; still delivered by the proven MOVE placement.
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag support_e2_rusa_helo}}}} {amount 1}}
+								{tag_add support_e2_src}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag support_e2_rusa_helo_team}}}} {amount 4}}
+								{tag_add support_e2_claim}
+								{tag_add support_e2_team}
+								{tag_remove support_e2_rusa_helo_team}
+							}
+							("e2_choose_flag")
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-									("e2_choose_lz")
+									{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+									("e2_own_current")
 									{"switch"
 										{"case"
-											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
-											; Both deep pads unsafe: delete the unused helo and deliver the
-											; four claimed troops at the entry standoff. Failure remains honest.
-											("e2_announce_failed")
-											{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-											("e2_place_one_entry")
-											("e2_place_one_entry")
-											("e2_place_one_entry")
-											("e2_place_one_entry")
-											("e2_finish_team_or_fail")
-											("e2_complete_cleanup")
-										}
-										{"default"
-											("e2_promote_helo")
-											("e2_place_aircraft_entry")
-											; Attested order: establish altitude, give AI control, then move.
-											{"air_state"
-												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
-												{altitude 30}
-											}
-											{"actor_state"
-												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
-												{drop sensor}
-												{control AI}
-												{movement {speed fast}}
-											}
-											; Evidence gate: a live claimed helicopter, or fail 10 and no flight leg.
-											("e2_fly_helo_or_fail")
-											; Arrival window for the flight proof; the near check below is the proof.
-											{"delay" {time 40}}
+											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+											("e2_choose_lz")
 											{"switch"
 												{"case"
-													{condition
-														{type near}
-														{units {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft} {state operatable}}
-														{near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}}
-														{distance 120}
-													}
-													("e2_announce_helo")
+													{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
+													; Both deep pads unsafe: delete the unused helo and deliver the
+													; four claimed troops at the entry standoff. Failure remains honest.
+													("e2_announce_failed")
 													{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-													("e2_place_one")
-													("e2_place_one")
-													("e2_place_one")
-													("e2_place_one")
+													("e2_place_one_entry")
+													("e2_place_one_entry")
+													("e2_place_one_entry")
+													("e2_place_one_entry")
 													("e2_finish_team_or_fail")
-													("e2_order_aircraft_exit")
-													{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
-													{"delay" {time 60}}
 													("e2_complete_cleanup")
 												}
 												{"default"
-													; Only blame the flight when nothing earlier already failed.
+													; Clone + teleport to the numeric air-entry waypoint. That waypoint's own
+													; {commands} block re-tags the arrival, sets its actor state and issues the
+													; first move order. No air_state verb and no placement verb: altitude is
+													; parked chassis snapshot's job and the teleport is the dispatch verb's.
+													("e2_clone_aircraft")
+													("e2_prove_arrival")
+													("e2_arrival_is_helo")
+													("e2_promote_arrival")
+													("e2_own_arrival")
+													{"actor_state"
+														{selector {ignore_captured_by_user 0} {tag support_e2_arrival}}
+														{drop sensor}
+														{control AI}
+														{movement {speed fast}}
+													}
+													; Evidence gate: a live claimed helicopter, or fail 10 and no flight leg.
+													("e2_fly_helo_or_fail")
+													; Arrival window for the flight proof; the near check below is the proof.
+													{"delay" {time 40}}
 													{"switch"
 														{"case"
-															{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-															{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+															{condition
+																{type near}
+																{units {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft} {state operatable}}
+																{near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}}
+																{distance 120}
+															}
+															("e2_announce_helo")
+															{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+															("e2_place_one")
+															("e2_place_one")
+															("e2_place_one")
+															("e2_place_one")
+															("e2_finish_team_or_fail")
+															("e2_order_aircraft_exit")
+															{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
+															{"delay" {time 60}}
+															("e2_complete_cleanup")
 														}
-														{"default"}
+														{"default"
+															; Only blame the flight when nothing earlier already failed.
+															{"switch"
+																{"case"
+																	{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+																	{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+																}
+																{"default"}
+															}
+															("e2_order_aircraft_exit")
+															{"delay" {time 10}}
+															("e2_fail_and_cleanup")
+														}
 													}
-													("e2_order_aircraft_exit")
-													{"delay" {time 10}}
-													("e2_fail_and_cleanup")
 												}
 											}
 										}
+										{"default" ("e2_fail_and_cleanup")}
 									}
 								}
 								{"default" ("e2_fail_and_cleanup")}
 							}
 						}
-						{"default" ("e2_fail_and_cleanup")}
+						{"default"}
 					}
 				}
 			}
@@ -3817,109 +4081,113 @@
 					}
 				}
 				{actions
-					; Consume one parked hull, both linked pilots, and four independent troops.
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag support_e2_prc_helo}}}} {amount 1}}
-						{tag_add support_e2_claim}
-						{tag_add support_e2_helo}
-						{tag_remove support_e2_prc_helo}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag support_e2_prc_helo_crew}}}} {amount 2}}
-						{tag_add support_e2_claim}
-						{tag_add support_e2_helo}
-						{tag_remove support_e2_prc_helo_crew}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag support_e2_prc_helo_team}}}} {amount 4}}
-						{tag_add support_e2_claim}
-						{tag_add support_e2_team}
-						{tag_remove support_e2_prc_helo_team}
-					}
-					("e2_prove_helo_claim")
-					("e2_choose_flag")
+					("e2_prove_park_prc_helo")
+					; Nothing may be claimed until the parked airframe is proved present.
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
-							("e2_own_current")
+							; The aircraft is CLONED, so the parked hull and its two linked pilots keep
+							; their pool tags and stay parked: an air call-in is repeatable and costs the
+							; pool nothing. Only the four independent troops are consumed, and they are
+							; still delivered by the proven MOVE placement.
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag support_e2_prc_helo}}}} {amount 1}}
+								{tag_add support_e2_src}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag support_e2_prc_helo_team}}}} {amount 4}}
+								{tag_add support_e2_claim}
+								{tag_add support_e2_team}
+								{tag_remove support_e2_prc_helo_team}
+							}
+							("e2_choose_flag")
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-									("e2_choose_lz")
+									{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+									("e2_own_current")
 									{"switch"
 										{"case"
-											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
-											; Both deep pads unsafe: delete the unused helo and deliver the
-											; four claimed troops at the entry standoff. Failure remains honest.
-											("e2_announce_failed")
-											{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-											("e2_place_one_entry")
-											("e2_place_one_entry")
-											("e2_place_one_entry")
-											("e2_place_one_entry")
-											("e2_finish_team_or_fail")
-											("e2_complete_cleanup")
-										}
-										{"default"
-											("e2_promote_helo")
-											("e2_place_aircraft_entry")
-											; Attested order: establish altitude, give AI control, then move.
-											{"air_state"
-												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
-												{altitude 30}
-											}
-											{"actor_state"
-												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
-												{drop sensor}
-												{control AI}
-												{movement {speed fast}}
-											}
-											; Evidence gate: a live claimed helicopter, or fail 10 and no flight leg.
-											("e2_fly_helo_or_fail")
-											; Arrival window for the flight proof; the near check below is the proof.
-											{"delay" {time 40}}
+											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+											("e2_choose_lz")
 											{"switch"
 												{"case"
-													{condition
-														{type near}
-														{units {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft} {state operatable}}
-														{near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}}
-														{distance 120}
-													}
-													("e2_announce_helo")
+													{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
+													; Both deep pads unsafe: delete the unused helo and deliver the
+													; four claimed troops at the entry standoff. Failure remains honest.
+													("e2_announce_failed")
 													{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-													("e2_place_one")
-													("e2_place_one")
-													("e2_place_one")
-													("e2_place_one")
+													("e2_place_one_entry")
+													("e2_place_one_entry")
+													("e2_place_one_entry")
+													("e2_place_one_entry")
 													("e2_finish_team_or_fail")
-													("e2_order_aircraft_exit")
-													{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
-													{"delay" {time 60}}
 													("e2_complete_cleanup")
 												}
 												{"default"
-													; Only blame the flight when nothing earlier already failed.
+													; Clone + teleport to the numeric air-entry waypoint. That waypoint's own
+													; {commands} block re-tags the arrival, sets its actor state and issues the
+													; first move order. No air_state verb and no placement verb: altitude is
+													; parked chassis snapshot's job and the teleport is the dispatch verb's.
+													("e2_clone_aircraft")
+													("e2_prove_arrival")
+													("e2_arrival_is_helo")
+													("e2_promote_arrival")
+													("e2_own_arrival")
+													{"actor_state"
+														{selector {ignore_captured_by_user 0} {tag support_e2_arrival}}
+														{drop sensor}
+														{control AI}
+														{movement {speed fast}}
+													}
+													; Evidence gate: a live claimed helicopter, or fail 10 and no flight leg.
+													("e2_fly_helo_or_fail")
+													; Arrival window for the flight proof; the near check below is the proof.
+													{"delay" {time 40}}
 													{"switch"
 														{"case"
-															{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-															{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+															{condition
+																{type near}
+																{units {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft} {state operatable}}
+																{near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}}
+																{distance 120}
+															}
+															("e2_announce_helo")
+															{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+															("e2_place_one")
+															("e2_place_one")
+															("e2_place_one")
+															("e2_place_one")
+															("e2_finish_team_or_fail")
+															("e2_order_aircraft_exit")
+															{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
+															{"delay" {time 60}}
+															("e2_complete_cleanup")
 														}
-														{"default"}
+														{"default"
+															; Only blame the flight when nothing earlier already failed.
+															{"switch"
+																{"case"
+																	{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+																	{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+																}
+																{"default"}
+															}
+															("e2_order_aircraft_exit")
+															{"delay" {time 10}}
+															("e2_fail_and_cleanup")
+														}
 													}
-													("e2_order_aircraft_exit")
-													{"delay" {time 10}}
-													("e2_fail_and_cleanup")
 												}
 											}
 										}
+										{"default" ("e2_fail_and_cleanup")}
 									}
 								}
 								{"default" ("e2_fail_and_cleanup")}
 							}
 						}
-						{"default" ("e2_fail_and_cleanup")}
+						{"default"}
 					}
 				}
 			}
@@ -3943,109 +4211,113 @@
 					}
 				}
 				{actions
-					; Consume one parked hull, both linked pilots, and four independent troops.
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag support_e2_ukr_helo}}}} {amount 1}}
-						{tag_add support_e2_claim}
-						{tag_add support_e2_helo}
-						{tag_remove support_e2_ukr_helo}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag support_e2_ukr_helo_crew}}}} {amount 2}}
-						{tag_add support_e2_claim}
-						{tag_add support_e2_helo}
-						{tag_remove support_e2_ukr_helo_crew}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag support_e2_ukr_helo_team}}}} {amount 4}}
-						{tag_add support_e2_claim}
-						{tag_add support_e2_team}
-						{tag_remove support_e2_ukr_helo_team}
-					}
-					("e2_prove_helo_claim")
-					("e2_choose_flag")
+					("e2_prove_park_ukr_helo")
+					; Nothing may be claimed until the parked airframe is proved present.
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
-							("e2_own_current")
+							; The aircraft is CLONED, so the parked hull and its two linked pilots keep
+							; their pool tags and stay parked: an air call-in is repeatable and costs the
+							; pool nothing. Only the four independent troops are consumed, and they are
+							; still delivered by the proven MOVE placement.
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag support_e2_ukr_helo}}}} {amount 1}}
+								{tag_add support_e2_src}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag support_e2_ukr_helo_team}}}} {amount 4}}
+								{tag_add support_e2_claim}
+								{tag_add support_e2_team}
+								{tag_remove support_e2_ukr_helo_team}
+							}
+							("e2_choose_flag")
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-									("e2_choose_lz")
+									{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+									("e2_own_current")
 									{"switch"
 										{"case"
-											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
-											; Both deep pads unsafe: delete the unused helo and deliver the
-											; four claimed troops at the entry standoff. Failure remains honest.
-											("e2_announce_failed")
-											{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-											("e2_place_one_entry")
-											("e2_place_one_entry")
-											("e2_place_one_entry")
-											("e2_place_one_entry")
-											("e2_finish_team_or_fail")
-											("e2_complete_cleanup")
-										}
-										{"default"
-											("e2_promote_helo")
-											("e2_place_aircraft_entry")
-											; Attested order: establish altitude, give AI control, then move.
-											{"air_state"
-												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
-												{altitude 30}
-											}
-											{"actor_state"
-												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
-												{drop sensor}
-												{control AI}
-												{movement {speed fast}}
-											}
-											; Evidence gate: a live claimed helicopter, or fail 10 and no flight leg.
-											("e2_fly_helo_or_fail")
-											; Arrival window for the flight proof; the near check below is the proof.
-											{"delay" {time 40}}
+											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+											("e2_choose_lz")
 											{"switch"
 												{"case"
-													{condition
-														{type near}
-														{units {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft} {state operatable}}
-														{near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}}
-														{distance 120}
-													}
-													("e2_announce_helo")
+													{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
+													; Both deep pads unsafe: delete the unused helo and deliver the
+													; four claimed troops at the entry standoff. Failure remains honest.
+													("e2_announce_failed")
 													{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-													("e2_place_one")
-													("e2_place_one")
-													("e2_place_one")
-													("e2_place_one")
+													("e2_place_one_entry")
+													("e2_place_one_entry")
+													("e2_place_one_entry")
+													("e2_place_one_entry")
 													("e2_finish_team_or_fail")
-													("e2_order_aircraft_exit")
-													{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
-													{"delay" {time 60}}
 													("e2_complete_cleanup")
 												}
 												{"default"
-													; Only blame the flight when nothing earlier already failed.
+													; Clone + teleport to the numeric air-entry waypoint. That waypoint's own
+													; {commands} block re-tags the arrival, sets its actor state and issues the
+													; first move order. No air_state verb and no placement verb: altitude is
+													; parked chassis snapshot's job and the teleport is the dispatch verb's.
+													("e2_clone_aircraft")
+													("e2_prove_arrival")
+													("e2_arrival_is_helo")
+													("e2_promote_arrival")
+													("e2_own_arrival")
+													{"actor_state"
+														{selector {ignore_captured_by_user 0} {tag support_e2_arrival}}
+														{drop sensor}
+														{control AI}
+														{movement {speed fast}}
+													}
+													; Evidence gate: a live claimed helicopter, or fail 10 and no flight leg.
+													("e2_fly_helo_or_fail")
+													; Arrival window for the flight proof; the near check below is the proof.
+													{"delay" {time 40}}
 													{"switch"
 														{"case"
-															{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-															{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+															{condition
+																{type near}
+																{units {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft} {state operatable}}
+																{near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}}
+																{distance 120}
+															}
+															("e2_announce_helo")
+															{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+															("e2_place_one")
+															("e2_place_one")
+															("e2_place_one")
+															("e2_place_one")
+															("e2_finish_team_or_fail")
+															("e2_order_aircraft_exit")
+															{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
+															{"delay" {time 60}}
+															("e2_complete_cleanup")
 														}
-														{"default"}
+														{"default"
+															; Only blame the flight when nothing earlier already failed.
+															{"switch"
+																{"case"
+																	{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+																	{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+																}
+																{"default"}
+															}
+															("e2_order_aircraft_exit")
+															{"delay" {time 10}}
+															("e2_fail_and_cleanup")
+														}
 													}
-													("e2_order_aircraft_exit")
-													{"delay" {time 10}}
-													("e2_fail_and_cleanup")
 												}
 											}
 										}
+										{"default" ("e2_fail_and_cleanup")}
 									}
 								}
 								{"default" ("e2_fail_and_cleanup")}
 							}
 						}
-						{"default" ("e2_fail_and_cleanup")}
+						{"default"}
 					}
 				}
 			}
@@ -4069,109 +4341,113 @@
 					}
 				}
 				{actions
-					; Consume one parked hull, both linked pilots, and four independent troops.
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag support_e2_nato_helo}}}} {amount 1}}
-						{tag_add support_e2_claim}
-						{tag_add support_e2_helo}
-						{tag_remove support_e2_nato_helo}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag support_e2_nato_helo_crew}}}} {amount 2}}
-						{tag_add support_e2_claim}
-						{tag_add support_e2_helo}
-						{tag_remove support_e2_nato_helo_crew}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag support_e2_nato_helo_team}}}} {amount 4}}
-						{tag_add support_e2_claim}
-						{tag_add support_e2_team}
-						{tag_remove support_e2_nato_helo_team}
-					}
-					("e2_prove_helo_claim")
-					("e2_choose_flag")
+					("e2_prove_park_nato_helo")
+					; Nothing may be claimed until the parked airframe is proved present.
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
-							("e2_own_current")
+							; The aircraft is CLONED, so the parked hull and its two linked pilots keep
+							; their pool tags and stay parked: an air call-in is repeatable and costs the
+							; pool nothing. Only the four independent troops are consumed, and they are
+							; still delivered by the proven MOVE placement.
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag support_e2_nato_helo}}}} {amount 1}}
+								{tag_add support_e2_src}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag support_e2_nato_helo_team}}}} {amount 4}}
+								{tag_add support_e2_claim}
+								{tag_add support_e2_team}
+								{tag_remove support_e2_nato_helo_team}
+							}
+							("e2_choose_flag")
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-									("e2_choose_lz")
+									{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+									("e2_own_current")
 									{"switch"
 										{"case"
-											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
-											; Both deep pads unsafe: delete the unused helo and deliver the
-											; four claimed troops at the entry standoff. Failure remains honest.
-											("e2_announce_failed")
-											{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-											("e2_place_one_entry")
-											("e2_place_one_entry")
-											("e2_place_one_entry")
-											("e2_place_one_entry")
-											("e2_finish_team_or_fail")
-											("e2_complete_cleanup")
-										}
-										{"default"
-											("e2_promote_helo")
-											("e2_place_aircraft_entry")
-											; Attested order: establish altitude, give AI control, then move.
-											{"air_state"
-												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
-												{altitude 30}
-											}
-											{"actor_state"
-												{selector {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft}}
-												{drop sensor}
-												{control AI}
-												{movement {speed fast}}
-											}
-											; Evidence gate: a live claimed helicopter, or fail 10 and no flight leg.
-											("e2_fly_helo_or_fail")
-											; Arrival window for the flight proof; the near check below is the proof.
-											{"delay" {time 40}}
+											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+											("e2_choose_lz")
 											{"switch"
 												{"case"
-													{condition
-														{type near}
-														{units {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft} {state operatable}}
-														{near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}}
-														{distance 120}
-													}
-													("e2_announce_helo")
+													{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 4}}
+													; Both deep pads unsafe: delete the unused helo and deliver the
+													; four claimed troops at the entry standoff. Failure remains honest.
+													("e2_announce_failed")
 													{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-													("e2_place_one")
-													("e2_place_one")
-													("e2_place_one")
-													("e2_place_one")
+													("e2_place_one_entry")
+													("e2_place_one_entry")
+													("e2_place_one_entry")
+													("e2_place_one_entry")
 													("e2_finish_team_or_fail")
-													("e2_order_aircraft_exit")
-													{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
-													{"delay" {time 60}}
 													("e2_complete_cleanup")
 												}
 												{"default"
-													; Only blame the flight when nothing earlier already failed.
+													; Clone + teleport to the numeric air-entry waypoint. That waypoint's own
+													; {commands} block re-tags the arrival, sets its actor state and issues the
+													; first move order. No air_state verb and no placement verb: altitude is
+													; parked chassis snapshot's job and the teleport is the dispatch verb's.
+													("e2_clone_aircraft")
+													("e2_prove_arrival")
+													("e2_arrival_is_helo")
+													("e2_promote_arrival")
+													("e2_own_arrival")
+													{"actor_state"
+														{selector {ignore_captured_by_user 0} {tag support_e2_arrival}}
+														{drop sensor}
+														{control AI}
+														{movement {speed fast}}
+													}
+													; Evidence gate: a live claimed helicopter, or fail 10 and no flight leg.
+													("e2_fly_helo_or_fail")
+													; Arrival window for the flight proof; the near check below is the proof.
+													{"delay" {time 40}}
 													{"switch"
 														{"case"
-															{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-															{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+															{condition
+																{type near}
+																{units {ignore_captured_by_user 0} {tag support_e2_helo} {tag support_e2_aircraft} {state operatable}}
+																{near_to {ignore_captured_by_user 0} {tag support_e2_lz_marker}}
+																{distance 120}
+															}
+															("e2_announce_helo")
+															{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
+															("e2_place_one")
+															("e2_place_one")
+															("e2_place_one")
+															("e2_place_one")
+															("e2_finish_team_or_fail")
+															("e2_order_aircraft_exit")
+															{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
+															{"delay" {time 60}}
+															("e2_complete_cleanup")
 														}
-														{"default"}
+														{"default"
+															; Only blame the flight when nothing earlier already failed.
+															{"switch"
+																{"case"
+																	{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+																	{"set_i" {var "support_e2_fail$"} {op "="} {value 5}}
+																}
+																{"default"}
+															}
+															("e2_order_aircraft_exit")
+															{"delay" {time 10}}
+															("e2_fail_and_cleanup")
+														}
 													}
-													("e2_order_aircraft_exit")
-													{"delay" {time 10}}
-													("e2_fail_and_cleanup")
 												}
 											}
 										}
+										{"default" ("e2_fail_and_cleanup")}
 									}
 								}
 								{"default" ("e2_fail_and_cleanup")}
 							}
 						}
-						{"default" ("e2_fail_and_cleanup")}
+						{"default"}
 					}
 				}
 			}
@@ -4285,6 +4561,8 @@
 						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 10}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 10}}}
 						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 11}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 11}}}
 						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 12}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 12}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 13}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 13}}}
+						{"case" {condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 14}} {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 14}}}
 						{"default" {"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 99}}}
 					}
 					{"set_i" {var "support_e2_fail$"} {op "="} {value 0}}
@@ -4312,42 +4590,14 @@
 				}
 			)
 
-			(define "e2_promote_para"
-				{"entity_state"
-					{selector {tag support_e2_claim}}
-					{tag_add attack_support_src}
-					{tag_remove ally_sup_tpl}
-					{tag_remove support_e2_tpl}
-					{tag_remove hidden}
-					{inactive off}
-					{impregnability disabled}
-					{discovered on}
-				}
-			)
-
-
-			(define "e2_order_para_exit"
-				{"switch"
-					{"case"
-						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
-						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "attack_support_entry_b1"}}
-					}
-					{"case"
-						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
-						{"action" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "attack_support_entry_a1"}}
-					}
-					{"default" {"action" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop orders} {action move} {waypoint "attack_support_entry_b1"}}}
-				}
-			)
-
-			; The plane is deleted at 90 seconds even while the landing window remains open.
+; The plane is deleted at 90 seconds even while the landing window remains open.
 			; A survivor may arrive for 30 more seconds; otherwise fail 7 is preserved.
 			(define "e2_para_settle"
 				{"delay" {time 90}}
 				("e2_delete_aircraft")
 				{"switch"
 					{"case"
-						{condition {type entities} {selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}}
+						{condition {type near} {units {ignore_captured_by_user 0} {tag paratrooper_need_orders} {type human} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 6000}}
 						{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
 						("e2_complete_cleanup")
 					}
@@ -4355,7 +4605,7 @@
 						{"delay" {time 29}}
 						{"switch"
 							{"case"
-								{condition {type entities} {selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}}
+								{condition {type near} {units {ignore_captured_by_user 0} {tag paratrooper_need_orders} {type human} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 6000}}
 								{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
 								("e2_complete_cleanup")
 							}
@@ -4369,67 +4619,16 @@
 				}
 			)
 
-			{"attack_support/e2_para_landed"
-				{condition
-					{expression "1 & 2 & 3 & 4"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
-						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
-						{"3.entities" {selector {tag support_e2_flag_target}}}
-						{"4.entities" {selector {ignore_captured_by_user 0} {tag support_e2_para_pax} {tag support_e2_claim} {tag paratrooper_need_orders} {type human} {state operatable}}}
-					}
-				}
-				{actions
-					; The simple selector establishes the three-tag intersection. The temporary
-					; candidate tag then permits the proven advanced select/exclude form without
-					; decorating the pool selector with an include clause that matches nothing.
-					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag support_e2_para_pax} {tag support_e2_claim} {tag paratrooper_need_orders} {type human} {state operatable}}
-						{tag_add support_e2_landed_candidate}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select {tag {tag support_e2_landed_candidate}}}
-								{exclude {state {state dead}} {state {state linked}} {state {state inactive}}}
-							}
-						}
-						{tag_add support_e2_landed}
-						{tag_remove support_e2_landed_candidate}
-						{tag_remove paratrooper_need_orders}
-						{tag_remove ai_spawn}
-					}
-					{"entity_state" {selector {tag support_e2_landed_candidate}} {tag_remove support_e2_landed_candidate}}
-					; Filtering can reject every initial candidate (for example, while still
-					; linked). Only a confirmed surviving landed human may advance the lifecycle.
-					{"switch"
-						{"case"
-							{condition {type entities} {selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}}
-							{"actor_state"
-								{selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}
-								{control AI}
-								{ai_move {mode enable}}
-								{weapon_prepare on}
-								{fire_mode open}
-								{move_mode free}
-								{movement {speed normal} {kind normal} {type normal}}
-								{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
-							}
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag support_e2_landed} {tag support_e2_claim} {type human} {state operatable}}
-								{drop orders}
-								{action advance}
-								{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
-							}
-							{"set_i" {var "support_e2_stage$"} {op "="} {value 50}}
-							{"delay" {time 0.25}}
-							{"trigger" {name "attack_support/e2_para_landed"}}
-						}
-						{"default"}
-					}
-				}
-			}			{"attack_support/e2_para_rusa"
+			; attack_support/e2_para_landed RETIRED (2026-07-30, clone restructure).
+			; It selected landed jumpers by support_e2_para_pax + support_e2_claim. Under
+			; the clone dispatch the jumpers are copies made by {clone} and carry NONE of
+			; this engine's tags, so that selector can never match, and there is no
+			; selector form that can tell one aircraft's untagged jumpers from anyone
+			; else's. Ordering them is therefore left to CE's own paratrooper lifecycle,
+			; which already owns every entity it tags paratrooper_need_orders; this engine
+			; only PROVES they landed (see e2_para_settle above) and never orders them, so
+			; the ordering conflict the plan warns about cannot arise.
+			{"attack_support/e2_para_rusa"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10"}
 					{terms
@@ -4446,38 +4645,52 @@
 					}
 				}
 				{actions
-					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_rusa_para}}}} {amount 1}} {tag_add support_e2_claim} {tag_add support_e2_plane} {tag_remove support_e2_rusa_para}}
-					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_rusa_para_crew}}}} {amount 5}} {tag_add support_e2_claim} {tag_remove support_e2_rusa_para_crew}}
-					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_rusa_para_pax}}}} {amount 4}} {tag_add support_e2_claim} {tag_remove support_e2_rusa_para_pax}}
-					("e2_prove_para_claim")
-					("e2_choose_flag")
+					("e2_prove_park_rusa_para")
+					; Nothing may be claimed until the parked airframe is proved present.
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
-							("e2_own_current")
+							; Clone dispatch: the parked plane, its linked crew and its linked jumpers
+							; all stay parked and keep their pool tags, so the para leg is repeatable and
+							; costs the pool nothing. The clone carries copies of both, and the copies in
+							; the seats are what the release ejects.
+							{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_rusa_para}}}} {amount 1}} {tag_add support_e2_src}}
+							("e2_choose_flag")
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-									("e2_promote_para")
-									("e2_place_aircraft_entry")
-									{"air_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {altitude 65}}
-									{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop sensor} {control AI} {movement {speed fast}}}
-									; Evidence gate: a live claimed transport, or fail 10 and no run-in.
-									("e2_fly_para_or_fail")
-									("e2_announce_para")
-									{"delay" {time 90}}
+									{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+									("e2_own_current")
 									{"switch"
-										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
-										; Stage still 20 means e2_fly_para_or_fail refused the run-in (fail 10).
-										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
-										{"default"}
+										{"case"
+											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+											; Clone + teleport; the numeric waypoint's {commands} block re-tags the arrival
+											; and starts it toward the chosen flag. No air_state verb: altitude belongs to
+											; the parked chassis snapshot.
+											("e2_clone_aircraft")
+											("e2_prove_arrival")
+											("e2_arrival_is_plane")
+											("e2_promote_arrival")
+											("e2_own_arrival")
+											{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop sensor} {control AI} {movement {speed fast}}}
+											; Evidence gate: a live claimed transport, or fail 10 and no run-in.
+											("e2_fly_para_or_fail")
+											("e2_announce_para")
+											{"delay" {time 90}}
+											{"switch"
+												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+												; Stage still 20 means e2_fly_para_or_fail refused the run-in (fail 10).
+												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+												{"default"}
+											}
+										}
+										{"default" ("e2_fail_and_cleanup")}
 									}
 								}
 								{"default" ("e2_fail_and_cleanup")}
 							}
 						}
-						{"default" ("e2_fail_and_cleanup")}
+						{"default"}
 					}
 				}
 			}
@@ -4499,38 +4712,52 @@
 					}
 				}
 				{actions
-					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_ukr_para}}}} {amount 1}} {tag_add support_e2_claim} {tag_add support_e2_plane} {tag_remove support_e2_ukr_para}}
-					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_ukr_para_crew}}}} {amount 3}} {tag_add support_e2_claim} {tag_remove support_e2_ukr_para_crew}}
-					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_ukr_para_pax}}}} {amount 4}} {tag_add support_e2_claim} {tag_remove support_e2_ukr_para_pax}}
-					("e2_prove_para_claim")
-					("e2_choose_flag")
+					("e2_prove_park_ukr_para")
+					; Nothing may be claimed until the parked airframe is proved present.
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
-							("e2_own_current")
+							; Clone dispatch: the parked plane, its linked crew and its linked jumpers
+							; all stay parked and keep their pool tags, so the para leg is repeatable and
+							; costs the pool nothing. The clone carries copies of both, and the copies in
+							; the seats are what the release ejects.
+							{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_ukr_para}}}} {amount 1}} {tag_add support_e2_src}}
+							("e2_choose_flag")
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-									("e2_promote_para")
-									("e2_place_aircraft_entry")
-									{"air_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {altitude 65}}
-									{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop sensor} {control AI} {movement {speed fast}}}
-									; Evidence gate: a live claimed transport, or fail 10 and no run-in.
-									("e2_fly_para_or_fail")
-									("e2_announce_para")
-									{"delay" {time 90}}
+									{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+									("e2_own_current")
 									{"switch"
-										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
-										; Stage still 20 means e2_fly_para_or_fail refused the run-in (fail 10).
-										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
-										{"default"}
+										{"case"
+											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+											; Clone + teleport; the numeric waypoint's {commands} block re-tags the arrival
+											; and starts it toward the chosen flag. No air_state verb: altitude belongs to
+											; the parked chassis snapshot.
+											("e2_clone_aircraft")
+											("e2_prove_arrival")
+											("e2_arrival_is_plane")
+											("e2_promote_arrival")
+											("e2_own_arrival")
+											{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop sensor} {control AI} {movement {speed fast}}}
+											; Evidence gate: a live claimed transport, or fail 10 and no run-in.
+											("e2_fly_para_or_fail")
+											("e2_announce_para")
+											{"delay" {time 90}}
+											{"switch"
+												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+												; Stage still 20 means e2_fly_para_or_fail refused the run-in (fail 10).
+												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+												{"default"}
+											}
+										}
+										{"default" ("e2_fail_and_cleanup")}
 									}
 								}
 								{"default" ("e2_fail_and_cleanup")}
 							}
 						}
-						{"default" ("e2_fail_and_cleanup")}
+						{"default"}
 					}
 				}
 			}
@@ -4552,128 +4779,326 @@
 					}
 				}
 				{actions
-					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_nato_para}}}} {amount 1}} {tag_add support_e2_claim} {tag_add support_e2_plane} {tag_remove support_e2_nato_para}}
-					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_nato_para_crew}}}} {amount 3}} {tag_add support_e2_claim} {tag_remove support_e2_nato_para_crew}}
-					{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_nato_para_pax}}}} {amount 4}} {tag_add support_e2_claim} {tag_remove support_e2_nato_para_pax}}
-					("e2_prove_para_claim")
-					("e2_choose_flag")
+					("e2_prove_park_nato_para")
+					; Nothing may be claimed until the parked airframe is proved present.
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-							{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
-							("e2_own_current")
+							; Clone dispatch: the parked plane, its linked crew and its linked jumpers
+							; all stay parked and keep their pool tags, so the para leg is repeatable and
+							; costs the pool nothing. The clone carries copies of both, and the copies in
+							; the seats are what the release ejects.
+							{"entity_state" {selector {source advanced} {group {select {tag {tag support_e2_nato_para}}}} {amount 1}} {tag_add support_e2_src}}
+							("e2_choose_flag")
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
-									("e2_promote_para")
-									("e2_place_aircraft_entry")
-									{"air_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {altitude 65}}
-									{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}} {drop sensor} {control AI} {movement {speed fast}}}
-									; Evidence gate: a live claimed transport, or fail 10 and no run-in.
-									("e2_fly_para_or_fail")
-									("e2_announce_para")
-									{"delay" {time 90}}
+									{"set_i" {var "support_e2_stage$"} {op "="} {value 20}}
+									("e2_own_current")
 									{"switch"
-										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
-										; Stage still 20 means e2_fly_para_or_fail refused the run-in (fail 10).
-										{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_order_para_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
-										{"default"}
+										{"case"
+											{condition {type cmp_i} {var "support_e2_fail$"} {op "=="} {value 0}}
+											; Clone + teleport; the numeric waypoint's {commands} block re-tags the arrival
+											; and starts it toward the chosen flag. No air_state verb: altitude belongs to
+											; the parked chassis snapshot.
+											("e2_clone_aircraft")
+											("e2_prove_arrival")
+											("e2_arrival_is_plane")
+											("e2_promote_arrival")
+											("e2_own_arrival")
+											{"actor_state" {selector {ignore_captured_by_user 0} {tag support_e2_arrival}} {drop sensor} {control AI} {movement {speed fast}}}
+											; Evidence gate: a live claimed transport, or fail 10 and no run-in.
+											("e2_fly_para_or_fail")
+											("e2_announce_para")
+											{"delay" {time 90}}
+											{"switch"
+												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}} {"set_i" {var "support_e2_fail$"} {op "="} {value 6}} ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+												; Stage still 20 means e2_fly_para_or_fail refused the run-in (fail 10).
+												{"case" {condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 20}} ("e2_order_aircraft_exit") {"set_i" {var "support_e2_stage$"} {op "="} {value 60}} {"delay" {time 10}} ("e2_fail_and_cleanup")}
+												{"default"}
+											}
+										}
+										{"default" ("e2_fail_and_cleanup")}
 									}
 								}
 								{"default" ("e2_fail_and_cleanup")}
 							}
 						}
-						{"default" ("e2_fail_and_cleanup")}
+						{"default"}
 					}
 				}
 			}
 
+			; Coarse closest-approach tracker for the run-in. SetVar takes integers only, so
+			; the range trend is carried as a band number: 1 = inside 1000, 2 = inside 2000,
+			; 3 = inside 3000, 4 = inside the 4000 outer ring. support_e2_para_range_band$
+			; keeps the TIGHTEST band reached so far (0 = the plane has never been inside the
+			; outer ring). A poll that reports a LOOSER band than the recorded best, while the
+			; plane is still inside the outer ring, means the run-in has passed its closest
+			; point - that is the release cue, and it grants support_e2_para_pass$ = 1. Band 1
+			; grants it outright: 1000 units is as close as this tracker can resolve, so a
+			; plane that arrives overhead and parks there still drops instead of hanging.
+			; Both vars are bounded: e2_reset_target clears them per leg and the
+			; support_e2_released tag stops any monitor firing twice.
+			(define "e2_para_range_poll"
+				{"switch"
+					{"case"
+						{condition
+							{type near}
+							{units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}}
+							{near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}}
+							{distance 1000}
+						}
+						{"set_i" {var "support_e2_para_range_band$"} {op "="} {value 1}}
+						{"set_i" {var "support_e2_para_pass$"} {op "="} {value 1}}
+					}
+					{"case"
+						{condition
+							{type near}
+							{units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}}
+							{near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}}
+							{distance 2000}
+						}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_e2_para_range_band$"} {op "=="} {value 1}}
+								{"set_i" {var "support_e2_para_pass$"} {op "="} {value 1}}
+							}
+							{"default" {"set_i" {var "support_e2_para_range_band$"} {op "="} {value 2}}}
+						}
+					}
+					{"case"
+						{condition
+							{type near}
+							{units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}}
+							{near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}}
+							{distance 3000}
+						}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_e2_para_range_band$"} {op "=="} {value 1}}
+								{"set_i" {var "support_e2_para_pass$"} {op "="} {value 1}}
+							}
+							{"case"
+								{condition {type cmp_i} {var "support_e2_para_range_band$"} {op "=="} {value 2}}
+								{"set_i" {var "support_e2_para_pass$"} {op "="} {value 1}}
+							}
+							{"default" {"set_i" {var "support_e2_para_range_band$"} {op "="} {value 3}}}
+						}
+					}
+					{"case"
+						{condition
+							{type near}
+							{units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}}
+							{near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}}
+							{distance 4000}
+						}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_e2_para_range_band$"} {op "=="} {value 1}}
+								{"set_i" {var "support_e2_para_pass$"} {op "="} {value 1}}
+							}
+							{"case"
+								{condition {type cmp_i} {var "support_e2_para_range_band$"} {op "=="} {value 2}}
+								{"set_i" {var "support_e2_para_pass$"} {op "="} {value 1}}
+							}
+							{"case"
+								{condition {type cmp_i} {var "support_e2_para_range_band$"} {op "=="} {value 3}}
+								{"set_i" {var "support_e2_para_pass$"} {op "="} {value 1}}
+							}
+							{"default" {"set_i" {var "support_e2_para_range_band$"} {op "="} {value 4}}}
+						}
+					}
+					; Outside the outer ring: no trend, and fail 6 stays on the table.
+					{"default"}
+				}
+			)
+
 			; Each monitor is independently gated and faction-specific. The inner release
 			; tag is added before the effect, so a second monitor can never repeat it.
+			;
+			; RELEASE BAND (widened 2026-07-30 after a live run sat at stage 30 for ~92s and
+			; then reported fail 6). The old band was 1500-2500: map coordinates are
+			; DECIMETRES, so that is a 1000-unit-wide shell only 150-250m out, crossed by the
+			; airborne chassis at ~264 units/s - under 4 seconds of dwell, and never entered at
+			; all if the run-in's closest approach was 2600. The band is now 600-4000, a
+			; 3400-unit annulus (~13s of dwell) that an off-axis run-in cannot skirt, and term
+			; 8 is the bounded closest-approach fallback described above, so a plane that steps
+			; into the 600 hole or parks over the flag still drops. Fail 6 stays meaningful: a
+			; plane that never gets inside 4000 satisfies neither term 5 nor term 8, never
+			; releases, and is still reported as "never approached".
 			{"attack_support/e2_para_release_rusa"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & !6 & 7"}
+					{expression "1 & 2 & 3 & 4 & 5 & 7 & (8 | !6)"}
 					{terms
 						{"7.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
 						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_plane}}} {exclude {tag {tag support_e2_released}}}}}}
-						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 2500}}
-						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 1500}}
+						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 4000}}
+						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 600}}
+						{"8.cmp_i" {var "support_e2_para_pass$"} {op "=="} {value 1}}
 					}
 				}
 				{actions
 					{"entity_state" {selector {tag support_e2_plane} {tag support_e2_claim}} {tag_add support_e2_released}}
-					; The singular West-81 effect opens cargo and unlinks seats, but does not
-					; assign CE's ground-hit routing tags. Scope them to this claimed payload.
-					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag support_e2_para_pax} {tag support_e2_claim} {type human} {state operatable}}
-						{tag_add paratrooper}
-						{tag_add ignore_spawn_logic}
-					}
+					; drop_paratrooper is the existence-verified receiver for BOTH airframes: the
+					; Code:X interaction set declares {on "drop_paratrooper"} in its own
+					; "il-76td_para" and "c130_para" groups. What it does there is open the cargo
+					; bay and report the cargobay_opened component - it does NOT unlink the seats.
+					; So the door animation is the effect's job and the actual release is the emit
+					; verb's, which is the same {emit {mode passengers}} the motorised insert
+					; already uses in this engine.
 					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_plane}}}}} {effect drop_paratrooper}}
+					{"delay" {time 1}}
+					{"emit"
+						{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {type vehicle} {state inhabited}}
+						{drop orders}
+						{emit
+							{mode passengers}
+						}
+					}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-					("e2_order_para_exit")
+					("e2_order_aircraft_exit")
 					("e2_para_settle")
 				}
 			}
 
 			{"attack_support/e2_para_release_ukr"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & !6 & 7"}
+					{expression "1 & 2 & 3 & 4 & 5 & 7 & (8 | !6)"}
 					{terms
 						{"7.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
 						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_plane}}} {exclude {tag {tag support_e2_released}}}}}}
-						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 2500}}
-						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 1500}}
+						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 4000}}
+						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 600}}
+						{"8.cmp_i" {var "support_e2_para_pass$"} {op "=="} {value 1}}
 					}
 				}
 				{actions
 					{"entity_state" {selector {tag support_e2_plane} {tag support_e2_claim}} {tag_add support_e2_released}}
-					; The singular West-81 effect opens cargo and unlinks seats, but does not
-					; assign CE's ground-hit routing tags. Scope them to this claimed payload.
-					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag support_e2_para_pax} {tag support_e2_claim} {type human} {state operatable}}
-						{tag_add paratrooper}
-						{tag_add ignore_spawn_logic}
-					}
+					; drop_paratrooper is the existence-verified receiver for BOTH airframes: the
+					; Code:X interaction set declares {on "drop_paratrooper"} in its own
+					; "il-76td_para" and "c130_para" groups. What it does there is open the cargo
+					; bay and report the cargobay_opened component - it does NOT unlink the seats.
+					; So the door animation is the effect's job and the actual release is the emit
+					; verb's, which is the same {emit {mode passengers}} the motorised insert
+					; already uses in this engine.
 					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_plane}}}}} {effect drop_paratrooper}}
+					{"delay" {time 1}}
+					{"emit"
+						{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {type vehicle} {state inhabited}}
+						{drop orders}
+						{emit
+							{mode passengers}
+						}
+					}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-					("e2_order_para_exit")
+					("e2_order_aircraft_exit")
 					("e2_para_settle")
 				}
 			}
 
 			{"attack_support/e2_para_release_nato"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & !6 & 7"}
+					{expression "1 & 2 & 3 & 4 & 5 & 7 & (8 | !6)"}
 					{terms
 						{"7.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
 						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_plane}}} {exclude {tag {tag support_e2_released}}}}}}
-						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 2500}}
-						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 1500}}
+						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 4000}}
+						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {state operatable}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 600}}
+						{"8.cmp_i" {var "support_e2_para_pass$"} {op "=="} {value 1}}
 					}
 				}
 				{actions
 					{"entity_state" {selector {tag support_e2_plane} {tag support_e2_claim}} {tag_add support_e2_released}}
-					; The singular West-81 effect opens cargo and unlinks seats, but does not
-					; assign CE's ground-hit routing tags. Scope them to this claimed payload.
-					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag support_e2_para_pax} {tag support_e2_claim} {type human} {state operatable}}
-						{tag_add paratrooper}
-						{tag_add ignore_spawn_logic}
-					}
+					; drop_paratrooper is the existence-verified receiver for BOTH airframes: the
+					; Code:X interaction set declares {on "drop_paratrooper"} in its own
+					; "il-76td_para" and "c130_para" groups. What it does there is open the cargo
+					; bay and report the cargobay_opened component - it does NOT unlink the seats.
+					; So the door animation is the effect's job and the actual release is the emit
+					; verb's, which is the same {emit {mode passengers}} the motorised insert
+					; already uses in this engine.
 					{"effect" {selector {source advanced} {group {select {tag {tag support_e2_plane}}}}} {effect drop_paratrooper}}
+					{"delay" {time 1}}
+					{"emit"
+						{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_claim} {type vehicle} {state inhabited}}
+						{drop orders}
+						{emit
+							{mode passengers}
+						}
+					}
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
-					("e2_order_para_exit")
+					("e2_order_aircraft_exit")
 					("e2_para_settle")
+				}
+			}
+
+			; Drives the closest-approach tracker for as long as stage 30 is open. The
+			; engine arms a trigger once, so the poll re-arms itself explicitly (same shape
+			; as attack_support/e2_para_landed) and stops the moment stage leaves 30 -
+			; release sets 40, the timeout sets 60 and e2_para_alive sets 60.
+			{"attack_support/e2_para_range"
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
+					}
+				}
+				{actions
+					("e2_para_range_poll")
+					{"delay" {time 0.5}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_e2_stage$"} {op "=="} {value 30}}
+							{"trigger" {name "attack_support/e2_para_range"}}
+						}
+						{"default"}
+					}
+				}
+			}
+
+			; Stage 30 means "a claimed transport is flying the run-in". The live defect this
+			; closes: e2_fly_para_or_fail proved the aircraft ONCE, and nothing afterwards ever
+			; re-proved it, so the leg sat at stage 30 for 92 seconds with nothing in the sky
+			; and blamed the release band (fail 6) for an aircraft that may not have been
+			; there. This monitor is armed for the whole of stage 30 and fires the instant the
+			; proof stops holding: 9 if no claimed aircraft exists at all, 10 if the hull is
+			; still there but no longer operatable. Stage 30 is therefore unsustainable
+			; without a live aircraft, and fail 6 is left to mean only "never approached".
+			{"attack_support/e2_para_alive"
+				{condition
+					{expression "1 & 2 & 3 & !4"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
+						{"4.entities" {selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim} {state operatable}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"switch"
+						{"case"
+							{condition
+								{type entities}
+								{selector {ignore_captured_by_user 0} {tag support_e2_plane} {tag support_e2_aircraft} {tag support_e2_claim}}
+								{count {op ">="} {value 1}}
+							}
+							{"set_i" {var "support_e2_fail$"} {op "="} {value 10}}
+						}
+						{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 9}}}
+					}
+					{"set_i" {var "support_e2_stage$"} {op "="} {value 60}}
+					("e2_fail_and_cleanup")
 				}
 			}
 
@@ -4681,6 +5106,9 @@
 			; Truck + linked crew/pax place at entry, drive toward flag, emit passengers,
 			; pax advance, truck holds. Cap attack_support_motor_left$=1. All four factions.
 			(define "as_finish_motor"
+				; Motorized stage code, log-only (mirrored by attack_support.lua). 0 idle, 1 claimed,
+				; 2 placed/promoted, 3 driving to the flag, 4 passengers emitted. Plain set_i:
+				; nothing on screen, so no support_debug$ gate.
 				{"delay" {time 0.5}}
 				{"entity_state"
 					{selector
@@ -4711,6 +5139,7 @@
 					{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
 					{remove select}
 				}
+				{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 2}}
 				{"delay" {time 0.25}}
 				; Pick one active flag as the approach objective.
 				{"entity_state"
@@ -4737,6 +5166,7 @@
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
 				}
+				{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 3}}
 				{"delay" {time 28}}
 				; Dismount passengers only (crew stays).
 				{"emit"
@@ -4751,6 +5181,7 @@
 						{mode passengers}
 					}
 				}
+				{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 4}}
 				{"delay" {time 3}}
 				; Pax advance on foot; truck holds.
 				{"action"
@@ -4926,6 +5357,7 @@
 				}
 				{"set_i" {var "attack_support_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
+					{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 1}}
 					{"delay" {time 0.1}}
 					("am_place_at_entry")
 					("as_finish_motor")
@@ -5055,6 +5487,7 @@
 				}
 				{"set_i" {var "attack_support_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
+					{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 1}}
 					{"delay" {time 0.1}}
 					("am_place_at_entry")
 					("as_finish_motor")
@@ -5184,6 +5617,7 @@
 				}
 				{"set_i" {var "attack_support_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
+					{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 1}}
 					{"delay" {time 0.1}}
 					("am_place_at_entry")
 					("as_finish_motor")
@@ -5313,6 +5747,7 @@
 				}
 				{"set_i" {var "attack_support_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "attack_support_motor_left$"} {op "-"} {value 1}}
+					{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 1}}
 					{"delay" {time 0.1}}
 					("am_place_at_entry")
 					("as_finish_motor")
