@@ -2190,7 +2190,7 @@ class LinkedBodyPlacementTests(unittest.TestCase):
           <engine>_motor_drive_t  0 -> 4, one step per 7s of the standoff that actually
                                   elapsed. An emit at drive_t < 4 proves the delay did
                                   not run.
-          <engine>_motor_band     the hull's distance to the flag it was ordered to at
+          <engine>_motor_band     the hull's distance to the nearest active capture flag at
                                   the instant before the emit: 1 inside 600, 2 inside
                                   1500, 3 inside 4000, 0 further out. drive_t 4 with
                                   band 0 proves the hull never moved.
@@ -2256,11 +2256,19 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                         '{"set_i" {var "%s$"} {op "="} {value %d}}' % (drive, step),
                         standoff,
                     )
-                # The distance band is a bounded near-check read at the last moment
-                # before the emit, expressed as an integer and never as a coordinate.
+                # The distance band is a bounded near-check against the live capture-flag
+                # set at the last moment before emit, expressed as an integer and never
+                # as a coordinate or a runtime-added objective tag.
                 self.assertIn('("%s")' % band_define, standoff)
                 probe = define_body(code, band_define)
                 self.assertEqual(probe.count("{type near}"), 3)
+                self.assertEqual(
+                    probe.count("{near_to {ignore_captured_by_user 0} {tag flag}}"), 3
+                )
+                self.assertNotIn(
+                    "{near_to {ignore_captured_by_user 0} {tag %s}}"
+                    % self.MOTOR_OBJECTIVE[engine][2], probe
+                )
                 for value, distance in ((1, 600), (2, 1500), (3, 4000)):
                     self.assertIn(
                         '{"set_i" {var "%s$"} {op "="} {value %d}}' % (band, value), probe
@@ -2354,8 +2362,10 @@ class LinkedBodyPlacementTests(unittest.TestCase):
             probe = define_body(code, band_define)
             with self.subTest(engine=engine):
                 # Dedicated: every occurrence in the engine is in one of those two forms.
+                self.assertEqual(code.count(flag), body.count(flag), flag)
+                self.assertNotIn(flag, probe)
                 self.assertEqual(
-                    code.count(flag), body.count(flag) + probe.count(flag), flag
+                    probe.count("{near_to {ignore_captured_by_user 0} {tag flag}}"), 3
                 )
                 # Cleared then re-picked by the motorized path itself, once each.
                 self.assertEqual(body.count("{tag_remove %s}" % flag), 1)
@@ -2422,7 +2432,8 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                 self.assertNotIn("{prop human}", probe)
                 self.assertNotIn("{type human}", probe)
                 # The reference tag is the same tag the advance order targeted.
-                advance = body.index("{action advance}")
+                advance = body.index("{action move}")
+                self.assertNotIn("{action advance}", body[:emit])
                 target = block_at(body, body.index("{target", advance))
                 self.assertIn("{tag %s}" % flag, target)
                 # Sampled at the last moment before the emit, and nowhere else.

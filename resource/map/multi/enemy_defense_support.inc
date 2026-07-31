@@ -2936,12 +2936,18 @@
 			; two capture points 1530 units apart, entry pads {radius 150}), so no real drive
 			; could ever land inside them. 600/1500/4000 units = 60 m / 150 m / 400 m, which is
 			; what the bands always meant, and band 0 once again means "barely left the pad".
-			(define "ed_motor_band"
+						; LIVE-PROOF REFERENCE (2026-07-31). The dedicated motor objective remains
+			; the order target, but tags added to capture-point entities did not survive as a
+			; reliable near_to reference: successful drives still reported band 0. The proof
+			; therefore measures the hull against the nearest active capture flag itself. A
+			; truck that drove toward its chosen flag must approach one member of that set; a
+			; truck that stayed at the edge remains outside all three rings.
+(define "ed_motor_band"
 				{"set_i" {var "enemy_defense_motor_band$"} {op "="} {value 0}}
 				{"switch"
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag enemy_def_motor_hull}} {near_to {ignore_captured_by_user 0} {tag enemy_def_motor_flag}} {distance 600}} {"set_i" {var "enemy_defense_motor_band$"} {op "="} {value 1}}}
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag enemy_def_motor_hull}} {near_to {ignore_captured_by_user 0} {tag enemy_def_motor_flag}} {distance 1500}} {"set_i" {var "enemy_defense_motor_band$"} {op "="} {value 2}}}
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag enemy_def_motor_hull}} {near_to {ignore_captured_by_user 0} {tag enemy_def_motor_flag}} {distance 4000}} {"set_i" {var "enemy_defense_motor_band$"} {op "="} {value 3}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag enemy_def_motor_hull}} {near_to {ignore_captured_by_user 0} {tag flag}} {distance 600}} {"set_i" {var "enemy_defense_motor_band$"} {op "="} {value 1}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag enemy_def_motor_hull}} {near_to {ignore_captured_by_user 0} {tag flag}} {distance 1500}} {"set_i" {var "enemy_defense_motor_band$"} {op "="} {value 2}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag enemy_def_motor_hull}} {near_to {ignore_captured_by_user 0} {tag flag}} {distance 4000}} {"set_i" {var "enemy_defense_motor_band$"} {op "="} {value 3}}}
 					{"default"}
 				}
 			)
@@ -3017,7 +3023,7 @@
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag enemy_def_motor_hull}}
 					{drop orders}
-					{action advance}
+					{action move}
 					{target {ignore_captured_by_user 0} {tag enemy_def_motor_flag}}
 				}
 				{"set_i" {var "enemy_defense_motor_stage$"} {op "="} {value 3}}

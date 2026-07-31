@@ -153,3 +153,16 @@ Suite at 281 passed / 1524 subtests with these in the tree. Root causes proven:
 - Deployed copy: `E:\Steam\steamapps\workshop\content\400750\3636883799`
   (never edit directly; `tools\deploy_attack_support_probe.ps1` only).
 - Test suite baseline at `9caa7c2`: 263 passed / 1448 subtests.
+
+## OpenAI continuation (2026-07-31)
+
+- `050295a`: motor packages 2-4 converted to Link-baked riders for all four factions.
+- `cfb5bf1`: helicopter teams Link-baked into seats; true altitude-0 landing gate on
+  `w81_landing`; passenger emit/promotion/ownership; climb to altitude 22 and exit.
+  The same checkpoint also preserves the shipped paradrop effect cascade and canopy
+  linker triggers. Focused air-mobile suite passed 133 tests / 563 subtests.
+- Motor proof follow-up: hulls use canonical vehicle `move` toward the selected motor
+  objective, while distance telemetry measures against the live capture-flag set rather
+  than the unreliable runtime-added objective tag.
+- Runtime proof remains required. Structural tests are not a claim that the game has
+  completed the landing, parachute, or motor route live.
