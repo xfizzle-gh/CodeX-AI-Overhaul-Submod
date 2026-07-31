@@ -8,6 +8,7 @@ on:
       - tools/fix_motor_lifecycle.py
       - tools/patch_motor_isolation_test.py
       - tools/patch_actual_motor_tests.py
+      - tools/patch_package1_restore_test.py
 
 permissions:
   contents: write
@@ -30,7 +31,10 @@ jobs:
           python tools/patch_motor_isolation_test.py
           python -m py_compile tools/patch_actual_motor_tests.py
           python tools/patch_actual_motor_tests.py
+          python -m py_compile tools/patch_package1_restore_test.py
+          python tools/patch_package1_restore_test.py
           python -m py_compile tests/test_motor_runtime_isolation.py
+          python -m py_compile tests/test_motor_package1_restore.py
           python -m py_compile tests/test_attack_support_slot_proof.py
           git diff --check
 
@@ -57,6 +61,7 @@ jobs:
           rm -f tools/fix_motor_lifecycle.py
           rm -f tools/patch_motor_isolation_test.py
           rm -f tools/patch_actual_motor_tests.py
+          rm -f tools/patch_package1_restore_test.py
           rm -f tools/patch_existing_motor_tests.py
           rm -f tools/list_motor_test_names.py
           git config user.name 'OpenAI Codex Agent'
@@ -66,6 +71,7 @@ jobs:
                   resource/map/multi/enemy_attack_support.inc \
                   resource/map/multi/enemy_defense_support.inc \
                   tests/test_motor_runtime_isolation.py \
+                  tests/test_motor_package1_restore.py \
                   tests/test_attack_support_slot_proof.py \
                   .github/workflows tools
           git commit -m 'Isolate motor passengers from infantry patrols'
