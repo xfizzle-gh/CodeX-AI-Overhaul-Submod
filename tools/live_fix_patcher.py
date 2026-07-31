@@ -104,6 +104,48 @@ e2_tests = replace_once(
 
 helo_anchor ='''
 
+motor_test_anchor = '''motor_tests = replace_once(motor_tests, old_motor, new_motor, 'define motor emit boundary')
+
+waves = strip_trailing_whitespace(waves)
+'''
+motor_test_replacement = '''motor_tests = replace_once(motor_tests, old_motor, new_motor, 'define motor emit boundary')
+
+old_motor_prefixes = ''' + '"""' + '''        prefixes = {
+            "attack_support_waves": ("attack_support", "as_motor_band"),
+            "defense_support_waves": ("defense_support", "ds_motor_band"),
+            "enemy_attack_support": ("enemy_attack", "ea_motor_band"),
+            "enemy_defense_support": ("enemy_defense", "ed_motor_band"),
+        }
+        for engine, (pfx, band_define) in sorted(prefixes.items()):''' + '"""' + '''
+new_motor_prefixes = ''' + '"""' + '''        prefixes = {
+            "attack_support_waves": ("attack_support", "as_motor_band", "attack_support_motor_flag"),
+            "defense_support_waves": ("defense_support", "ds_motor_band", "def_sup_motor_flag"),
+            "enemy_attack_support": ("enemy_attack", "ea_motor_band", "ea_motor_flag"),
+            "enemy_defense_support": ("enemy_defense", "ed_motor_band", "enemy_def_motor_flag"),
+        }
+        for engine, (pfx, band_define, objective) in sorted(prefixes.items()):''' + '"""' + '''
+motor_tests = replace_once(
+    motor_tests,
+    old_motor_prefixes,
+    new_motor_prefixes,
+    'bind each telemetry probe to its dedicated objective',
+)
+motor_tests = replace_once(
+    motor_tests,
+    '                    probe.count("{near_to {ignore_captured_by_user 0} {tag flag}}"), 3',
+    '                    probe.count("{near_to {ignore_captured_by_user 0} {tag %s}}" % objective), 3',
+    'assert dedicated objective in each motor band probe',
+)
+motor_tests = replace_once(
+    motor_tests,
+    '                self.assertEqual(code.count(flag), body.count(flag), flag)',
+    '                self.assertEqual(code.count(flag), body.count(flag) + probe.count(flag), flag)',
+    'count the dedicated objective in finisher and probe',
+)
+
+waves = strip_trailing_whitespace(waves)
+'''
+
 correction_replacements = [
     (
         old_match_gate,
@@ -119,6 +161,11 @@ correction_replacements = [
         post_repair_anchor,
         post_repair_replacement,
         'apply the obsolete radius test correction after base repair',
+    ),
+    (
+        motor_test_anchor,
+        motor_test_replacement,
+        'align motor telemetry assertions with dedicated objectives',
     ),
 ]
 for old, new, label in correction_replacements:
