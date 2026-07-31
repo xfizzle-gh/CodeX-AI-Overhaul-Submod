@@ -412,8 +412,16 @@
 				}
 			)
 
+			; Twelve single-body slots: a motorized package is up to eleven bodies
+			; (hull + 2 crew + 8 {Link}-baked riders) and anything past the slot count
+			; stayed at its parked corner already un-hidden and owned. Unused slots cost
+			; one 0.05s tick each.
 			(define "ds_place_at_entry"
 				("ds_entry_next")
+				("ds_place_one")
+				("ds_place_one")
+				("ds_place_one")
+				("ds_place_one")
 				("ds_place_one")
 				("ds_place_one")
 				("ds_place_one")
@@ -2050,6 +2058,11 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_armed$"} {op "="} {value 1}}
+					; Motorized inserts: four trucks a mission, a cursor that counts them and
+					; the first-truck latch its own clock reads.
+					{"set_i" {var "defense_support_motor_left$"} {op "="} {value 4}}
+					{"set_i" {var "defense_support_motor_pkg$"} {op "="} {value 1}}
+					{"set_i" {var "defense_support_motor_first$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_air_left$"} {op "="} {value 2}}
 					{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}
 					{"set_i" {var "support_announce$"} {op "="} {value 1}}
@@ -4154,3 +4167,689 @@
 				}
 			}
 
+
+			; ===== MOTORIZED INSERT (cmd 19) — parity with the attack-side engines =====
+			; Q2: the friendly AI defender on a human-DEFENCE mission. Its trucks drive at the
+			; player-side active flags, so the dismounts thicken the line the player is holding. The
+			; truck packages are the shared numbered ones in faction_support_templates.inc
+			; (ally_sup_<fac>_p<N>_{hull,crew,pax}). Sharing is safe because every claim strips the
+			; numbered tags it took, so the engine running alongside this one falls through to the
+			; next parked package instead of taking a truck that is already driving.
+
+			(define "ds_poke_motor"
+				{"trigger" {name "defense_support/ally_rusa_motor"}}
+				{"trigger" {name "defense_support/ally_ukr_motor"}}
+				{"trigger" {name "defense_support/ally_nato_motor"}}
+				{"trigger" {name "defense_support/ally_prc_motor"}}
+			)
+
+			(define "ds_finish_motor"
+				{"delay" {time 0.5}}
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group {select {tag {tag def_sup_deploy}}}}
+					}
+					{tag_add def_sup_src}
+					{tag_remove ally_sup_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+				{"delay" {time 0.2}}
+				; The crew carries the deploy tag, so this is what puts a driver in the cab.
+				("ds_own_to_defenderbot")
+				{"delay" {time 0.4}}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag def_sup_deploy}}
+					{control AI}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag def_sup_deploy}}
+					{remove select}
+				}
+				{"delay" {time 0.25}}
+				; One active flag, shuffled fresh per truck.
+				{"entity_state"
+					{selector {tag def_sup_motor_flag}}
+					{tag_remove def_sup_motor_flag}
+				}
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group
+							{select {tag {tag flag}}}
+							{exclude {state {state inactive}}}
+						}
+						{sort {type shuffle}}
+						{amount 1}
+					}
+					{tag_add def_sup_motor_flag}
+				}
+				{"delay" {time 0.1}}
+				{"action"
+					{selector {ignore_captured_by_user 0} {tag def_sup_motor_hull}}
+					{drop orders}
+					{action advance}
+					{target {ignore_captured_by_user 0} {tag def_sup_motor_flag}}
+				}
+				{"delay" {time 28}}
+				; Dismount passengers only; the crew stays with the hull.
+				{"emit"
+					{selector
+						{ignore_captured_by_user 0}
+						{tag def_sup_motor_hull}
+						{type vehicle}
+						{state inhabited}
+					}
+					{drop orders}
+					{emit
+						{mode passengers}
+					}
+				}
+				{"delay" {time 3}}
+				{"action"
+					{selector {ignore_captured_by_user 0} {tag def_sup_motor_pax}}
+					{drop orders}
+					{action advance}
+					{target {ignore_captured_by_user 0} {tag def_sup_motor_flag}}
+				}
+				; Driver leaves the field instead of idling: drive for waypoint "0" and the
+				; cleanup trigger below removes the hull 45s later, wreck included.
+				{"entity_state"
+					{selector {ignore_captured_by_user 0} {tag def_sup_motor_hull}}
+					{tag_add def_sup_motor_leaving}
+				}
+				{"action"
+					{selector {ignore_captured_by_user 0} {tag def_sup_motor_hull}}
+					{drop orders}
+					{action move}
+					{waypoint "0"}
+				}
+				{"entity_state"
+					{selector {tag def_sup_deploy}}
+					{tag_remove def_sup_deploy}
+				}
+				{"entity_state"
+					{selector {tag def_sup_motor_hull}}
+					{tag_remove def_sup_motor_hull}
+				}
+				{"entity_state"
+					{selector {tag def_sup_motor_pax}}
+					{tag_remove def_sup_motor_pax}
+				}
+				{"set_i" {var "defense_support_transferred$"} {op "="} {value 1}}
+			)
+
+			{"defense_support/ally_rusa_motor"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 19}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "defense_support_motor_left$"} {op ">"} {value 0}}
+						{"6.entities" {selector {tag ally_sup_rusa_motor_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT MOTORIZED INSERT"}}
+						}
+						{"default"}
+					}
+					{"switch"
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_rusa_p1_hull}} {count {op ">="} {value 1}}}
+							; Numbered package: one hull, ITS {Link}-baked crew and its own riders. The case is
+							; keyed on the package still being parked, not on the cursor: two engines run on every
+							; mission and a mirror matchup (NATO vs CSA, RUSA vs SOV) folds both of them onto the
+							; same faction pool. Whoever claims first strips the numbered tags, so the other engine
+							; falls through to the next package instead of claiming a truck that is already on the
+							; road. Bare single-tag selects only; the deploy tag is what routes the crew through the
+							; ownership switch.
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p1_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_rusa_p1_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p1_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_rusa_motor_hull}
+								{tag_remove ally_sup_rusa_p1_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p1_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_rusa_motor_pax}
+								{tag_remove ally_sup_rusa_p1_pax}
+							}
+						}
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_rusa_p2_hull}} {count {op ">="} {value 1}}}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p2_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_rusa_p2_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p2_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_rusa_motor_hull}
+								{tag_remove ally_sup_rusa_p2_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p2_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_rusa_motor_pax}
+								{tag_remove ally_sup_rusa_p2_pax}
+							}
+						}
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_rusa_p3_hull}} {count {op ">="} {value 1}}}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p3_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_rusa_p3_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p3_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_rusa_motor_hull}
+								{tag_remove ally_sup_rusa_p3_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p3_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_rusa_motor_pax}
+								{tag_remove ally_sup_rusa_p3_pax}
+							}
+						}
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_rusa_p4_hull}} {count {op ">="} {value 1}}}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p4_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_rusa_p4_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p4_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_rusa_motor_hull}
+								{tag_remove ally_sup_rusa_p4_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p4_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_rusa_motor_pax}
+								{tag_remove ally_sup_rusa_p4_pax}
+							}
+						}
+						{"default"}
+					}
+					{"set_i" {var "defense_support_motor_pkg$"} {op "+"} {value 1}}
+					{"set_i" {var "defense_support_motor_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ds_place_at_entry")
+					("ds_finish_motor")
+				}
+			}
+
+			{"defense_support/ally_ukr_motor"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 19}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
+						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "defense_support_motor_left$"} {op ">"} {value 0}}
+						{"6.entities" {selector {tag ally_sup_ukr_motor_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT MOTORIZED INSERT"}}
+						}
+						{"default"}
+					}
+					{"switch"
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_ukr_p1_hull}} {count {op ">="} {value 1}}}
+							; Numbered package: one hull, ITS {Link}-baked crew and its own riders. The case is
+							; keyed on the package still being parked, not on the cursor: two engines run on every
+							; mission and a mirror matchup (NATO vs CSA, RUSA vs SOV) folds both of them onto the
+							; same faction pool. Whoever claims first strips the numbered tags, so the other engine
+							; falls through to the next package instead of claiming a truck that is already on the
+							; road. Bare single-tag selects only; the deploy tag is what routes the crew through the
+							; ownership switch.
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p1_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_ukr_p1_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p1_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_ukr_motor_hull}
+								{tag_remove ally_sup_ukr_p1_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p1_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_ukr_motor_pax}
+								{tag_remove ally_sup_ukr_p1_pax}
+							}
+						}
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_ukr_p2_hull}} {count {op ">="} {value 1}}}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p2_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_ukr_p2_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p2_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_ukr_motor_hull}
+								{tag_remove ally_sup_ukr_p2_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p2_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_ukr_motor_pax}
+								{tag_remove ally_sup_ukr_p2_pax}
+							}
+						}
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_ukr_p3_hull}} {count {op ">="} {value 1}}}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p3_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_ukr_p3_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p3_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_ukr_motor_hull}
+								{tag_remove ally_sup_ukr_p3_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p3_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_ukr_motor_pax}
+								{tag_remove ally_sup_ukr_p3_pax}
+							}
+						}
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_ukr_p4_hull}} {count {op ">="} {value 1}}}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p4_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_ukr_p4_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p4_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_ukr_motor_hull}
+								{tag_remove ally_sup_ukr_p4_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p4_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_ukr_motor_pax}
+								{tag_remove ally_sup_ukr_p4_pax}
+							}
+						}
+						{"default"}
+					}
+					{"set_i" {var "defense_support_motor_pkg$"} {op "+"} {value 1}}
+					{"set_i" {var "defense_support_motor_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ds_place_at_entry")
+					("ds_finish_motor")
+				}
+			}
+
+			{"defense_support/ally_nato_motor"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 19}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
+						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "defense_support_motor_left$"} {op ">"} {value 0}}
+						{"6.entities" {selector {tag ally_sup_nato_motor_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT MOTORIZED INSERT"}}
+						}
+						{"default"}
+					}
+					{"switch"
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_nato_p1_hull}} {count {op ">="} {value 1}}}
+							; Numbered package: one hull, ITS {Link}-baked crew and its own riders. The case is
+							; keyed on the package still being parked, not on the cursor: two engines run on every
+							; mission and a mirror matchup (NATO vs CSA, RUSA vs SOV) folds both of them onto the
+							; same faction pool. Whoever claims first strips the numbered tags, so the other engine
+							; falls through to the next package instead of claiming a truck that is already on the
+							; road. Bare single-tag selects only; the deploy tag is what routes the crew through the
+							; ownership switch.
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_p1_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_nato_p1_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_p1_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_nato_motor_hull}
+								{tag_remove ally_sup_nato_p1_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_p1_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_nato_motor_pax}
+								{tag_remove ally_sup_nato_p1_pax}
+							}
+						}
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_nato_p2_hull}} {count {op ">="} {value 1}}}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_p2_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_nato_p2_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_p2_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_nato_motor_hull}
+								{tag_remove ally_sup_nato_p2_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_p2_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_nato_motor_pax}
+								{tag_remove ally_sup_nato_p2_pax}
+							}
+						}
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_nato_p3_hull}} {count {op ">="} {value 1}}}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_p3_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_nato_p3_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_p3_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_nato_motor_hull}
+								{tag_remove ally_sup_nato_p3_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_p3_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_nato_motor_pax}
+								{tag_remove ally_sup_nato_p3_pax}
+							}
+						}
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_nato_p4_hull}} {count {op ">="} {value 1}}}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_p4_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_nato_p4_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_p4_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_nato_motor_hull}
+								{tag_remove ally_sup_nato_p4_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_nato_p4_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_nato_motor_pax}
+								{tag_remove ally_sup_nato_p4_pax}
+							}
+						}
+						{"default"}
+					}
+					{"set_i" {var "defense_support_motor_pkg$"} {op "+"} {value 1}}
+					{"set_i" {var "defense_support_motor_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ds_place_at_entry")
+					("ds_finish_motor")
+				}
+			}
+
+			{"defense_support/ally_prc_motor"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 19}}
+						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
+						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "defense_support_motor_left$"} {op ">"} {value 0}}
+						{"6.entities" {selector {tag ally_sup_prc_motor_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "DEFENSE SUPPORT MOTORIZED INSERT"}}
+						}
+						{"default"}
+					}
+					{"switch"
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_prc_p1_hull}} {count {op ">="} {value 1}}}
+							; Numbered package: one hull, ITS {Link}-baked crew and its own riders. The case is
+							; keyed on the package still being parked, not on the cursor: two engines run on every
+							; mission and a mirror matchup (NATO vs CSA, RUSA vs SOV) folds both of them onto the
+							; same faction pool. Whoever claims first strips the numbered tags, so the other engine
+							; falls through to the next package instead of claiming a truck that is already on the
+							; road. Bare single-tag selects only; the deploy tag is what routes the crew through the
+							; ownership switch.
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_p1_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_prc_p1_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_p1_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_prc_motor_hull}
+								{tag_remove ally_sup_prc_p1_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_p1_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_prc_motor_pax}
+								{tag_remove ally_sup_prc_p1_pax}
+							}
+						}
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_prc_p2_hull}} {count {op ">="} {value 1}}}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_p2_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_prc_p2_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_p2_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_prc_motor_hull}
+								{tag_remove ally_sup_prc_p2_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_p2_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_prc_motor_pax}
+								{tag_remove ally_sup_prc_p2_pax}
+							}
+						}
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_prc_p3_hull}} {count {op ">="} {value 1}}}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_p3_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_prc_p3_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_p3_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_prc_motor_hull}
+								{tag_remove ally_sup_prc_p3_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_p3_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_prc_motor_pax}
+								{tag_remove ally_sup_prc_p3_pax}
+							}
+						}
+						{"case"
+							{condition {type entities} {selector {tag ally_sup_prc_p4_hull}} {count {op ">="} {value 1}}}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_p4_crew}}}}}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_prc_p4_crew}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_p4_hull}}}}}
+								{tag_add def_sup_motor_hull}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_prc_motor_hull}
+								{tag_remove ally_sup_prc_p4_hull}
+							}
+							{"entity_state"
+								{selector {source advanced} {group {select {tag {tag ally_sup_prc_p4_pax}}}}}
+								{tag_add def_sup_motor_pax}
+								{tag_add def_sup_deploy}
+								{tag_remove ally_sup_prc_motor_pax}
+								{tag_remove ally_sup_prc_p4_pax}
+							}
+						}
+						{"default"}
+					}
+					{"set_i" {var "defense_support_motor_pkg$"} {op "+"} {value 1}}
+					{"set_i" {var "defense_support_motor_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ds_place_at_entry")
+					("ds_finish_motor")
+				}
+			}
+
+			; Motorised inserts run on their own randomised clock, independent of this engine's wave
+			; ladder so truck and infantry arrivals never sync. The three opening delays and the
+			; three cycle delays are each at least three seconds clear of every other cadence in
+			; this file AND of the motor clock in the engine that co-runs with it, so no two
+			; spawners can beat together.
+			{"defense_support/motor_clock"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "defense_support_armed$"} {op "=="} {value 1}}
+						{"2.cmp_i" {var "defense_support_motor_left$"} {op ">"} {value 0}}
+						{"3.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "faction_support_army$"} {op ">"} {value 0}}
+					}
+				}
+				{actions
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "defense_support_motor_first$"} {op "=="} {value 0}}
+							{"set_i" {var "defense_support_motor_first$"} {op "="} {value 1}}
+							{"switch"
+								{"case" {condition {type rand} {value 0.34}} {"delay" {time 70}}}
+								{"case" {condition {type rand} {value 0.5}} {"delay" {time 100}}}
+								{"default" {"delay" {time 136}}}
+							}
+						}
+						{"default"
+							{"switch"
+								{"case" {condition {type rand} {value 0.34}} {"delay" {time 175}}}
+								{"case" {condition {type rand} {value 0.5}} {"delay" {time 235}}}
+								{"default" {"delay" {time 295}}}
+							}
+						}
+					}
+					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 19}}
+					("ds_poke_motor")
+					{"delay" {time 20}}
+					{"trigger" {name "defense_support/motor_clock"}}
+				}
+			}
+
+			; One-shot per truck: give the departing hull 45s of driving, then remove it
+			; (dead or alive) so trucks never accumulate. Fires only when a hull is leaving.
+			{"defense_support/motor_cleanup"
+				{condition
+					{expression "1 & 2"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
+						{"2.entities" {selector {tag def_sup_motor_leaving}} {count {op ">"} {value 0}}}
+					}
+				}
+				{actions
+					{"delay" {time 45}}
+					{"delete" {selector {ignore_captured_by_user 0} {tag def_sup_motor_leaving}}}
+				}
+			}

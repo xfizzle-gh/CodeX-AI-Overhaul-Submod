@@ -213,10 +213,16 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 for suffix, _cmd, _take, _depth in FACTION_COMPS
             } | {
                 "ally_%s_air" % key for key, _army in FACTION_ARMIES
-            },
+            } | {
+                # Motorized insert: one trigger per faction, its own clock, its cleanup.
+                "ally_%s_motor" % key for key, _army in FACTION_ARMIES
+            } | {"motor_clock", "motor_cleanup"},
         )
-        self.assertEqual(len(ds), 11 + len(FACTION_ARMIES) * len(FACTION_COMPS) + len(FACTION_ARMIES))
-        self.assertEqual(len(ds), 39)
+        self.assertEqual(
+            len(ds),
+            13 + len(FACTION_ARMIES) * len(FACTION_COMPS) + 2 * len(FACTION_ARMIES),
+        )
+        self.assertEqual(len(ds), 45)
         # Light vehicles are attack-only: the defence engine must not grow a veh
         # trigger, and must not reference the vehicle pools at all.
         self.assertFalse([n for n in ds if "veh" in n])
@@ -259,6 +265,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
                        "ds_poke_faction_recon", "ds_poke_faction_assault",
                        "ds_poke_faction_eng", "ds_poke_faction_manpad",
                        "ds_poke_faction_air",
+                       "ds_poke_motor", "ds_finish_motor",
                        "ds_props_af1", "ds_props_af2", "ds_props_af3",
                        "ds_own_prop_crew", "ds_crew_claim_one",
                        "ds_crew_af1", "ds_crew_af2", "ds_crew_af3",
@@ -475,7 +482,18 @@ class DefenceMissionSupportTests(unittest.TestCase):
         }
         # Vehicle pools are attack-only, so they are deliberately NOT allow-listed
         # here: if the defence engine ever names one this test fails.
-        ds_shared = set(DS_POOL_DEPTH) | {"attack_support_tpl"} | faction_pools
+        numbered_packages = {
+            "ally_sup_%s_p%d_%s" % (key, n, kind)
+            for key, _army in FACTION_ARMIES
+            for n in (1, 2, 3, 4)
+            for kind in ("hull", "crew", "pax")
+        } | {
+            "ally_sup_%s_motor%s" % (key, suf)
+            for key, _army in FACTION_ARMIES
+            for suf in ("", "_hull", "_crew", "_pax")
+        }
+        ds_shared = (set(DS_POOL_DEPTH) | {"attack_support_tpl"} | faction_pools
+                     | numbered_packages)
         ds_own = tags(self.ds) - shared - ds_shared
         ea_own = tags(self.ea) - shared - {"enemy_def_tpl", "ally_sup_tpl"} - {
             "enemy_def_%s_%s" % (key, role)
@@ -492,13 +510,15 @@ class DefenceMissionSupportTests(unittest.TestCase):
             for n in (1, 2, 3, 4)
             for kind in ("hull", "crew", "pax")
         } - {"ally_sup_%s" % key for key, _army in EA_FACTIONS}
+        ds_own -= {"ally_sup_tpl"}
         self.assertTrue(all(t.startswith("def_sup_") for t in ds_own), ds_own)
         self.assertTrue(all(t.startswith("ea_") for t in ea_own), ea_own)
         # Every faction pool the defence engine claims must be one of the allowed
         # ones - a typo'd or invented pool tag would silently never match.
         claimed = {t for t in tags(self.ds) if t.startswith("ally_sup_")}
         self.assertTrue(claimed)
-        self.assertFalse(claimed - faction_pools, claimed - faction_pools)
+        self.assertFalse(claimed - faction_pools - numbered_packages,
+                         claimed - faction_pools - numbered_packages)
         self.assertFalse(ds_own & ea_own)
         self.assertFalse(ds_own & tags(self.q1))
         self.assertFalse(ea_own & tags(self.q4))
@@ -1912,13 +1932,21 @@ class DefenceMissionSupportTests(unittest.TestCase):
             blk = trigger_block(code, "enemy_attack/%s_motor" % fac)
             for n in (1, 2, 3, 4):
                 with self.subTest(faction=fac, package=n):
-                    self.assertIn('{var "enemy_attack_motor_pkg$"} {op "=="} {value %d}' % n, blk)
+                    # Availability-keyed, because Q3 shares this pool with Q2 on the
+                    # same mission and a mirror matchup folds both onto one faction.
+                    self.assertIn(
+                        '{condition {type entities} {selector {tag ally_sup_%s_p%d_hull}} '
+                        '{count {op ">="} {value 1}}}' % (fac, n),
+                        blk,
+                    )
                     for kind in ("hull", "crew", "pax"):
                         self.assertIn(
                             '{selector {source advanced} {group {select {tag {tag ally_sup_%s_p%d_%s}}}}}'
                             % (fac, n, kind),
                             blk,
                         )
+                        self.assertIn('{tag_remove ally_sup_%s_p%d_%s}' % (fac, n, kind), blk)
+            self.assertNotIn('{var "enemy_attack_motor_pkg$"} {op "=="}', blk)
             self.assertNotIn("{include", blk)
             self.assertNotIn("{state operatable}", blk)
             # Crew must be ea_deploy-tagged; that tag is the ownership switch's input.
@@ -2120,6 +2148,242 @@ class DefenceMissionSupportTests(unittest.TestCase):
         self.assertIn("-35500}", q4_tpl)
         self.assertIn("-36900}", fac_tpl)
 
+
+
+# key -> (path, mission-side gate value, trigger namespace, faction trigger pattern,
+#         poke define, finish define, ownership define, placement define,
+#         state-var prefix, runtime-tag prefix)
+MOTOR_ENGINES = {
+    "Q1 friendly attack": (Q1, 0, "attack_support", "ally_%s_motor",
+                           "as_poke_faction_motor", "as_finish_motor",
+                           "am_own_to_support", "am_place_at_entry",
+                           "attack_support", "attack_support_motor"),
+    "Q2 friendly defence": (DS, 1, "defense_support", "ally_%s_motor",
+                            "ds_poke_motor", "ds_finish_motor",
+                            "ds_own_to_defenderbot", "ds_place_at_entry",
+                            "defense_support", "def_sup_motor"),
+    "Q3 enemy attack": (EA, 1, "enemy_attack", "%s_motor",
+                        "ea_poke_motor", "ea_finish_motor",
+                        "ea_own_to_enemy", "ea_place_at_entry",
+                        "enemy_attack", "ea_motor"),
+    "Q4 enemy defence": (Q4, 0, "enemy_defense", "%s_motor",
+                         "ed_poke_motor", "ed_finish_motor",
+                         "ed_own_to_enemy", "ed_place",
+                         "enemy_defense", "enemy_def_motor"),
+}
+MOTOR_FACTIONS = ("rusa", "ukr", "prc", "nato")
+# The tag a departing hull carries until its cleanup trigger deletes it. Q1 keeps
+# the am_* runtime vocabulary its own defines use; the other three follow their
+# engine's tag prefix.
+MOTOR_LEAVING = {
+    "Q1 friendly attack": "am_motor_leaving",
+    "Q2 friendly defence": "def_sup_motor_leaving",
+    "Q3 enemy attack": "ea_motor_leaving",
+    "Q4 enemy defence": "enemy_def_motor_leaving",
+}
+# The self-re-arming spawner ladders each engine already ran before trucks existed.
+# A motor delay landing on one of these makes two arrivals beat together.
+MOTOR_RIVAL_SCHEDULERS = {
+    "Q1 friendly attack": ("clock", "init"),
+    "Q2 friendly defence": ("clock", "init"),
+    "Q3 enemy attack": ("clock", "init"),
+    "Q4 enemy defence": ("trickle", "surge", "init"),
+}
+PLACE_ONE = {
+    "am_place_at_entry": "am_place_one",
+    "ds_place_at_entry": "ds_place_one",
+    "ea_place_at_entry": "ea_place_one",
+    "ed_place": "ed_place_one",
+}
+
+
+class MotorizedInsertOnEveryEngineTests(unittest.TestCase):
+    """Trucks run for BOTH sides of EVERY mission - the standing user requirement.
+
+    An attack mission runs Q1 and Q4 together; a defence mission runs Q2 and Q3.
+    All four therefore need the same motorized path, and the two engines that share
+    a mission must never fight over the same parked truck or beat in time with each
+    other.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.vars = VARS.read_text(encoding="utf-8")
+        cls.code = {
+            name: strip_comments(spec[0].read_text(encoding="utf-8"))
+            for name, spec in MOTOR_ENGINES.items()
+        }
+
+    def test_every_engine_carries_the_full_motor_inventory(self) -> None:
+        for name, spec in MOTOR_ENGINES.items():
+            (_p, _gate, ns, pattern, poke, finish,
+             own, place, _var_pfx, tag_pfx) = spec
+            code = self.code[name]
+            with self.subTest(engine=name):
+                for fac in MOTOR_FACTIONS:
+                    self.assertIn('{"%s/%s"' % (ns, pattern % fac), code)
+                self.assertIn('{"%s/motor_clock"' % ns, code)
+                self.assertIn('{"%s/motor_cleanup"' % ns, code)
+                self.assertEqual(code.count('(define "%s"' % poke), 1)
+                self.assertEqual(code.count('(define "%s"' % finish), 1)
+                body = define_body(code, finish)
+                # Ownership is the whole point: an unowned crew is not a driver.
+                self.assertIn('("%s")' % own, body)
+                self.assertIn("{mode passengers}", body)
+                self.assertIn('{waypoint "0"}', body)
+                self.assertIn("{tag_add %s}" % MOTOR_LEAVING[name], body)
+                self.assertIn("{tag_add %s_hull}" % tag_pfx, code)
+                self.assertIn("{tag_add %s_pax}" % tag_pfx, code)
+                # Placement runs before promotion on every motor deploy.
+                for fac in MOTOR_FACTIONS:
+                    blk = trigger_block(code, "%s/%s" % (ns, pattern % fac))
+                    self.assertLess(
+                        blk.index('("%s")' % place), blk.index('("%s")' % finish)
+                    )
+                # And the placement run is wide enough for the widest package:
+                # hull + 2 crew + 8 {Link}-baked riders = 11 bodies.
+                self.assertGreaterEqual(
+                    define_body(code, place).count('("%s")' % PLACE_ONE[place]), 11
+                )
+                # Cleanup removes the departed hull after 45s, wreck included.
+                cleanup = trigger_block(code, "%s/motor_cleanup" % ns)
+                self.assertIn('{"delay" {time 45}}', cleanup)
+                self.assertIn(
+                    '{"delete" {selector {ignore_captured_by_user 0} {tag %s}}}'
+                    % MOTOR_LEAVING[name],
+                    cleanup,
+                )
+
+    def test_budget_and_cursor_are_declared_and_per_engine(self) -> None:
+        for name, spec in MOTOR_ENGINES.items():
+            var_pfx = spec[8]
+            code = self.code[name]
+            with self.subTest(engine=name):
+                for suffix in ("motor_left", "motor_pkg", "motor_first"):
+                    self.assertIn('{"%s_%s"}' % (var_pfx, suffix), self.vars)
+                self.assertIn('{var "%s_motor_left$"} {op "="} {value 4}' % var_pfx, code)
+                self.assertIn('{var "%s_motor_pkg$"} {op "="} {value 1}' % var_pfx, code)
+                self.assertEqual(
+                    code.count('{var "%s_motor_left$"} {op "-"} {value 1}' % var_pfx), 4
+                )
+                self.assertEqual(
+                    code.count('{var "%s_motor_pkg$"} {op "+"} {value 1}' % var_pfx), 4
+                )
+                # No engine may read or write another engine's motor state.
+                for other, ospec in MOTOR_ENGINES.items():
+                    if other != name:
+                        self.assertNotIn('{var "%s_motor_left$"}' % ospec[8], code)
+
+    def test_motor_triggers_are_gated_to_their_own_mission_side(self) -> None:
+        for name, spec in MOTOR_ENGINES.items():
+            gate, ns, pattern = spec[1], spec[2], spec[3]
+            code = self.code[name]
+            expect = '{var "user_is_defender$"} {op "=="} {value %d}' % gate
+            names = [pattern % f for f in MOTOR_FACTIONS] + ["motor_clock", "motor_cleanup"]
+            for tname in names:
+                with self.subTest(engine=name, trigger=tname):
+                    blk = trigger_block(code, "%s/%s" % (ns, tname))
+                    self.assertIn(expect, blk[: blk.index("{actions")])
+
+    def test_every_engine_claims_whole_numbered_packages_and_strips_them(self) -> None:
+        for name, spec in MOTOR_ENGINES.items():
+            ns, pattern = spec[2], spec[3]
+            code = self.code[name]
+            for fac in MOTOR_FACTIONS:
+                blk = trigger_block(code, "%s/%s" % (ns, pattern % fac))
+                order = []
+                for n in (1, 2, 3, 4):
+                    with self.subTest(engine=name, faction=fac, package=n):
+                        gate = ('{condition {type entities} {selector {tag ally_sup_%s_p%d_hull}} '
+                                '{count {op ">="} {value 1}}}' % (fac, n))
+                        self.assertIn(gate, blk)
+                        order.append(blk.index(gate))
+                        for kind in ("hull", "crew", "pax"):
+                            self.assertIn(
+                                '{selector {source advanced} {group {select {tag {tag ally_sup_%s_p%d_%s}}}}}'
+                                % (fac, n, kind),
+                                blk,
+                            )
+                            # Stripping the numbered tag is what makes the shared pool
+                            # safe when the co-running engine folds to the same army.
+                            self.assertIn(
+                                "{tag_remove ally_sup_%s_p%d_%s}" % (fac, n, kind), blk
+                            )
+                self.assertEqual(order, sorted(order), "packages must be tried in order")
+                # Decorated selectors match nothing; never let one in here.
+                self.assertNotIn("{include", blk)
+                self.assertNotIn("{state operatable}", blk)
+
+    def test_motor_clock_waits_for_the_published_faction(self) -> None:
+        """The E2 lesson applied to trucks.
+
+        E2 dispatched before faction_support_army$ was published, read 0, fell to
+        the by-army default and killed the whole leg. A motor clock that fires that
+        early is milder - no faction trigger matches, so the cycle simply produces
+        nothing - but it still burns the opening slot silently, which is the same
+        class of lie. Every motor clock therefore waits for its own army var.
+        """
+        army_of = {
+            "Q1 friendly attack": "faction_support_army$",
+            "Q2 friendly defence": "faction_support_army$",
+            "Q3 enemy attack": "enemy_attack_army$",
+            "Q4 enemy defence": "enemy_defense_army$",
+        }
+        for name, spec in MOTOR_ENGINES.items():
+            ns, var_pfx = spec[2], spec[8]
+            code = self.code[name]
+            clock = trigger_block(code, "%s/motor_clock" % ns)
+            head = clock[: clock.index("{actions")]
+            with self.subTest(engine=name):
+                self.assertIn('{var "%s"} {op ">"} {value 0}' % army_of[name], head)
+                self.assertIn('{var "%s_armed$"} {op "=="} {value 1}' % var_pfx, head)
+                self.assertIn('{var "%s_motor_left$"} {op ">"} {value 0}' % var_pfx, head)
+                # Every term is ANDed: no branch may slip past a missing gate.
+                expression = re.search(r'\{expression "([^"]+)"\}', head).group(1)
+                self.assertNotIn("|", expression)
+                self.assertEqual(
+                    sorted(re.findall(r"\d+", expression)),
+                    sorted(re.findall(r'\{"(\d+)\.', head)),
+                )
+
+    def _clock_delays(self, name: str) -> list:
+        ns = MOTOR_ENGINES[name][2]
+        clock = trigger_block(self.code[name], "%s/motor_clock" % ns)
+        return sorted(
+            int(v) for v in re.findall(r'\{"delay" \{time (\d+)\}\}', clock) if int(v) > 30
+        )
+
+    def test_motor_cadences_never_beat_together(self) -> None:
+        """Two engines run on every mission; their truck clocks must not sync.
+
+        The co-running pairs are Q1+Q4 on an attack mission and Q2+Q3 on a defence
+        one. Each engine's six motor delays must also stay clear of every other
+        cadence in its own file, or trucks arrive on top of an infantry wave.
+        """
+        ladders = {name: self._clock_delays(name) for name in MOTOR_ENGINES}
+        for name, values in ladders.items():
+            with self.subTest(engine=name):
+                self.assertEqual(len(values), 6, values)
+                self.assertEqual(len(set(values)), 6, values)
+        for a, b in (("Q1 friendly attack", "Q4 enemy defence"),
+                     ("Q2 friendly defence", "Q3 enemy attack")):
+            for x in ladders[a]:
+                for y in ladders[b]:
+                    with self.subTest(pair=(a, b), x=x, y=y):
+                        self.assertGreaterEqual(abs(x - y), 3)
+        for name, spec in MOTOR_ENGINES.items():
+            ns = spec[2]
+            code = self.code[name]
+            others = set()
+            for rival in MOTOR_RIVAL_SCHEDULERS[name]:
+                blk = trigger_block(code, "%s/%s" % (ns, rival))
+                others |= {int(v) for v in re.findall(r'\{"delay" \{time (\d+)\}\}', blk)
+                           if int(v) > 25}
+            self.assertTrue(others, name)
+            for x in ladders[name]:
+                for y in sorted(others):
+                    with self.subTest(engine=name, motor=x, rival=y):
+                        self.assertGreaterEqual(abs(x - y), 3)
 
 if __name__ == "__main__":
     unittest.main()

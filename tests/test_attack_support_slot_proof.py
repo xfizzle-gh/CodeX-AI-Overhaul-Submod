@@ -1755,7 +1755,16 @@ class AttackSupportMotorizedInsertTests(unittest.TestCase):
             self.assertEqual(pax_total, 24, fac)
             self.assertEqual(self.tpl.count('"ally_sup_%s_motor_pax"' % fac), 24, fac)
 
-    def test_package_cursor_walks_one_truck_at_a_time(self) -> None:
+    def test_package_claim_takes_the_first_package_still_parked(self) -> None:
+        """Cases are keyed on availability, not on the cursor.
+
+        Two engines run on every mission - Q1 alongside Q4 on an attack mission,
+        Q2 alongside Q3 on a defence one - and a mirror matchup (NATO vs CSA,
+        RUSA vs SOV, both folded to one army value) puts both of them on the same
+        faction's four packages. A cursor-keyed case would hand truck 1 to both.
+        Each claim therefore strips the numbered tags it took, and the switch walks
+        p1..p4 taking the first one still parked.
+        """
         self.assertIn('{"attack_support_motor_pkg"}', self.vars)
         self.assertIn('{var "attack_support_motor_pkg$"} {op "="} {value 1}', self.waves)
         self.assertEqual(
@@ -1763,18 +1772,25 @@ class AttackSupportMotorizedInsertTests(unittest.TestCase):
         )
         for fac in ("rusa", "ukr", "prc", "nato"):
             block = self.waves.split('{"attack_support/ally_%s_motor"' % fac)[1].split('{"attack_support/')[0]
+            seen = []
             for n in (1, 2, 3, 4):
                 with self.subTest(faction=fac, package=n):
-                    self.assertIn(
-                        '{var "attack_support_motor_pkg$"} {op "=="} {value %d}' % n, block
-                    )
+                    gate = ('{condition {type entities} {selector {tag ally_sup_%s_p%d_hull}} '
+                            '{count {op ">="} {value 1}}}' % (fac, n))
+                    self.assertIn(gate, block)
+                    seen.append(block.index(gate))
                     for kind in ("hull", "crew", "pax"):
-                        # Bare single-tag select on the parked package tag only.
+                        # Bare single-tag select on the parked package tag only...
                         self.assertIn(
                             '{selector {source advanced} {group {select {tag {tag ally_sup_%s_p%d_%s}}}}}'
                             % (fac, n, kind),
                             block,
                         )
+                        # ...and the claim strips it, so the co-running engine skips it.
+                        self.assertIn('{tag_remove ally_sup_%s_p%d_%s}' % (fac, n, kind), block)
+            self.assertEqual(seen, sorted(seen), "packages must be tried in order")
+            # The cursor may no longer select anything: it is a per-engine counter.
+            self.assertNotIn('{var "attack_support_motor_pkg$"} {op "=="}', block)
             # Crew ride through the ownership switch or the truck has no driver.
             self.assertNotIn("{include", block)
             self.assertNotIn("{state operatable}", block)

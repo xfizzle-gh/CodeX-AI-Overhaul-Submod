@@ -138,13 +138,16 @@ class EnemyDefenseSupportTests(unittest.TestCase):
         self.assertEqual(len(names), len(set(names)), "duplicate trigger name")
         expected = {"init", "trickle", "surge"}
         expected |= {"patrol_%d" % n for n in (1, 2, 3, 4)}
+        # Motorized insert: one trigger per faction plus its own clock and cleanup.
+        expected |= {"%s_motor" % key for key, _army, _side in FACTIONS}
+        expected |= {"motor_clock", "motor_cleanup"}
         expected |= {
             "%s_%s" % (key, suffix)
             for key, _army, _side in FACTIONS
             for suffix, _cmd, _role, _take, _stage in DRAWS
         }
         self.assertEqual(set(names), expected)
-        self.assertEqual(len(names), 19)
+        self.assertEqual(len(names), 25)
 
     def test_mi_defines_are_declared_before_they_are_called(self) -> None:
         code = self.code
@@ -309,7 +312,11 @@ class EnemyDefenseSupportTests(unittest.TestCase):
         # Capture points are addressed as {tag flag}: the fpc1..fpc5 tags are absent
         # from one of the fourteen maps entirely, which left units standing still.
         self.assertNotIn("fpc", code)
-        self.assertEqual(code.count("{select {tag {tag flag}}}"), 5)
+        # Five anchor picks plus the one the motorized insert shuffles per truck.
+        self.assertEqual(code.count("{select {tag {tag flag}}}"), 6)
+        motor = define_body(code, "ed_finish_motor")
+        self.assertEqual(motor.count("{select {tag {tag flag}}}"), 1)
+        self.assertIn("{state {state inactive}}", motor)
 
         # The garrison is MOVED onto its flag. {"placement"} takes a plain {target}
         # entity selector - the form dcg_functions.inc uses for spawn helpers.
@@ -505,9 +512,11 @@ class EnemyDefenseSupportTests(unittest.TestCase):
                 '{target_waypoint "attack_support_entry_%s"}' % side, place
             )
 
-        # Placement happens before promotion on every one of the twelve draws.
-        self.assertEqual(code.count('("ed_place")'), 12)
+        # Placement happens before promotion on every one of the twelve draws, and
+        # on each of the four motorized ones.
+        self.assertEqual(code.count('("ed_place")'), 16)
         self.assertEqual(code.count('("ed_finish")'), 12)
+        self.assertEqual(code.count('("ed_finish_motor")'), 4)
         self.assertLess(code.index('(define "ed_place"'), code.index('(define "ed_finish"'))
 
     def test_ownership_switch_covers_every_literal_player_slot(self) -> None:
@@ -525,10 +534,12 @@ class EnemyDefenseSupportTests(unittest.TestCase):
         self.assertNotIn('{player "id_1st_enemy$"}', code)
         self.assertNotIn('{player "17"}', own)
         self.assertNotIn('{player "0"}', code)
-        # Ownership is handed over exactly once per deploy, after placement.
-        self.assertEqual(code.count('("ed_own_to_enemy")'), 1)
-        finish = define_body(code, "ed_finish")
-        self.assertIn('("ed_own_to_enemy")', finish)
+        # Ownership is handed over exactly once per deploy, after placement - once
+        # from the infantry finish and once from the motorized one. The motorized
+        # path MUST go through it: the truck crew is only a driver if it is owned.
+        self.assertEqual(code.count('("ed_own_to_enemy")'), 2)
+        for name in ("ed_finish", "ed_finish_motor"):
+            self.assertIn('("ed_own_to_enemy")', define_body(code, name))
         self.assertIn('BotApi.Scene:SetVar("id_1st_enemy", firstEnemyId)', self.conquest)
 
     # -------------------------------------------------------------- spec point 4

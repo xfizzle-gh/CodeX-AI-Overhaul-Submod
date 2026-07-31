@@ -765,13 +765,15 @@ if (Select-String -Quiet -LiteralPath $defSource -SimpleMatch '{var "id_attack_s
 # Every trigger must carry the attack-mission gate, or the system fires on a
 # human-DEFENCE mission and reinforces the wrong side.
 $defText = [System.IO.File]::ReadAllText($defSource)
+# 19 original (init, two spawners, four patrols, twelve draws) plus the six the
+# motorized insert adds: one per faction, its own clock and its cleanup.
 $defTriggers = [regex]::Matches($defText, '\{"enemy_defense/[a-z0-9_]+"')
-if ($defTriggers.Count -ne 19) {
-    throw "Expected 19 enemy_defense triggers, found $($defTriggers.Count)"
+if ($defTriggers.Count -ne 25) {
+    throw "Expected 25 enemy_defense triggers, found $($defTriggers.Count)"
 }
 $defGates = [regex]::Matches($defText, [regex]::Escape('{var "user_is_defender$"} {op "=="} {value 0}'))
-if ($defGates.Count -lt 19) {
-    throw "Only $($defGates.Count) of the 19 enemy_defense triggers carry the user_is_defender$ == 0 gate"
+if ($defGates.Count -lt 25) {
+    throw "Only $($defGates.Count) of the 25 enemy_defense triggers carry the user_is_defender$ == 0 gate"
 }
 # 184 prototypes: 4 faction pools x (30 line + 16 weapons). A claim MOVES bodies
 # out and never returns them, so each pool carries the whole L3 budget alone. The

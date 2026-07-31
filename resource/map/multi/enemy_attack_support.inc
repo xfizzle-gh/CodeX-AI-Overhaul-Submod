@@ -1355,87 +1355,98 @@
 					}
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 1}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_rusa_p1_hull}} {count {op ">="} {value 1}}}
+						; Numbered package: one hull, ITS {Link}-baked crew and its own riders. The case is
+						; keyed on the package still being parked, not on the cursor: two engines run on every
+						; mission and a mirror matchup (NATO vs CSA, RUSA vs SOV) folds both of them onto the
+						; same faction pool. Whoever claims first strips the numbered tags, so the other engine
+						; falls through to the next package instead of claiming a truck that is already on the
+						; road. Bare single-tag selects only; the deploy tag is what routes the crew through the
+						; ownership switch.
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p1_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_rusa_p1_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p1_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_rusa_motor_hull}
+							{tag_remove ally_sup_rusa_p1_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p1_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_rusa_motor_pax}
+							{tag_remove ally_sup_rusa_p1_pax}
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 2}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_rusa_p2_hull}} {count {op ">="} {value 1}}}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p2_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_rusa_p2_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p2_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_rusa_motor_hull}
+							{tag_remove ally_sup_rusa_p2_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p2_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_rusa_motor_pax}
+							{tag_remove ally_sup_rusa_p2_pax}
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 3}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_rusa_p3_hull}} {count {op ">="} {value 1}}}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p3_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_rusa_p3_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p3_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_rusa_motor_hull}
+							{tag_remove ally_sup_rusa_p3_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p3_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_rusa_motor_pax}
+							{tag_remove ally_sup_rusa_p3_pax}
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 4}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_rusa_p4_hull}} {count {op ">="} {value 1}}}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p4_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_rusa_p4_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p4_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_rusa_motor_hull}
+							{tag_remove ally_sup_rusa_p4_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p4_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_rusa_motor_pax}
+							{tag_remove ally_sup_rusa_p4_pax}
 						}
 					}
 					{"default"}
@@ -1473,87 +1484,98 @@
 					}
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 1}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_ukr_p1_hull}} {count {op ">="} {value 1}}}
+						; Numbered package: one hull, ITS {Link}-baked crew and its own riders. The case is
+						; keyed on the package still being parked, not on the cursor: two engines run on every
+						; mission and a mirror matchup (NATO vs CSA, RUSA vs SOV) folds both of them onto the
+						; same faction pool. Whoever claims first strips the numbered tags, so the other engine
+						; falls through to the next package instead of claiming a truck that is already on the
+						; road. Bare single-tag selects only; the deploy tag is what routes the crew through the
+						; ownership switch.
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p1_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_ukr_p1_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p1_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_ukr_motor_hull}
+							{tag_remove ally_sup_ukr_p1_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p1_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_ukr_motor_pax}
+							{tag_remove ally_sup_ukr_p1_pax}
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 2}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_ukr_p2_hull}} {count {op ">="} {value 1}}}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p2_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_ukr_p2_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p2_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_ukr_motor_hull}
+							{tag_remove ally_sup_ukr_p2_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p2_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_ukr_motor_pax}
+							{tag_remove ally_sup_ukr_p2_pax}
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 3}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_ukr_p3_hull}} {count {op ">="} {value 1}}}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p3_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_ukr_p3_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p3_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_ukr_motor_hull}
+							{tag_remove ally_sup_ukr_p3_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p3_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_ukr_motor_pax}
+							{tag_remove ally_sup_ukr_p3_pax}
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 4}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_ukr_p4_hull}} {count {op ">="} {value 1}}}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p4_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_ukr_p4_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p4_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_ukr_motor_hull}
+							{tag_remove ally_sup_ukr_p4_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p4_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_ukr_motor_pax}
+							{tag_remove ally_sup_ukr_p4_pax}
 						}
 					}
 					{"default"}
@@ -1591,87 +1613,98 @@
 					}
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 1}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_prc_p1_hull}} {count {op ">="} {value 1}}}
+						; Numbered package: one hull, ITS {Link}-baked crew and its own riders. The case is
+						; keyed on the package still being parked, not on the cursor: two engines run on every
+						; mission and a mirror matchup (NATO vs CSA, RUSA vs SOV) folds both of them onto the
+						; same faction pool. Whoever claims first strips the numbered tags, so the other engine
+						; falls through to the next package instead of claiming a truck that is already on the
+						; road. Bare single-tag selects only; the deploy tag is what routes the crew through the
+						; ownership switch.
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p1_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_prc_p1_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p1_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_prc_motor_hull}
+							{tag_remove ally_sup_prc_p1_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p1_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_prc_motor_pax}
+							{tag_remove ally_sup_prc_p1_pax}
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 2}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_prc_p2_hull}} {count {op ">="} {value 1}}}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p2_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_prc_p2_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p2_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_prc_motor_hull}
+							{tag_remove ally_sup_prc_p2_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p2_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_prc_motor_pax}
+							{tag_remove ally_sup_prc_p2_pax}
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 3}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_prc_p3_hull}} {count {op ">="} {value 1}}}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p3_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_prc_p3_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p3_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_prc_motor_hull}
+							{tag_remove ally_sup_prc_p3_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p3_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_prc_motor_pax}
+							{tag_remove ally_sup_prc_p3_pax}
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 4}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_prc_p4_hull}} {count {op ">="} {value 1}}}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p4_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_prc_p4_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p4_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_prc_motor_hull}
+							{tag_remove ally_sup_prc_p4_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p4_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_prc_motor_pax}
+							{tag_remove ally_sup_prc_p4_pax}
 						}
 					}
 					{"default"}
@@ -1709,87 +1742,98 @@
 					}
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 1}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_nato_p1_hull}} {count {op ">="} {value 1}}}
+						; Numbered package: one hull, ITS {Link}-baked crew and its own riders. The case is
+						; keyed on the package still being parked, not on the cursor: two engines run on every
+						; mission and a mirror matchup (NATO vs CSA, RUSA vs SOV) folds both of them onto the
+						; same faction pool. Whoever claims first strips the numbered tags, so the other engine
+						; falls through to the next package instead of claiming a truck that is already on the
+						; road. Bare single-tag selects only; the deploy tag is what routes the crew through the
+						; ownership switch.
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p1_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_nato_p1_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p1_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_nato_motor_hull}
+							{tag_remove ally_sup_nato_p1_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p1_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_nato_motor_pax}
+							{tag_remove ally_sup_nato_p1_pax}
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 2}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_nato_p2_hull}} {count {op ">="} {value 1}}}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p2_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_nato_p2_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p2_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_nato_motor_hull}
+							{tag_remove ally_sup_nato_p2_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p2_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_nato_motor_pax}
+							{tag_remove ally_sup_nato_p2_pax}
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 3}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_nato_p3_hull}} {count {op ">="} {value 1}}}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p3_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_nato_p3_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p3_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_nato_motor_hull}
+							{tag_remove ally_sup_nato_p3_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p3_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_nato_motor_pax}
+							{tag_remove ally_sup_nato_p3_pax}
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_attack_motor_pkg$"} {op "=="} {value 4}}
-						; Numbered package: hull + ITS linked crew + its six passengers. Bare
-						; single-tag selects only; the deploy tag routes crew through ownership.
+						{condition {type entities} {selector {tag ally_sup_nato_p4_hull}} {count {op ">="} {value 1}}}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p4_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_remove ally_sup_nato_p4_crew}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p4_hull}}}}}
 							{tag_add ea_motor_hull}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_nato_motor_hull}
+							{tag_remove ally_sup_nato_p4_hull}
 						}
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p4_pax}}}}}
 							{tag_add ea_motor_pax}
 							{tag_add ea_deploy}
 							{tag_remove ally_sup_nato_motor_pax}
+							{tag_remove ally_sup_nato_p4_pax}
 						}
 					}
 					{"default"}
@@ -1815,11 +1859,12 @@
 			; The pool parks four packages per faction, so every one of those can be filled.
 			{"enemy_attack/motor_clock"
 				{condition
-					{expression "1 & 2 & 3"}
+					{expression "1 & 2 & 3 & 4"}
 					{terms
 						{"1.cmp_i" {var "enemy_attack_armed$"} {op "=="} {value 1}}
 						{"2.cmp_i" {var "enemy_attack_motor_left$"} {op ">"} {value 0}}
 						{"3.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
+						{"4.cmp_i" {var "enemy_attack_army$"} {op ">"} {value 0}}
 					}
 				}
 				{actions

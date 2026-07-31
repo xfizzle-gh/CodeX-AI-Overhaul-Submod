@@ -103,3 +103,9 @@
 			{"attack_support_motor_first"}
 			{"attack_support_motor_pkg"}
 			{"enemy_attack_motor_pkg"}
+			{"enemy_defense_motor_left"}
+			{"enemy_defense_motor_pkg"}
+			{"enemy_defense_motor_first"}
+			{"defense_support_motor_left"}
+			{"defense_support_motor_pkg"}
+			{"defense_support_motor_first"}
