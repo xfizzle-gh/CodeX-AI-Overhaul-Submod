@@ -11,19 +11,39 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
 
 
 def normalize_once(text: str, old: str, new: str, label: str) -> str:
-    candidates = [(old, new)]
-    alternate_old = old.replace(
-        'count("{tag_add support_e2_pax}")',
-        "count('{tag_add support_e2_pax}')",
-    )
-    alternate_new = new.replace(
-        'count("{tag_add support_e2_pax}")',
-        "count('{tag_add support_e2_pax}')",
-    )
-    if alternate_old != old:
-        candidates.append((alternate_old, alternate_new))
+    candidates: list[tuple[str, str]] = []
 
-    old_hits = [(candidate_old, candidate_new) for candidate_old, candidate_new in candidates if text.count(candidate_old) == 1]
+    def add_candidate(candidate_old: str, candidate_new: str) -> None:
+        pair = (candidate_old, candidate_new)
+        if pair not in candidates:
+            candidates.append(pair)
+
+    # Accept the exact modern assertion, the older local-variable form, and either
+    # Python quote style around the MI token. Still require exactly one assertion.
+    add_candidate(old, new)
+    if 'self.waves.' in old:
+        add_candidate(
+            old.replace('self.waves.', 'waves.'),
+            new.replace('self.waves.', 'waves.'),
+        )
+
+    for candidate_old, candidate_new in list(candidates):
+        add_candidate(
+            candidate_old.replace(
+                'count("{tag_add support_e2_pax}")',
+                "count('{tag_add support_e2_pax}')",
+            ),
+            candidate_new.replace(
+                'count("{tag_add support_e2_pax}")',
+                "count('{tag_add support_e2_pax}')",
+            ),
+        )
+
+    old_hits = [
+        (candidate_old, candidate_new)
+        for candidate_old, candidate_new in candidates
+        if text.count(candidate_old) == 1
+    ]
     if len(old_hits) == 1:
         candidate_old, candidate_new = old_hits[0]
         return text.replace(candidate_old, candidate_new, 1)
