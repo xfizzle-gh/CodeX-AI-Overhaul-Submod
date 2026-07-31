@@ -1,0 +1,21 @@
+name: Agent repository export
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  export:
+    if: github.head_ref == 'experiment/attack-mate-slot-proof' || github.ref_name == 'experiment/attack-mate-slot-proof'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create repository archive
+        run: zip -q -r repo-export.zip . -x '.git/*'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: agent-repo-export
+          path: repo-export.zip
+          retention-days: 1
