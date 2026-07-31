@@ -37,11 +37,10 @@ templates = replace_once(
     '{Tags "support_e2_marker_tpl" 0xc207}',
     'isolate marker tag and remove hidden state',
 )
-templates = replace_once(
-    templates,
+templates = templates.replace(
     '; A dedicated, unlinked hidden body used only as the near_to anchor for helicopter',
     '; A dedicated, unlinked parked body used only as the near_to anchor for helicopter',
-    'update marker comment',
+    1,
 )
 
 e2_tests = replace_once(
