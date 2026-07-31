@@ -208,6 +208,15 @@ end
 --   0 idle  1 claimed  2 placed/promoted  3 driving to the flag  4 passengers emitted
 -- so a truck that was dispatched but never seen is decidable from game.log alone
 -- (motor_left dropped but motor_stage stuck at 1 = claimed and never placed, and so on).
+--
+-- motor_drive_t and motor_band make the DRIVE PHASE itself machine-visible, because
+-- stage alone cannot: a live run reported passengers appearing at the truck with no
+-- drive phase at all, and stage 3 -> 4 looks identical whether the 28s standoff ran or
+-- not. motor_drive_t steps 0 -> 4, one step per 7 seconds of the standoff that actually
+-- elapsed, so an emit seen at drive_t < 4 proves the delay did not run. motor_band is
+-- the truck's distance to its objective at the instant before the emit - 1 inside 60,
+-- 2 inside 150, 3 inside 400, 0 further out - so drive_t 4 with band 0 proves the hull
+-- never moved. Between them the two hypotheses are separable from the log alone.
 local MIRROR_QUANTS = 200
 
 local function mirrorEngineState()
@@ -218,7 +227,9 @@ local function mirrorEngineState()
 		"wave_num", readVar("attack_support_wave_num"),
 		"waves_left", readVar("attack_support_waves_left"),
 		"motor_left", readVar("attack_support_motor_left"),
-		"motor_stage", readVar("attack_support_motor_stage"))
+		"motor_stage", readVar("attack_support_motor_stage"),
+		"motor_drive_t", readVar("attack_support_motor_drive_t"),
+		"motor_band", readVar("attack_support_motor_band"))
 	emit("mirror", "enemy_defense",
 		"armed", readVar("enemy_defense_armed"),
 		"wave_num", readVar("enemy_defense_wave_num"),
@@ -226,19 +237,25 @@ local function mirrorEngineState()
 		"garrison_place", readVar("enemy_defense_place"),
 		"garrison_group", readVar("enemy_defense_group"),
 		"motor_left", readVar("enemy_defense_motor_left"),
-		"motor_stage", readVar("enemy_defense_motor_stage"))
+		"motor_stage", readVar("enemy_defense_motor_stage"),
+		"motor_drive_t", readVar("enemy_defense_motor_drive_t"),
+		"motor_band", readVar("enemy_defense_motor_band"))
 	emit("mirror", "defense_support",
 		"armed", readVar("defense_support_armed"),
 		"wave_num", readVar("defense_support_wave_num"),
 		"waves_left", readVar("defense_support_waves_left"),
 		"motor_left", readVar("defense_support_motor_left"),
-		"motor_stage", readVar("defense_support_motor_stage"))
+		"motor_stage", readVar("defense_support_motor_stage"),
+		"motor_drive_t", readVar("defense_support_motor_drive_t"),
+		"motor_band", readVar("defense_support_motor_band"))
 	emit("mirror", "enemy_attack",
 		"armed", readVar("enemy_attack_armed"),
 		"wave_num", readVar("enemy_attack_wave_num"),
 		"waves_left", readVar("enemy_attack_waves_left"),
 		"motor_left", readVar("enemy_attack_motor_left"),
-		"motor_stage", readVar("enemy_attack_motor_stage"))
+		"motor_stage", readVar("enemy_attack_motor_stage"),
+		"motor_drive_t", readVar("enemy_attack_motor_drive_t"),
+		"motor_band", readVar("enemy_attack_motor_band"))
 end
 
 local function onGameStart()

@@ -115,3 +115,11 @@
 			{"defense_support_motor_stage"}
 			{"enemy_attack_motor_stage"}
 			{"enemy_defense_motor_stage"}
+			{"attack_support_motor_drive_t"}
+			{"defense_support_motor_drive_t"}
+			{"enemy_attack_motor_drive_t"}
+			{"enemy_defense_motor_drive_t"}
+			{"attack_support_motor_band"}
+			{"defense_support_motor_band"}
+			{"enemy_attack_motor_band"}
+			{"enemy_defense_motor_band"}

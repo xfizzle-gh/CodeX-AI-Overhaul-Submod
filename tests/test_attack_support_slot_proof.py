@@ -2121,6 +2121,201 @@ class LinkedBodyPlacementTests(unittest.TestCase):
         self.assertEqual(mirror.count('"motor_stage"'), 4)
         self.assertEqual(mirror.count('"motor_left"'), 4)
 
+    # ------------------------------------------------ the drive phase itself
+
+    def test_the_drive_phase_is_instrumented_in_every_engine(self) -> None:
+        """motor_stage alone cannot tell a 28s drive from no drive at all.
+
+        Live run 2026-07-30: the passengers appeared at the truck with no drive phase,
+        and motor_stage stepped 0 -> 4 inside a single ~5s mirror window on both active
+        engines. Stage 3 -> 4 looks identical whether the standoff ran or not, so the
+        claim was unfalsifiable from the log. Two integers fix that:
+          <engine>_motor_drive_t  0 -> 4, one step per 7s of the standoff that actually
+                                  elapsed. An emit at drive_t < 4 proves the delay did
+                                  not run.
+          <engine>_motor_band     the hull's distance to its objective at the instant
+                                  before the emit: 1 inside 60, 2 inside 150, 3 inside
+                                  400, 0 further out. drive_t 4 with band 0 proves the
+                                  hull never moved.
+        The total standoff is unchanged at 28 seconds, which is the live-proven value.
+        """
+        mirror = self.lua[self.lua.index("local function mirrorEngineState()"):]
+        mirror = mirror[: mirror.index("\nend")]
+        prefixes = {
+            "attack_support_waves": ("attack_support", "as_motor_band"),
+            "defense_support_waves": ("defense_support", "ds_motor_band"),
+            "enemy_attack_support": ("enemy_attack", "ea_motor_band"),
+            "enemy_defense_support": ("enemy_defense", "ed_motor_band"),
+        }
+        for engine, (pfx, band_define) in sorted(prefixes.items()):
+            code = self.engines[engine]
+            drive = "%s_motor_drive_t" % pfx
+            band = "%s_motor_band" % pfx
+            with self.subTest(engine=engine):
+                # Declared once, in the one var block every managed map pulls in.
+                self.assertIn('{"%s"}' % drive, self.vars)
+                self.assertIn('{"%s"}' % band, self.vars)
+                # Written 0 twice - at init, and again as the package is promoted -
+                # then once per step of the standoff.
+                self.assertEqual(
+                    code.count('{"set_i" {var "%s$"} {op "="} {value 0}}' % drive), 2
+                )
+                for step in (1, 2, 3, 4):
+                    self.assertEqual(
+                        code.count(
+                            '{"set_i" {var "%s$"} {op "="} {value %d}}' % (drive, step)
+                        ),
+                        1,
+                        step,
+                    )
+                # Monotonic, in order, integers only, never a var-to-var copy.
+                seen = [
+                    code.index('{"set_i" {var "%s$"} {op "="} {value %d}}' % (drive, n))
+                    for n in (1, 2, 3, 4)
+                ]
+                self.assertEqual(seen, sorted(seen))
+                self.assertNotIn('{var "%s$"} {op "+"}' % drive, code)
+                self.assertNotIn('{var "%s$"} {op "="} {var ' % drive, code)
+                self.assertNotIn('{var "%s$"} {op "="} {var ' % band, code)
+                # The 28s standoff is four instrumented 7s steps now, never one block.
+                self.assertNotIn('{"delay" {time 28}}', code)
+                stage3 = code.index(
+                    '{"set_i" {var "%s_motor_stage$"} {op "="} {value 3}}' % pfx
+                )
+                emit = code.index('{"emit"', stage3)
+                standoff = code[stage3:emit]
+                self.assertEqual(standoff.count('{"delay" {time 7}}'), 4)
+                for step in (1, 2, 3, 4):
+                    self.assertIn(
+                        '{"set_i" {var "%s$"} {op "="} {value %d}}' % (drive, step),
+                        standoff,
+                    )
+                # The distance band is a bounded near-check read at the last moment
+                # before the emit, expressed as an integer and never as a coordinate.
+                self.assertIn('("%s")' % band_define, standoff)
+                probe = define_body(code, band_define)
+                self.assertEqual(probe.count("{type near}"), 3)
+                for value, distance in ((1, 60), (2, 150), (3, 400)):
+                    self.assertIn(
+                        '{"set_i" {var "%s$"} {op "="} {value %d}}' % (band, value), probe
+                    )
+                    self.assertIn("{distance %d}" % distance, probe)
+                # Both are mirrored to game.log beside the stage they disambiguate.
+                self.assertIn('readVar("%s")' % drive, mirror)
+                self.assertIn('readVar("%s")' % band, mirror)
+        # All four quadrants report both, exactly once each.
+        self.assertEqual(mirror.count('"motor_drive_t"'), 4)
+        self.assertEqual(mirror.count('"motor_band"'), 4)
+        # And the deploy refuses a build that drops either half.
+        deploy = DEPLOY.read_text(encoding="utf-8")
+        self.assertIn("MOTORIZED INSERT: THE DRIVE PHASE IS PART OF THE CONTRACT", deploy)
+        self.assertIn("is missing drive-clock step", deploy)
+        self.assertIn("is missing the truck distance-to-objective band", deploy)
+        self.assertIn("still uses one opaque 28s standoff", deploy)
+
+    def test_the_emit_still_follows_the_proven_ordering(self) -> None:
+        """Unchanged from the live-proven original: drive first, emit after.
+
+        The emit selector and the 28s clock were both verified byte-identical to the
+        commit that first shipped the motorized insert, so neither of them is the
+        regression. What this pins is the ordering they sit in: ownership and AI
+        control, then a LIVE flag, then the advance order, then the standoff, then the
+        dismount - and the pax order after that.
+        """
+        prefixes = {
+            "attack_support_waves": (
+                "attack_support", "attack_support_motor_hull",
+                "attack_support_flag1", "attack_support_motor_pax"),
+            "defense_support_waves": (
+                "defense_support", "def_sup_motor_hull",
+                "def_sup_motor_flag", "def_sup_motor_pax"),
+            "enemy_attack_support": (
+                "enemy_attack", "ea_motor_hull", "ea_flag1", "ea_motor_pax"),
+            "enemy_defense_support": (
+                "enemy_defense", "enemy_def_motor_hull",
+                "enemy_def_motor_flag", "enemy_def_motor_pax"),
+        }
+        for engine, (pfx, hull, flag, pax) in sorted(prefixes.items()):
+            code = self.engines[engine]
+            with self.subTest(engine=engine):
+                control = code.index("{ai_move {mode enable}}")
+                pick = code.index("{tag_add %s}" % flag)
+                advance = code.index("{tag %s}" % flag, pick + 1)
+                stage3 = code.index(
+                    '{"set_i" {var "%s_motor_stage$"} {op "="} {value 3}}' % pfx
+                )
+                emit = code.index('{"emit"', stage3)
+                stage4 = code.index(
+                    '{"set_i" {var "%s_motor_stage$"} {op "="} {value 4}}' % pfx
+                )
+                pax_order = code.index("{tag %s}" % pax, stage4)
+                self.assertLess(control, pick)
+                self.assertLess(pick, advance)
+                self.assertLess(advance, stage3)
+                self.assertLess(stage3, emit)
+                self.assertLess(emit, stage4)
+                self.assertLess(stage4, pax_order)
+                emit_block = block_at(code, emit)
+                self.assertIn("{tag %s}" % hull, emit_block)
+                self.assertIn("{type vehicle}", emit_block)
+                self.assertIn("{state inhabited}", emit_block)
+                self.assertIn("{mode passengers}", emit_block)
+                # The objective the truck drives at is a LIVE flag: a mission activates
+                # only some of a map's capture points, and a truck sent at a dead one
+                # just drives and parks there.
+                self.assertIn("{exclude {state {state inactive}}}", code[:pick])
+
+    def test_one_package_cannot_disarm_another(self) -> None:
+        """The shared deploy tag is re-asserted, and released only per package.
+
+        Both the infantry wave path and the motorized path run off one deploy tag, and
+        both used to clear it from EVERY body carrying it when they finished. With one
+        truck a mission that was survivable; the budget is four now, so the collision
+        window is hit often - and a hull that loses the tag before ownership and AI
+        control are set is left neutral, driverless and motionless, which from outside
+        looks exactly like "the passengers appeared with no drive phase".
+        """
+        packages = {
+            "attack_support_waves": (
+                "attack_support_deploy", "attack_support_motor_hull",
+                "attack_support_motor_pax", "attack_support_motor_crew",
+                "am_own_to_support", "as_finish_motor"),
+            "defense_support_waves": (
+                "def_sup_deploy", "def_sup_motor_hull",
+                "def_sup_motor_pax", "def_sup_motor_crew",
+                "ds_own_to_defenderbot", "ds_finish_motor"),
+            "enemy_attack_support": (
+                "ea_deploy", "ea_motor_hull",
+                "ea_motor_pax", "ea_motor_crew",
+                "ea_own_to_enemy", "ea_finish_motor"),
+            "enemy_defense_support": (
+                "enemy_def_deploy", "enemy_def_motor_hull",
+                "enemy_def_motor_pax", "enemy_def_motor_crew",
+                "ed_own_to_enemy", "ed_finish_motor"),
+        }
+        for engine, cfg in sorted(packages.items()):
+            deploy, hull, pax, crew, owner, finisher = cfg
+            code = self.engines[engine]
+            body = define_body(code, finisher)
+            with self.subTest(engine=engine):
+                # Every crew claim marks its own package - four factions x four
+                # packages - so the crew stays addressable without the shared tag.
+                self.assertEqual(code.count("{tag_add %s}" % crew), 16)
+                # Re-asserted from the package's own marks, before ownership is set.
+                head = body[: body.index('("%s")' % owner)]
+                for mark in (hull, pax, crew):
+                    self.assertIn(
+                        '{"entity_state" {selector {tag %s}} {tag_add %s}}'
+                        % (mark, deploy),
+                        head,
+                    )
+                # And released per package: three scoped strips, no unscoped one.
+                self.assertEqual(body.count("{tag_remove %s}" % deploy), 3)
+                tail = body[body.index('("%s")' % owner):]
+                for mark in (hull, pax, crew):
+                    at = tail.index("{selector {tag %s}}\n" % mark)
+                    self.assertIn("{tag_remove %s}" % deploy, tail[at : at + 200])
+
     # --------------------------------------------------------- delimiter balance
 
     def test_delimiters_are_balanced(self) -> None:

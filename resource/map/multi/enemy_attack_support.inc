@@ -741,6 +741,8 @@
 					{"set_i" {var "enemy_attack_motor_pkg$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_attack_motor_first$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 0}}
+					{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 0}}
+					{"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_busy$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_attack_next_ok$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
@@ -1233,6 +1235,22 @@
 
 			; ===== MOTORIZED INSERT (cmd 19) — parity with attack_support =====
 			; Claims ally_sup_*_motor packages (parked always; attack_support inert here).
+			; Truck-to-objective distance the moment before the passengers come out, as a
+			; bounded integer band: 1 = inside 60, 2 = inside 150, 3 = inside 400, 0 = further
+			; out than that (or no hull left to measure). SetVar takes integers only, so the
+			; distance is carried as a band number and never as a coordinate. Together with
+			; enemy_attack_motor_drive_t$ this settles "did the truck actually drive?" from game.log
+			; alone: drive_t 4 with band 0 is a hull that never left the pad.
+			(define "ea_motor_band"
+				{"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 0}}
+				{"switch"
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag ea_motor_hull}} {near_to {ignore_captured_by_user 0} {tag ea_flag1}} {distance 60}} {"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 1}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag ea_motor_hull}} {near_to {ignore_captured_by_user 0} {tag ea_flag1}} {distance 150}} {"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 2}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag ea_motor_hull}} {near_to {ignore_captured_by_user 0} {tag ea_flag1}} {distance 400}} {"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 3}}}
+					{"default"}
+				}
+			)
+
 			(define "ea_finish_motor"
 				; Motorized stage code, log-only (mirrored by attack_support.lua). 0 idle, 1 claimed,
 				; 2 placed/promoted, 3 driving to the flag, 4 passengers emitted. Plain set_i:
@@ -1251,6 +1269,16 @@
 					{discovered on}
 				}
 				{"delay" {time 0.2}}
+				; An infantry wave that finishes during this truck's placement window strips
+				; the shared deploy tag from EVERY body carrying it - this hull and its riders
+				; included. With four trucks a mission instead of one that window is hit often.
+				; Re-assert the tag from the package's own hull/pax/crew marks before ownership
+				; and AI control are set, or the truck is left neutral, driverless and motionless
+				; - which is exactly what "the passengers appeared with no drive phase" looks
+				; like from the outside.
+				{"entity_state" {selector {tag ea_motor_hull}} {tag_add ea_deploy}}
+				{"entity_state" {selector {tag ea_motor_pax}} {tag_add ea_deploy}}
+				{"entity_state" {selector {tag ea_motor_crew}} {tag_add ea_deploy}}
 				("ea_own_to_enemy")
 				{"delay" {time 0.4}}
 				{"actor_state"
@@ -1268,6 +1296,9 @@
 					{remove select}
 				}
 				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 2}}
+				; Drive telemetry starts at zero for every truck.
+				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 0}}
+				{"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 0}}
 				{"delay" {time 0.25}}
 				{"entity_state"
 					{selector {tag ea_flag1}}
@@ -1293,7 +1324,20 @@
 					{target {ignore_captured_by_user 0} {tag ea_flag1}}
 				}
 				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 3}}
-				{"delay" {time 28}}
+				; DRIVE CLOCK. The 28s standoff is unchanged - it is the live-proven sequence
+				; from the original motorized insert, byte for byte - but it is now readable
+				; from game.log. enemy_attack_motor_drive_t$ steps 0 -> 4, one step per 7 seconds
+				; that actually elapsed, so an emit observed at drive_t < 4 proves the delay did
+				; not run, and an emit at drive_t 4 with band 0 proves the hull never moved.
+				{"delay" {time 7}}
+				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 1}}
+				{"delay" {time 7}}
+				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 2}}
+				{"delay" {time 7}}
+				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 3}}
+				{"delay" {time 7}}
+				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 4}}
+				("ea_motor_band")
 				{"emit"
 					{selector
 						{ignore_captured_by_user 0}
@@ -1326,9 +1370,21 @@
 					{action move}
 					{waypoint "0"}
 				}
+				; Scoped strip. The unscoped form cleared the deploy tag from every body that
+				; carried it, which disarmed any infantry wave that happened to be placing at
+				; the same moment - the same collision as above, in the other direction.
 				{"entity_state"
-					{selector {tag ea_deploy}}
+					{selector {tag ea_motor_hull}}
 					{tag_remove ea_deploy}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_pax}}
+					{tag_remove ea_deploy}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_crew}}
+					{tag_remove ea_deploy}
+					{tag_remove ea_motor_crew}
 				}
 				{"entity_state"
 					{selector {tag ea_motor_hull}}
@@ -1377,6 +1433,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p1_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_rusa_p1_crew}
 						}
 						{"entity_state"
@@ -1399,6 +1456,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p2_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_rusa_p2_crew}
 						}
 						{"entity_state"
@@ -1421,6 +1479,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p3_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_rusa_p3_crew}
 						}
 						{"entity_state"
@@ -1443,6 +1502,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_rusa_p4_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_rusa_p4_crew}
 						}
 						{"entity_state"
@@ -1507,6 +1567,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p1_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_ukr_p1_crew}
 						}
 						{"entity_state"
@@ -1529,6 +1590,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p2_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_ukr_p2_crew}
 						}
 						{"entity_state"
@@ -1551,6 +1613,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p3_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_ukr_p3_crew}
 						}
 						{"entity_state"
@@ -1573,6 +1636,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_ukr_p4_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_ukr_p4_crew}
 						}
 						{"entity_state"
@@ -1637,6 +1701,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p1_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_prc_p1_crew}
 						}
 						{"entity_state"
@@ -1659,6 +1724,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p2_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_prc_p2_crew}
 						}
 						{"entity_state"
@@ -1681,6 +1747,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p3_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_prc_p3_crew}
 						}
 						{"entity_state"
@@ -1703,6 +1770,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_prc_p4_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_prc_p4_crew}
 						}
 						{"entity_state"
@@ -1767,6 +1835,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p1_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_nato_p1_crew}
 						}
 						{"entity_state"
@@ -1789,6 +1858,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p2_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_nato_p2_crew}
 						}
 						{"entity_state"
@@ -1811,6 +1881,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p3_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_nato_p3_crew}
 						}
 						{"entity_state"
@@ -1833,6 +1904,7 @@
 						{"entity_state"
 							{selector {source advanced} {group {select {tag {tag ally_sup_nato_p4_crew}}}}}
 							{tag_add ea_deploy}
+							{tag_add ea_motor_crew}
 							{tag_remove ally_sup_nato_p4_crew}
 						}
 						{"entity_state"

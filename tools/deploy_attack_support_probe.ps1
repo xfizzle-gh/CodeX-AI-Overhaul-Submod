@@ -158,7 +158,17 @@ $E2HeloWaveMarkers = @('attack_support/e2_helo_prc',
     '(define "e2_prove_park_ukr_para"',
     '(define "e2_prove_park_nato_para"',
     '{"set_i" {var "support_e2_fail$"} {op "="} {value 13}}',
-    '{"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 13}}'
+    '{"set_i" {var "support_e2_combo_helo_fail$"} {op "="} {value 13}}',
+    # The unload chain is armed off the aircraft's ARRIVAL, never off the stage machine:
+    # e2_helo_lz is a near check on the arrived hull and owns stages 40/60, e2_helo_timeout
+    # closes the window and owns fail 5, e2_orphan_sweep is the standing guarantee that no
+    # dispatched clone is ever left flying, and e2_combo_clear retires a leftover claim so
+    # the combo transition cannot be blocked by one.
+    '{"attack_support/e2_helo_lz"',
+    '{"attack_support/e2_helo_timeout"',
+    '{"attack_support/e2_orphan_sweep"',
+    '{"attack_support/e2_combo_clear"',
+    'support_e2_lz_done'
 )
 $E2HeloTemplateMarkers = @('support_e2_prc_helo', '{Altitude 22}')
 # PRC flies the Mi-171 adaptation (Army Aviation transport), so its helo probe is
@@ -169,6 +179,9 @@ $E2HeloTemplateMarkers = @('support_e2_prc_helo', '{Altitude 22}')
 # The superseded flight mechanism is forbidden instead: air_state altitude commands
 # and {"placement"} of an aircraft onto a ground pad.
 $E2HeloForbiddenMarkers = @('attack_support/e2_para_prc', 'support_e2_lz_fpc',
+    # The inline arrival window. A leg that false-failed its dispatch-time evidence gate
+    # walked away from this delay and left the physical aircraft hovering (2026-07-30).
+    '{"delay" {time 40}}',
     '{"air_state"',
     '("e2_place_aircraft_entry")',
     '("e2_promote_helo")',
@@ -576,7 +589,21 @@ foreach ($marker in @(
     '{"enemy_attack_busy"}',
     '{"enemy_attack_next_ok"}',
     '{"enemy_attack_owner_fail"}',
-    '{"enemy_attack_motor_left"}'
+    '{"enemy_attack_motor_left"}',
+    # Drive-phase telemetry, one pair per engine. motor_stage cannot distinguish "the
+    # truck drove for 28s then dropped its passengers" from "the passengers appeared at
+    # the pad", because 3 -> 4 looks the same either way. drive_t counts the standoff
+    # seconds that actually elapsed (0 -> 4, one step per 7s) and band is the hull's
+    # distance to its objective at the instant before the emit (1 inside 60, 2 inside
+    # 150, 3 inside 400, 0 further out). drive_t 4 with band 0 is a truck that never moved.
+    '{"attack_support_motor_drive_t"}',
+    '{"defense_support_motor_drive_t"}',
+    '{"enemy_attack_motor_drive_t"}',
+    '{"enemy_defense_motor_drive_t"}',
+    '{"attack_support_motor_band"}',
+    '{"defense_support_motor_band"}',
+    '{"enemy_attack_motor_band"}',
+    '{"enemy_defense_motor_band"}'
 )) {
     if (-not (Select-String -Quiet -LiteralPath $varsSource -SimpleMatch $marker)) {
         throw "Source dcg_vars.inc is missing marker: $marker"
@@ -704,6 +731,34 @@ if ((Select-String -LiteralPath $wavesSource -SimpleMatch '{state {state inactiv
 foreach ($banned in @('{include {prop human}}', '{prop {prop human}}', '{state {state operatable}}')) {
     if (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch $banned) {
         throw "Source wave engine decorates a pool selector with $banned, which zeroes the match on these units"
+    }
+}
+# SECOND LIVE PROOF (2026-07-30) - and the reason the SIMPLE selector form is now banned
+# as well. The ADVANCED form {state {state operatable}} has been banned above since the
+# first proof. The simple form - {selector ... {state operatable}} and its {units ...}
+# twin - was not, and it cost a whole run: the E2 helicopter leg's flight gate carried it,
+# matched nothing on a helicopter the player watched fly the full route and hover over the
+# objective, recorded fail 10 one second after the clone arrived, and abandoned the leg.
+# Because the leg was abandoned, the departure order and the delete never ran either and
+# the aircraft hovered there for the rest of the mission. The paradrop leg reproduced the
+# identical fail 10 from the identical gate in the same run.
+# The ban is deliberately NARROW: {state operatable} is forbidden only on a selector that
+# is also addressing this system's own support_e2_* entities. It stays legal where it
+# addresses ordinary live map units - the enemy-proximity LZ guard and the CE paratrooper
+# survivor proof - and the test suite pins that remaining scope at exactly four uses.
+foreach ($pair in @(
+    @($wavesSource, 'attack support'),
+    @($defSource, 'enemy defence'),
+    @($dsSource, 'defence support'),
+    @($eaSource, 'enemy attack')
+)) {
+    $engineLines = [System.IO.File]::ReadAllLines($pair[0])
+    for ($i = 0; $i -lt $engineLines.Length; $i++) {
+        $at = $engineLines[$i].IndexOf('{state operatable}')
+        if ($at -lt 0) { continue }
+        if ($engineLines[$i].Substring(0, $at).Contains('support_e2_')) {
+            throw ("Source {0} engine decorates a support_e2_ selector with {{state operatable}} on line {1}, which zeroes the match on these units" -f $pair[1], ($i + 1))
+        }
     }
 }
 if (Select-String -Quiet -LiteralPath $wavesSource -Pattern '^[^;]*\bfpc') {
@@ -1407,6 +1462,37 @@ $wavesInclude = '(include "../attack_support_waves.inc")'
 $tplInclude = '(include "../attack_support_templates.inc")'
 # Player-nation prototype pools, shared by the attack-support and defence-support
 # engines. Sits between the two NATO pools in the entities section. The name matters:
+# ===== MOTORIZED INSERT: THE DRIVE PHASE IS PART OF THE CONTRACT =====
+# The live-proven sequence is: place -> own -> {control AI} -> advance on a live flag ->
+# 28 seconds of standoff -> emit passengers. A live run reported the passengers appearing
+# at the truck with no drive phase at all, and motor_stage alone could not tell the two
+# cases apart because 3 -> 4 looks identical whether the standoff ran or not. Every engine
+# must therefore carry BOTH halves of the telemetry, and the standoff must still total 28s.
+foreach ($motorPair in @(
+    @($wavesSource, 'attack support', 'attack_support'),
+    @($defSource, 'enemy defence', 'enemy_defense'),
+    @($dsSource, 'defence support', 'defense_support'),
+    @($eaSource, 'enemy attack', 'enemy_attack')
+)) {
+    $motorCode = [System.IO.File]::ReadAllText($motorPair[0])
+    foreach ($step in 0..4) {
+        $marker = '{"set_i" {var "' + $motorPair[2] + '_motor_drive_t$"} {op "="} {value ' + $step + '}}'
+        if (-not $motorCode.Contains($marker)) {
+            throw "Source $($motorPair[1]) engine is missing drive-clock step $step. Without it a zero-length drive phase is invisible in game.log, which is exactly how this defect survived a live run"
+        }
+    }
+    if (-not $motorCode.Contains('{"set_i" {var "' + $motorPair[2] + '_motor_band$"} {op "="} {value 3}}')) {
+        throw "Source $($motorPair[1]) engine is missing the truck distance-to-objective band"
+    }
+    # Four 7s steps, not one opaque 28s block: same total standoff, one readable step each.
+    $sevens = ([regex]::Matches($motorCode, [regex]::Escape('{"delay" {time 7}}'))).Count
+    if ($sevens -lt 4) {
+        throw "Source $($motorPair[1]) engine drive clock is $sevens steps, not the four 7s steps that make up the proven 28s standoff"
+    }
+    if ($motorCode.Contains('{"delay" {time 28}}')) {
+        throw "Source $($motorPair[1]) engine still uses one opaque 28s standoff. Split it into the four instrumented 7s steps"
+    }
+}
 # the retired experiment was called allied_support_*, and that substring is banned
 # outright by the guards below, so this file must never be renamed back into it.
 $factionTplInclude = '(include "../faction_support_templates.inc")'
@@ -2155,6 +2241,16 @@ foreach ($marker in $E2HeloForbiddenMarkers) {
 }
 foreach ($marker in $E2ParaWaveMarkers) {
     if (-not (Select-String -Quiet -LiteralPath $waves -SimpleMatch $marker)) { throw "Workshop wave engine is missing E2 paradrop marker: $marker" }
+}
+# The shipped copy carries the same narrow ban as the source: no {state operatable} on
+# any selector that is also addressing this system's own support_e2_* entities.
+$workshopEngineLines = [System.IO.File]::ReadAllLines($waves)
+for ($i = 0; $i -lt $workshopEngineLines.Length; $i++) {
+    $at = $workshopEngineLines[$i].IndexOf('{state operatable}')
+    if ($at -lt 0) { continue }
+    if ($workshopEngineLines[$i].Substring(0, $at).Contains('support_e2_')) {
+        throw ("Workshop wave engine decorates a support_e2_ selector with {{state operatable}} on line {0}, which zeroes the match on these units" -f ($i + 1))
+    }
 }
 $workshopWaveCode = [System.IO.File]::ReadAllText($waves)
 $workshopParaStart = $workshopWaveCode.IndexOf('; ===== E2 PARADROP')

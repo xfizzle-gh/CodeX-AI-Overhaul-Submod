@@ -265,7 +265,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
                        "ds_poke_faction_recon", "ds_poke_faction_assault",
                        "ds_poke_faction_eng", "ds_poke_faction_manpad",
                        "ds_poke_faction_air",
-                       "ds_poke_motor", "ds_finish_motor",
+                       "ds_poke_motor", "ds_motor_band", "ds_finish_motor",
                        "ds_props_af1", "ds_props_af2", "ds_props_af3",
                        "ds_own_prop_crew", "ds_crew_claim_one",
                        "ds_crew_af1", "ds_crew_af2", "ds_crew_af3",
@@ -273,7 +273,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
             (self.ea, ("ea_entry_next",
                        "ea_place_at_entry", "ea_place_one",
                        "ea_own_to_enemy",
-                       "ea_resolve_army", "ea_finish", "ea_finish_motor",
+                       "ea_resolve_army", "ea_finish", "ea_motor_band", "ea_finish_motor",
                        "ea_poke_line", "ea_poke_wpn", "ea_poke_motor",
                        "ea_pick_wave")),
         ):
