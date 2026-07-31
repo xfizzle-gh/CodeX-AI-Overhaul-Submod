@@ -131,6 +131,10 @@
 						{group
 							{select {tag {tag ea_deploy}}}
 							{exclude {tag {tag ea_placed}}}
+							; A {Link}-baked crew/rider is carried by its hull. Teleporting it on its own
+							; overwrites its world transform with the pad point and it renders clipped into
+							; the driver seat until it emits. Place the hull only.
+							{exclude {tag {tag sup_linked}}}
 						}
 						{amount 1}
 					}
@@ -736,6 +740,7 @@
 					{"set_i" {var "enemy_attack_motor_left$"} {op "="} {value 4}}
 					{"set_i" {var "enemy_attack_motor_pkg$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_attack_motor_first$"} {op "="} {value 0}}
+					{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_busy$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_attack_next_ok$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
@@ -1229,6 +1234,9 @@
 			; ===== MOTORIZED INSERT (cmd 19) — parity with attack_support =====
 			; Claims ally_sup_*_motor packages (parked always; attack_support inert here).
 			(define "ea_finish_motor"
+				; Motorized stage code, log-only (mirrored by attack_support.lua). 0 idle, 1 claimed,
+				; 2 placed/promoted, 3 driving to the flag, 4 passengers emitted. Plain set_i:
+				; nothing on screen, so no support_debug$ gate.
 				{"delay" {time 0.5}}
 				{"entity_state"
 					{selector
@@ -1259,6 +1267,7 @@
 					{selector {ignore_captured_by_user 0} {tag ea_deploy}}
 					{remove select}
 				}
+				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 2}}
 				{"delay" {time 0.25}}
 				{"entity_state"
 					{selector {tag ea_flag1}}
@@ -1283,6 +1292,7 @@
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag ea_flag1}}
 				}
+				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 3}}
 				{"delay" {time 28}}
 				{"emit"
 					{selector
@@ -1296,6 +1306,7 @@
 						{mode passengers}
 					}
 				}
+				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 4}}
 				{"delay" {time 3}}
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
@@ -1453,6 +1464,7 @@
 				}
 				{"set_i" {var "enemy_attack_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "enemy_attack_motor_left$"} {op "-"} {value 1}}
+					{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 1}}
 					{"delay" {time 0.1}}
 					("ea_place_at_entry")
 					("ea_finish_motor")
@@ -1582,6 +1594,7 @@
 				}
 				{"set_i" {var "enemy_attack_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "enemy_attack_motor_left$"} {op "-"} {value 1}}
+					{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 1}}
 					{"delay" {time 0.1}}
 					("ea_place_at_entry")
 					("ea_finish_motor")
@@ -1711,6 +1724,7 @@
 				}
 				{"set_i" {var "enemy_attack_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "enemy_attack_motor_left$"} {op "-"} {value 1}}
+					{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 1}}
 					{"delay" {time 0.1}}
 					("ea_place_at_entry")
 					("ea_finish_motor")
@@ -1840,6 +1854,7 @@
 				}
 				{"set_i" {var "enemy_attack_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "enemy_attack_motor_left$"} {op "-"} {value 1}}
+					{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 1}}
 					{"delay" {time 0.1}}
 					("ea_place_at_entry")
 					("ea_finish_motor")

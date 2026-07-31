@@ -136,6 +136,10 @@
 						{group
 							{select {tag {tag enemy_def_deploy}}}
 							{exclude {tag {tag enemy_def_placed}}}
+							; A {Link}-baked crew/rider is carried by its hull. Teleporting it on its own
+							; overwrites its world transform with the pad point and it renders clipped into
+							; the driver seat until it emits. Place the hull only.
+							{exclude {tag {tag sup_linked}}}
 						}
 						{amount 1}
 					}
@@ -1568,6 +1572,7 @@
 					{"set_i" {var "enemy_defense_motor_left$"} {op "="} {value 4}}
 					{"set_i" {var "enemy_defense_motor_pkg$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_defense_motor_first$"} {op "="} {value 0}}
+					{"set_i" {var "enemy_defense_motor_stage$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
 										{"set_i" {var "enemy_defense_wave_num$"} {op "="} {value 0}}
 					{"set_i" {var "enemy_defense_place$"} {op "="} {value 0}}
@@ -2915,6 +2920,9 @@
 			)
 
 			(define "ed_finish_motor"
+				; Motorized stage code, log-only (mirrored by attack_support.lua). 0 idle, 1 claimed,
+				; 2 placed/promoted, 3 driving to the flag, 4 passengers emitted. Plain set_i:
+				; nothing on screen, so no support_debug$ gate.
 				{"delay" {time 0.5}}
 				{"entity_state"
 					{selector
@@ -2946,6 +2954,7 @@
 					{selector {ignore_captured_by_user 0} {tag enemy_def_deploy}}
 					{remove select}
 				}
+				{"set_i" {var "enemy_defense_motor_stage$"} {op "="} {value 2}}
 				{"delay" {time 0.25}}
 				; One active flag, shuffled fresh per truck.
 				{"entity_state"
@@ -2971,6 +2980,7 @@
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag enemy_def_motor_flag}}
 				}
+				{"set_i" {var "enemy_defense_motor_stage$"} {op "="} {value 3}}
 				{"delay" {time 28}}
 				; Dismount passengers only; the crew stays with the hull.
 				{"emit"
@@ -2985,6 +2995,7 @@
 						{mode passengers}
 					}
 				}
+				{"set_i" {var "enemy_defense_motor_stage$"} {op "="} {value 4}}
 				{"delay" {time 3}}
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag enemy_def_motor_pax}}
@@ -3140,6 +3151,7 @@
 					}
 					{"set_i" {var "enemy_defense_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "enemy_defense_motor_left$"} {op "-"} {value 1}}
+					{"set_i" {var "enemy_defense_motor_stage$"} {op "="} {value 1}}
 					{"delay" {time 0.1}}
 					("ed_place")
 					("ed_finish_motor")
@@ -3267,6 +3279,7 @@
 					}
 					{"set_i" {var "enemy_defense_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "enemy_defense_motor_left$"} {op "-"} {value 1}}
+					{"set_i" {var "enemy_defense_motor_stage$"} {op "="} {value 1}}
 					{"delay" {time 0.1}}
 					("ed_place")
 					("ed_finish_motor")
@@ -3394,6 +3407,7 @@
 					}
 					{"set_i" {var "enemy_defense_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "enemy_defense_motor_left$"} {op "-"} {value 1}}
+					{"set_i" {var "enemy_defense_motor_stage$"} {op "="} {value 1}}
 					{"delay" {time 0.1}}
 					("ed_place")
 					("ed_finish_motor")
@@ -3521,6 +3535,7 @@
 					}
 					{"set_i" {var "enemy_defense_motor_pkg$"} {op "+"} {value 1}}
 					{"set_i" {var "enemy_defense_motor_left$"} {op "-"} {value 1}}
+					{"set_i" {var "enemy_defense_motor_stage$"} {op "="} {value 1}}
 					{"delay" {time 0.1}}
 					("ed_place")
 					("ed_finish_motor")

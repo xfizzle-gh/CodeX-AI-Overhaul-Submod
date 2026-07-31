@@ -468,6 +468,11 @@ class DefenceMissionSupportTests(unittest.TestCase):
                   # "destroyed" is the engine's own wreck marker, not our state: the
                   # board excludes it so a crew never climbs into a dead gun.
                   "destroyed",
+                  # "sup_linked" is baked onto every {Link}ed crew/rider in the shared
+                  # template pools. Every engine READS it - to keep a linked body out
+                  # of its per-body {"placement"} selector - and no engine owns, adds
+                  # or clears it, so it is shared vocabulary, not another system's state.
+                  "sup_linked",
                   "_bot"}
         # Pool tags the defence engine is ALLOWED to claim from: the original NATO
         # comps plus the player-nation faction pools it now shares with Q1. These are

@@ -551,6 +551,13 @@
 	{Link 0xaf5e {0xaf5d "driver"}}
 	{Link 0xaf5f {0xaf5d "gunner2"}}
 
+; sup_linked marks every body that is {Link}-baked into a hull above. It is carried by
+; the crew and the riders, never by a hull, and it is PERSISTENT - no engine removes it.
+; The four wave engines exclude it from their per-body {"placement"} selector: a linked
+; body must never be teleported on its own. Placing it individually overwrote its world
+; transform with the pad point and every occupant rendered clipped into the driver
+; position until {emit {mode passengers}} handed it a fresh one. Place the hull; the
+; link carries its occupants. Derived from the {Link} table, never hand-kept.
 ; ===== TAGS =====
 	{Tags "attack_support_tpl" "attack_support_inf_usmc" "hidden" 0xaf20}
 	{Tags "attack_support_tpl" "attack_support_inf_usmc" "hidden" 0xaf21}
@@ -629,17 +636,17 @@
 	{Tags "attack_support_tpl" "attack_support_inf_arf" "hidden" 0xaf73}
 
 	{Tags "attack_support_tpl" "attack_support_hmmwv1" "hidden" 0xaf54}
-	{Tags "attack_support_tpl" "attack_support_hmmwv1" "hidden" 0xaf55}
-	{Tags "attack_support_tpl" "attack_support_hmmwv1" "hidden" 0xaf56}
+	{Tags "attack_support_tpl" "attack_support_hmmwv1" "sup_linked" "hidden" 0xaf55}
+	{Tags "attack_support_tpl" "attack_support_hmmwv1" "sup_linked" "hidden" 0xaf56}
 
 	{Tags "attack_support_tpl" "attack_support_hmmwv2" "hidden" 0xaf57}
-	{Tags "attack_support_tpl" "attack_support_hmmwv2" "hidden" 0xaf58}
-	{Tags "attack_support_tpl" "attack_support_hmmwv2" "hidden" 0xaf59}
+	{Tags "attack_support_tpl" "attack_support_hmmwv2" "sup_linked" "hidden" 0xaf58}
+	{Tags "attack_support_tpl" "attack_support_hmmwv2" "sup_linked" "hidden" 0xaf59}
 
 	{Tags "attack_support_tpl" "attack_support_hmmwv3" "hidden" 0xaf5a}
-	{Tags "attack_support_tpl" "attack_support_hmmwv3" "hidden" 0xaf5b}
-	{Tags "attack_support_tpl" "attack_support_hmmwv3" "hidden" 0xaf5c}
+	{Tags "attack_support_tpl" "attack_support_hmmwv3" "sup_linked" "hidden" 0xaf5b}
+	{Tags "attack_support_tpl" "attack_support_hmmwv3" "sup_linked" "hidden" 0xaf5c}
 
 	{Tags "attack_support_tpl" "attack_support_hmmwv4" "hidden" 0xaf5d}
-	{Tags "attack_support_tpl" "attack_support_hmmwv4" "hidden" 0xaf5e}
-	{Tags "attack_support_tpl" "attack_support_hmmwv4" "hidden" 0xaf5f}
+	{Tags "attack_support_tpl" "attack_support_hmmwv4" "sup_linked" "hidden" 0xaf5e}
+	{Tags "attack_support_tpl" "attack_support_hmmwv4" "sup_linked" "hidden" 0xaf5f}
