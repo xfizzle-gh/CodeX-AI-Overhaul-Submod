@@ -225,8 +225,8 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         code = self.faction_tpl
         # 526 + 100 motor top-up (4 factions x [3 hulls + 6 crew + 16 pax]) so each
         # faction can field four trucks a mission: 1 hull + 2 crew + 6 pax per truck.
-        self.assertEqual(code.count('{Able "-select"}'), 633)
-        self.assertEqual(code.count("{Player 0}"), 633)
+        self.assertEqual(code.count('{Able "-select"}'), 634)
+        self.assertEqual(code.count("{Player 0}"), 634)
         self.assertEqual(code.count('"ally_sup_tpl"'), 633)
         self.assertEqual(code.count('"hidden"'), 633)
         for fac in ("rusa", "ukr", "nato", "prc"):
@@ -269,12 +269,12 @@ class AttackSupportSlotProofTests(unittest.TestCase):
 
         # Bands: this pool must not collide with either neighbour in a resolved map.
         ids = re.findall(r"\{(?:Entity|Human) \"[^\"]*\" (0x[0-9a-f]+)", code)
-        self.assertEqual(len(ids), 633)
-        self.assertEqual(len(set(ids)), 633)
+        self.assertEqual(len(ids), 634)
+        self.assertEqual(len(set(ids)), 634)
         # 0xc1 is the motor top-up band, swept against every pool and base map.
         self.assertTrue(all(i.startswith(("0xb2", "0xb3", "0xb4", "0xc1", "0xc2")) for i in ids))
         mids = [int(m) for m in re.findall(r"\{MID (\d+)\}", code)]
-        self.assertEqual(len(set(mids)), 633)
+        self.assertEqual(len(set(mids)), 634)
         self.assertGreaterEqual(min(mids), 9300)
         # Real breeds only, and none of the retired idioms.
         self.assertNotIn('{Human ""', code)
@@ -2208,12 +2208,12 @@ class LinkedBodyPlacementTests(unittest.TestCase):
         mirror = self.lua[self.lua.index("local function mirrorEngineState()"):]
         mirror = mirror[: mirror.index("\nend")]
         prefixes = {
-            "attack_support_waves": ("attack_support", "as_motor_band"),
-            "defense_support_waves": ("defense_support", "ds_motor_band"),
-            "enemy_attack_support": ("enemy_attack", "ea_motor_band"),
-            "enemy_defense_support": ("enemy_defense", "ed_motor_band"),
+            "attack_support_waves": ("attack_support", "as_motor_band", "attack_support_motor_flag"),
+            "defense_support_waves": ("defense_support", "ds_motor_band", "def_sup_motor_flag"),
+            "enemy_attack_support": ("enemy_attack", "ea_motor_band", "ea_motor_flag"),
+            "enemy_defense_support": ("enemy_defense", "ed_motor_band", "enemy_def_motor_flag"),
         }
-        for engine, (pfx, band_define) in sorted(prefixes.items()):
+        for engine, (pfx, band_define, objective) in sorted(prefixes.items()):
             code = self.engines[engine]
             drive = "%s_motor_drive_t" % pfx
             band = "%s_motor_band" % pfx
@@ -2263,11 +2263,10 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                 probe = define_body(code, band_define)
                 self.assertEqual(probe.count("{type near}"), 3)
                 self.assertEqual(
-                    probe.count("{near_to {ignore_captured_by_user 0} {tag flag}}"), 3
+                    probe.count("{near_to {ignore_captured_by_user 0} {tag %s}}" % objective), 3
                 )
                 self.assertNotIn(
-                    "{near_to {ignore_captured_by_user 0} {tag %s}}"
-                    % self.MOTOR_OBJECTIVE[engine][2], probe
+                    "{near_to {ignore_captured_by_user 0} {tag flag}}", probe
                 )
                 for value, distance in ((1, 600), (2, 1500), (3, 4000)):
                     self.assertIn(
@@ -2362,10 +2361,10 @@ class LinkedBodyPlacementTests(unittest.TestCase):
             probe = define_body(code, band_define)
             with self.subTest(engine=engine):
                 # Dedicated: every occurrence in the engine is in one of those two forms.
-                self.assertEqual(code.count(flag), body.count(flag), flag)
-                self.assertNotIn(flag, probe)
+                self.assertEqual(code.count(flag), body.count(flag) + probe.count(flag), flag)
+                self.assertEqual(probe.count(flag), 3, flag)
                 self.assertEqual(
-                    probe.count("{near_to {ignore_captured_by_user 0} {tag flag}}"), 3
+                    probe.count("{near_to {ignore_captured_by_user 0} {tag flag}}"), 0
                 )
                 # Cleared then re-picked by the motorized path itself, once each.
                 self.assertEqual(body.count("{tag_remove %s}" % flag), 1)
@@ -2432,8 +2431,10 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                 self.assertNotIn("{prop human}", probe)
                 self.assertNotIn("{type human}", probe)
                 # The reference tag is the same tag the advance order targeted.
-                advance = body.index("{action move}")
-                self.assertNotIn("{action advance}", body[:emit])
+                emit = body.index('{"emit"')
+                advance = body.index("{action advance}")
+                self.assertLess(advance, emit)
+                self.assertNotIn("{action move}", body[:emit])
                 target = block_at(body, body.index("{target", advance))
                 self.assertIn("{tag %s}" % flag, target)
                 # Sampled at the last moment before the emit, and nowhere else.

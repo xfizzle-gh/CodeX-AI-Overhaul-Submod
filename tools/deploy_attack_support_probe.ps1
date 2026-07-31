@@ -195,7 +195,10 @@ $E2HeloTemplateMarkers = @(
     '{Link 0xb404 {0xb401 "seat1"}}',
     '{Link 0xb40b {0xb408 "seat1"}}',
     '{Link 0xb412 {0xb40f "seat1"}}',
-    '{Link 0xc203 {0xc200 "seat1"}}'
+    '{Link 0xc203 {0xc200 "seat1"}}',
+    'support_e2_marker_tpl',
+    '0xc207',
+    '{MID 10016}'
 )
 # PRC flies the Mi-171 adaptation (Army Aviation transport), so its helo probe is
 # required, not forbidden. The fixed-wing paradrop stays out per the PRC doctrine note.
@@ -277,9 +280,11 @@ $E2ParaWaveMarkers = @(
     'paratrooper_need_orders',
     '{"attack_support/e2_para_range"',
     '{"attack_support/e2_para_alive"',
+    '{"attack_support/e2_para_takeover"',
     '(define "e2_para_range_poll"',
     '{distance 600}',
     '{distance 4000}',
+    '{distance 1500}',
     'support_e2_para_range_band$',
     'support_e2_para_pass$',
     'support_e2_released',
@@ -299,7 +304,6 @@ $E2ParaForbiddenMarkers = @(
     # is untouched by this ban.
     '{"emit"',
     '{mode passengers}',
-    '{distance 1500}',
     '{distance 2500}',
     'waypoint "5004"',
     'waypoint "5005"',

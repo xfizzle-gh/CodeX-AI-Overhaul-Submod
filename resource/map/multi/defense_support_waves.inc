@@ -4212,9 +4212,9 @@
 (define "ds_motor_band"
 				{"set_i" {var "defense_support_motor_band$"} {op "="} {value 0}}
 				{"switch"
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag def_sup_motor_hull}} {near_to {ignore_captured_by_user 0} {tag flag}} {distance 600}} {"set_i" {var "defense_support_motor_band$"} {op "="} {value 1}}}
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag def_sup_motor_hull}} {near_to {ignore_captured_by_user 0} {tag flag}} {distance 1500}} {"set_i" {var "defense_support_motor_band$"} {op "="} {value 2}}}
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag def_sup_motor_hull}} {near_to {ignore_captured_by_user 0} {tag flag}} {distance 4000}} {"set_i" {var "defense_support_motor_band$"} {op "="} {value 3}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag def_sup_motor_hull}} {near_to {ignore_captured_by_user 0} {tag def_sup_motor_flag}} {distance 600}} {"set_i" {var "defense_support_motor_band$"} {op "="} {value 1}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag def_sup_motor_hull}} {near_to {ignore_captured_by_user 0} {tag def_sup_motor_flag}} {distance 1500}} {"set_i" {var "defense_support_motor_band$"} {op "="} {value 2}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag def_sup_motor_hull}} {near_to {ignore_captured_by_user 0} {tag def_sup_motor_flag}} {distance 4000}} {"set_i" {var "defense_support_motor_band$"} {op "="} {value 3}}}
 					{"default"}
 				}
 			)
@@ -4290,7 +4290,7 @@
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag def_sup_motor_hull}}
 					{drop orders}
-					{action move}
+					{action advance}
 					{target {ignore_captured_by_user 0} {tag def_sup_motor_flag}}
 				}
 				{"set_i" {var "defense_support_motor_stage$"} {op "="} {value 3}}
@@ -4324,7 +4324,14 @@
 				{"set_i" {var "defense_support_motor_stage$"} {op "="} {value 4}}
 				{"delay" {time 3}}
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag def_sup_motor_pax}}
+					{selector
+						{source advanced}
+						{ignore_captured_by_user 0}
+						{group
+							{select {tag {tag def_sup_motor_pax}}}
+							{exclude {state {state linked}} {state {state inactive}} {state {state dead}}}
+						}
+					}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag def_sup_motor_flag}}
@@ -4941,6 +4948,7 @@
 			; One-shot per truck: give the departing hull 45s of driving, then remove it
 			; (dead or alive) so trucks never accumulate. Fires only when a hull is leaving.
 			{"defense_support/motor_cleanup"
+				{autoreset}
 				{condition
 					{expression "1 & 2"}
 					{terms

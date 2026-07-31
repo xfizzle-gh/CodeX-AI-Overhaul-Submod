@@ -583,10 +583,10 @@ class E2HelicopterLifecycleTests(unittest.TestCase):
 
     def test_pad_safety_uses_one_claimed_marker_and_two_independent_near_queries(self) -> None:
         claim = mi_define(self.waves, "e2_claim_lz_marker")
-        self.assertIn('{tag support_e2_team}', claim)
+        self.assertIn('{tag support_e2_marker_tpl}', claim)
         self.assertIn('{tag_add support_e2_lz_marker}', claim)
         self.assertIn('{amount 1}', claim)
-        self.assertNotIn('{tag_remove support_e2_team}', claim)
+        self.assertNotIn('{tag_remove support_e2_marker_tpl}', claim)
 
         place = mi_define(self.waves, "e2_place_lz_marker")
         for side in "ab":
@@ -934,22 +934,16 @@ class E2ParadropLifecycleTests(unittest.TestCase):
             self.assertIn('{tag support_e2_arrival}', condition)
             self.assertIn('{near_to', condition)
             self.assertIn('{tag support_e2_flag_target}', condition)
-            # Widened band: 600-4000, a 3400-unit annulus. The old 1500-2500 shell was
-            # 150-250m out and the airborne chassis crosses it in under 4 seconds - or
-            # misses it entirely on an off-axis run-in. Both old values are gone.
-            self.assertEqual(condition.count('{distance 4000}'), 1)
-            self.assertEqual(condition.count('{distance 600}'), 1)
+            # Live proof: the 4000-unit annulus fired at the backline. Release now
+            # requires the aircraft to reach 1500 units (150 m) from the selected flag.
+            self.assertEqual(condition.count('{distance 1500}'), 1)
+            self.assertNotIn('{distance 4000}', condition)
+            self.assertNotIn('{distance 600}', condition)
             self.assertNotIn('{distance 2500}', condition)
-            self.assertNotIn('{distance 1500}', condition)
-            self.assertRegex(condition, r'\{expression "[^"]*!\d+[^"]*"\}')
-            # Term 8 is the bounded closest-approach fallback, ORed against the inner
-            # exclusion so a run-in that steps into the hole or parks overhead still
-            # drops. It never bypasses the outer ring, which is ANDed in on its own.
-            self.assertIn(
-                '{"8.cmp_i" {var "support_e2_para_pass$"} {op "=="} {value 1}}', condition
-            )
+            self.assertNotIn('{"6.near"', condition)
+            self.assertNotIn('{"8.cmp_i"', condition)
             expression = re.search(r'\{expression "([^"]+)"\}', condition).group(1)
-            self.assertEqual(expression, "1 & 2 & 3 & 4 & 5 & 7 & (8 | !6)")
+            self.assertEqual(expression, "1 & 2 & 3 & 4 & 5 & 7")
             self.assertIn('{tag support_e2_released}', condition)
             actions = release.split("{actions", 1)[1]
             tagged = actions.index('{tag_add support_e2_released}')
@@ -2692,7 +2686,7 @@ class E2PassengerOwnershipTests(unittest.TestCase):
         cls.deploy = DEPLOY.read_text(encoding="utf-8")
 
     def test_the_pax_tag_is_written_only_on_completed_delivery_paths(self) -> None:
-        self.assertEqual(self.live.count("{tag_add support_e2_pax}"), 3)
+        self.assertEqual(self.live.count("{tag_add support_e2_pax}"), 4)
         for name in ("e2_place_one", "e2_place_one_entry"):
             place = mi_define(self.live, name)
             with self.subTest(place=name):
@@ -2709,6 +2703,17 @@ class E2PassengerOwnershipTests(unittest.TestCase):
         self.assertIn("{select {tag {tag support_e2_helo_pax}}}", helo)
         self.assertIn("{exclude {tag {tag hidden}}}", helo)
         self.assertIn("{tag_remove support_e2_helo_pax}", helo)
+
+        para_start = self.live.index('{"attack_support/e2_para_takeover"')
+        para_end = self.live.index('{"attack_support/e2_paradrop_link_0"', para_start)
+        para = self.live[para_start:para_end]
+        self.assertEqual(para.count("{tag_add support_e2_pax}"), 1)
+        self.assertIn("{tag paratrooper_need_orders}", para)
+        self.assertIn("{state {state linked}}", para)
+        self.assertIn("{state {state inactive}}", para)
+        self.assertIn("{state {state dead}}", para)
+        self.assertIn('("e2_own_pax")', para)
+        self.assertIn('("e2_order_team")', para)
 
     def test_the_pax_tag_carries_the_literal_1_to_16_switch_and_fails_closed(self) -> None:
         own = mi_define(self.live, "e2_own_pax")
@@ -3021,12 +3026,15 @@ class E2ParaExitEvidenceTests(unittest.TestCase):
             with self.subTest(release=faction):
                 self.assertEqual(
                     sorted(int(v) for v in re.findall(r"\{distance (\d+)\}", condition)),
-                    [600, 4000],
+                    [1500],
                 )
-        # The retired shell is still banned in both directions.
-        for retired in ("{distance 1500}", "{distance 2500}"):
-            self.assertNotIn(retired, self.para)
-            self.assertIn("'%s'" % retired, self.deploy)
+        # The old 2500-unit shell remains retired. The telemetry poll still owns
+        # 600/4000, while 1500 is now the release radius.
+        self.assertNotIn("{distance 2500}", self.para)
+        self.assertIn("'{distance 2500}'", self.deploy)
+        self.assertNotIn("{distance 600}", self.para)
+        self.assertIn("{distance 4000}", self.para)
+        self.assertIn("{distance 1500}", self.para)
 
     def test_the_release_monitors_address_the_dispatched_clone(self) -> None:
         for faction in ("rusa", "ukr", "nato"):

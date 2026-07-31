@@ -144,7 +144,7 @@
 					{"default"}
 				}
 			)
-			
+
 			(define "as_announce_motor"
 				{"switch"
 					{"case"
@@ -471,7 +471,7 @@
 
 			; Stagger up to 8 bodies onto the entry (same waypoint, spaced in time so
 			; physics does not crush a full fireteam into one pile).
-			
+
 			; Pick main triple pads vs flank pads for this placement batch (attack only).
 			; 25% flank roll; round-robin flank_rr 1/2; fall back to main if enemies near pad.
 			(define "as_choose_entry"
@@ -3970,7 +3970,7 @@
 			; numbered entry waypoint and fail code 4.
 			(define "e2_claim_lz_marker"
 				{"entity_state"
-					{selector {ignore_captured_by_user 0} {tag support_e2_team} {amount 1}}
+					{selector {ignore_captured_by_user 0} {tag support_e2_marker_tpl} {amount 1}}
 					{tag_add support_e2_lz_marker}
 				}
 			)
@@ -5803,16 +5803,14 @@
 			; releases, and is still reported as "never approached".
 			{"attack_support/e2_para_release_rusa"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 7 & (8 | !6)"}
+					{expression "1 & 2 & 3 & 4 & 5 & 7"}
 					{terms
 						{"7.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
 						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}} {exclude {tag {tag support_e2_released}}}}}}
-						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 4000}}
-						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 600}}
-						{"8.cmp_i" {var "support_e2_para_pass$"} {op "=="} {value 1}}
+						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 1500}}
 					}
 				}
 				{actions
@@ -5879,16 +5877,14 @@
 
 			{"attack_support/e2_para_release_ukr"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 7 & (8 | !6)"}
+					{expression "1 & 2 & 3 & 4 & 5 & 7"}
 					{terms
 						{"7.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
 						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}} {exclude {tag {tag support_e2_released}}}}}}
-						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 4000}}
-						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 600}}
-						{"8.cmp_i" {var "support_e2_para_pass$"} {op "=="} {value 1}}
+						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 1500}}
 					}
 				}
 				{actions
@@ -5955,16 +5951,14 @@
 
 			{"attack_support/e2_para_release_nato"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 7 & (8 | !6)"}
+					{expression "1 & 2 & 3 & 4 & 5 & 7"}
 					{terms
 						{"7.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
 						{"1.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
 						{"2.cmp_i" {var "support_e2_stage$"} {op "=="} {value 30}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
 						{"4.entities" {selector {source advanced} {group {select {tag {tag support_e2_arrival}}} {exclude {tag {tag support_e2_released}}}}}}
-						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 4000}}
-						{"6.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 600}}
-						{"8.cmp_i" {var "support_e2_para_pass$"} {op "=="} {value 1}}
+						{"5.near" {units {ignore_captured_by_user 0} {tag support_e2_arrival}} {near_to {ignore_captured_by_user 0} {tag support_e2_flag_target}} {distance 1500}}
 					}
 				}
 				{actions
@@ -6026,6 +6020,64 @@
 					{"set_i" {var "support_e2_stage$"} {op "="} {value 40}}
 					("e2_order_aircraft_exit")
 					("e2_para_settle")
+				}
+			}
+
+
+			; ===== E2 LANDED PARATROOPER TAKEOVER =====
+			; The aircraft interaction tags each jumper paratrooper_need_orders. Collect
+			; bodies only after they have unlinked from their canopy, transfer them to the
+			; support player and order them toward the selected flag. Autoreset catches each
+			; member of the stick as it finishes landing.
+			{"attack_support/e2_para_takeover"
+				{autoreset}
+				{condition
+					{expression "1 & 2 & 3 & 4"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_e2_test$"} {op "=="} {value 2}}
+						{"3.cmp_i" {var "support_e2_stage$"} {op "=="} {value 40}}
+						{"4.entities"
+							{selector
+								{source advanced}
+								{group
+									{select {tag {tag paratrooper_need_orders}}}
+									{exclude
+										{tag {tag support_e2_pax}}
+										{state {state linked}}
+										{state {state inactive}}
+										{state {state dead}}
+									}
+								}
+							}
+							{count {op ">="} {value 1}}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select {tag {tag paratrooper_need_orders}}}
+								{exclude
+									{tag {tag support_e2_pax}}
+									{state {state linked}}
+									{state {state inactive}}
+									{state {state dead}}
+								}
+							}
+						}
+						{tag_add support_e2_pax}
+						{tag_add support_e2_team}
+						{tag_add attack_support_src}
+						{inactive off}
+						{impregnability disabled}
+						{discovered on}
+					}
+					("e2_own_pax")
+					{"delay" {time 0.2}}
+					("e2_order_team")
 				}
 			}
 
@@ -7653,9 +7705,9 @@
 (define "as_motor_band"
 				{"set_i" {var "attack_support_motor_band$"} {op "="} {value 0}}
 				{"switch"
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag attack_support_motor_hull}} {near_to {ignore_captured_by_user 0} {tag flag}} {distance 600}} {"set_i" {var "attack_support_motor_band$"} {op "="} {value 1}}}
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag attack_support_motor_hull}} {near_to {ignore_captured_by_user 0} {tag flag}} {distance 1500}} {"set_i" {var "attack_support_motor_band$"} {op "="} {value 2}}}
-					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag attack_support_motor_hull}} {near_to {ignore_captured_by_user 0} {tag flag}} {distance 4000}} {"set_i" {var "attack_support_motor_band$"} {op "="} {value 3}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag attack_support_motor_hull}} {near_to {ignore_captured_by_user 0} {tag attack_support_motor_flag}} {distance 600}} {"set_i" {var "attack_support_motor_band$"} {op "="} {value 1}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag attack_support_motor_hull}} {near_to {ignore_captured_by_user 0} {tag attack_support_motor_flag}} {distance 1500}} {"set_i" {var "attack_support_motor_band$"} {op "="} {value 2}}}
+					{"case" {condition {type near} {units {ignore_captured_by_user 0} {tag attack_support_motor_hull}} {near_to {ignore_captured_by_user 0} {tag attack_support_motor_flag}} {distance 4000}} {"set_i" {var "attack_support_motor_band$"} {op "="} {value 3}}}
 					{"default"}
 				}
 			)
@@ -7748,7 +7800,7 @@
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
 					{drop orders}
-					{action move}
+					{action advance}
 					{target {ignore_captured_by_user 0} {tag attack_support_motor_flag}}
 				}
 				{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 3}}
@@ -7784,7 +7836,14 @@
 				; Pax advance on foot; truck holds. Same motor-only objective the hull drove at,
 				; so the dismounts finish the approach instead of chasing the infantry's flag.
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag attack_support_motor_pax}}
+					{selector
+						{source advanced}
+						{ignore_captured_by_user 0}
+						{group
+							{select {tag {tag attack_support_motor_pax}}}
+							{exclude {state {state linked}} {state {state inactive}} {state {state dead}}}
+						}
+					}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag attack_support_motor_flag}}
@@ -8429,6 +8488,7 @@
 			; One-shot per truck: give the departing hull 45s of driving, then remove it
 			; (dead or alive) so trucks never accumulate. Fires only when a hull is leaving.
 			{"attack_support/motor_cleanup"
+				{autoreset}
 				{condition
 					{expression "1 & 2"}
 					{terms

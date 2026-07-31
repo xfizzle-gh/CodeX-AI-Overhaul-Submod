@@ -4943,3 +4943,14 @@
 	{Link 0xc161 {0xc151 "seat4"}}
 	{Link 0xc162 {0xc151 "seat5"}}
 	{Link 0xc163 {0xc151 "seat6"}}
+
+; ----- E2 INDEPENDENT LZ MARKER -----
+; Dedicated unlinked hidden body used only as the near_to anchor for helicopter
+; pad safety and arrival. A seat-linked passenger cannot be MOVE-placed independently.
+	{Human "mp/nato/2022s/nato_rifleman" 0xc207
+		{Position -8965 -37400}
+		{Player 0}
+		{MID 10016}
+		{Able "-select"}
+	}
+	{Tags "support_e2_marker_tpl" 0xc207}
