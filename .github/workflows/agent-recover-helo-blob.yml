@@ -1,0 +1,32 @@
+name: Recover helicopter patch blob
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    if: github.head_ref == 'experiment/attack-mate-slot-proof' || github.ref_name == 'experiment/attack-mate-slot-proof'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download raw stored blob
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fsSL \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs/e998d47627f0a9d42868eb53924830be2642b4ad" \
+            | python -c 'import base64,json,sys; sys.stdout.buffer.write(base64.b64decode(json.load(sys.stdin)["content"]))' \
+            > helo.patch.gz
+          sha256sum helo.patch.gz
+          file helo.patch.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recovered-helicopter-patch-blob
+          path: helo.patch.gz
+          retention-days: 1
