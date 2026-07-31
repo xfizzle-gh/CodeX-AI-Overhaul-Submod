@@ -72,7 +72,7 @@ def replace_block(text: str, token: str, transform) -> str:
 
 
 def restore_finisher(block: str, path: str, finisher_name: str, pax_tag: str) -> str:
-    witness = f"{{select {{tag {{tag {pax_tag}}}}}}"
+    witness = "{select {tag {tag " + pax_tag + "}}}"
     witness_at = block.index(witness)
     selector_start = block.rfind("{selector", 0, witness_at)
     if selector_start < 0:
@@ -93,7 +93,7 @@ def restore_finisher(block: str, path: str, finisher_name: str, pax_tag: str) ->
         )
     if block.find(witness, selector_end) >= 0:
         raise RuntimeError(f"{path}:{finisher_name}: multiple advanced pax selectors")
-    replacement = f"{{selector {{ignore_captured_by_user 0}} {{tag {pax_tag}}}}}"
+    replacement = "{selector {ignore_captured_by_user 0} {tag " + pax_tag + "}}"
     return block[:selector_start] + replacement + block[selector_end:]
 
 
