@@ -25,14 +25,17 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import subprocess
-          import textwrap
 
           workflow = Path('.github/workflows/apply-live-air-motor-fixes.yml').read_text(encoding='utf-8')
           start_marker = "          python - <<'PY'\n"
           end_marker = "\n          PY\n"
           start = workflow.index(start_marker) + len(start_marker)
           end = workflow.index(end_marker, start)
-          script = textwrap.dedent(workflow[start:end])
+          raw = workflow[start:end]
+          script = "\n".join(
+              line[10:] if line.startswith("          ") else line
+              for line in raw.splitlines()
+          ) + "\n"
           Path('/tmp/apply_live_fixes.py').write_text(script, encoding='utf-8')
           subprocess.run(['python', '/tmp/apply_live_fixes.py'], check=True)
           PY
