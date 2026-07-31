@@ -30,72 +30,13 @@ jobs:
           ' .github/workflows/run-live-air-motor-fixes.yml > /tmp/live_fix.b64
           base64 -d /tmp/live_fix.b64 > /tmp/apply_live_air_motor_fixes.py
 
-          python - <<'PY'
-          from pathlib import Path
-
-          path = Path('/tmp/apply_live_air_motor_fixes.py')
-          text = path.read_text(encoding='utf-8')
-
-          replacements = [
-              (
-                  '        "attack_support/motor_cleanup",\n    ),',
-                  '        "attack_support/motor_cleanup",\n        "as_finish_motor",\n    ),',
-              ),
-              (
-                  '        "defense_support/motor_cleanup",\n    ),',
-                  '        "defense_support/motor_cleanup",\n        "ds_finish_motor",\n    ),',
-              ),
-              (
-                  '        "enemy_attack/motor_cleanup",\n    ),',
-                  '        "enemy_attack/motor_cleanup",\n        "ea_finish_motor",\n    ),',
-              ),
-              (
-                  '        "enemy_defense/motor_cleanup",\n    ),',
-                  '        "enemy_defense/motor_cleanup",\n        "ed_finish_motor",\n    ),',
-              ),
-              (
-                  'for path, (hull, objective, pax, cleanup_trigger) in motor_files.items():',
-                  'for path, (hull, objective, pax, cleanup_trigger, finisher_name) in motor_files.items():',
-              ),
-          ]
-          for old, new in replacements:
-              if text.count(old) != 1:
-                  raise SystemExit(f'expected one script fragment: {old!r}')
-              text = text.replace(old, new, 1)
-
-          start_token = '    # Scope the foot order to bodies that the emit has actually unlinked.'
-          end_token = '    motor_texts[path] = text'
-          start = text.index(start_token)
-          end = text.index(end_token, start)
-          replacement = """    # Scope the foot order to bodies that the emit has actually unlinked. Work inside
-    # the named finisher because each engine uses different prose before this action.
-    finisher_start = text.index('(define \\"' + finisher_name + '\\"')
-    next_define = text.find('(define \\"', finisher_start + 10)
-    finisher_end = len(text) if next_define < 0 else next_define
-    finisher = text[finisher_start:finisher_end]
-    old_pax_selector = '{selector {ignore_captured_by_user 0} {tag ' + pax + '}}'
-    new_pax_selector = '''{selector
-\\t\\t\\t\\t\\t\\t{source advanced}
-\\t\\t\\t\\t\\t\\t{ignore_captured_by_user 0}
-\\t\\t\\t\\t\\t\\t{group
-\\t\\t\\t\\t\\t\\t\\t{select {tag {tag ''' + pax + '''}}}
-\\t\\t\\t\\t\\t\\t\\t{exclude {state {state linked}} {state {state inactive}} {state {state dead}}}
-\\t\\t\\t\\t\\t\\t}
-\\t\\t\\t\\t\\t}'''
-    finisher = replace_exact(
-        finisher,
-        old_pax_selector,
-        new_pax_selector,
-        1,
-        f'{path}: order only emitted passengers',
-    )
-    text = text[:finisher_start] + finisher + text[finisher_end:]
-
-"""
-          text = text[:start] + replacement + text[end:]
-          path.write_text(text, encoding='utf-8')
-          PY
-
+          cat > /tmp/patcher.b64 <<'B64'
+          ZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgpwYXRoID0gUGF0aCgnL3RtcC9hcHBseV9saXZlX2Fpcl9tb3Rvcl9maXhlcy5weScpCnRleHQgPSBwYXRoLnJlYWRfdGV4dChlbmNvZGluZz0ndXRmLTgnKQoKcmVwbGFjZW1lbnRzID0gWwogICAgKAogICAgICAgICcgICAgICAgICJhdHRhY2tfc3VwcG9ydC9tb3Rvcl9jbGVhbnVwIixcbiAgICApLCcsCiAgICAgICAgJyAgICAgICAgImF0dGFja19zdXBwb3J0L21vdG9yX2NsZWFudXAiLFxuICAgICAgICAiYXNfZmluaXNoX21vdG9yIixcbiAgICApLCcsCiAgICApLAogICAgKAogICAgICAgICcgICAgICAgICJkZWZlbnNlX3N1cHBvcnQvbW90b3JfY2xlYW51cCIsXG4gICAgKSwnLAogICAgICAgICcgICAgICAgICJkZWZlbnNlX3N1cHBvcnQvbW90b3JfY2xlYW51cCIsXG4gICAgICAgICJkc19maW5pc2hfbW90b3IiLFxuICAgICksJywKICAgICksCiAgICAoCiAgICAgICAgJyAgICAgICAgImVuZW15X2F0dGFjay9tb3Rvcl9jbGVhbnVwIixcbiAgICApLCcsCiAgICAgICAgJyAgICAgICAgImVuZW15X2F0dGFjay9tb3Rvcl9jbGVhbnVwIixcbiAgICAgICAgImVhX2ZpbmlzaF9tb3RvciIsXG4gICAgKSwnLAogICAgKSwKICAgICgKICAgICAgICAnICAgICAgICAiZW5lbXlfZGVmZW5zZS9tb3Rvcl9jbGVhbnVwIixcbiAgICApLCcsCiAgICAgICAgJyAgICAgICAgImVuZW15X2RlZmVuc2UvbW90b3JfY2xlYW51cCIsXG4gICAgICAgICJlZF9maW5pc2hfbW90b3IiLFxuICAgICksJywKICAgICksCiAgICAoCiAgICAgICAgJ2ZvciBwYXRoLCAoaHVsbCwgb2JqZWN0aXZlLCBwYXgsIGNsZWFudXBfdHJpZ2dlcikgaW4gbW90b3JfZmlsZXMuaXRlbXMoKTonLAogICAgICAgICdmb3IgcGF0aCwgKGh1bGwsIG9iamVjdGl2ZSwgcGF4LCBjbGVhbnVwX3RyaWdnZXIsIGZpbmlzaGVyX25hbWUpIGluIG1vdG9yX2ZpbGVzLml0ZW1zKCk6JywKICAgICksCl0KZm9yIG9sZCwgbmV3IGluIHJlcGxhY2VtZW50czoKICAgIGlmIHRleHQuY291bnQob2xkKSAhPSAxOgogICAgICAgIHJhaXNlIFJ1bnRpbWVFcnJvcihmJ2V4cGVjdGVkIG9uZSBzY3JpcHQgZnJhZ21lbnQ6IHtvbGQhcn0nKQogICAgdGV4dCA9IHRleHQucmVwbGFjZShvbGQsIG5ldywgMSkKCnN0YXJ0X3Rva2VuID0gJyAgICAjIFNjb3BlIHRoZSBmb290IG9yZGVyIHRvIGJvZGllcyB0aGF0IHRoZSBlbWl0IGhhcyBhY3R1YWxseSB1bmxpbmtlZC4nCmVuZF90b2tlbiA9ICcgICAgbW90b3JfdGV4dHNbcGF0aF0gPSB0ZXh0JwpzdGFydCA9IHRleHQuaW5kZXgoc3RhcnRfdG9rZW4pCmVuZCA9IHRleHQuaW5kZXgoZW5kX3Rva2VuLCBzdGFydCkKcmVwbGFjZW1lbnQgPSAiIiIgICAgIyBTY29wZSB0aGUgZm9vdCBvcmRlciB0byBib2RpZXMgdGhhdCB0aGUgZW1pdCBoYXMgYWN0dWFsbHkgdW5saW5rZWQuIFdvcmsgaW5zaWRlCiAgICAjIHRoZSBuYW1lZCBmaW5pc2hlciBiZWNhdXNlIGVhY2ggZW5naW5lIHVzZXMgZGlmZmVyZW50IHByb3NlIGJlZm9yZSB0aGlzIGFjdGlvbi4KICAgIGZpbmlzaGVyX3N0YXJ0ID0gdGV4dC5pbmRleCgnKGRlZmluZSAiJyArIGZpbmlzaGVyX25hbWUgKyAnIicpCiAgICBuZXh0X2RlZmluZSA9IHRleHQuZmluZCgnKGRlZmluZSAiJywgZmluaXNoZXJfc3RhcnQgKyAxMCkKICAgIGZpbmlzaGVyX2VuZCA9IGxlbih0ZXh0KSBpZiBuZXh0X2RlZmluZSA8IDAgZWxzZSBuZXh0X2RlZmluZQogICAgZmluaXNoZXIgPSB0ZXh0W2ZpbmlzaGVyX3N0YXJ0OmZpbmlzaGVyX2VuZF0KICAgIG9sZF9wYXhfc2VsZWN0b3IgPSAne3NlbGVjdG9yIHtpZ25vcmVfY2FwdHVyZWRfYnlfdXNlciAwfSB7dGFnICcgKyBwYXggKyAnfX0nCiAgICBuZXdfcGF4X3NlbGVjdG9yID0gJycne3NlbGVjdG9yClx0XHRcdFx0XHRcdHtzb3VyY2UgYWR2YW5jZWR9Clx0XHRcdFx0XHRcdHtpZ25vcmVfY2FwdHVyZWRfYnlfdXNlciAwfQpcdFx0XHRcdFx0XHR7Z3JvdXAKXHRcdFx0XHRcdFx0XHR7c2VsZWN0IHt0YWcge3RhZyAnJycgKyBwYXggKyAnJyd9fX0KXHRcdFx0XHRcdFx0XHR7ZXhjbHVkZSB7c3RhdGUge3N0YXRlIGxpbmtlZH19IHtzdGF0ZSB7c3RhdGUgaW5hY3RpdmV9fSB7c3RhdGUge3N0YXRlIGRlYWR9fX0KXHRcdFx0XHRcdFx0fQpcdFx0XHRcdFx0fScnJwogICAgZmluaXNoZXIgPSByZXBsYWNlX2V4YWN0KAogICAgICAgIGZpbmlzaGVyLAogICAgICAgIG9sZF9wYXhfc2VsZWN0b3IsCiAgICAgICAgbmV3X3BheF9zZWxlY3RvciwKICAgICAgICAxLAogICAgICAgIGYne3BhdGh9OiBvcmRlciBvbmx5IGVtaXR0ZWQgcGFzc2VuZ2VycycsCiAgICApCiAgICB0ZXh0ID0gdGV4dFs6ZmluaXNoZXJfc3RhcnRdICsgZmluaXNoZXIgKyB0ZXh0W2ZpbmlzaGVyX2VuZDpdCgoiIiIKdGV4dCA9IHRleHRbOnN0YXJ0XSArIHJlcGxhY2VtZW50ICsgdGV4dFtlbmQ6XQpwYXRoLndyaXRlX3RleHQodGV4dCwgZW5jb2Rpbmc9J3V0Zi04JykK
+          B64
+          sed -i 's/^          //' /tmp/patcher.b64
+          base64 -d /tmp/patcher.b64 > /tmp/patch_repair_script.py
+          python -m py_compile /tmp/patch_repair_script.py
+          python /tmp/patch_repair_script.py
           python -m py_compile /tmp/apply_live_air_motor_fixes.py
           python /tmp/apply_live_air_motor_fixes.py
 
