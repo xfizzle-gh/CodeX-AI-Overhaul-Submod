@@ -68,6 +68,29 @@ takeover_assert = '''        self.assertIn("{tag_remove support_e2_helo_pax}", h
 '''
 e2_tests = replace_once(e2_tests, helo_anchor, takeover_assert, 'pin paratrooper delivery path')
 
+# The base payload also inserts a standalone takeover test. The canonical completed-
+# delivery-path test above now covers the same trigger plus all three exclusion states,
+# ownership, and ordering, so remove the duplicate helper-parser test.
+redundant_takeover_test = '''
+
+    def test_landed_paratroopers_are_owned_and_ordered_immediately(self) -> None:
+        takeover = mi_block(self.waves, '{"attack_support/e2_para_takeover"')
+        condition, actions = takeover.split('{actions', 1)
+        self.assertIn('{autoreset}', takeover)
+        self.assertIn('{var "support_e2_stage$"} {op "=="} {value 40}', condition)
+        self.assertIn('{tag paratrooper_need_orders}', condition)
+        self.assertIn('{state {state linked}}', condition)
+        self.assertIn('{tag_add support_e2_pax}', actions)
+        self.assertIn('(\"e2_own_pax\")', actions)
+        self.assertIn('(\"e2_order_team\")', actions)
+'''
+e2_tests = replace_once(
+    e2_tests,
+    redundant_takeover_test,
+    '',
+    'remove redundant standalone takeover test',
+)
+
 old_motor = '''                # The reference tag is the same tag the advance order targeted.
                 advance = body.index("{action advance}")
                 self.assertNotIn("{action move}", body[:emit])
