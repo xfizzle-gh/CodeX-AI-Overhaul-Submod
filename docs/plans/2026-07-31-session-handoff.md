@@ -16,9 +16,12 @@ before "done", never loosen guards/tests, verified asset strings only.
 - **Trucks**: package 1 on BOTH sides (8 Link-baked seated riders) does the
   full claim → place → drive (~30 s) → emit at objective sequence. Proven on
   Q1 (NATO FMTV) and Q4 (rusa Ural), fields map, 2026-07-31.
-- **Helicopter call-in (E2 helo leg)**: full sequence executed live —
-  clone-dispatch, flight to flag, emit, exit, delete. Mi-17 visible on minimap
-  and in sky. NATO currently flies `mi17_b8_rus` (red-star livery — cosmetic
+- **Helicopter call-in (E2 helo leg)**: the FLIGHT is real and executed live —
+  clone-dispatch, flight to flag, exit, delete; Mi-17 visible on minimap and
+  in sky. **Honesty note: in code through `9caa7c2` the 4-man team is
+  MOVE-placed at the LZ while the helicopter flies overhead — it is NOT
+  emitted from the aircraft.** The binding user requirement (below) replaces
+  this with a true land → disembark → take off sequence. NATO currently flies `mi17_b8_rus` (red-star livery — cosmetic
   pass later; do NOT swap back to the Blackhawk, its parked actor has never
   provably instantiated; fail 13/14/9 discriminate it on a future run).
 - **C-130 para leg**: plane dispatches at the 3-minute mark and flies visibly.
@@ -33,9 +36,13 @@ before "done", never loosen guards/tests, verified asset strings only.
 - **CRITICAL — numeric waypoint ids are a small engine id space, not labels.**
   The 9101–9104 band hard-crashed maps at load
   (`APP_ERROR: Can't use waypoint id, it already used`, eHelperWaypoint.cpp:55).
-  Highest numeric waypoint name across 1035 shipped .mi files is 1000. Current
-  band: **21/22 entry a/b, 23/24 exit a/b**. Keep any new numeric waypoint
-  two-digit and collision-swept.
+  Highest numeric waypoint name across 1035 shipped .mi files is 1000.
+  **STATUS WARNING: commits through `9caa7c2` still carry 9101–9104 in the
+  engine, deploy generator and tests — the migration to the safe band
+  (21/22 entry a/b, 23/24 exit a/b) exists only as in-flight/uncommitted work
+  at the time of writing. If no later commit contains it, the crash is STILL
+  ACTIVE and the migration must be finished first, then woodland proven to
+  load.** Keep any new numeric waypoint two-digit and collision-swept.
 
 ## In flight at handoff time
 
