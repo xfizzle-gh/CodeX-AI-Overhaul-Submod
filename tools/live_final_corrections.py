@@ -55,7 +55,9 @@ helo_anchor = '''        self.assertIn("{tag_remove support_e2_helo_pax}", helo)
 '''
 takeover_assert = '''        self.assertIn("{tag_remove support_e2_helo_pax}", helo)
 
-        para = mi_block(self.live, '{"attack_support/e2_para_takeover"')
+        para_start = self.live.index('{"attack_support/e2_para_takeover"')
+        para_end = self.live.index('; ===== THE PARACHUTE LINKERS', para_start)
+        para = self.live[para_start:para_end]
         self.assertEqual(para.count("{tag_add support_e2_pax}"), 1)
         self.assertIn("{tag paratrooper_need_orders}", para)
         self.assertIn("{state {state linked}}", para)
