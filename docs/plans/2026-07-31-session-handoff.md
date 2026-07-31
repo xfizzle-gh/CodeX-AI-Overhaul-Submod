@@ -1,0 +1,92 @@
+# Session handoff — 2026-07-31
+
+State capture for the next agent picking up the four-quadrant AI support system
+(waves + trucks + helicopter/paradrop call-ins for campaign_capture_the_flag).
+Read this alongside `2026-07-30-allied-support-expansion.md` (MARCHING ORDERS —
+process rules, verification bar) and `2026-07-30-e2-airmobile-handoff.md`
+(flight research + traps). Those rules still bind: repo-first, deploy script is
+the only workshop writer, full pytest + deploy exit 0 twice byte-identical
+before "done", never loosen guards/tests, verified asset strings only.
+
+## Where things stand (proven live, user-witnessed)
+
+- **Ground waves (Q1–Q4)**: working. Four engines: `attack_support_waves.inc`,
+  `enemy_defense_support.inc`, `defense_support_waves.inc`,
+  `enemy_attack_support.inc`.
+- **Trucks**: package 1 on BOTH sides (8 Link-baked seated riders) does the
+  full claim → place → drive (~30 s) → emit at objective sequence. Proven on
+  Q1 (NATO FMTV) and Q4 (rusa Ural), fields map, 2026-07-31.
+- **Helicopter call-in (E2 helo leg)**: full sequence executed live —
+  clone-dispatch, flight to flag, emit, exit, delete. Mi-17 visible on minimap
+  and in sky. NATO currently flies `mi17_b8_rus` (red-star livery — cosmetic
+  pass later; do NOT swap back to the Blackhawk, its parked actor has never
+  provably instantiated; fail 13/14/9 discriminate it on a future run).
+- **C-130 para leg**: plane dispatches at the 3-minute mark and flies visibly.
+  The drop itself has never fired (Defect B below).
+- **Aircraft recipe (the hard-won part)**: parked airborne template off-map +
+  `actor_to_waypoint` + `{clone}` + `{approach "safe teleport & rotate"}` to a
+  NUMERIC waypoint whose own `{commands}` block re-tags the arriving clone.
+  This is vanilla's own dcg airstrike mechanism (dcg_hills) and Indomitus's.
+  Fixed-wing park block: `{Chassis "airborne" {AirborneMode 1}{Altitude N}}` +
+  `{ChassisManager {Current "airborne"}}` + `{DisableObstacles}`. Helicopter
+  chassis keeps `{Airborne}{EngineStarted}` (1523-vs-58 census, zero overlap).
+- **CRITICAL — numeric waypoint ids are a small engine id space, not labels.**
+  The 9101–9104 band hard-crashed maps at load
+  (`APP_ERROR: Can't use waypoint id, it already used`, eHelperWaypoint.cpp:55).
+  Highest numeric waypoint name across 1035 shipped .mi files is 1000. Current
+  band: **21/22 entry a/b, 23/24 exit a/b**. Keep any new numeric waypoint
+  two-digit and collision-swept.
+
+## In flight at handoff time
+
+An Opus agent was mid-pass on Defects A–D (uncommitted edits to
+`attack_support_waves.inc`, `test_e2_airmobile.py`,
+`deploy_attack_support_probe.ps1` are its work). If those got committed after
+`9caa7c2`, read that commit's message; otherwise finish or redo:
+
+- **A — helo passengers emit as player 0** (white minimap dots, false fail 11).
+  Tag pax at emit (`{"emit" {crew {tag …}}}`), literal 1–16 player switch on
+  the tag, orders, and key the landed-evidence check on that tag.
+  **REQUIREMENT CHANGE (user, binding): the helicopter must LAND at the LZ,
+  disembark on the ground, take off, exit — hover-emit is rejected.** Vanilla
+  precedent: conquest helicopter transport call-ins + Gostomel heli inserts on
+  the same Mi-8 airframes. Extract the real mechanism from shipped sources
+  (air_state altitude-to-0, landing effect receiver, or whatever the purchase
+  call-in fires) — never guess.
+- **B — para release never arms + dishonest success.** `e2_para_band`/`pass`
+  stayed 0 through a long visible overflight; stage walked 60→70 with fail 0
+  and no drop. Fix the band/position reference, evidence-gate stages 60/70
+  (fail 6/7 must fire when no drop happened), route exit off-map before delete.
+  The drop must be `{effect drop_paratrooper}` invoked the way the vanilla
+  conquest paradrop call-in invokes it — literal parachutes (user requirement).
+- **C — motor packages 2–4 never board** (loose pax stand at spawn; truck
+  drives off; "troops chasing truck"). Convert packages 2–4 to the proven
+  package-1 pattern: Link-bake pax into seats (all four hulls have ≥10
+  passenger places; fmtv has no seat12 bone; shaanxi place group is
+  `passengers` plural with bones offset by one — see Task A census in
+  2026-07-30 plan doc). Also rotate truck placement toward the objective.
+- **D — motor band metric always 0** even on perfect drives (after the
+  600/1500/4000 decimetre fix). Fix the reference or replace the metric.
+
+## Parked (do not touch without user say-so)
+
+- Woodland crash (was the 910x id collision — likely resolved by the 21–24
+  resweep, but woodland has NOT been proven to load since; prove it).
+- Blackhawk instantiation (fail 13/14/9 discriminate).
+- Red-star livery on NATO's Mi-17 (cosmetic).
+- E2 production roll: committed source keeps `support_e2_test$ = 0`; testing
+  uses `deploy -E2TestMode 3` (sequential combo). Plain deploy restores 0.
+- Flag emplacement crewing (user parked it).
+
+## Process (user directives, standing)
+
+- Opus subagents write all code; the main agent diagnoses, reviews, verifies
+  (commits are re-verified: pytest re-run, deploy re-run for idempotency).
+- The user's eyes outrank any script state: a stage/status variable is NOT
+  evidence an aircraft or truck did anything. Never suggest the user failed to
+  notice something. Telemetry lives in `game.log` as `CODEX_ATTACK_SUPPORT`
+  mirror lines (e2 stage/fail/band/pass, per-engine motor stage/drive_t/band).
+- Log path: `%LOCALAPPDATA%\digitalmindsoft\gates of hell\log\game.log`.
+- Deployed copy: `E:\Steam\steamapps\workshop\content\400750\3636883799`
+  (never edit directly; `tools\deploy_attack_support_probe.ps1` only).
+- Test suite baseline at `9caa7c2`: 263 passed / 1448 subtests.
