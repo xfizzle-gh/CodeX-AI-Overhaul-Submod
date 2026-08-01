@@ -31,7 +31,7 @@ if ($LASTEXITCODE -ne 0) {
 $sourceDeploy = Join-Path $RepoRoot "tools\deploy_attack_support_probe.ps1"
 $timingOverlay = Join-Path $RepoRoot "tools\apply_known_good_motor_30s_test.py"
 $placementOverlay = Join-Path $RepoRoot "tools\apply_motor_visible_package_overlay.py"
-$dismountOverlay = Join-Path $RepoRoot "tools\apply_motor_dismount_35s_overlay.py"
+$lifecycleOverlay = Join-Path $RepoRoot "tools\apply_motor_lifecycle_tuning_overlay.py"
 if (-not (Test-Path -LiteralPath $sourceDeploy)) {
     throw "Missing trusted deployer: $sourceDeploy"
 }
@@ -41,8 +41,8 @@ if (-not (Test-Path -LiteralPath $timingOverlay)) {
 if (-not (Test-Path -LiteralPath $placementOverlay)) {
     throw "Missing base-entry package placement overlay: $placementOverlay"
 }
-if (-not (Test-Path -LiteralPath $dismountOverlay)) {
-    throw "Missing 35-second dismount overlay: $dismountOverlay"
+if (-not (Test-Path -LiteralPath $lifecycleOverlay)) {
+    throw "Missing final motor lifecycle overlay: $lifecycleOverlay"
 }
 
 # The trusted e74ef6e deployer pins its historical experiment branch. Run an
@@ -80,9 +80,9 @@ if ($LASTEXITCODE -ne 0) {
 if ($LASTEXITCODE -ne 0) {
     throw "The base-entry package placement overlay failed with exit code $LASTEXITCODE."
 }
-& python $dismountOverlay --multi-root $multiRoot
+& python $lifecycleOverlay --multi-root $multiRoot
 if ($LASTEXITCODE -ne 0) {
-    throw "The 35-second motor dismount overlay failed with exit code $LASTEXITCODE."
+    throw "The final motor lifecycle overlay failed with exit code $LASTEXITCODE."
 }
 
 & python $timingOverlay --multi-root $multiRoot --check
@@ -93,9 +93,9 @@ if ($LASTEXITCODE -ne 0) {
 if ($LASTEXITCODE -ne 0) {
     throw "The deployed base-entry package placement overlay did not validate."
 }
-& python $dismountOverlay --multi-root $multiRoot --check
+& python $lifecycleOverlay --multi-root $multiRoot --check
 if ($LASTEXITCODE -ne 0) {
-    throw "The deployed 35-second motor dismount overlay did not validate."
+    throw "The deployed final motor lifecycle overlay did not validate."
 }
 
 $manifest = Join-Path $WorkshopRoot "known_good_motor_30s_test.txt"
@@ -107,7 +107,9 @@ $manifest = Join-Path $WorkshopRoot "known_good_motor_30s_test.txt"
     "truck_count_per_active_motor_path=1"
     "motor_package_placement=whole_linked_package"
     "motor_spawn_waypoint=base_entry_centroid"
-    "motor_passenger_dismount=35s_after_drive_order"
+    "motor_passenger_dismount=45s_after_drive_order"
+    "motor_withdrawal=return_to_original_base_entry"
+    "motor_cleanup=90s_after_dismount"
     "off_map_rear_pads=disabled_for_motor"
     "recurring_motor_scheduler=disabled_by_consumed_budget"
     "attack_helicopter_test=off"
@@ -118,4 +120,4 @@ Write-Host "Known-good motor test deployed."
 Write-Host "  Branch:   $ExpectedBranch"
 Write-Host "  Baseline: $BaselineCommit"
 Write-Host "  Workshop: $WorkshopRoot"
-Write-Host "  Result:   one linked truck at +30 seconds; passengers dismount after 35 seconds of travel"
+Write-Host "  Result:   one linked truck at +30s; dismount at 45s; return to base entry; cleanup after 90s"
