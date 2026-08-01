@@ -40,7 +40,7 @@ The active transport paths do not use timer-driven passenger emit, fixed 60- or 
 
 ## CI checkpoint
 
-The four-engine/four-faction generator, contact gate, linked packages, waypoint idempotency, all fourteen real map layouts, and Windows PowerShell 5.1 deployment wrapper passed at `d4f9b7c6517d934ede7f4189783d90d807f1bf04`. Later commits only document the same runtime build.
+The four-engine/four-faction generator, contact gate, linked packages, waypoint idempotency, all fourteen real map layouts, and Windows PowerShell 5.1 deployment wrapper passed at `d4f9b7c6517d934ede7f4189783d90d807f1bf04`. Later commits only changed documentation.
 
 ## Deployment
 
