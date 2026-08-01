@@ -68,9 +68,15 @@ jobs:
           '''
           source = source[:start] + replacement + source[end:]
 
-          diagnostic = source.index("Engine marker not found")
           print("BEGIN PATCH_ENGINE DIAGNOSTIC")
-          print(source[max(0, diagnostic - 1800):diagnostic + 400])
+          lines = source.splitlines()
+          for index, line in enumerate(lines):
+              lower = line.lower()
+              if "patch_engine" in lower or "marker" in lower or "finish_motor" in lower:
+                  lo = max(0, index - 3)
+                  hi = min(len(lines), index + 5)
+                  print(f"--- lines {lo + 1}-{hi} ---")
+                  print("\n".join(f"{n + 1}: {lines[n]}" for n in range(lo, hi)))
           print("END PATCH_ENGINE DIAGNOSTIC")
 
           compile(source, ".git/decoupled_motor_runtime.py", "exec")
