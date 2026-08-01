@@ -6,7 +6,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$ExpectedBranch = "feature/canonical-motor-all-quadrants"
+$ExpectedBranch = "fix/motor-linked-seat-regression"
 $SourceBranch = "experiment/attack-mate-slot-proof"
 
 $ScriptDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -27,11 +27,15 @@ if ($branch -ne $ExpectedBranch) {
 
 $baseDeployer = Join-Path $RepoRoot "tools\deploy_attack_support_probe.ps1"
 $overlay = Join-Path $RepoRoot "tools\apply_canonical_motor_production_overlay.py"
+$seatHotfix = Join-Path $RepoRoot "tools\apply_motor_linked_seat_hotfix.py"
 if (-not (Test-Path -LiteralPath $baseDeployer)) {
     throw "Missing base support deployer: $baseDeployer"
 }
 if (-not (Test-Path -LiteralPath $overlay)) {
     throw "Missing canonical motor overlay: $overlay"
+}
+if (-not (Test-Path -LiteralPath $seatHotfix)) {
+    throw "Missing linked-seat motor hotfix: $seatHotfix"
 }
 
 # Reuse the current four-engine deployer exactly, changing only its historical
@@ -59,13 +63,26 @@ try {
     Remove-Item -LiteralPath $tempDeployer -Force -ErrorAction SilentlyContinue
 }
 
+# First build and validate the four-engine production cadence/lifecycle exactly as
+# PR #71 defines it. Then apply the runtime seat hotfix LAST: the production overlay
+# rewrites its placement macros, so running it after the hotfix would reintroduce the
+# full-deploy selector that teleports linked occupants independently.
 & python $overlay --root $WorkshopRoot
 if ($LASTEXITCODE -ne 0) {
     throw "Canonical motor production overlay failed with exit code $LASTEXITCODE."
 }
 & python $overlay --root $WorkshopRoot --check
 if ($LASTEXITCODE -ne 0) {
-    throw "Canonical motor production deployment did not validate."
+    throw "Canonical motor production deployment did not validate before seat hotfix."
+}
+
+& python $seatHotfix --root $WorkshopRoot
+if ($LASTEXITCODE -ne 0) {
+    throw "Linked-seat motor hotfix failed with exit code $LASTEXITCODE."
+}
+& python $seatHotfix --root $WorkshopRoot --check
+if ($LASTEXITCODE -ne 0) {
+    throw "Linked-seat motor deployment did not validate."
 }
 
 $manifest = Join-Path $WorkshopRoot "canonical_motor_production.txt"
@@ -78,14 +95,19 @@ $manifest = Join-Path $WorkshopRoot "canonical_motor_production.txt"
     "recurring_dispatch_seconds=180|240|300"
     "ride_before_dismount_seconds=60"
     "post_dismount_cleanup_seconds=90"
-    "placement=whole_linked_package_at_base_entry"
+    "package_claim=full_linked_hull_crew_passengers"
+    "placement=hull_only_at_base_entry_links_carry_occupants"
+    "pre_drive_actor_state=hull_only"
+    "cab_crew=driver_and_commander_remain_linked"
+    "passenger_ai=post_emit_only"
     "withdrawal=return_to_original_base_entry"
 ) | Set-Content -LiteralPath $manifest -Encoding UTF8
 
 Write-Host ""
-Write-Host "Canonical motor production build deployed."
+Write-Host "Canonical motor linked-seat hotfix deployed."
 Write-Host "  Branch:      $ExpectedBranch"
 Write-Host "  Workshop:    $WorkshopRoot"
 Write-Host "  Coverage:    both sides, four factions, all four support scenarios"
 Write-Host "  Cadence:     first truck +30s; subsequent trucks at random 180/240/300s"
 Write-Host "  Lifecycle:   60s ride; passenger-only dismount; return; 90s cleanup"
+Write-Host "  Seat fix:    hull-only placement and pre-drive AI; linked cab/cargo preserved"
