@@ -43,7 +43,7 @@ if (-not $wrapperText.Contains($oldBranch)) {
 }
 $wrapperText = $wrapperText.Replace($oldBranch, $ExpectedBranch)
 $tempWrapper = Join-Path $ScriptDirectory "deploy_motor_drive_exit_base.generated.ps1"
-[System.IO.File]::WriteAllText($tempWrapper, $wrapperText, [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllText($tempWrapper, $wrapperText, [System.Text.UTF8Encoding]::new($true))
 try {
     & powershell -ExecutionPolicy Bypass -File $tempWrapper -RepoRoot $RepoRoot -WorkshopRoot $WorkshopRoot
     if ($LASTEXITCODE -ne 0) { throw "Friendly-defender Stage-2 deployment failed with exit code $LASTEXITCODE." }
