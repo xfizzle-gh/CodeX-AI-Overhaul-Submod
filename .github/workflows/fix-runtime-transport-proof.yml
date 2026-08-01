@@ -45,10 +45,23 @@ jobs:
           python -m pytest tests/test_attack_support_slot_proof.py tests/test_enemy_defense_support.py tests/test_defense_mission_support.py -q -k 'motor or linked or package or flank or deploy or air_test or placement'
 
       - name: Run hosted-compatible repository suite
+        shell: bash
         run: |
-          python -m pytest tests/ -q \
+          set +e
+          python -m pytest tests/ -q -x --tb=short \
             --deselect=tests/test_attack_support_slot_proof.py::AttackSupportSlotProofTests::test_wave_pool_is_deep_enough_for_the_level_budget \
-            --deselect=tests/test_enemy_defense_support.py::EnemyDefenseSupportTests::test_pool_parks_four_faction_pools_deep_enough_for_the_budget
+            --deselect=tests/test_enemy_defense_support.py::EnemyDefenseSupportTests::test_pool_parks_four_faction_pools_deep_enough_for_the_budget \
+            2>&1 | tee full-suite.log
+          status=${PIPESTATUS[0]}
+          exit $status
+
+      - name: Upload full-suite log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-transport-full-suite
+          path: full-suite.log
+          if-no-files-found: error
 
       - name: Publish clean repair
         shell: bash
