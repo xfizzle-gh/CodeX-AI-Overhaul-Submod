@@ -5,7 +5,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $ExpectedBranch = "experiment/defense-transport-control-comparison"
-$ComparisonBase = "2e095596ada5ddc9d51b6fa2f28fe22ba1bf34cb"
+$ValidatedBaseline = "b182a28c7675bd70b084970c4a685fac628d975f"
 
 $ScriptDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
@@ -23,30 +23,29 @@ if ($branch -ne $ExpectedBranch) {
     throw "Wrong source branch '$branch'. Switch to '$ExpectedBranch', pull origin, and run again."
 }
 
-& git -C $RepoRoot merge-base --is-ancestor $ComparisonBase HEAD
+& git -C $RepoRoot merge-base --is-ancestor $ValidatedBaseline HEAD
 if ($LASTEXITCODE -ne 0) {
-    throw "This branch is not descended from tested transport correction $ComparisonBase."
+    throw "This branch is not descended from runtime-validated baseline $ValidatedBaseline."
 }
 
-$baseWrapper = Join-Path $RepoRoot "tools\deploy_motor_drive_origin_exit_fixed.ps1"
-$comparison = Join-Path $RepoRoot "tools\apply_transport_control_comparison_fixed.py"
-if (-not (Test-Path -LiteralPath $baseWrapper)) {
-    throw "Missing scripted transport deployer: $baseWrapper"
+$stage2Wrapper = Join-Path $RepoRoot "tools\deploy_friendly_defender_motor_one_shot.ps1"
+$normalOnly = Join-Path $RepoRoot "tools\apply_normal_transport_only.py"
+if (-not (Test-Path -LiteralPath $stage2Wrapper)) {
+    throw "Missing defender transport helper deployment: $stage2Wrapper"
 }
-if (-not (Test-Path -LiteralPath $comparison)) {
-    throw "Missing normal transport comparison overlay: $comparison"
+if (-not (Test-Path -LiteralPath $normalOnly)) {
+    throw "Missing normal transport-only overlay: $normalOnly"
 }
 
-# Rebuild the tested scripted stack first. The temporary copy changes only its
-# branch assertion; all source paths resolve against this experiment branch, so
-# the current turnaround-first and infantry-reassert overlay is deployed.
-$wrapperText = [System.IO.File]::ReadAllText($baseWrapper)
-$oldBranch = "fix/enemy-motor-drive-origin-exit"
+# Build the validated linked-package base and defender-side placement/ownership
+# helpers. The normal-only overlay then removes both timer-driven dispatches.
+$wrapperText = [System.IO.File]::ReadAllText($stage2Wrapper)
+$oldBranch = "feature/motor-friendly-defender-one-shot"
 if (-not $wrapperText.Contains($oldBranch)) {
-    throw "Base wrapper branch assertion was not found; refusing to approximate deployment."
+    throw "Stage-2 branch assertion was not found; refusing to approximate deployment."
 }
 $wrapperText = $wrapperText.Replace($oldBranch, $ExpectedBranch)
-$tempWrapper = Join-Path $ScriptDirectory "deploy_transport_comparison_base.generated.ps1"
+$tempWrapper = Join-Path $ScriptDirectory "deploy_normal_transport_base.generated.ps1"
 [System.IO.File]::WriteAllText(
     $tempWrapper,
     $wrapperText,
@@ -58,50 +57,50 @@ try {
         -RepoRoot $RepoRoot `
         -WorkshopRoot $WorkshopRoot
     if ($LASTEXITCODE -ne 0) {
-        throw "Scripted transport stack failed with exit code $LASTEXITCODE."
+        throw "Linked transport base deployment failed with exit code $LASTEXITCODE."
     }
 } finally {
     Remove-Item -LiteralPath $tempWrapper -Force -ErrorAction SilentlyContinue
 }
 
-# Add one independent normal-combat transport for each side. These controls have
-# no scripted emit, turnaround, withdrawal, or cleanup. They receive one normal
-# advance order toward a flag and remain under ordinary AI behavior.
-& python $comparison --root $WorkshopRoot
+# Replace the experiment with exactly two ordinary AI combat transports:
+# one friendly NATO FMTV and one enemy Russian Ural. No scripted dismount,
+# turnaround, return-to-edge, deletion, or cleanup remains active.
+& python $normalOnly --root $WorkshopRoot
 if ($LASTEXITCODE -ne 0) {
-    throw "Normal transport comparison overlay failed with exit code $LASTEXITCODE."
+    throw "Normal transport-only overlay failed with exit code $LASTEXITCODE."
 }
-& python $comparison --root $WorkshopRoot --check
+& python $normalOnly --root $WorkshopRoot --check
 if ($LASTEXITCODE -ne 0) {
-    throw "Normal transport comparison overlay did not validate."
+    throw "Normal transport-only deployment did not validate."
 }
 
-$manifest = Join-Path $WorkshopRoot "transport_control_comparison.txt"
+$manifest = Join-Path $WorkshopRoot "normal_transport_only.txt"
 @(
     "branch=$ExpectedBranch"
-    "stacked_on=$ComparisonBase"
+    "validated_baseline=$ValidatedBaseline"
     "test_mission=player_defense"
     "required_matchup=friendly_nato_vs_enemy_rusa"
-    "scripted_friendly_spawn_seconds=30"
-    "scripted_enemy_spawn_seconds=15"
-    "scripted_turnaround_seconds=75"
-    "scripted_turn_before_emit=true"
-    "scripted_stop_dwell_seconds=1"
-    "scripted_passenger_emit=passengers_only"
-    "scripted_infantry_order_reasserted_after_hull_exit=true"
-    "control_friendly_vehicle=fmtv"
-    "control_enemy_vehicle=ural"
-    "control_spawn_seconds=45"
-    "control_order=single_advance_to_active_flag"
-    "control_scripted_emit=false"
-    "control_scripted_return=false"
-    "control_scripted_cleanup=false"
+    "active_transport_count=2"
+    "friendly_transport=fmtv"
+    "enemy_transport=ural"
+    "spawn_seconds=45"
+    "order=single_advance_to_active_flag"
+    "passengers=linked_and_seated"
+    "dismount=engine_controlled"
+    "scripted_emit=false"
+    "scripted_turnaround=false"
+    "scripted_return=false"
+    "scripted_delete=false"
+    "scripted_cleanup=false"
+    "enemy_scripted_motor_budget=0"
 ) | Set-Content -LiteralPath $manifest -Encoding UTF8
 
 Write-Host ""
-Write-Host "Transport comparison deployed."
-Write-Host "  Mission:          PLAYER DEFENSE - NATO versus RUSSIA"
-Write-Host "  Scripted trucks:  turn at 75s, pause, dismount, return; infantry attack reasserted"
-Write-Host "  Control trucks:   NATO FMTV + Russian Ural at +45s"
-Write-Host "  Control behavior: one normal advance order; no scripted dismount or return"
-Write-Host "  Expected total:   two NATO trucks and two Russian trucks"
+Write-Host "Normal transport-only test deployed."
+Write-Host "  Mission:     PLAYER DEFENSE - NATO versus RUSSIA"
+Write-Host "  Friendly:    one loaded NATO FMTV"
+Write-Host "  Enemy:       one loaded Russian Ural"
+Write-Host "  Behavior:    ordinary AI advance; engine-controlled dismount under fire"
+Write-Host "  Removed:     timed emit, forced turnaround, return-to-edge, deletion, cleanup"
+Write-Host "  Total:       exactly two transport trucks"
