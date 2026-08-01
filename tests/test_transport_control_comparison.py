@@ -36,8 +36,8 @@ correction = load_module(
     ROOT / "tools" / "apply_motor_drive_origin_exit_fixed.py",
 )
 tuning = load_module(
-    "defense_motor_turn_compare_test",
-    ROOT / "tools" / "apply_defense_motor_75s.py",
+    "defense_motor_turnaround_compare_test",
+    ROOT / "tools" / "apply_defense_motor_turnaround.py",
 )
 comparison = load_module(
     "transport_control_comparison_test",
@@ -79,17 +79,9 @@ class TransportControlComparisonTests(unittest.TestCase):
         text = self.text(
             "defense_support_waves.inc" if friendly else "enemy_attack_support.inc"
         )
-        begin = (
-            comparison.FRIEND_SECTION_BEGIN
-            if friendly
-            else comparison.ENEMY_SECTION_BEGIN
-        )
-        end = (
-            comparison.FRIEND_SECTION_END
-            if friendly
-            else comparison.ENEMY_SECTION_END
-        )
-        bounds = comparison.marked_section(text, begin, end)
+        begin = comparison.FRIEND_BEGIN if friendly else comparison.ENEMY_BEGIN
+        end = comparison.FRIEND_END if friendly else comparison.ENEMY_END
+        bounds = comparison.marked_bounds(text, begin, end)
         assert bounds
         return text[bounds[0] : bounds[1]]
 
@@ -109,8 +101,8 @@ class TransportControlComparisonTests(unittest.TestCase):
         templates = self.text("faction_support_templates.inc")
         self.assertEqual(templates.count('{Entity "fmtv" 0xb500'), 1)
         self.assertEqual(templates.count('{Entity "ural" 0xb510'), 1)
-        self.assertEqual(templates.count(comparison.TEMPLATE_PACKAGE_BEGIN), 1)
-        self.assertEqual(templates.count(comparison.TEMPLATE_TAG_BEGIN), 1)
+        self.assertEqual(templates.count(comparison.PACKAGE_BEGIN), 1)
+        self.assertEqual(templates.count(comparison.TAG_BEGIN), 1)
         self.assertEqual(templates.count('{MID 9900}'), 1)
         self.assertEqual(templates.count('{MID 9910}'), 1)
         self.assertEqual(templates.count('{MID 9920}'), 1)
@@ -143,15 +135,21 @@ class TransportControlComparisonTests(unittest.TestCase):
         friendly = self.control_block(friendly=True)
         enemy = self.control_block(friendly=False)
 
-        self.assertIn('{var "faction_support_army$"} {op "=="} {value 3}', friendly)
+        self.assertIn(
+            '{var "faction_support_army$"} {op "=="} {value 3}',
+            friendly,
+        )
         self.assertIn('{var "id_defenderbot$"} {op ">"} {value 0}', friendly)
-        self.assertIn('(“ds_own_to_defenderbot”)'.replace('“', '"').replace('”', '"'), friendly)
-        self.assertIn('(“ds_place_motor_visible”)'.replace('“', '"').replace('”', '"'), friendly)
+        self.assertIn('("ds_own_to_defenderbot")', friendly)
+        self.assertIn('("ds_place_motor_visible")', friendly)
 
-        self.assertIn('{var "enemy_attack_army$"} {op "=="} {value 1}', enemy)
+        self.assertIn(
+            '{var "enemy_attack_army$"} {op "=="} {value 1}',
+            enemy,
+        )
         self.assertIn('{var "id_1st_enemy$"} {op ">"} {value 0}', enemy)
-        self.assertIn('(“ea_own_to_enemy”)'.replace('“', '"').replace('”', '"'), enemy)
-        self.assertIn('(“ea_place_motor_visible”)'.replace('“', '"').replace('”', '"'), enemy)
+        self.assertIn('("ea_own_to_enemy")', enemy)
+        self.assertIn('("ea_place_motor_visible")', enemy)
 
     def test_scripted_transport_paths_remain_present_beside_controls(self) -> None:
         comparison.apply(self.root)
