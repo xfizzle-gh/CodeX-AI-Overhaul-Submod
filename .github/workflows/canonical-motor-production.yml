@@ -8,17 +8,21 @@ on:
     paths:
       - tools/apply_canonical_motor_production_overlay.py
       - tools/apply_motor_linked_seat_hotfix.py
+      - tools/apply_motor_entry_waypoint_hotfix.py
       - tools/deploy_canonical_motor_production.ps1
       - tests/test_canonical_motor_production_overlay.py
       - tests/test_motor_linked_seat_hotfix.py
+      - tests/test_motor_entry_waypoint_hotfix.py
       - .github/workflows/canonical-motor-production.yml
   pull_request:
     paths:
       - tools/apply_canonical_motor_production_overlay.py
       - tools/apply_motor_linked_seat_hotfix.py
+      - tools/apply_motor_entry_waypoint_hotfix.py
       - tools/deploy_canonical_motor_production.ps1
       - tests/test_canonical_motor_production_overlay.py
       - tests/test_motor_linked_seat_hotfix.py
+      - tests/test_motor_entry_waypoint_hotfix.py
       - .github/workflows/canonical-motor-production.yml
 
 jobs:
@@ -35,10 +39,13 @@ jobs:
         run: |
           python -m py_compile tools/apply_canonical_motor_production_overlay.py
           python -m py_compile tools/apply_motor_linked_seat_hotfix.py
+          python -m py_compile tools/apply_motor_entry_waypoint_hotfix.py
       - name: Validate production transform
         run: python -m unittest tests/test_canonical_motor_production_overlay.py
-      - name: Validate linked seats across all four engines
+      - name: Validate linked seats and isolated motor dispatch
         run: python -m unittest tests/test_motor_linked_seat_hotfix.py
+      - name: Validate numbered motor placement pads
+        run: python -m unittest tests/test_motor_entry_waypoint_hotfix.py
 
   powershell:
     runs-on: windows-latest
