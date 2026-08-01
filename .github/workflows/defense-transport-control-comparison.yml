@@ -6,6 +6,7 @@ on:
       - experiment/defense-transport-control-comparison
     paths:
       - tools/apply_four_quadrant_transport_patrol.py
+      - tools/apply_four_quadrant_transport_patrol_fixed.py
       - tools/apply_transport_flag_perimeter_waypoints.py
       - tools/deploy_known_good_motor_30s_test.ps1
       - tools/deploy_runtime_proven_motor_60s.ps1
@@ -16,6 +17,7 @@ on:
   pull_request:
     paths:
       - tools/apply_four_quadrant_transport_patrol.py
+      - tools/apply_four_quadrant_transport_patrol_fixed.py
       - tools/apply_transport_flag_perimeter_waypoints.py
       - tools/deploy_known_good_motor_30s_test.ps1
       - tools/deploy_runtime_proven_motor_60s.ps1
@@ -34,10 +36,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Compile transport and waypoint overlays
+      - name: Compile corrected transport and waypoint entry points
         run: |
-          python -m py_compile tools/apply_four_quadrant_transport_patrol.py
+          python -m py_compile tools/apply_four_quadrant_transport_patrol_fixed.py
           python -m py_compile tools/apply_transport_flag_perimeter_waypoints.py
+      - name: Load corrected four-quadrant generator
+        run: |
+          python -c "import importlib.util, pathlib, sys; p=pathlib.Path('tools/apply_four_quadrant_transport_patrol_fixed.py'); s=importlib.util.spec_from_file_location('fourq_ci', p); m=importlib.util.module_from_spec(s); sys.modules[s.name]=m; s.loader.exec_module(m)"
       - name: Validate four engines, four factions, patrol contact gate, and map geometry
         run: python -m unittest tests/test_four_quadrant_transport_patrol.py
 
