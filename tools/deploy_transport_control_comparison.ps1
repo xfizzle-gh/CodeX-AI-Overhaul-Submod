@@ -50,7 +50,7 @@ $tempWrapper = Join-Path $ScriptDirectory "deploy_transport_comparison_base.gene
 [System.IO.File]::WriteAllText(
     $tempWrapper,
     $wrapperText,
-    [System.Text.UTF8Encoding]::new($false)
+    [System.Text.UTF8Encoding]::new($true)
 )
 
 try {
@@ -100,7 +100,7 @@ $manifest = Join-Path $WorkshopRoot "transport_control_comparison.txt"
 
 Write-Host ""
 Write-Host "Transport comparison deployed."
-Write-Host "  Mission:          PLAYER DEFENSE — NATO versus RUSSIA"
+Write-Host "  Mission:          PLAYER DEFENSE - NATO versus RUSSIA"
 Write-Host "  Scripted trucks:  turn at 75s, pause, dismount, return; infantry attack reasserted"
 Write-Host "  Control trucks:   NATO FMTV + Russian Ural at +45s"
 Write-Host "  Control behavior: one normal advance order; no scripted dismount or return"
