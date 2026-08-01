@@ -67,6 +67,14 @@ jobs:
 
           '''
           source = source[:start] + replacement + source[end:]
+
+          # The branch restored an older live-tested comment above each finisher.
+          # Locate the finisher by define name instead of pinning that comment text.
+          fn = source.index("def patch_engine(")
+          needle = "    start = text.index(marker)\n"
+          pos = source.index(needle, fn)
+          source = source[:pos] + '    marker = f\'(define "{prefix}_finish_motor"\'\n' + source[pos:]
+
           compile(source, ".git/decoupled_motor_runtime.py", "exec")
           (root / ".git" / "decoupled_motor_runtime.py").write_text(source, encoding="utf-8")
           PY
