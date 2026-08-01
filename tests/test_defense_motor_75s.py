@@ -36,8 +36,8 @@ correction = load_module(
     ROOT / "tools" / "apply_motor_drive_origin_exit_fixed.py",
 )
 tuning = load_module(
-    "defense_motor_75s",
-    ROOT / "tools" / "apply_defense_motor_75s.py",
+    "defense_motor_75s_fixed",
+    ROOT / "tools" / "apply_defense_motor_75s_fixed.py",
 )
 
 FILES = (
@@ -118,15 +118,13 @@ class DefenseMotor75SecondTests(unittest.TestCase):
             drive_at = block.find('{action advance}')
             emit_at = block.find('{"emit"')
             release_at = block.find(tuning.RELEASE_MARKER)
-            pax_advance_at = block.find(
-                f'{{selector {{ignore_captured_by_user 0}} {{tag {pax}}}}}',
-                release_at + 1,
-            )
+            pax_advance_at = block.find('{action advance}', release_at)
             self.assertLess(hold_at, drive_at)
             self.assertLess(emit_at, release_at)
             self.assertLess(release_at, pax_advance_at)
             self.assertIn('{ai_move {mode disable}}', block[hold_at:drive_at])
             self.assertIn('{ai_move {mode enable}}', block[release_at:pax_advance_at])
+            self.assertIn(f'{{tag {pax}}}', block[release_at:pax_advance_at])
 
     def test_empty_hulls_resume_normal_speed_before_origin_exit(self) -> None:
         tuning.apply(self.root)
