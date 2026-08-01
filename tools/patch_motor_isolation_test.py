@@ -1,5 +1,6 @@
 from pathlib import Path
 
+# Rerun the repair after replacing the four retired flank-contract assertions.
 path = Path("tests/test_motor_runtime_isolation.py")
 text = path.read_text(encoding="utf-8")
 old = "        assert f'{selector {ignore_captured_by_user 0} {tag {deploy}}}' not in body"
