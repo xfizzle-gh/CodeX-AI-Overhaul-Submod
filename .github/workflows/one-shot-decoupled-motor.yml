@@ -73,12 +73,77 @@ jobs:
           source = source[:start] + replacement + source[end:]
 
           main_pos = source.index("def main(")
-          overrides = '''ENGINE_PREFIXES = {
+          overrides = r'''ENGINE_PREFIXES = {
               "resource/map/multi/attack_support_waves.inc": "as",
               "resource/map/multi/defense_support_waves.inc": "ds",
               "resource/map/multi/enemy_attack_support.inc": "ea",
               "resource/map/multi/enemy_defense_support.inc": "ed",
           }
+
+          def finalize_decoupled_template() -> None:
+              path = ROOT / "resource/map/multi/faction_support_templates.inc"
+              text = path.read_text(encoding="utf-8")
+              link_re = re.compile(
+                  r'(?m)^[ \t]*\{Link\s+(?P<body>0x[0-9a-fA-F]+)\s+'
+                  r'\{(?P<hull>0x[0-9a-fA-F]+)\s+"(?P<slot>[^"]+)"\}\}[ \t]*\n?'
+              )
+              commander_ids: set[str] = set()
+
+              def is_motor(body: int, hull: int) -> bool:
+                  base = 0xB3A0 <= hull <= 0xB3CB and 0xB3A0 <= body <= 0xB3CB
+                  topup = 0xC100 <= hull <= 0xC153 and 0xC100 <= body <= 0xC153
+                  return base or topup
+
+              def rewrite_link(match: re.Match[str]) -> str:
+                  body = int(match.group("body"), 16)
+                  hull = int(match.group("hull"), 16)
+                  if not is_motor(body, hull):
+                      return match.group(0)
+                  if match.group("slot") == "driver":
+                      return match.group(0)
+                  if match.group("slot") == "commander":
+                      commander_ids.add(match.group("body").lower())
+                  return ""
+
+              text = link_re.sub(rewrite_link, text)
+              package_crew_re = re.compile(
+                  r'\s*"(?:ally_sup_(?:rusa|ukr|nato|prc)_p[1-4]_crew|'
+                  r'ally_sup_(?:rusa|ukr|nato|prc)_motor_crew|sup_linked)"'
+              )
+              lines: list[str] = []
+              for line in text.splitlines(keepends=True):
+                  ids = re.findall(r"0x[0-9a-fA-F]+", line)
+                  entity_id = ids[-1].lower() if ids else ""
+                  if "{Tags " in line and entity_id in commander_ids:
+                      line = package_crew_re.sub("", line)
+                  elif "{Tags " in line and re.search(
+                      r'ally_sup_(?:rusa|ukr|nato|prc)_p[1-4]_pax', line
+                  ):
+                      line = re.sub(r'\s*"sup_linked"', "", line)
+                  lines.append(line)
+              text = "".join(lines)
+
+              motor_links: list[tuple[int, int, str]] = []
+              for body_raw, hull_raw, slot in re.findall(
+                  r'\{Link\s+(0x[0-9a-fA-F]+)\s+'
+                  r'\{(0x[0-9a-fA-F]+)\s+"([^"]+)"\}\}',
+                  text,
+              ):
+                  body = int(body_raw, 16)
+                  hull = int(hull_raw, 16)
+                  if is_motor(body, hull):
+                      motor_links.append((body, hull, slot))
+              if len(motor_links) != 16:
+                  raise RuntimeError(
+                      f"Expected 16 motor driver links, found {len(motor_links)}"
+                  )
+              if any(slot != "driver" for _, _, slot in motor_links):
+                  raise RuntimeError("A motor package still has a non-driver link")
+              if len({hull for _, hull, _ in motor_links}) != 16:
+                  raise RuntimeError("Motor links do not identify 16 unique trucks")
+
+              path.write_text(text, encoding="utf-8")
+              print("Template finalization complete: 16 driver-only motor packages.")
 
           def restore_decoupled_tests() -> None:
               fixtures = {
@@ -92,11 +157,21 @@ jobs:
 
           '''
           source = source[:main_pos] + overrides + source[main_pos:]
-          needle = "    patch_tests()\n"
-          if needle not in source:
+
+          template_call = "    patch_template()\n"
+          if template_call not in source:
+              raise RuntimeError("Could not locate patch_template call")
+          source = source.replace(
+              template_call,
+              "    patch_template()\n    finalize_decoupled_template()\n",
+              1,
+          )
+
+          test_call = "    patch_tests()\n"
+          if test_call not in source:
               raise RuntimeError("Could not locate patch_tests call")
           source = source.replace(
-              needle,
+              test_call,
               "    patch_tests()\n    restore_decoupled_tests()\n",
               1,
           )
