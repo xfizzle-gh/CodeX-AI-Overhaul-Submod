@@ -7,6 +7,7 @@ on:
     paths:
       - tools/apply_motor_drive_origin_exit_fixed.py
       - tools/apply_defense_motor_75s.py
+      - tools/apply_defense_motor_75s_fixed.py
       - tools/deploy_motor_drive_origin_exit_fixed.ps1
       - tests/test_motor_drive_origin_exit_fixed.py
       - tests/test_defense_motor_75s.py
@@ -15,6 +16,7 @@ on:
     paths:
       - tools/apply_motor_drive_origin_exit_fixed.py
       - tools/apply_defense_motor_75s.py
+      - tools/apply_defense_motor_75s_fixed.py
       - tools/deploy_motor_drive_origin_exit_fixed.ps1
       - tests/test_motor_drive_origin_exit_fixed.py
       - tests/test_defense_motor_75s.py
@@ -30,12 +32,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Compile correction and 75-second timing overlay
+      - name: Compile movement and stop-and-dismount overlays
         run: |
           python -m py_compile tools/apply_motor_drive_origin_exit.py
           python -m py_compile tools/apply_motor_drive_origin_exit_fixed.py
           python -m py_compile tools/apply_defense_motor_75s.py
-      - name: Validate movement, exits, package lifecycle, and 75-second rides
+          python -m py_compile tools/apply_defense_motor_75s_fixed.py
+      - name: Validate movement, seated passengers, timed stops, exits, and cleanup
         run: |
           python -m unittest tests/test_motor_drive_origin_exit_fixed.py
           python -m unittest tests/test_defense_motor_75s.py
