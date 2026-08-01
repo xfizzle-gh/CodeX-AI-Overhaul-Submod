@@ -30,4 +30,51 @@ jobs:
         with:
           python-version: '3.13'
       - run: python -m pip install --upgrade pytest
-      - run: python tools/apply_decoupled_motor_delivery.py
+      - name: Build corrected repair runtime
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+          import zlib
+
+          root = Path.cwd()
+          payload = "".join(
+              (root / "tools" / f".decoupled_payload_{i}.txt").read_text(encoding="ascii").strip()
+              for i in range(1, 6)
+          )
+          source = zlib.decompress(base64.b64decode(payload)).decode("utf-8")
+          source = source.replace(
+              "ROOT = Path(__file__).resolve().parents[1]",
+              "ROOT = Path.cwd()",
+              1,
+          )
+
+          start = source.index("    topup_crew_ids = {")
+          end = source.index("    text = link_re.sub(strip_topup_commander, text)", start)
+          replacement = '''    # Identify numbered top-up trucks by their hull tags. Restricting links by
+              # tagged hull prevents the motor repair from touching aircraft links.
+              topup_hull_ids: set[str] = set()
+              for line in text.splitlines():
+                  if not re.search(r'"ally_sup_(?:rusa|ukr|nato|prc)_p[2-4]_hull"', line):
+                      continue
+                  ids = re.findall(r"0x[0-9a-fA-F]+", line)
+                  if ids:
+                      topup_hull_ids.add(ids[-1].lower())
+              if len(topup_hull_ids) != 12:
+                  raise RuntimeError(f"Expected 12 top-up motor hulls, found {len(topup_hull_ids)}")
+
+              def strip_topup_commander(match: re.Match[str]) -> str:
+                  if match.group("hull").lower() not in topup_hull_ids:
+                      return match.group(0)
+                  if match.group("slot") == "commander":
+                      commander_ids.add(match.group("body").lower())
+                      return ""
+                  return match.group(0)
+
+          '''
+          source = source[:start] + replacement + source[end:]
+          compile(source, ".git/decoupled_motor_runtime.py", "exec")
+          (root / ".git" / "decoupled_motor_runtime.py").write_text(source, encoding="utf-8")
+          PY
+      - run: python .git/decoupled_motor_runtime.py
