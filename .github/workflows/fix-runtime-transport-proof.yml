@@ -70,16 +70,15 @@ jobs:
 
           defense_test = Path("tests/test_defense_mission_support.py")
           text = defense_test.read_text(encoding="utf-8")
-          old = '''        # Shared Day-2 toggle set on defense garrison
-                  garr = trigger_block(code, "defense_support/garrison_init")
-                  self.assertIn('{var "attack_support_air_test$"} {op "="} {value 1}', garr)'''
-          new = '''        # Shared legacy force toggle is explicitly parked on defense garrison.
-                  garr = trigger_block(code, "defense_support/garrison_init")
-                  self.assertIn('{var "attack_support_air_test$"} {op "="} {value 0}', garr)
+          old_line = '        self.assertIn(\'{var "attack_support_air_test$"} {op "="} {value 1}\', garr)'
+          new_lines = '''        self.assertIn('{var "attack_support_air_test$"} {op "="} {value 0}', garr)
                   self.assertNotIn('{var "attack_support_air_test$"} {op "="} {value 1}', garr)'''
-          if text.count(old) != 1:
-              raise RuntimeError("obsolete defense forced-air assertion not found exactly once")
-          defense_test.write_text(text.replace(old, new), encoding="utf-8")
+          if text.count(old_line) != 2:
+              raise RuntimeError(f"expected two obsolete defense forced-air assertions, found {text.count(old_line)}")
+          text = text.replace(old_line, new_lines)
+          text = text.replace("Shared Day-2 toggle set on defense garrison", "Shared legacy force toggle parked on defense garrison")
+          text = text.replace("Day-2 forces insert ~30s", "manual enable forces insert ~30s")
+          defense_test.write_text(text, encoding="utf-8")
           PY
           python -m py_compile tests/test_motor_runtime_isolation.py tests/test_attack_support_slot_proof.py tests/test_defense_mission_support.py
           git diff --check
