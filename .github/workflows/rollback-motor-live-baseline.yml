@@ -1,0 +1,71 @@
+name: Roll back motor lifecycle to live-moving baseline
+
+on:
+  push:
+    branches:
+      - experiment/attack-mate-slot-proof
+    paths:
+      - tools/rollback_motor_to_live_baseline.py
+      - .github/workflows/rollback-motor-live-baseline.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rollback-motor-live-baseline
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/attack-mate-slot-proof
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Restore last live-moving motor finishers
+        run: |
+          python -m py_compile tools/rollback_motor_to_live_baseline.py
+          python tools/rollback_motor_to_live_baseline.py
+          git diff --check
+
+      - name: Run focused motor and support tests
+        run: |
+          python -m pip install pytest
+          python -m pytest \
+            tests/test_motor_runtime_isolation.py \
+            tests/test_motor_package1_restore.py \
+            tests/test_attack_support_slot_proof.py \
+            tests/test_enemy_defense_support.py \
+            tests/test_defense_mission_support.py \
+            -q
+
+      - name: Run complete repository suite
+        run: python -m pytest tests -q
+
+      - name: Publish rollback and remove temporary automation
+        shell: bash
+        run: |
+          rm -f tools/rollback_motor_to_live_baseline.py
+          rm -f .github/workflows/rollback-motor-live-baseline.yml
+          git diff --check
+          git config user.name "OpenAI Codex Agent"
+          git config user.email "noreply@openai.com"
+          git add \
+            resource/map/multi/attack_support_waves.inc \
+            resource/map/multi/defense_support_waves.inc \
+            resource/map/multi/enemy_attack_support.inc \
+            resource/map/multi/enemy_defense_support.inc \
+            tests/test_motor_runtime_isolation.py \
+            tests/test_attack_support_slot_proof.py \
+            tools/deploy_attack_support_probe.ps1 \
+            tools/rollback_motor_to_live_baseline.py \
+            .github/workflows/rollback-motor-live-baseline.yml
+          git commit -m "Roll back broken motor lifecycle to last moving baseline"
+          git push origin HEAD:experiment/attack-mate-slot-proof
