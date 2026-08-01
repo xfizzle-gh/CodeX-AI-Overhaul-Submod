@@ -31,7 +31,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $stage2Wrapper = Join-Path $RepoRoot "tools\deploy_friendly_defender_motor_one_shot.ps1"
-$dropoff = Join-Path $RepoRoot "tools\apply_four_quadrant_transport_dropoff.py"
+$dropoff = Join-Path $RepoRoot "tools\apply_four_quadrant_transport_dropoff_fixed.py"
 $perimeters = Join-Path $RepoRoot "tools\apply_transport_flag_perimeter_waypoints_fixed.py"
 foreach ($required in @($stage2Wrapper, $dropoff, $perimeters)) {
     if (-not (Test-Path -LiteralPath $required)) {
