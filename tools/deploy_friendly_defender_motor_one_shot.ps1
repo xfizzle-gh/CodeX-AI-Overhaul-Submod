@@ -50,7 +50,7 @@ $tempWrapper = Join-Path $ScriptDirectory "deploy_friendly_defender_base.generat
 [System.IO.File]::WriteAllText(
     $tempWrapper,
     $wrapperText,
-    [System.Text.UTF8Encoding]::new($false)
+    [System.Text.UTF8Encoding]::new($true)
 )
 
 try {
