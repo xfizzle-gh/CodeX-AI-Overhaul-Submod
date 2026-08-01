@@ -69,11 +69,11 @@ FACTION_ARMIES = (("rusa", 1), ("ukr", 2), ("nato", 3), ("prc", 4))
 # faction_support_templates.inc funds those six one for one so the wave budget is
 # untouched. See test_flag_emplacements_are_crewed_from_the_line_pool.
 FACTION_COMPS = (
-    ("line", 10, 4, 30),
-    ("wpn", 11, 4, 16),
-    ("recon", 12, 3, 15),
-    ("assault", 13, 4, 16),
-    ("eng", 14, 3, 12),
+    ("line", 10, 6, 30),
+    ("wpn", 11, 5, 16),
+    ("recon", 12, 5, 15),
+    ("assault", 13, 5, 16),
+    ("eng", 14, 5, 12),
     ("manpad", 15, 2, 8),
 )
 # The published fold, mapping every user_nation$ the CE setup can emit onto a pool.
@@ -82,10 +82,10 @@ NATION_FOLD = {1: 1, 5: 1, 8: 1, 2: 2, 3: 3, 4: 3, 7: 3, 6: 4}
 
 # Q2 draws: trigger suffix -> (wave_cmd, shared attack-support pool, bodies, stage base)
 DS_DRAWS = (
-    ("usmc", 1, "attack_support_inf_usmc", 4, 10),
-    ("1ad", 2, "attack_support_inf_1ad", 4, 20),
+    ("usmc", 1, "attack_support_inf_usmc", 5, 10),
+    ("1ad", 2, "attack_support_inf_1ad", 5, 20),
     ("pzgd", 3, "attack_support_inf_pzgd", 6, 30),
-    ("arf", 5, "attack_support_inf_arf", 4, 50),
+    ("arf", 5, "attack_support_inf_arf", 5, 50),
 )
 # Depth of the shared NATO pool, read back below from the shipped template file.
 DS_POOL_DEPTH = {"attack_support_inf_usmc": 20, "attack_support_inf_1ad": 20,
@@ -95,7 +95,7 @@ DS_POOL_DEPTH = {"attack_support_inf_usmc": 20, "attack_support_inf_1ad": 20,
 # resolved into its own var so the two pool-sharing engines stay decoupled.
 EA_FACTIONS = (("rusa", 1), ("ukr", 2), ("prc", 4), ("nato", 3))
 # Q3 draws: trigger suffix -> (wave_cmd, shared enemy-defence pool role, bodies, stage)
-EA_DRAWS = (("line", 1, "line", 4, 10), ("wpn", 2, "wpn", 4, 20))
+EA_DRAWS = (("line", 1, "line", 6, 10), ("wpn", 2, "wpn", 5, 20))
 # 30, not 24: six of the line pool fund the two-man crews on the three flag
 # emplacements enemy_defense_support.inc plants at garrison time.
 EA_POOL_DEPTH = {"line": 30, "wpn": 16}
@@ -1338,23 +1338,20 @@ class DefenceMissionSupportTests(unittest.TestCase):
         self.assertGreaterEqual(finish.count("{sort {type shuffle}}"), 3)
         self.assertGreaterEqual(code.count("{select {tag {tag flag}}}"), 3)
 
-        # Two staggered fireteams. Every draw is four bodies, so two pairs is the whole
-        # wave and a third group would only ever order an empty selector.
-        for n in (1, 2):
+        # Six-body arrivals are split into three staggered pairs.
+        for n in (1, 2, 3):
             self.assertIn("{tag_add ea_g%d}" % n, finish)
             self.assertIn("{tag_remove ea_g%d}" % n, finish)
-        self.assertNotIn("ea_g3", finish)
-        self.assertEqual(finish.count("{amount 2}"), 1)
-        for _s, _c, _r, take, _st in EA_DRAWS:
-            self.assertEqual(take, 4)
-        # The retired cover beat is gone. The line is broken by sending the two
-        # groups to DIFFERENT flags instead: G1 always takes flag1, and G2 rolls
-        # between flag3 and flag2, so the two halves of a wave never converge on the
-        # same point and pile up on each other.
+        self.assertGreaterEqual(finish.count("{amount 2}"), 2)
+        for _s, _c, role, take, _st in EA_DRAWS:
+            self.assertEqual(take, 6 if role == "line" else 5)
+        # The retired cover beat is gone. The six-body line wave is split
+        # into three pairs: G1 takes flag1, G2 rolls between flag2 and flag3,
+        # and G3 takes flag3.
         self.assertNotIn('{"actor_to_cover"', finish)
         # Read each order as a whole: which group it selects, and which flag it sends
-        # them to. G1's set and G2's set must be disjoint.
-        by_group = {"ea_g1": set(), "ea_g2": set()}
+        # them to. G1 remains separate from both flanking groups.
+        by_group = {"ea_g1": set(), "ea_g2": set(), "ea_g3": set()}
         for m in re.finditer(r'\{"action"', finish):
             order = block_at(finish, m.start())
             grp = re.search(r"\{selector \{ignore_captured_by_user 0\} \{tag (ea_g\d)\}\}",
@@ -1365,10 +1362,23 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 by_group[grp.group(1)].add(tgt.group(1))
         self.assertEqual(by_group["ea_g1"], {"ea_flag1"})
         self.assertEqual(by_group["ea_g2"], {"ea_flag2", "ea_flag3"})
+        self.assertEqual(by_group["ea_g3"], {"ea_flag3"})
         self.assertFalse(by_group["ea_g1"] & by_group["ea_g2"])
-        # Both groups advance rather than beelining, and each drops its prior order.
-        self.assertEqual(finish.count("{action advance}"), 3)
-        self.assertEqual(finish.count("{drop orders}"), 3)
+        self.assertFalse(by_group["ea_g1"] & by_group["ea_g3"])
+        # Check the three named fireteams directly. ea_g2 has two alternative
+        # advance branches, so a global count is intentionally greater than three.
+        for group in ("ea_g1", "ea_g2", "ea_g3"):
+            group_orders = []
+            for match in re.finditer(r'\{"action"', finish):
+                order = block_at(finish, match.start())
+                if f"{{tag {group}}}" in order:
+                    group_orders.append(order)
+            self.assertTrue(
+                any("{action advance}" in order for order in group_orders), group
+            )
+            self.assertTrue(
+                any("{drop orders}" in order for order in group_orders), group
+            )
         self.assertIn("{tag_remove ea_deploy}", finish)
 
     def test_enemy_attack_faction_selection_is_its_own_bot_army_switch(self) -> None:

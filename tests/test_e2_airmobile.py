@@ -758,7 +758,9 @@ class E2SequentialComboTests(unittest.TestCase):
         self.assertIn("[System.IO.File]::WriteAllText($deployedWaves", self.deploy)
         self.assertIn("Requested E2 test mode was not written exactly once", self.deploy)
         self.assertIn("Legacy E1 air test value is incorrect", self.deploy)
-        self.assertIn("if ($E2TestMode -ne 0)", self.deploy)
+        self.assertNotIn("if ($E2TestMode -ne 0)", self.deploy)
+        self.assertIn("$expectedLegacyMode = 0", self.deploy)
+        self.assertNotIn("$sourceLegacyInit =", self.deploy)
         self.assertNotIn("WriteAllText($wavesSource", self.deploy)
 
     def test_combo_result_is_declared_initialized_and_mirrored(self) -> None:

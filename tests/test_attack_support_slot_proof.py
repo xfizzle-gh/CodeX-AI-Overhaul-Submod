@@ -79,11 +79,11 @@ FACTION_ARMIES = (("rusa", 1), ("ukr", 2), ("nato", 3), ("prc", 4))
 # faction_support_templates.inc funds those six draws one for one. The attack engine
 # is unaffected - it never places flag props - so its worst case is unchanged.
 FACTION_COMPS = (
-    ("line", 10, 4, 30),
-    ("wpn", 11, 4, 16),
-    ("recon", 12, 3, 15),
-    ("assault", 13, 4, 16),
-    ("eng", 14, 3, 12),
+    ("line", 10, 6, 30),
+    ("wpn", 11, 5, 16),
+    ("recon", 12, 5, 15),
+    ("assault", 13, 5, 16),
+    ("eng", 14, 5, 12),
     ("manpad", 15, 2, 8),
 )
 # Light vehicles are attack-only and counter-gated rather than pool-counted:
@@ -239,10 +239,11 @@ class AttackSupportSlotProofTests(unittest.TestCase):
                 tag = "ally_sup_%s_%s" % (key, suffix)
                 with self.subTest(pool=tag):
                     self.assertEqual(code.count('"%s"' % tag), depth, tag)
-                    # A pool must field at least four consecutive draws of its own
-                    # comp; beyond that the gate declines and the pick falls back to
-                    # the faction line pool rather than deploying a partial team.
-                    self.assertGreaterEqual(depth // take, 4, tag)
+                    # Larger 5-6 body arrivals intentionally consume specialist
+                    # pools faster. Every pool must still field at least two complete
+                    # squads; after that the command falls back to the deep line pool
+                    # rather than deploying a partial team.
+                    self.assertGreaterEqual(depth // take, 2, tag)
             # No faction can be exhausted outright: the largest per-wave draw is 4
             # bodies, so an 8-wave L3 run can consume at most 32 from a faction that
             # parks 91 or more.
@@ -2160,8 +2161,10 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                 # Reset in init, beside the other motor vars.
                 init = code[: code.index('{"set_i" {var "%s$"} {op "="} {value 1}}' % var)]
                 self.assertIn('{"set_i" {var "%s$"} {op "="} {value 0}}' % var, init)
+                # One reset is initialization; the second releases the completed
+                # or failed lifecycle so another truck package may be dispatched.
                 self.assertEqual(
-                    code.count('{"set_i" {var "%s$"} {op "="} {value 0}}' % var), 1
+                    code.count('{"set_i" {var "%s$"} {op "="} {value 0}}' % var), 2
                 )
                 # One claim write per faction trigger, right where the budget drops.
                 self.assertEqual(
@@ -2325,9 +2328,12 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                 pax_order = code.index("{action advance}", pax_source)
                 self.assertLess(pick, move)
                 self.assertLess(move, stage3)
-                self.assertLess(stage3, emit)
-                self.assertLess(emit, stage4)
-                self.assertLess(stage4, pax_source)
+                # Stage 4 now means movement was proved and unload was released.
+                # It is written immediately before emit; passengers become normal
+                # infantry only after the emit command completes.
+                self.assertLess(stage3, stage4)
+                self.assertLess(stage4, emit)
+                self.assertLess(emit, pax_source)
                 self.assertLess(pax_source, pax_order)
                 self.assertNotIn("{action advance}", code[:emit])
                 emit_block = block_at(code, emit)
@@ -2487,4 +2493,3 @@ class LinkedBodyPlacementTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

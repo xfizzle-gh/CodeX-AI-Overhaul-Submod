@@ -35,9 +35,9 @@ FACTIONS = (
 
 # trigger suffix -> (wave_cmd value, pool role, bodies taken, stage base)
 DRAWS = (
-    ("light", 1, "line", 3, 10),
-    ("line", 2, "line", 4, 20),
-    ("wpn", 3, "wpn", 4, 30),
+    ("light", 1, "line", 5, 10),
+    ("line", 2, "line", 6, 20),
+    ("wpn", 3, "wpn", 5, 30),
 )
 
 # Pool depth per faction. A claim MOVES prototypes out and never returns them, so a
@@ -574,10 +574,11 @@ class EnemyDefenseSupportTests(unittest.TestCase):
         self.assertIn("{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}", finish)
         self.assertNotIn("{no_retreat on}", code)
 
-        # Every draw is a 3-4 body fireteam.
+        # Standard arrivals are now five or six bodies. They remain small
+        # enough to maneuver independently and still use the same no-retreat policy.
         for _suffix, _cmd, _role, take, _stage in DRAWS:
-            self.assertGreaterEqual(take, 3)
-            self.assertLessEqual(take, 4)
+            self.assertGreaterEqual(take, 5)
+            self.assertLessEqual(take, 6)
 
     # ------------------------------------------------------------ spec point 5/6
 

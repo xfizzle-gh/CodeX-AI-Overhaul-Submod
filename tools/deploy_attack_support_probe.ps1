@@ -133,7 +133,7 @@ if (Select-String -Quiet -LiteralPath $factionTplSource -SimpleMatch '{Entity "u
 foreach ($key in @('mission/multi/support/e2_helo_inbound', 'mission/multi/support/e2_para_inbound', 'mission/multi/support/e2_insert_failed')) {
     if (-not (Select-String -Quiet -LiteralPath (Join-Path $RepoRoot $files[13]) -SimpleMatch "msgctxt `"$key`"")) { throw "Source support_events.pot is missing msgctxt $key" }
 }
-$E2HeloWaveMarkers = @('attack_support/e2_helo_prc', 
+$E2HeloWaveMarkers = @('attack_support/e2_helo_prc',
     '; ===== E2 REAL AIR INSERT PROBES =====',
     '{"attack_support/e2_dispatch"',
     '{"attack_support/e2_helo_rusa"',
@@ -2159,7 +2159,7 @@ foreach ($mapFile in $mapFiles) {
             throw "Expected exactly three entry pads on side $side in: $mapFile (found $triple)"
         }
     }
-    
+
     foreach ($side in @("a", "b")) {
         foreach ($fp in @(1, 2)) {
             $n = ([regex]::Matches($text, [regex]::Escape('{"attack_support_flank_' + $side + $fp + '"'))).Count

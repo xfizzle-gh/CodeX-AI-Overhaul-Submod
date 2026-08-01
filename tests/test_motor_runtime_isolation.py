@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -186,29 +187,44 @@ def test_arrivals_activate_and_rotate_one_unlinked_human_at_a_time() -> None:
         assert 'sup_linked' in body[selector_start:activation]
 
 
-def test_runtime_proof_requires_atomic_inhabited_motor_packages() -> None:
+def test_runtime_proof_requires_role_reassertion_and_movement_release() -> None:
     for path, finisher, owner, deploy, transfer, hull, pax, crew, _, leaving in CONFIGS:
         text = (ROOT / path).read_text(encoding="utf-8-sig")
         body = block(text, f'(define "{finisher}"')
-        promote = body[body.index('Atomic linked-package activation'):body.index(f'("{owner}")')]
-        assert promote.count(f'{{selector {{tag {transfer}}}}}') == 1
-        assert f'{{selector {{tag {hull}}}}}' not in promote
-        assert f'{{selector {{tag {pax}}}}}' not in promote
-        assert f'{{selector {{tag {crew}}}}}' not in promote
+        drive = body.index('; Vehicles use MOVE')
+        prefix = body[:drive]
 
-        gate = body.index(f'{{tag {hull}}} {{type vehicle}} {{state inhabited}}')
-        stage_two = body.index('{value 2}', gate)
-        stage_nine = body.index('{value 9}', stage_two)
-        assert gate < stage_two < stage_nine
-        assert 'INVALID MOTOR PACKAGE - REHIDE' in body[stage_two:]
+        # Ownership keeps one witness per role; linked crew are not separately activated.
+        for role in (hull, pax, crew):
+            assert f'{role}_tx' in prefix
+            assert f'{{selector {{tag {role}_tx}}}}' in prefix
+        assert '{state inhabited}' not in prefix
+        # A linked driver must not receive a separate actor-state activation before
+        # the hull moves. The previous split-based check bled into the following
+        # commands and falsely classified the hull actor-state block as a crew block.
+        assert (
+            f'{{selector {{ignore_captured_by_user 0}} {{tag {crew}}}}}'
+            not in prefix
+        )
 
-        untyped = f'{{selector {{ignore_captured_by_user 0}} {{tag {hull}}}}}'
-        assert untyped not in body
-        retirement = body.index(f'{{tag_add {leaving}}}', stage_two)
+        # No passenger release is legal until objective-distance movement is proven.
+        marker = 'MOTOR RELEASE REQUIRES PROVEN MOVEMENT'
+        assert body.count(marker) == 1
+        proof = body[body.index(marker):body.index('{"emit"')]
+        assert '{op ">"} {value 0}' in proof
+        assert f'{{tag_add {transfer}_release}}' in proof
+        assert 'Band 0' in proof
+        assert 'INVALID MOTOR PACKAGE - REHIDE' in body
+
+        # Both the movement-failure and invalid-package paths expose stage 9, then the
+        # finisher resets to zero so a later numbered package can run.
+        assert body.count('{value 9}') >= 2
+        assert body.rfind('{value 0}') > body.rfind('{value 9}')
+
+        retirement = body.index(f'{{tag_add {leaving}}}')
         return_path = body[retirement:]
         assert f'{{tag {leaving}}} {{type vehicle}}' in return_path
         assert f'{{tag {hull}}} {{type vehicle}}' not in return_path
-
 
 def test_deploy_guard_pins_runtime_transport_repairs() -> None:
     deploy = (ROOT / "tools/deploy_attack_support_probe.ps1").read_text(encoding="utf-8-sig")
@@ -216,3 +232,27 @@ def test_deploy_guard_pins_runtime_transport_repairs() -> None:
     assert "Per-body activation spacing" in deploy
     assert "Atomic linked-package activation" in deploy
     assert "INVALID MOTOR PACKAGE - REHIDE" in deploy
+
+
+def test_standard_infantry_arrivals_are_five_or_six() -> None:
+    configs = (
+        ("resource/map/multi/attack_support_waves.inc", "attack_support"),
+        ("resource/map/multi/defense_support_waves.inc", "defense_support"),
+        ("resource/map/multi/enemy_attack_support.inc", "enemy_attack"),
+        ("resource/map/multi/enemy_defense_support.inc", "enemy_defense"),
+    )
+    for path, prefix in configs:
+        text = (ROOT / path).read_text(encoding="utf-8-sig")
+        pattern = re.compile(
+            rf'\{{"(?P<name>{re.escape(prefix)}/(?:ally_)?(?:rusa|ukr|nato|prc)_'
+            r'(?P<role>line|wpn|recon|assault|eng|light))"'
+        )
+        matches = list(pattern.finditer(text))
+        assert matches, path
+        for match in matches:
+            name = match.group("name")
+            role = match.group("role")
+            target = 6 if role == "line" else 5
+            trigger = block(text, '{"' + name + '"')
+            assert f'{{count {{op ">="}} {{value {target}}}}}' in trigger, name
+            assert f'{{amount {target}}}' in trigger, name

@@ -1794,7 +1794,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 10}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_rusa_line}} {count {op ">="} {value 4}}}
+						{"5.entities" {selector {tag ally_sup_rusa_line}} {count {op ">="} {value 6}}}
 					}
 				}
 				{actions
@@ -1808,7 +1808,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_line}}}} {amount 4}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_line}}}} {amount 6}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_rusa_line}
 					}
@@ -1825,7 +1825,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 10}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_ukr_line}} {count {op ">="} {value 4}}}
+						{"5.entities" {selector {tag ally_sup_ukr_line}} {count {op ">="} {value 6}}}
 					}
 				}
 				{actions
@@ -1839,7 +1839,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_line}}}} {amount 4}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_line}}}} {amount 6}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_ukr_line}
 					}
@@ -1856,7 +1856,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 10}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_prc_line}} {count {op ">="} {value 4}}}
+						{"5.entities" {selector {tag ally_sup_prc_line}} {count {op ">="} {value 6}}}
 					}
 				}
 				{actions
@@ -1870,7 +1870,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_line}}}} {amount 4}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_line}}}} {amount 6}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_prc_line}
 					}
@@ -1887,7 +1887,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 10}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_nato_line}} {count {op ">="} {value 4}}}
+						{"5.entities" {selector {tag ally_sup_nato_line}} {count {op ">="} {value 6}}}
 					}
 				}
 				{actions
@@ -1901,7 +1901,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_line}}}} {amount 4}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_line}}}} {amount 6}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_nato_line}
 					}
@@ -1918,7 +1918,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 11}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_rusa_wpn}} {count {op ">="} {value 4}}}
+						{"5.entities" {selector {tag ally_sup_rusa_wpn}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -1932,7 +1932,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_wpn}}}} {amount 4}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_wpn}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_rusa_wpn}
 					}
@@ -1949,7 +1949,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 11}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_ukr_wpn}} {count {op ">="} {value 4}}}
+						{"5.entities" {selector {tag ally_sup_ukr_wpn}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -1963,7 +1963,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_wpn}}}} {amount 4}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_wpn}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_ukr_wpn}
 					}
@@ -1980,7 +1980,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 11}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_prc_wpn}} {count {op ">="} {value 4}}}
+						{"5.entities" {selector {tag ally_sup_prc_wpn}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -1994,7 +1994,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_wpn}}}} {amount 4}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_wpn}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_prc_wpn}
 					}
@@ -2011,7 +2011,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 11}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_nato_wpn}} {count {op ">="} {value 4}}}
+						{"5.entities" {selector {tag ally_sup_nato_wpn}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2025,7 +2025,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_wpn}}}} {amount 4}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_wpn}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_nato_wpn}
 					}
@@ -2044,7 +2044,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 12}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_rusa_recon}} {count {op ">="} {value 3}}}
+						{"5.entities" {selector {tag ally_sup_rusa_recon}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2058,7 +2058,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_recon}}}} {amount 3}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_recon}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_rusa_recon}
 					}
@@ -2075,7 +2075,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 12}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_ukr_recon}} {count {op ">="} {value 3}}}
+						{"5.entities" {selector {tag ally_sup_ukr_recon}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2089,7 +2089,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_recon}}}} {amount 3}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_recon}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_ukr_recon}
 					}
@@ -2106,7 +2106,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 12}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_prc_recon}} {count {op ">="} {value 3}}}
+						{"5.entities" {selector {tag ally_sup_prc_recon}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2120,7 +2120,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_recon}}}} {amount 3}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_recon}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_prc_recon}
 					}
@@ -2137,7 +2137,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 12}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_nato_recon}} {count {op ">="} {value 3}}}
+						{"5.entities" {selector {tag ally_sup_nato_recon}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2151,7 +2151,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_recon}}}} {amount 3}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_recon}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_nato_recon}
 					}
@@ -2168,7 +2168,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 13}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_rusa_assault}} {count {op ">="} {value 4}}}
+						{"5.entities" {selector {tag ally_sup_rusa_assault}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2182,7 +2182,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_assault}}}} {amount 4}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_assault}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_rusa_assault}
 					}
@@ -2199,7 +2199,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 13}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_ukr_assault}} {count {op ">="} {value 4}}}
+						{"5.entities" {selector {tag ally_sup_ukr_assault}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2213,7 +2213,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_assault}}}} {amount 4}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_assault}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_ukr_assault}
 					}
@@ -2230,7 +2230,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 13}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_prc_assault}} {count {op ">="} {value 4}}}
+						{"5.entities" {selector {tag ally_sup_prc_assault}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2244,7 +2244,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_assault}}}} {amount 4}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_assault}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_prc_assault}
 					}
@@ -2261,7 +2261,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 13}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_nato_assault}} {count {op ">="} {value 4}}}
+						{"5.entities" {selector {tag ally_sup_nato_assault}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2275,7 +2275,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_assault}}}} {amount 4}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_assault}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_nato_assault}
 					}
@@ -2292,7 +2292,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 14}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_rusa_eng}} {count {op ">="} {value 3}}}
+						{"5.entities" {selector {tag ally_sup_rusa_eng}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2306,7 +2306,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_eng}}}} {amount 3}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_eng}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_rusa_eng}
 					}
@@ -2323,7 +2323,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 14}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_ukr_eng}} {count {op ">="} {value 3}}}
+						{"5.entities" {selector {tag ally_sup_ukr_eng}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2337,7 +2337,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_eng}}}} {amount 3}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_eng}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_ukr_eng}
 					}
@@ -2354,7 +2354,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 14}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_prc_eng}} {count {op ">="} {value 3}}}
+						{"5.entities" {selector {tag ally_sup_prc_eng}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2368,7 +2368,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_eng}}}} {amount 3}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_prc_eng}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_prc_eng}
 					}
@@ -2385,7 +2385,7 @@
 						{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value 14}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
 						{"4.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_nato_eng}} {count {op ">="} {value 3}}}
+						{"5.entities" {selector {tag ally_sup_nato_eng}} {count {op ">="} {value 5}}}
 					}
 				}
 				{actions
@@ -2399,7 +2399,7 @@
 						{"default"}
 					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_eng}}}} {amount 3}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_eng}}}} {amount 5}}
 						{tag_add attack_support_deploy}
 						{tag_remove ally_sup_nato_eng}
 					}
@@ -7718,16 +7718,19 @@
 					{selector {tag attack_support_motor_hull}}
 					{tag_remove attack_support_deploy}
 					{tag_add attack_support_motor_transfer}
+					{tag_add attack_support_motor_hull_tx}
 				}
 				{"entity_state"
 					{selector {tag attack_support_motor_pax}}
 					{tag_remove attack_support_deploy}
 					{tag_add attack_support_motor_transfer}
+					{tag_add attack_support_motor_pax_tx}
 				}
 				{"entity_state"
 					{selector {tag attack_support_motor_crew}}
 					{tag_remove attack_support_deploy}
 					{tag_add attack_support_motor_transfer}
+					{tag_add attack_support_motor_crew_tx}
 				}
 				{"entity_state"
 					{selector {tag attack_support_motor_hull}}
@@ -7766,35 +7769,34 @@
 				}
 				("as_own_motor_to_support")
 				{"delay" {time 0.2}}
-				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull} {type vehicle}}
-					{control AI}
-					{ai_move {mode enable}}
-					{weapon_prepare on}
-					{fire_mode open}
-					{move_mode free}
-					{movement {speed normal} {kind normal} {type normal}}
-					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
-				}
-				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag attack_support_motor_crew}}
-					{control AI}
-					{ai_move {mode enable}}
-					{weapon_prepare on}
-					{fire_mode open}
-					{move_mode free}
-					{movement {speed normal} {kind normal} {type normal}}
-					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
-				}
-				{"ables"
-					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull} {type vehicle}}
-					{remove select}
-				}
-				{"ables"
-					{selector {ignore_captured_by_user 0} {tag attack_support_motor_crew}}
-					{remove select}
+				; Re-assert role tags from ownership-stable witnesses before any order.
+				{"entity_state"
+					{selector {tag attack_support_motor_hull_tx}}
+					{tag_add attack_support_motor_hull}
 				}
 				{"entity_state"
+					{selector {tag attack_support_motor_pax_tx}}
+					{tag_add attack_support_motor_pax}
+				}
+				{"entity_state"
+					{selector {tag attack_support_motor_crew_tx}}
+					{tag_add attack_support_motor_crew}
+				}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull} {type vehicle}}
+					{control AI}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+				}
+								{"ables"
+					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull} {type vehicle}}
+					{remove select}
+				}
+								{"entity_state"
 					{selector {tag attack_support_motor_hull}}
 					{tag_remove attack_support_motor_transfer}
 				}
@@ -7812,7 +7814,7 @@
 					{"case"
 						{condition
 							{type entities}
-							{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull} {type vehicle} {state inhabited}}
+							{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull} {type vehicle}}
 							{count {op ">="} {value 1}}
 						}
 	{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 2}}
@@ -7849,17 +7851,55 @@
 					{"delay" {time 7}}
 					{"set_i" {var "attack_support_motor_drive_t$"} {op "="} {value 4}}
 					("as_motor_band")
+					; MOTOR RELEASE REQUIRES PROVEN MOVEMENT. A seated package may unload only
+					; after the hull has entered one of the objective-distance bands. Band 0
+					; means it never made useful progress, so the package is retired without
+					; emitting or leaking its riders into normal infantry selectors.
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "attack_support_motor_band$"} {op ">"} {value 0}}
+							{"entity_state" {selector {tag attack_support_motor_hull}} {tag_add attack_support_motor_transfer_release}}
+							{"entity_state" {selector {tag attack_support_motor_pax}} {tag_add attack_support_motor_transfer_release}}
+							{"entity_state" {selector {tag attack_support_motor_crew}} {tag_add attack_support_motor_transfer_release}}
+							{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 4}}
+						}
+						{"default"
+							{"entity_state"
+								{selector {tag attack_support_motor_hull}}
+								{tag_add hidden}
+								{inactive on}
+								{tag_remove attack_support_motor_hull}
+								{tag_remove attack_support_motor_hull_tx}
+							}
+							{"entity_state"
+								{selector {tag attack_support_motor_pax}}
+								{tag_add hidden}
+								{inactive on}
+								{tag_remove attack_support_motor_pax}
+								{tag_remove attack_support_motor_pax_tx}
+							}
+							{"entity_state"
+								{selector {tag attack_support_motor_crew}}
+								{tag_add hidden}
+								{inactive on}
+								{tag_remove attack_support_motor_crew}
+								{tag_remove attack_support_motor_crew_tx}
+							}
+							{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 9}}
+						}
+					}
 					{"emit"
 						{selector
 							{ignore_captured_by_user 0}
 							{tag attack_support_motor_hull}
+							{tag attack_support_motor_transfer_release}
 							{type vehicle}
 							{state inhabited}
 						}
 						{drop orders}
 						{emit {mode passengers}}
 					}
-					{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 4}}
+
 					{"delay" {time 1}}
 					; Only now are the passengers normal infantry eligible for combat/patrol orders.
 					{"entity_state"
@@ -7943,7 +7983,13 @@
 						{tag_remove attack_support_deploy}
 						{tag_remove attack_support_motor_crew}
 					}
-					{"set_i" {var "attack_support_transferred$"} {op "="} {value 1}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "attack_support_motor_stage$"} {op "=="} {value 4}}
+							{"set_i" {var "attack_support_transferred$"} {op "="} {value 1}}
+						}
+						{"default"}
+					}
 					}
 					{"default"
 					; INVALID MOTOR PACKAGE - REHIDE. No truck order, passenger emit or
@@ -7974,6 +8020,9 @@
 					{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 9}}
 				}
 				}
+
+				{"delay" {time 1}}
+				{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 0}}
 			)
 
 

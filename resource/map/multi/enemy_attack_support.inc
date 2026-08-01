@@ -518,10 +518,9 @@
 					{tag_add ea_flag3}
 				}
 				{"delay" {time 0.1}}
-				; Split the deploy into two staggered fireteams so a wave does not laser
-				; in as one blob. Every draw here is four bodies, so two pairs is the
-				; whole wave: a third group would only ever be an order on an empty
-				; selector.
+				; Split the six-body arrival into three staggered pairs so the wave does
+				; not laser in as one blob. A smaller fallback draw leaves the final
+				; selector empty, which is safe.
 				{"entity_state"
 					{selector
 						{source advanced}
@@ -538,8 +537,23 @@
 							{select {tag {tag ea_deploy}}}
 							{exclude {tag {tag ea_g1}}}
 						}
+						{amount 2}
 					}
 					{tag_add ea_g2}
+				}
+				{"delay" {time 0.05}}
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group
+							{select {tag {tag ea_deploy}}}
+							{exclude
+								{tag {tag ea_g1}}
+								{tag {tag ea_g2}}
+							}
+						}
+					}
+					{tag_add ea_g3}
 				}
 				; Off the pad immediately (no multi-second dwell / stack deaths).
 				{"action"
@@ -568,6 +582,13 @@
 						}
 					}
 				}
+				{"delay" {time 0.35}}
+				{"action"
+					{selector {ignore_captured_by_user 0} {tag ea_g3}}
+					{drop orders}
+					{action advance}
+					{target {ignore_captured_by_user 0} {tag ea_flag3}}
+				}
 				{"delay" {time 0.2}}
 				{"entity_state"
 					{selector
@@ -577,6 +598,7 @@
 					{tag_remove ea_deploy}
 					{tag_remove ea_g1}
 					{tag_remove ea_g2}
+					{tag_remove ea_g3}
 				}
 				{"entity_state"
 					{selector {tag ea_flag3}}
@@ -969,7 +991,7 @@
 						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 1}}
 						{"5.entities"
 							{selector {tag enemy_def_rusa_line}}
-							{count {op ">="} {value 4}}
+							{count {op ">="} {value 6}}
 						}
 					}
 				}
@@ -987,7 +1009,7 @@
 						{selector
 							{source advanced}
 							{group {select {tag {tag enemy_def_rusa_line}}}}
-							{amount 4}
+							{amount 6}
 						}
 						{tag_add ea_deploy}
 						{tag_remove enemy_def_rusa_line}
@@ -1009,7 +1031,7 @@
 						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 1}}
 						{"5.entities"
 							{selector {tag enemy_def_rusa_wpn}}
-							{count {op ">="} {value 4}}
+							{count {op ">="} {value 5}}
 						}
 					}
 				}
@@ -1027,7 +1049,7 @@
 						{selector
 							{source advanced}
 							{group {select {tag {tag enemy_def_rusa_wpn}}}}
-							{amount 4}
+							{amount 5}
 						}
 						{tag_add ea_deploy}
 						{tag_remove enemy_def_rusa_wpn}
@@ -1049,7 +1071,7 @@
 						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 2}}
 						{"5.entities"
 							{selector {tag enemy_def_ukr_line}}
-							{count {op ">="} {value 4}}
+							{count {op ">="} {value 6}}
 						}
 					}
 				}
@@ -1067,7 +1089,7 @@
 						{selector
 							{source advanced}
 							{group {select {tag {tag enemy_def_ukr_line}}}}
-							{amount 4}
+							{amount 6}
 						}
 						{tag_add ea_deploy}
 						{tag_remove enemy_def_ukr_line}
@@ -1089,7 +1111,7 @@
 						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 2}}
 						{"5.entities"
 							{selector {tag enemy_def_ukr_wpn}}
-							{count {op ">="} {value 4}}
+							{count {op ">="} {value 5}}
 						}
 					}
 				}
@@ -1107,7 +1129,7 @@
 						{selector
 							{source advanced}
 							{group {select {tag {tag enemy_def_ukr_wpn}}}}
-							{amount 4}
+							{amount 5}
 						}
 						{tag_add ea_deploy}
 						{tag_remove enemy_def_ukr_wpn}
@@ -1129,7 +1151,7 @@
 						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 4}}
 						{"5.entities"
 							{selector {tag enemy_def_prc_line}}
-							{count {op ">="} {value 4}}
+							{count {op ">="} {value 6}}
 						}
 					}
 				}
@@ -1147,7 +1169,7 @@
 						{selector
 							{source advanced}
 							{group {select {tag {tag enemy_def_prc_line}}}}
-							{amount 4}
+							{amount 6}
 						}
 						{tag_add ea_deploy}
 						{tag_remove enemy_def_prc_line}
@@ -1169,7 +1191,7 @@
 						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 4}}
 						{"5.entities"
 							{selector {tag enemy_def_prc_wpn}}
-							{count {op ">="} {value 4}}
+							{count {op ">="} {value 5}}
 						}
 					}
 				}
@@ -1187,7 +1209,7 @@
 						{selector
 							{source advanced}
 							{group {select {tag {tag enemy_def_prc_wpn}}}}
-							{amount 4}
+							{amount 5}
 						}
 						{tag_add ea_deploy}
 						{tag_remove enemy_def_prc_wpn}
@@ -1209,7 +1231,7 @@
 						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 3}}
 						{"5.entities"
 							{selector {tag enemy_def_nato_line}}
-							{count {op ">="} {value 4}}
+							{count {op ">="} {value 6}}
 						}
 					}
 				}
@@ -1227,7 +1249,7 @@
 						{selector
 							{source advanced}
 							{group {select {tag {tag enemy_def_nato_line}}}}
-							{amount 4}
+							{amount 6}
 						}
 						{tag_add ea_deploy}
 						{tag_remove enemy_def_nato_line}
@@ -1249,7 +1271,7 @@
 						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 3}}
 						{"5.entities"
 							{selector {tag enemy_def_nato_wpn}}
-							{count {op ">="} {value 4}}
+							{count {op ">="} {value 5}}
 						}
 					}
 				}
@@ -1267,7 +1289,7 @@
 						{selector
 							{source advanced}
 							{group {select {tag {tag enemy_def_nato_wpn}}}}
-							{amount 4}
+							{amount 5}
 						}
 						{tag_add ea_deploy}
 						{tag_remove enemy_def_nato_wpn}
@@ -1316,16 +1338,19 @@
 					{selector {tag ea_motor_hull}}
 					{tag_remove ea_deploy}
 					{tag_add ea_motor_transfer}
+					{tag_add ea_motor_hull_tx}
 				}
 				{"entity_state"
 					{selector {tag ea_motor_pax}}
 					{tag_remove ea_deploy}
 					{tag_add ea_motor_transfer}
+					{tag_add ea_motor_pax_tx}
 				}
 				{"entity_state"
 					{selector {tag ea_motor_crew}}
 					{tag_remove ea_deploy}
 					{tag_add ea_motor_transfer}
+					{tag_add ea_motor_crew_tx}
 				}
 				{"entity_state"
 					{selector {tag ea_motor_hull}}
@@ -1363,35 +1388,34 @@
 				}
 				("ea_own_motor_to_enemy")
 				{"delay" {time 0.2}}
-				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag ea_motor_hull} {type vehicle}}
-					{control AI}
-					{ai_move {mode enable}}
-					{weapon_prepare on}
-					{fire_mode open}
-					{move_mode free}
-					{movement {speed normal} {kind normal} {type normal}}
-					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
-				}
-				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag ea_motor_crew}}
-					{control AI}
-					{ai_move {mode enable}}
-					{weapon_prepare on}
-					{fire_mode open}
-					{move_mode free}
-					{movement {speed normal} {kind normal} {type normal}}
-					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
-				}
-				{"ables"
-					{selector {ignore_captured_by_user 0} {tag ea_motor_hull} {type vehicle}}
-					{remove select}
-				}
-				{"ables"
-					{selector {ignore_captured_by_user 0} {tag ea_motor_crew}}
-					{remove select}
+				; Re-assert role tags from ownership-stable witnesses before any order.
+				{"entity_state"
+					{selector {tag ea_motor_hull_tx}}
+					{tag_add ea_motor_hull}
 				}
 				{"entity_state"
+					{selector {tag ea_motor_pax_tx}}
+					{tag_add ea_motor_pax}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_crew_tx}}
+					{tag_add ea_motor_crew}
+				}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_hull} {type vehicle}}
+					{control AI}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+				}
+								{"ables"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_hull} {type vehicle}}
+					{remove select}
+				}
+								{"entity_state"
 					{selector {tag ea_motor_hull}}
 					{tag_remove ea_motor_transfer}
 				}
@@ -1409,7 +1433,7 @@
 					{"case"
 						{condition
 							{type entities}
-							{selector {ignore_captured_by_user 0} {tag ea_motor_hull} {type vehicle} {state inhabited}}
+							{selector {ignore_captured_by_user 0} {tag ea_motor_hull} {type vehicle}}
 							{count {op ">="} {value 1}}
 						}
 	{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 2}}
@@ -1446,17 +1470,55 @@
 					{"delay" {time 7}}
 					{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 4}}
 					("ea_motor_band")
+					; MOTOR RELEASE REQUIRES PROVEN MOVEMENT. A seated package may unload only
+					; after the hull has entered one of the objective-distance bands. Band 0
+					; means it never made useful progress, so the package is retired without
+					; emitting or leaking its riders into normal infantry selectors.
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "enemy_attack_motor_band$"} {op ">"} {value 0}}
+							{"entity_state" {selector {tag ea_motor_hull}} {tag_add ea_motor_transfer_release}}
+							{"entity_state" {selector {tag ea_motor_pax}} {tag_add ea_motor_transfer_release}}
+							{"entity_state" {selector {tag ea_motor_crew}} {tag_add ea_motor_transfer_release}}
+							{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 4}}
+						}
+						{"default"
+							{"entity_state"
+								{selector {tag ea_motor_hull}}
+								{tag_add hidden}
+								{inactive on}
+								{tag_remove ea_motor_hull}
+								{tag_remove ea_motor_hull_tx}
+							}
+							{"entity_state"
+								{selector {tag ea_motor_pax}}
+								{tag_add hidden}
+								{inactive on}
+								{tag_remove ea_motor_pax}
+								{tag_remove ea_motor_pax_tx}
+							}
+							{"entity_state"
+								{selector {tag ea_motor_crew}}
+								{tag_add hidden}
+								{inactive on}
+								{tag_remove ea_motor_crew}
+								{tag_remove ea_motor_crew_tx}
+							}
+							{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 9}}
+						}
+					}
 					{"emit"
 						{selector
 							{ignore_captured_by_user 0}
 							{tag ea_motor_hull}
+							{tag ea_motor_transfer_release}
 							{type vehicle}
 							{state inhabited}
 						}
 						{drop orders}
 						{emit {mode passengers}}
 					}
-					{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 4}}
+
 					{"delay" {time 1}}
 					; Only now are the passengers normal infantry eligible for combat/patrol orders.
 					{"entity_state"
@@ -1540,7 +1602,13 @@
 						{tag_remove ea_deploy}
 						{tag_remove ea_motor_crew}
 					}
-					{"set_i" {var "enemy_attack_transferred$"} {op "="} {value 1}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "enemy_attack_motor_stage$"} {op "=="} {value 4}}
+							{"set_i" {var "enemy_attack_transferred$"} {op "="} {value 1}}
+						}
+						{"default"}
+					}
 					}
 					{"default"
 					; INVALID MOTOR PACKAGE - REHIDE. No truck order, passenger emit or
@@ -1571,6 +1639,9 @@
 					{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 9}}
 				}
 				}
+
+				{"delay" {time 1}}
+				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 0}}
 			)
 
 
