@@ -7,10 +7,38 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "resource/map/multi/faction_support_templates.inc"
 ENGINES = {
-    "resource/map/multi/attack_support_waves.inc": "as",
-    "resource/map/multi/defense_support_waves.inc": "ds",
-    "resource/map/multi/enemy_attack_support.inc": "ea",
-    "resource/map/multi/enemy_defense_support.inc": "ed",
+    "resource/map/multi/attack_support_waves.inc": {
+        "define": "as",
+        "hull": "attack_support_motor_hull",
+        "crew": "attack_support_motor_crew",
+        "pax": "attack_support_motor_pax",
+        "flag": "attack_support_motor_flag",
+        "stage": "attack_support_motor_stage$",
+    },
+    "resource/map/multi/defense_support_waves.inc": {
+        "define": "ds",
+        "hull": "def_sup_motor_hull",
+        "crew": "def_sup_motor_crew",
+        "pax": "def_sup_motor_pax",
+        "flag": "def_sup_motor_flag",
+        "stage": "defense_support_motor_stage$",
+    },
+    "resource/map/multi/enemy_attack_support.inc": {
+        "define": "ea",
+        "hull": "ea_motor_hull",
+        "crew": "ea_motor_crew",
+        "pax": "ea_motor_pax",
+        "flag": "ea_motor_flag",
+        "stage": "enemy_attack_motor_stage$",
+    },
+    "resource/map/multi/enemy_defense_support.inc": {
+        "define": "ed",
+        "hull": "enemy_def_motor_hull",
+        "crew": "enemy_def_motor_crew",
+        "pax": "enemy_def_motor_pax",
+        "flag": "enemy_def_motor_flag",
+        "stage": "enemy_defense_motor_stage$",
+    },
 }
 
 
@@ -46,65 +74,78 @@ def _motor_links(text: str) -> list[tuple[int, int, str]]:
 
 
 class MotorRuntimeIsolationTests(unittest.TestCase):
-    def test_motor_core_runs_on_all_four_engines(self) -> None:
-        for relative, prefix in ENGINES.items():
+    def test_all_four_engines_use_decoupled_drop_helpers(self) -> None:
+        for relative, config in ENGINES.items():
+            define = config["define"]
             with self.subTest(relative=relative):
                 text = (ROOT / relative).read_text(encoding="utf-8")
-                block = _define_block(text, f"{prefix}_finish_motor")
-                self.assertIn("DECOUPLED MOTOR DELIVERY", block)
-                self.assertIn("NO PASSENGER LINK OR EMIT DEPENDENCY", block)
-                self.assertIn("BOUNDED INFANTRY RELEASE INDEPENDENT OF TRUCK", block)
-                self.assertIn(f"{prefix}_motor_hull", block)
-                self.assertIn(f"{prefix}_motor_crew", block)
-                self.assertIn(f"{prefix}_motor_pax", block)
-                self.assertIn(f"{prefix}_motor_flag", block)
+                finisher = _define_block(text, f"{define}_finish_motor")
+                helper = _define_block(text, f"{define}_drop_motor_pax")
+                self.assertIn(f'("{define}_drop_motor_pax")', finisher)
+                self.assertIn('{"placement"', helper)
+                self.assertIn("attack_support_air_", helper)
+                self.assertIn(config["pax"], helper)
 
-    def test_release_is_independent_of_vehicle_occupancy_and_emit(self) -> None:
-        for relative, prefix in ENGINES.items():
+    def test_release_has_no_occupancy_or_emit_dependency(self) -> None:
+        for relative, config in ENGINES.items():
+            define = config["define"]
             with self.subTest(relative=relative):
                 text = (ROOT / relative).read_text(encoding="utf-8")
-                block = _define_block(text, f"{prefix}_finish_motor")
-                self.assertNotIn("{state inhabited}", block)
-                self.assertNotIn("{emit", block)
-                self.assertNotIn("emit {mode passengers}", block)
-                self.assertGreaterEqual(block.count('{"delay" {time 7}}'), 4)
-                self.assertIn("attack_support_air_", block)
-                placement = block.index('{"placement"')
-                advance = block.index("{action advance}", placement)
-                self.assertLess(placement, advance)
+                finisher = _define_block(text, f"{define}_finish_motor")
+                helper = _define_block(text, f"{define}_drop_motor_pax")
+                combined = finisher + helper
+                self.assertNotIn("{state inhabited}", combined)
+                self.assertNotIn("{emit", combined)
+                self.assertNotIn("emit {mode passengers}", combined)
+                self.assertGreaterEqual(finisher.count('{"delay" {time 7}}'), 4)
 
-    def test_truck_uses_vehicle_move_and_infantry_uses_advance(self) -> None:
-        for relative, prefix in ENGINES.items():
+    def test_truck_moves_before_timed_infantry_release(self) -> None:
+        for relative, config in ENGINES.items():
+            define = config["define"]
             with self.subTest(relative=relative):
                 text = (ROOT / relative).read_text(encoding="utf-8")
-                block = _define_block(text, f"{prefix}_finish_motor")
-                move = block.index("{action move}")
-                release = block.index("BOUNDED INFANTRY RELEASE INDEPENDENT OF TRUCK")
-                advance = block.index("{action advance}", release)
-                self.assertLess(move, release)
-                self.assertLess(release, advance)
+                finisher = _define_block(text, f"{define}_finish_motor")
+                helper_call = finisher.index(f'("{define}_drop_motor_pax")')
+                vehicle_move = finisher.index("{action move}")
+                infantry_advance = finisher.index("{action advance}", helper_call)
+                self.assertLess(vehicle_move, helper_call)
+                self.assertLess(helper_call, infantry_advance)
+                self.assertIn(config["hull"], finisher)
+                self.assertIn(config["crew"], finisher)
+                self.assertIn(config["pax"], finisher)
+                self.assertIn(config["flag"], finisher)
+
+    def test_motor_stage_completes_and_resets(self) -> None:
+        for relative, config in ENGINES.items():
+            define = config["define"]
+            stage = config["stage"]
+            with self.subTest(relative=relative):
+                text = (ROOT / relative).read_text(encoding="utf-8")
+                finisher = _define_block(text, f"{define}_finish_motor")
                 self.assertIn(
-                    '{"set_i" {var "' + prefix + '_motor_stage$"} {op "="} {value 5}}',
-                    block,
+                    f'{{"set_i" {{var "{stage}"}} {{op "="}} {{value 4}}}}',
+                    finisher,
                 )
                 self.assertIn(
-                    '{"set_i" {var "' + prefix + '_motor_stage$"} {op "="} {value 0}}',
-                    block,
+                    f'{{"set_i" {{var "{stage}"}} {{op "="}} {{value 0}}}}',
+                    finisher,
                 )
 
     def test_templates_link_only_one_driver_per_motor_package(self) -> None:
         text = TEMPLATE.read_text(encoding="utf-8")
         links = _motor_links(text)
+        self.assertEqual(len(links), 16)
         self.assertEqual(sum(slot == "driver" for _, _, slot in links), 16)
         self.assertEqual(sum(slot == "commander" for _, _, slot in links), 0)
         self.assertEqual(sum(slot.startswith("seat") for _, _, slot in links), 0)
+        self.assertEqual(len({hull for _, hull, _ in links}), 16)
 
     def test_motor_passengers_are_loose_hidden_packages(self) -> None:
         text = TEMPLATE.read_text(encoding="utf-8")
-        lines = text.splitlines()
+        tag_lines = [line for line in text.splitlines() if "{Tags " in line]
         pax_lines = [
             line
-            for line in lines
+            for line in tag_lines
             if re.search(r'ally_sup_(?:rusa|ukr|nato|prc)_p[1-4]_pax', line)
         ]
         self.assertTrue(pax_lines)
@@ -112,8 +153,16 @@ class MotorRuntimeIsolationTests(unittest.TestCase):
         for faction in ("rusa", "ukr", "nato", "prc"):
             for package in range(1, 5):
                 tag = f'ally_sup_{faction}_p{package}_crew'
-                linked = [line for line in lines if tag in line and "sup_linked" in line]
-                self.assertEqual(len(linked), 1, f"{tag} must name exactly one linked driver")
+                linked = [
+                    line
+                    for line in tag_lines
+                    if tag in line and "sup_linked" in line
+                ]
+                self.assertEqual(
+                    len(linked),
+                    1,
+                    f"{tag} must name exactly one linked driver",
+                )
 
 
 if __name__ == "__main__":
