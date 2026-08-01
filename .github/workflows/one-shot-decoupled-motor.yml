@@ -52,20 +52,13 @@ jobs:
 
           start = source.index("    topup_crew_ids = {")
           end = source.index("    text = link_re.sub(strip_topup_commander, text)", start)
-          replacement = '''    # Identify numbered top-up trucks by their hull tags. Restricting links by
-              # tagged hull prevents the motor repair from touching aircraft links.
-              topup_hull_ids: set[str] = set()
-              for line in text.splitlines():
-                  if not re.search(r'"ally_sup_(?:rusa|ukr|nato|prc)_p[2-4]_hull"', line):
-                      continue
-                  ids = re.findall(r"0x[0-9a-fA-F]+", line)
-                  if ids:
-                      topup_hull_ids.add(ids[-1].lower())
-              if len(topup_hull_ids) != 12:
-                  raise RuntimeError(f"Expected 12 top-up motor hulls, found {len(topup_hull_ids)}")
-
+          replacement = '''    # Generated top-up motor packages occupy 0xc100-0xc153. Base motors are
+              # 0xb3xx and aircraft are 0xb4xx, so this range isolates only the twelve
+              # numbered top-up trucks without relying on tag layout.
               def strip_topup_commander(match: re.Match[str]) -> str:
-                  if match.group("hull").lower() not in topup_hull_ids:
+                  hull = int(match.group("hull"), 16)
+                  body = int(match.group("body"), 16)
+                  if not (0xC100 <= hull <= 0xC153 and 0xC100 <= body <= 0xC153):
                       return match.group(0)
                   if match.group("slot") == "commander":
                       commander_ids.add(match.group("body").lower())
