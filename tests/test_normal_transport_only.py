@@ -32,8 +32,8 @@ defender = load_module(
     ROOT / "tools" / "apply_friendly_defender_motor_one_shot.py",
 )
 normal = load_module(
-    "normal_transport_only",
-    ROOT / "tools" / "apply_normal_transport_only.py",
+    "normal_transport_only_fixed",
+    ROOT / "tools" / "apply_normal_transport_only_fixed.py",
 )
 base = load_module(
     "normal_transport_base_test",
@@ -58,7 +58,6 @@ class NormalTransportOnlyTests(unittest.TestCase):
         for name in FILES:
             shutil.copy2(ROOT / "resource/map/multi" / name, self.multi / name)
 
-        # Recreate the proven baseline plus the defender-side helper macros.
         visible.patch_multi_root(self.multi)
         timing.patch_multi_root(self.multi)
         defender.apply(self.root)
