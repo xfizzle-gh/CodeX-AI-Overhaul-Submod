@@ -163,7 +163,7 @@ class FriendlyDefenderMotorOneShotTests(unittest.TestCase):
                 ('("ds_finish_motor")', '("as_finish_motor")'),
             )
             for old, new in replacements:
-                restored = restored.replace(old, new, 1)
+                restored = restored.replace(old, new)
             self.assertEqual(source, restored, faction)
 
     def test_one_shot_contract_and_variables(self) -> None:
