@@ -1,4 +1,4 @@
-name: Known-good motor tuning
+name: Final motor lifecycle tuning
 
 on:
   push:
