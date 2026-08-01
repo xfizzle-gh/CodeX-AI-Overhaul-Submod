@@ -45,6 +45,31 @@ def named_block(text: str, marker: str) -> tuple[int, int, str]:
     raise PatchError(f"Unbalanced block: {marker}")
 
 
+def paren_block_end(text: str, start: int, name: str) -> int:
+    depth = 0
+    in_string = False
+    escaped = False
+    for index in range(start, len(text)):
+        char = text[index]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+        elif char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth == 0:
+                return index + 1
+    raise PatchError(f"Unbalanced macro: {name}")
+
+
 ATTACK_MACRO = r'''
 
 			; TEST OVERLAY: place the complete linked truck package in one operation.
@@ -145,37 +170,18 @@ def patch_motor_blocks(text: str, *, namespace: str, old_call: str, new_call: st
 
 def insert_macro(text: str, *, macro_name: str, macro: str, anchor: str) -> str:
     marker = f'(define "{macro_name}"'
-    if marker in text:
-        start = text.find(marker)
-        brace = text.find("(", start)
-        if brace < 0:
-            raise PatchError(f"Missing macro opening: {macro_name}")
-        depth = 0
-        end = None
-        in_string = False
-        escaped = False
-        for index in range(brace, len(text)):
-            char = text[index]
-            if in_string:
-                if escaped:
-                    escaped = False
-                elif char == "\\":
-                    escaped = True
-                elif char == '"':
-                    in_string = False
-                continue
-            if char == '"':
-                in_string = True
-            elif char == "(":
-                depth += 1
-            elif char == ")":
-                depth -= 1
-                if depth == 0:
-                    end = index + 1
-                    break
-        if end is None:
-            raise PatchError(f"Unbalanced macro: {macro_name}")
-        return text[:start] + macro.strip("\n") + text[end:]
+    desired_start = macro.find(marker)
+    if desired_start < 0:
+        raise PatchError(f"Generated macro is missing its define: {macro_name}")
+    desired_define = macro[desired_start:].strip("\n")
+
+    start = text.find(marker)
+    if start >= 0:
+        end = paren_block_end(text, start, macro_name)
+        current_define = text[start:end]
+        if current_define == desired_define:
+            return text
+        return text[:start] + desired_define + text[end:]
 
     pos = text.find(anchor)
     if pos < 0:
@@ -208,10 +214,17 @@ def validate_multi_root(multi_root: Path) -> None:
     for token in required_enemy:
         if token not in enemy:
             raise PatchError(f"enemy_attack_support.inc missing {token}")
+
+    attack_macro_start = attack.index('(define "as_place_motor_visible"')
+    attack_macro_end = paren_block_end(attack, attack_macro_start, "as_place_motor_visible")
+    enemy_macro_start = enemy.index('(define "ea_place_motor_visible"')
+    enemy_macro_end = paren_block_end(enemy, enemy_macro_start, "ea_place_motor_visible")
+    attack_macro = attack[attack_macro_start:attack_macro_end]
+    enemy_macro = enemy[enemy_macro_start:enemy_macro_end]
     for token in forbidden:
-        if token in named_block(attack, '(define "as_place_motor_visible"')[2]:
+        if token in attack_macro:
             raise PatchError(f"attack motor helper still uses off-map rear pad: {token}")
-        if token in named_block(enemy, '(define "ea_place_motor_visible"')[2]:
+        if token in enemy_macro:
             raise PatchError(f"enemy motor helper still uses off-map rear pad: {token}")
 
     for text, namespace, call in (
