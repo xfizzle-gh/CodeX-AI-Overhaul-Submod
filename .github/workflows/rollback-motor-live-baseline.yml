@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - tools/rollback_motor_to_live_baseline.py
+      - tools/fix_rollback_audit.py
       - .github/workflows/rollback-motor-live-baseline.yml
   workflow_dispatch:
 
@@ -32,6 +33,7 @@ jobs:
 
       - name: Restore last live-moving motor finishers
         run: |
+          python tools/fix_rollback_audit.py
           python -m py_compile tools/rollback_motor_to_live_baseline.py
           python tools/rollback_motor_to_live_baseline.py
           git diff --check
@@ -54,6 +56,7 @@ jobs:
         shell: bash
         run: |
           rm -f tools/rollback_motor_to_live_baseline.py
+          rm -f tools/fix_rollback_audit.py
           rm -f .github/workflows/rollback-motor-live-baseline.yml
           git diff --check
           git config user.name "OpenAI Codex Agent"
@@ -67,6 +70,7 @@ jobs:
             tests/test_attack_support_slot_proof.py \
             tools/deploy_attack_support_probe.ps1 \
             tools/rollback_motor_to_live_baseline.py \
+            tools/fix_rollback_audit.py \
             .github/workflows/rollback-motor-live-baseline.yml
           git commit -m "Roll back broken motor lifecycle to last moving baseline"
           git push origin HEAD:experiment/attack-mate-slot-proof
