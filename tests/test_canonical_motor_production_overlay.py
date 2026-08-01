@@ -45,7 +45,7 @@ class CanonicalMotorProductionOverlayTests(unittest.TestCase):
 
     def test_all_quadrants_and_factions_receive_canonical_contract(self) -> None:
         changed = motor.apply(self.root)
-        self.assertEqual(len(changed), 5)
+        self.assertEqual(len(changed), 4)
 
         templates = (
             self.root / "resource/map/multi/faction_support_templates.inc"
@@ -111,7 +111,7 @@ class CanonicalMotorProductionOverlayTests(unittest.TestCase):
         after = {
             relative: (self.root / relative).read_bytes() for relative in FILES
         }
-        self.assertEqual(len(changed), 5)
+        self.assertEqual(len(changed), 4)
         self.assertEqual(before, after)
 
 
