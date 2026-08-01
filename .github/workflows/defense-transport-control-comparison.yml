@@ -14,6 +14,7 @@ on:
       - tools/deploy_friendly_defender_motor_one_shot.ps1
       - tools/deploy_transport_control_comparison.ps1
       - tests/test_four_quadrant_transport_patrol.py
+      - tests/test_transport_perimeters_actual_maps.py
       - .github/workflows/defense-transport-control-comparison.yml
   pull_request:
     paths:
@@ -26,6 +27,7 @@ on:
       - tools/deploy_friendly_defender_motor_one_shot.ps1
       - tools/deploy_transport_control_comparison.ps1
       - tests/test_four_quadrant_transport_patrol.py
+      - tests/test_transport_perimeters_actual_maps.py
       - .github/workflows/defense-transport-control-comparison.yml
 
 jobs:
@@ -45,8 +47,10 @@ jobs:
       - name: Load corrected four-quadrant generator
         run: |
           python -c "import importlib.util, pathlib, sys; p=pathlib.Path('tools/apply_four_quadrant_transport_patrol_fixed.py'); s=importlib.util.spec_from_file_location('fourq_ci', p); m=importlib.util.module_from_spec(s); sys.modules[s.name]=m; s.loader.exec_module(m)"
-      - name: Validate four engines, four factions, patrol contact gate, and map geometry
-        run: python -m unittest tests/test_four_quadrant_transport_patrol.py
+      - name: Validate engines, factions, contact gate, and all map geometry
+        run: |
+          python -m unittest tests/test_four_quadrant_transport_patrol.py
+          python -m unittest tests/test_transport_perimeters_actual_maps.py
 
   powershell:
     runs-on: windows-latest
