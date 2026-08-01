@@ -6,14 +6,18 @@ on:
       - fix/enemy-motor-drive-origin-exit
     paths:
       - tools/apply_motor_drive_origin_exit_fixed.py
+      - tools/apply_defense_motor_75s.py
       - tools/deploy_motor_drive_origin_exit_fixed.ps1
       - tests/test_motor_drive_origin_exit_fixed.py
+      - tests/test_defense_motor_75s.py
       - .github/workflows/motor-drive-origin-exit-fixed.yml
   pull_request:
     paths:
       - tools/apply_motor_drive_origin_exit_fixed.py
+      - tools/apply_defense_motor_75s.py
       - tools/deploy_motor_drive_origin_exit_fixed.ps1
       - tests/test_motor_drive_origin_exit_fixed.py
+      - tests/test_defense_motor_75s.py
       - .github/workflows/motor-drive-origin-exit-fixed.yml
 
 jobs:
@@ -26,12 +30,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Compile correction
+      - name: Compile correction and 75-second timing overlay
         run: |
           python -m py_compile tools/apply_motor_drive_origin_exit.py
           python -m py_compile tools/apply_motor_drive_origin_exit_fixed.py
-      - name: Validate movement, exits, and preserved package lifecycle
-        run: python -m unittest tests/test_motor_drive_origin_exit_fixed.py
+          python -m py_compile tools/apply_defense_motor_75s.py
+      - name: Validate movement, exits, package lifecycle, and 75-second rides
+        run: |
+          python -m unittest tests/test_motor_drive_origin_exit_fixed.py
+          python -m unittest tests/test_defense_motor_75s.py
 
   powershell:
     runs-on: windows-latest
