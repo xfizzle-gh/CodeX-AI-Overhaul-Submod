@@ -74,7 +74,8 @@ class CanonicalMotorProductionOverlayTests(unittest.TestCase):
                     r'\{"delay"\s+\{time\s+([0-9]+)\}\}', clock[:command]
                 )
             ]
-            self.assertEqual(schedule, [30, 30, 30, 180, 240, 300])
+            self.assertEqual(schedule, [30, 30, 30, 160, 220, 280])
+            self.assertIn('{"delay" {time 20}}', clock[command:])
 
             cleanup = motor.brace_block(
                 text, '{"' + engine.namespace + '/motor_cleanup"'
