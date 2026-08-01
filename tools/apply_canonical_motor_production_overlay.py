@@ -95,11 +95,13 @@ def upsert_define(text: str, name: str, rendered: str, before_marker: str) -> st
     marker = f'(define "{name}"'
     if marker in text:
         start, end, _ = paren_block(text, marker)
-        return text[:start] + rendered + text[end:]
+        line_start = text.rfind("\n", 0, start) + 1
+        return text[:line_start] + rendered + text[end:]
     pos = text.find(before_marker)
     if pos < 0:
         raise PatchError(f"Missing insertion anchor {before_marker}")
-    return text[:pos] + rendered + "\n\n" + text[pos:]
+    line_start = text.rfind("\n", 0, pos) + 1
+    return text[:line_start] + rendered + "\n\n" + text[line_start:]
 
 
 def render_placer(engine: Engine) -> str:
