@@ -187,52 +187,55 @@ def test_arrivals_activate_and_rotate_one_unlinked_human_at_a_time() -> None:
         assert 'sup_linked' in body[selector_start:activation]
 
 
-def test_runtime_proof_requires_role_reassertion_and_movement_release() -> None:
-    for path, finisher, owner, deploy, transfer, hull, pax, crew, _, leaving in CONFIGS:
+def test_motor_finishers_match_last_live_moving_baseline() -> None:
+    for path, finisher, _, _, _, hull, pax, crew, _, _ in CONFIGS:
         text = (ROOT / path).read_text(encoding="utf-8-sig")
         body = block(text, f'(define "{finisher}"')
-        drive = body.index('; Vehicles use MOVE')
-        prefix = body[:drive]
 
-        # Ownership keeps one witness per role; linked crew are not separately activated.
+        assert "LAST LIVE MOVING MOTOR BASELINE" in text
+        assert "MOTOR RELEASE REQUIRES PROVEN MOVEMENT" not in body
+        assert "_transfer_release" not in body
         for role in (hull, pax, crew):
-            assert f'{role}_tx' in prefix
-            assert f'{{selector {{tag {role}_tx}}}}' in prefix
-        assert '{state inhabited}' not in prefix
-        # A linked driver must not receive a separate actor-state activation before
-        # the hull moves. The previous split-based check bled into the following
-        # commands and falsely classified the hull actor-state block as a crew block.
-        assert (
-            f'{{selector {{ignore_captured_by_user 0}} {{tag {crew}}}}}'
-            not in prefix
+            assert f"{role}_tx" not in body
+
+        stage_var = {
+            "as_finish_motor": "attack_support_motor_stage",
+            "ds_finish_motor": "defense_support_motor_stage",
+            "ea_finish_motor": "enemy_attack_motor_stage",
+            "ed_finish_motor": "enemy_defense_motor_stage",
+        }[finisher]
+        stage2 = body.index(
+            f'{{"set_i" {{var "{stage_var}$"}} {{op "="}} {{value 2}}}}'
         )
+        drive = body.index("; Vehicles use MOVE")
+        stage3 = body.index(
+            f'{{"set_i" {{var "{stage_var}$"}} {{op "="}} {{value 3}}}}'
+        )
+        emit = body.index('{"emit"', stage3)
+        stage4 = body.index(
+            f'{{"set_i" {{var "{stage_var}$"}} {{op "="}} {{value 4}}}}', emit
+        )
+        assert stage2 < drive < stage3 < emit < stage4
 
-        # No passenger release is legal until objective-distance movement is proven.
-        marker = 'MOTOR RELEASE REQUIRES PROVEN MOVEMENT'
-        assert body.count(marker) == 1
-        proof = body[body.index(marker):body.index('{"emit"')]
-        assert '{op ">"} {value 0}' in proof
-        assert f'{{tag_add {transfer}_release}}' in proof
-        assert 'Band 0' in proof
-        assert 'INVALID MOTOR PACKAGE - REHIDE' in body
+        prefix = body[:drive]
+        assert f'{{selector {{ignore_captured_by_user 0}} {{tag {crew}}}}}' in prefix
+        emit_block = block(body, '{"emit"')
+        assert f"{{tag {hull}}}" in emit_block
+        assert "{type vehicle}" in emit_block
+        assert "{state inhabited}" in emit_block
+        assert "{emit {mode passengers}}" in emit_block
+        assert '{value 9}' not in body
 
-        # Both the movement-failure and invalid-package paths expose stage 9, then the
-        # finisher resets to zero so a later numbered package can run.
-        assert body.count('{value 9}') >= 2
-        assert body.rfind('{value 0}') > body.rfind('{value 9}')
-
-        retirement = body.index(f'{{tag_add {leaving}}}')
-        return_path = body[retirement:]
-        assert f'{{tag {leaving}}} {{type vehicle}}' in return_path
-        assert f'{{tag {hull}}} {{type vehicle}}' not in return_path
-
-def test_deploy_guard_pins_runtime_transport_repairs() -> None:
+def test_deploy_guard_pins_live_moving_motor_baseline() -> None:
     deploy = (ROOT / "tools/deploy_attack_support_probe.ps1").read_text(encoding="utf-8-sig")
     assert "still forces the legacy mid-map airmobile test" in deploy
     assert "Per-body activation spacing" in deploy
-    assert "Atomic linked-package activation" in deploy
-    assert "INVALID MOTOR PACKAGE - REHIDE" in deploy
-
+    assert "LAST LIVE MOVING MOTOR BASELINE" in deploy
+    assert "Promote the three roles independently" in deploy
+    assert "Vehicles use MOVE" in deploy
+    assert "Atomic linked-package activation" not in deploy
+    assert "INVALID MOTOR PACKAGE - REHIDE" not in deploy
+    assert "Fail closed before any drive or emit" not in deploy
 
 def test_standard_infantry_arrivals_are_five_or_six() -> None:
     configs = (

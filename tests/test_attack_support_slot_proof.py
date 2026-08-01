@@ -2161,10 +2161,10 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                 # Reset in init, beside the other motor vars.
                 init = code[: code.index('{"set_i" {var "%s$"} {op "="} {value 1}}' % var)]
                 self.assertIn('{"set_i" {var "%s$"} {op "="} {value 0}}' % var, init)
-                # One reset is initialization; the second releases the completed
-                # or failed lifecycle so another truck package may be dispatched.
+                # The last live-moving baseline initializes the stage once. It does
+                # not synthesize a stage-9 failure latch or a later reset.
                 self.assertEqual(
-                    code.count('{"set_i" {var "%s$"} {op "="} {value 0}}' % var), 2
+                    code.count('{"set_i" {var "%s$"} {op "="} {value 0}}' % var), 1
                 )
                 # One claim write per faction trigger, right where the budget drops.
                 self.assertEqual(
@@ -2328,12 +2328,10 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                 pax_order = code.index("{action advance}", pax_source)
                 self.assertLess(pick, move)
                 self.assertLess(move, stage3)
-                # Stage 4 now means movement was proved and unload was released.
-                # It is written immediately before emit; passengers become normal
-                # infantry only after the emit command completes.
-                self.assertLess(stage3, stage4)
-                self.assertLess(stage4, emit)
-                self.assertLess(emit, pax_source)
+                # Last live-moving ordering: drive, timed transit, emit, then stage 4.
+                self.assertLess(stage3, emit)
+                self.assertLess(emit, stage4)
+                self.assertLess(stage4, pax_source)
                 self.assertLess(pax_source, pax_order)
                 self.assertNotIn("{action advance}", code[:emit])
                 emit_block = block_at(code, emit)

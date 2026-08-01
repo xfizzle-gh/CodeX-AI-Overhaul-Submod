@@ -723,7 +723,7 @@ foreach ($pair in @(
     @($eaSource, 'enemy attack')
 )) {
     $raw = [System.IO.File]::ReadAllText($pair[0])
-    foreach ($marker in @('Per-body activation spacing', 'Atomic linked-package activation', 'INVALID MOTOR PACKAGE - REHIDE', 'Fail closed before any drive or emit')) {
+    foreach ($marker in @('Per-body activation spacing', 'LAST LIVE MOVING MOTOR BASELINE', 'Promote the three roles independently', 'Vehicles use MOVE')) {
         if (-not $raw.Contains($marker)) {
             throw "Source $($pair[1]) engine is missing runtime-proof marker: $marker"
         }

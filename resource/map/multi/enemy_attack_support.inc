@@ -1331,26 +1331,24 @@
 				}
 			)
 
-						(define "ea_finish_motor"
+						; LAST LIVE MOVING MOTOR BASELINE (2026-07-31). Restored after the stage-9/no-drive regression.
+(define "ea_finish_motor"
 				; Motor package isolation: the placement helper requires the shared deploy tag,
 				; but no infantry finisher may see the truck or its linked riders after placement.
 				{"entity_state"
 					{selector {tag ea_motor_hull}}
 					{tag_remove ea_deploy}
 					{tag_add ea_motor_transfer}
-					{tag_add ea_motor_hull_tx}
 				}
 				{"entity_state"
 					{selector {tag ea_motor_pax}}
 					{tag_remove ea_deploy}
 					{tag_add ea_motor_transfer}
-					{tag_add ea_motor_pax_tx}
 				}
 				{"entity_state"
 					{selector {tag ea_motor_crew}}
 					{tag_remove ea_deploy}
 					{tag_add ea_motor_transfer}
-					{tag_add ea_motor_crew_tx}
 				}
 				{"entity_state"
 					{selector {tag ea_motor_hull}}
@@ -1374,12 +1372,26 @@
 					{tag_remove ea_g4}
 				}
 				{"delay" {time 0.1}}
-				; Atomic linked-package activation. Hull, driver, commander and passengers
-				; must leave inactive/hidden state in one entity-state operation. Activating
-				; the three roles separately breaks the Link seat bindings and produces a
-				; white empty truck with bodies clipping through its center.
+				; Promote the three roles independently. Seated passengers remain outside the
+				; generic infantry source/patrol tags until the explicit emit below.
 				{"entity_state"
-					{selector {tag ea_motor_transfer}}
+					{selector {tag ea_motor_hull}}
+					{tag_remove ally_sup_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_pax}}
+					{tag_remove ally_sup_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_crew}}
 					{tag_remove ally_sup_tpl}
 					{tag_remove hidden}
 					{inactive off}
@@ -1388,21 +1400,8 @@
 				}
 				("ea_own_motor_to_enemy")
 				{"delay" {time 0.2}}
-				; Re-assert role tags from ownership-stable witnesses before any order.
-				{"entity_state"
-					{selector {tag ea_motor_hull_tx}}
-					{tag_add ea_motor_hull}
-				}
-				{"entity_state"
-					{selector {tag ea_motor_pax_tx}}
-					{tag_add ea_motor_pax}
-				}
-				{"entity_state"
-					{selector {tag ea_motor_crew_tx}}
-					{tag_add ea_motor_crew}
-				}
 				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag ea_motor_hull} {type vehicle}}
+					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
 					{control AI}
 					{ai_move {mode enable}}
 					{weapon_prepare on}
@@ -1411,11 +1410,25 @@
 					{movement {speed normal} {kind normal} {type normal}}
 					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
 				}
-								{"ables"
-					{selector {ignore_captured_by_user 0} {tag ea_motor_hull} {type vehicle}}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_crew}}
+					{control AI}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
 					{remove select}
 				}
-								{"entity_state"
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_crew}}
+					{remove select}
+				}
+				{"entity_state"
 					{selector {tag ea_motor_hull}}
 					{tag_remove ea_motor_transfer}
 				}
@@ -1427,221 +1440,135 @@
 					{selector {tag ea_motor_crew}}
 					{tag_remove ea_motor_transfer}
 				}
-								; Fail closed before any drive or emit. The 2026-07-31 runtime showed both
-				; pipelines reaching stage 4 with band 0 while the hull was uninhabited.
+				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 2}}
+				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 0}}
+				{"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 0}}
+				{"entity_state" {selector {tag ea_motor_flag}} {tag_remove ea_motor_flag}}
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group
+							{select {tag {tag flag}}}
+							{exclude {state {state inactive}}}
+						}
+						{sort {type shuffle}}
+						{amount 1}
+					}
+					{tag_add ea_motor_flag}
+				}
+				{"delay" {time 0.1}}
+				; Vehicles use MOVE. ADVANCE lets infantry AI and patrol logic reinterpret the hull.
+				{"action"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+					{drop orders}
+					{action move}
+					{target {ignore_captured_by_user 0} {tag ea_motor_flag}}
+				}
+				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 3}}
+				{"delay" {time 7}}
+				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 1}}
+				{"delay" {time 7}}
+				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 2}}
+				{"delay" {time 7}}
+				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 3}}
+				{"delay" {time 7}}
+				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 4}}
+				("ea_motor_band")
+				{"emit"
+					{selector
+						{ignore_captured_by_user 0}
+						{tag ea_motor_hull}
+						{type vehicle}
+						{state inhabited}
+					}
+					{drop orders}
+					{emit {mode passengers}}
+				}
+				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 4}}
+				{"delay" {time 1}}
+				; Only now are the passengers normal infantry eligible for combat/patrol orders.
+				{"entity_state"
+					{selector {tag ea_motor_pax}}
+					{tag_add ea_src}
+					{tag_remove hidden}
+					{inactive off}
+					{discovered on}
+				}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
+					{control AI}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
+					{remove select}
+				}
+				{"action"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
+					{drop orders}
+					{action advance}
+					{target {ignore_captured_by_user 0} {tag ea_motor_flag}}
+				}
+				; The empty hull is never a support infantry/patrol member. It returns to the
+				; actual edge it entered from and remains cleanup-addressable for 45 seconds.
+				{"entity_state"
+					{selector {tag ea_motor_hull}}
+					{tag_add ea_motor_leaving}
+					{tag_remove ea_src}
+					{tag_remove ea_g1}
+					{tag_remove ea_g2}
+					{tag_remove ea_g3}
+					{tag_remove ea_g4}
+				}
 				{"switch"
 					{"case"
-						{condition
-							{type entities}
-							{selector {ignore_captured_by_user 0} {tag ea_motor_hull} {type vehicle}}
-							{count {op ">="} {value 1}}
-						}
-	{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 2}}
-					{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 0}}
-					{"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 0}}
-					{"entity_state" {selector {tag ea_motor_flag}} {tag_remove ea_motor_flag}}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select {tag {tag flag}}}
-								{exclude {state {state inactive}}}
-							}
-							{sort {type shuffle}}
-							{amount 1}
-						}
-						{tag_add ea_motor_flag}
-					}
-					{"delay" {time 0.1}}
-					; Vehicles use MOVE. ADVANCE lets infantry AI and patrol logic reinterpret the hull.
-					{"action"
-						{selector {ignore_captured_by_user 0} {tag ea_motor_hull} {type vehicle}}
-						{drop orders}
-						{action move}
-						{target {ignore_captured_by_user 0} {tag ea_motor_flag}}
-					}
-					{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 3}}
-					{"delay" {time 7}}
-					{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 1}}
-					{"delay" {time 7}}
-					{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 2}}
-					{"delay" {time 7}}
-					{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 3}}
-					{"delay" {time 7}}
-					{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 4}}
-					("ea_motor_band")
-					; MOTOR RELEASE REQUIRES PROVEN MOVEMENT. A seated package may unload only
-					; after the hull has entered one of the objective-distance bands. Band 0
-					; means it never made useful progress, so the package is retired without
-					; emitting or leaking its riders into normal infantry selectors.
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "enemy_attack_motor_band$"} {op ">"} {value 0}}
-							{"entity_state" {selector {tag ea_motor_hull}} {tag_add ea_motor_transfer_release}}
-							{"entity_state" {selector {tag ea_motor_pax}} {tag_add ea_motor_transfer_release}}
-							{"entity_state" {selector {tag ea_motor_crew}} {tag_add ea_motor_transfer_release}}
-							{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 4}}
-						}
-						{"default"
-							{"entity_state"
-								{selector {tag ea_motor_hull}}
-								{tag_add hidden}
-								{inactive on}
-								{tag_remove ea_motor_hull}
-								{tag_remove ea_motor_hull_tx}
-							}
-							{"entity_state"
-								{selector {tag ea_motor_pax}}
-								{tag_add hidden}
-								{inactive on}
-								{tag_remove ea_motor_pax}
-								{tag_remove ea_motor_pax_tx}
-							}
-							{"entity_state"
-								{selector {tag ea_motor_crew}}
-								{tag_add hidden}
-								{inactive on}
-								{tag_remove ea_motor_crew}
-								{tag_remove ea_motor_crew_tx}
-							}
-							{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 9}}
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+						{"action"
+							{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+							{drop orders}
+							{action move}
+							{waypoint "attack_support_entry_a1"}
 						}
 					}
-					{"emit"
-						{selector
-							{ignore_captured_by_user 0}
-							{tag ea_motor_hull}
-							{tag ea_motor_transfer_release}
-							{type vehicle}
-							{state inhabited}
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+						{"action"
+							{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+							{drop orders}
+							{action move}
+							{waypoint "attack_support_entry_b1"}
 						}
-						{drop orders}
-						{emit {mode passengers}}
-					}
-
-					{"delay" {time 1}}
-					; Only now are the passengers normal infantry eligible for combat/patrol orders.
-					{"entity_state"
-						{selector {tag ea_motor_pax}}
-						{tag_add ea_src}
-						{tag_remove hidden}
-						{inactive off}
-						{discovered on}
-					}
-					{"actor_state"
-						{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
-						{control AI}
-						{ai_move {mode enable}}
-						{weapon_prepare on}
-						{fire_mode open}
-						{move_mode free}
-						{movement {speed normal} {kind normal} {type normal}}
-						{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
-					}
-					{"ables"
-						{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
-						{remove select}
-					}
-					{"action"
-						{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
-						{drop orders}
-						{action advance}
-						{target {ignore_captured_by_user 0} {tag ea_motor_flag}}
-					}
-					; The empty hull is never a support infantry/patrol member. It returns to the
-					; actual edge it entered from and remains cleanup-addressable for 45 seconds.
-					{"entity_state"
-						{selector {tag ea_motor_hull}}
-						{tag_add ea_motor_leaving}
-						{tag_remove ea_src}
-						{tag_remove ea_g1}
-						{tag_remove ea_g2}
-						{tag_remove ea_g3}
-						{tag_remove ea_g4}
-					}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag ea_motor_leaving} {type vehicle}}
-								{drop orders}
-								{action move}
-								{waypoint "attack_support_entry_a1"}
-							}
-						}
-						{"case"
-							{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag ea_motor_leaving} {type vehicle}}
-								{drop orders}
-								{action move}
-								{waypoint "attack_support_entry_b1"}
-							}
-						}
-						{"default"
-							{"action"
-								{selector {ignore_captured_by_user 0} {tag ea_motor_leaving} {type vehicle}}
-								{drop orders}
-								{action move}
-								{waypoint "attack_support_entry_a1"}
-							}
-						}
-					}
-					{"entity_state"
-						{selector {tag ea_motor_hull}}
-						{tag_remove ea_deploy}
-						{tag_remove ea_motor_hull}
-					}
-					{"entity_state"
-						{selector {tag ea_motor_pax}}
-						{tag_remove ea_deploy}
-						{tag_remove ea_motor_pax}
-					}
-					{"entity_state"
-						{selector {tag ea_motor_crew}}
-						{tag_remove ea_deploy}
-						{tag_remove ea_motor_crew}
-					}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "enemy_attack_motor_stage$"} {op "=="} {value 4}}
-							{"set_i" {var "enemy_attack_transferred$"} {op "="} {value 1}}
-						}
-						{"default"}
-					}
 					}
 					{"default"
-					; INVALID MOTOR PACKAGE - REHIDE. No truck order, passenger emit or
-					; return-to-edge order is legal unless the atomic package resolves as
-					; one inhabited vehicle. This prevents white trucks and walking riders.
-					{"entity_state"
-						{selector {tag ea_motor_hull}}
-						{tag_add ea_motor_leaving}
-						{tag_add hidden}
-						{inactive on}
-						{tag_remove ea_deploy}
-						{tag_remove ea_motor_hull}
+						{"action"
+							{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+							{drop orders}
+							{action move}
+							{waypoint "attack_support_entry_a1"}
+						}
 					}
-					{"entity_state"
-						{selector {tag ea_motor_pax}}
-						{tag_add hidden}
-						{inactive on}
-						{tag_remove ea_deploy}
-						{tag_remove ea_motor_pax}
-					}
-					{"entity_state"
-						{selector {tag ea_motor_crew}}
-						{tag_add hidden}
-						{inactive on}
-						{tag_remove ea_deploy}
-						{tag_remove ea_motor_crew}
-					}
-					{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 9}}
 				}
+				{"entity_state"
+					{selector {tag ea_motor_hull}}
+					{tag_remove ea_deploy}
+					{tag_remove ea_motor_hull}
 				}
-
-				{"delay" {time 1}}
-				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 0}}
+				{"entity_state"
+					{selector {tag ea_motor_pax}}
+					{tag_remove ea_deploy}
+					{tag_remove ea_motor_pax}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_crew}}
+					{tag_remove ea_deploy}
+					{tag_remove ea_motor_crew}
+				}
+				{"set_i" {var "enemy_attack_transferred$"} {op "="} {value 1}}
 			)
 
 
