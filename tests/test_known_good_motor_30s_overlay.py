@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TIMING_SCRIPT = ROOT / "tools" / "apply_known_good_motor_30s_test.py"
 PLACEMENT_SCRIPT = ROOT / "tools" / "apply_motor_visible_package_overlay.py"
-DISMOUNT_SCRIPT = ROOT / "tools" / "apply_motor_dismount_35s_overlay.py"
+LIFECYCLE_SCRIPT = ROOT / "tools" / "apply_motor_lifecycle_tuning_overlay.py"
 
 
 def load_module(name: str, path: Path):
@@ -22,7 +22,7 @@ def load_module(name: str, path: Path):
 
 motor_30s = load_module("motor_30s", TIMING_SCRIPT)
 motor_visible = load_module("motor_visible", PLACEMENT_SCRIPT)
-motor_35s = load_module("motor_35s", DISMOUNT_SCRIPT)
+motor_lifecycle = load_module("motor_lifecycle", LIFECYCLE_SCRIPT)
 
 
 class KnownGoodMotorThirtySecondOverlayTests(unittest.TestCase):
@@ -38,12 +38,12 @@ class KnownGoodMotorThirtySecondOverlayTests(unittest.TestCase):
     def apply_all(self) -> None:
         motor_30s.patch_multi_root(self.multi)
         motor_visible.patch_multi_root(self.multi)
-        motor_35s.patch_multi_root(self.multi)
+        motor_lifecycle.patch_multi_root(self.multi)
         motor_30s.validate_multi_root(self.multi)
         motor_visible.validate_multi_root(self.multi)
-        motor_35s.validate_multi_root(self.multi)
+        motor_lifecycle.validate_multi_root(self.multi)
 
-    def test_actual_known_good_files_become_visible_one_shot_30_second_tests(self) -> None:
+    def test_actual_known_good_files_become_final_one_shot_motor_tests(self) -> None:
         self.apply_all()
 
         attack = (self.multi / "attack_support_waves.inc").read_text(encoding="utf-8")
@@ -80,12 +80,33 @@ class KnownGoodMotorThirtySecondOverlayTests(unittest.TestCase):
         self.assertNotIn('attack_support_rear_a1', enemy_macro)
         self.assertNotIn('attack_support_rear_b1', enemy_macro)
 
-        _, _, attack_finish = motor_35s.named_paren_block(attack, '(define "as_finish_motor"')
-        _, _, enemy_finish = motor_35s.named_paren_block(enemy, '(define "ea_finish_motor"')
-        self.assertEqual(attack_finish.count('{"delay" {time 35}}'), 1)
-        self.assertEqual(enemy_finish.count('{"delay" {time 35}}'), 1)
-        self.assertNotIn('{"delay" {time 28}}', attack_finish)
-        self.assertNotIn('{"delay" {time 28}}', enemy_finish)
+        _, _, attack_finish = motor_lifecycle.named_paren_block(
+            attack, '(define "as_finish_motor"'
+        )
+        _, _, enemy_finish = motor_lifecycle.named_paren_block(
+            enemy, '(define "ea_finish_motor"'
+        )
+        self.assertEqual(attack_finish.count('{"delay" {time 45}}'), 1)
+        self.assertEqual(enemy_finish.count('{"delay" {time 45}}'), 1)
+        for stale in ('{"delay" {time 28}}', '{"delay" {time 35}}', '{waypoint "0"}'):
+            self.assertNotIn(stale, attack_finish)
+            self.assertNotIn(stale, enemy_finish)
+
+        self.assertEqual(attack_finish.count('{waypoint "attack_support_entry_b"}'), 2)
+        self.assertEqual(attack_finish.count('{waypoint "attack_support_entry_a"}'), 1)
+        self.assertEqual(enemy_finish.count('{waypoint "attack_support_entry_a"}'), 2)
+        self.assertEqual(enemy_finish.count('{waypoint "attack_support_entry_b"}'), 1)
+
+        _, _, attack_cleanup = motor_lifecycle.named_brace_block(
+            attack, '{"attack_support/motor_cleanup"'
+        )
+        _, _, enemy_cleanup = motor_lifecycle.named_brace_block(
+            enemy, '{"enemy_attack/motor_cleanup"'
+        )
+        self.assertEqual(attack_cleanup.count('{"delay" {time 90}}'), 1)
+        self.assertEqual(enemy_cleanup.count('{"delay" {time 90}}'), 1)
+        self.assertNotIn('{"delay" {time 45}}', attack_cleanup)
+        self.assertNotIn('{"delay" {time 45}}', enemy_cleanup)
 
         for faction in ("rusa", "ukr", "prc", "nato"):
             marker = f'{{"attack_support/ally_{faction}_motor"'
