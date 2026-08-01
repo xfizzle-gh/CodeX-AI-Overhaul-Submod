@@ -158,21 +158,14 @@ jobs:
           '''
           source = source[:main_pos] + overrides + source[main_pos:]
 
-          template_call = "    patch_template()\n"
-          if template_call not in source:
-              raise RuntimeError("Could not locate patch_template call")
-          source = source.replace(
-              template_call,
-              "    patch_template()\n    finalize_decoupled_template()\n",
-              1,
-          )
-
           test_call = "    patch_tests()\n"
           if test_call not in source:
               raise RuntimeError("Could not locate patch_tests call")
           source = source.replace(
               test_call,
-              "    patch_tests()\n    restore_decoupled_tests()\n",
+              "    finalize_decoupled_template()\n"
+              "    patch_tests()\n"
+              "    restore_decoupled_tests()\n",
               1,
           )
 
