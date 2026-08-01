@@ -64,7 +64,7 @@ def main() -> None:
     tests = TESTS.read_text(encoding="utf-8-sig")
     marker = "def test_deploy_guard_allows_only_the_empty_departing_hull_to_drop_attack_source"
     if marker not in tests:
-        tests = tests.rstrip() + TEST + "\n"
+        tests = tests.rstrip() + TEST.rstrip() + "\n"
         TESTS.write_text(tests, encoding="utf-8")
 
     print("Scoped deploy guard to the empty departing attack-support motor hull")
