@@ -8,6 +8,7 @@ on:
       - tools/apply_defense_motor_75s.py
       - tools/apply_defense_motor_turnaround.py
       - tools/apply_transport_control_comparison.py
+      - tools/apply_transport_control_comparison_fixed.py
       - tools/deploy_motor_drive_origin_exit_fixed.ps1
       - tools/deploy_transport_control_comparison.ps1
       - tests/test_defense_motor_75s.py
@@ -18,6 +19,7 @@ on:
       - tools/apply_defense_motor_75s.py
       - tools/apply_defense_motor_turnaround.py
       - tools/apply_transport_control_comparison.py
+      - tools/apply_transport_control_comparison_fixed.py
       - tools/deploy_motor_drive_origin_exit_fixed.ps1
       - tools/deploy_transport_control_comparison.ps1
       - tests/test_defense_motor_75s.py
@@ -39,6 +41,7 @@ jobs:
           python -m py_compile tools/apply_defense_motor_75s.py
           python -m py_compile tools/apply_defense_motor_turnaround.py
           python -m py_compile tools/apply_transport_control_comparison.py
+          python -m py_compile tools/apply_transport_control_comparison_fixed.py
       - name: Validate scripted turnaround and normal transport controls
         run: |
           python -m unittest tests/test_defense_motor_75s.py
