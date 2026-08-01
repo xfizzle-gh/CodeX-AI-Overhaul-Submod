@@ -29,7 +29,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $baseWrapper = Join-Path $RepoRoot "tools\deploy_motor_drive_origin_exit_fixed.ps1"
-$comparison = Join-Path $RepoRoot "tools\apply_transport_control_comparison.py"
+$comparison = Join-Path $RepoRoot "tools\apply_transport_control_comparison_fixed.py"
 if (-not (Test-Path -LiteralPath $baseWrapper)) {
     throw "Missing scripted transport deployer: $baseWrapper"
 }
