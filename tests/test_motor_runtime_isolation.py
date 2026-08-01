@@ -124,3 +124,30 @@ def test_deploy_guard_allows_only_the_empty_departing_hull_to_drop_attack_source
     assert "$allowedMotorRetirement" in deploy
     assert "outside the exact empty-hull retirement block" in deploy
     assert "but the entire downstream chain selects on it" not in deploy
+
+def test_deploy_guard_scopes_remaining_motor_source_removals() -> None:
+    deploy = (ROOT / "tools/deploy_attack_support_probe.ps1").read_text(encoding="utf-8-sig")
+    configs = [
+        ("resource/map/multi/enemy_defense_support.inc", "ed_finish_motor", "enemy_def_src", "enemy_def_motor_hull", "enemy_def_motor_leaving", ("enemy_def_p1", "enemy_def_p2", "enemy_def_p3", "enemy_def_p4")),
+        ("resource/map/multi/defense_support_waves.inc", "ds_finish_motor", "def_sup_src", "def_sup_motor_hull", "def_sup_motor_leaving", ("def_sup_h1", "def_sup_h2", "def_sup_h3")),
+        ("resource/map/multi/enemy_attack_support.inc", "ea_finish_motor", "ea_src", "ea_motor_hull", "ea_motor_leaving", ("ea_g1", "ea_g2", "ea_g3", "ea_g4")),
+    ]
+
+    assert "function Assert-ScopedMotorSourceRemoval" in deploy
+    for path, finisher, source, hull, leaving_tag, groups in configs:
+        text = (ROOT / path).read_text(encoding="utf-8-sig")
+        token = f"{{tag_remove {source}}}"
+        assert text.count(token) == 1
+        motor = block(text, f'(define "{finisher}"')
+        leaving = motor.index(f"{{tag_add {leaving_tag}}}")
+        removal = motor.index(token)
+        assert leaving < removal
+        retirement = motor[motor.rindex('{"entity_state"', 0, leaving):removal + len(token) + 300]
+        assert f"{{selector {{tag {hull}}}}}" in retirement
+        for group in groups:
+            assert f"{{tag_remove {group}}}" in retirement
+        assert f"-SourceTag '{source}'" in deploy
+        assert f"-HullTag '{hull}'" in deploy
+        assert f"-LeavingTag '{leaving_tag}'" in deploy
+
+    assert "removes enemy_def_src, but the live-unit cap counts it" not in deploy

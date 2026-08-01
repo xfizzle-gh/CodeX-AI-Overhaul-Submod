@@ -998,9 +998,56 @@ foreach ($banned in @('{clone}', '{include {prop human}}', '{prop {prop human}}'
 if (Select-String -Quiet -LiteralPath $defSource -Pattern '^[^;]*\bfpc') {
     throw "Source enemy defence engine still targets fpc* capture points. Those tags are absent from outback entirely; address capture points as {tag flag}"
 }
-if (Select-String -Quiet -LiteralPath $defSource -SimpleMatch '{tag_remove enemy_def_src}') {
-    throw "Source enemy defence engine removes enemy_def_src, but the live-unit cap counts it"
+# Every engine keeps its source tag on delivered infantry because the live-unit cap
+# and downstream order flow select on it. The only legal removal is from the EMPTY
+# motor hull after passenger emission, immediately after the engine-specific leaving
+# tag is applied and inside the exact hull retirement block.
+function Assert-ScopedMotorSourceRemoval {
+    param(
+        [string]$Path,
+        [string]$Label,
+        [string]$SourceTag,
+        [string]$HullTag,
+        [string]$LeavingTag,
+        [string[]]$GroupTags
+    )
+
+    $token = '{tag_remove ' + $SourceTag + '}'
+    $text = Get-Content -LiteralPath $Path -Raw
+    $count = [regex]::Matches($text, [regex]::Escape($token)).Count
+    if ($count -ne 1) {
+        throw "Source $Label engine must remove $SourceTag exactly once, from the empty departing motor hull; found $count removals"
+    }
+
+    $compact = [regex]::Replace($text, '\s+', ' ').Trim()
+    $groupRemoval = ($GroupTags | ForEach-Object { '{tag_remove ' + $_ + '}' }) -join ' '
+    $allowed = '{"entity_state" {selector {tag ' + $HullTag + '}} {tag_add ' + $LeavingTag + '} ' + $token + ' ' + $groupRemoval + ' }'
+    if (-not $compact.Contains($allowed)) {
+        throw "Source $Label engine removes $SourceTag outside the exact empty-hull retirement block"
+    }
 }
+
+Assert-ScopedMotorSourceRemoval `
+    -Path $defSource `
+    -Label 'enemy defence' `
+    -SourceTag 'enemy_def_src' `
+    -HullTag 'enemy_def_motor_hull' `
+    -LeavingTag 'enemy_def_motor_leaving' `
+    -GroupTags @('enemy_def_p1', 'enemy_def_p2', 'enemy_def_p3', 'enemy_def_p4')
+Assert-ScopedMotorSourceRemoval `
+    -Path $dsSource `
+    -Label 'defence support' `
+    -SourceTag 'def_sup_src' `
+    -HullTag 'def_sup_motor_hull' `
+    -LeavingTag 'def_sup_motor_leaving' `
+    -GroupTags @('def_sup_h1', 'def_sup_h2', 'def_sup_h3')
+Assert-ScopedMotorSourceRemoval `
+    -Path $eaSource `
+    -Label 'enemy attack' `
+    -SourceTag 'ea_src' `
+    -HullTag 'ea_motor_hull' `
+    -LeavingTag 'ea_motor_leaving' `
+    -GroupTags @('ea_g1', 'ea_g2', 'ea_g3', 'ea_g4')
 if (Select-String -Quiet -LiteralPath $defSource -SimpleMatch '{var "id_attack_support$"}') {
     throw "Source enemy defence engine reaches into the attack-support owner var; it must own to id_1st_enemy$"
 }
