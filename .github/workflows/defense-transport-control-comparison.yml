@@ -1,33 +1,31 @@
-name: Normal transport-only validation
+name: Four-quadrant normal transport patrols
 
 on:
   push:
     branches:
       - experiment/defense-transport-control-comparison
     paths:
-      - tools/apply_normal_transport_only.py
-      - tools/apply_normal_transport_only_fixed.py
-      - tools/apply_transport_control_comparison.py
+      - tools/apply_four_quadrant_transport_patrol.py
+      - tools/apply_transport_flag_perimeter_waypoints.py
       - tools/deploy_known_good_motor_30s_test.ps1
       - tools/deploy_runtime_proven_motor_60s.ps1
       - tools/deploy_friendly_defender_motor_one_shot.ps1
       - tools/deploy_transport_control_comparison.ps1
-      - tests/test_normal_transport_only.py
+      - tests/test_four_quadrant_transport_patrol.py
       - .github/workflows/defense-transport-control-comparison.yml
   pull_request:
     paths:
-      - tools/apply_normal_transport_only.py
-      - tools/apply_normal_transport_only_fixed.py
-      - tools/apply_transport_control_comparison.py
+      - tools/apply_four_quadrant_transport_patrol.py
+      - tools/apply_transport_flag_perimeter_waypoints.py
       - tools/deploy_known_good_motor_30s_test.ps1
       - tools/deploy_runtime_proven_motor_60s.ps1
       - tools/deploy_friendly_defender_motor_one_shot.ps1
       - tools/deploy_transport_control_comparison.ps1
-      - tests/test_normal_transport_only.py
+      - tests/test_four_quadrant_transport_patrol.py
       - .github/workflows/defense-transport-control-comparison.yml
 
 jobs:
-  normal-transports:
+  transport-patrols:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,13 +34,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Compile normal transport overlay
+      - name: Compile transport and waypoint overlays
         run: |
-          python -m py_compile tools/apply_normal_transport_only.py
-          python -m py_compile tools/apply_normal_transport_only_fixed.py
-          python -m py_compile tools/apply_transport_control_comparison.py
-      - name: Validate exactly two ordinary AI transports
-        run: python -m unittest tests/test_normal_transport_only.py
+          python -m py_compile tools/apply_four_quadrant_transport_patrol.py
+          python -m py_compile tools/apply_transport_flag_perimeter_waypoints.py
+      - name: Validate four engines, four factions, patrol contact gate, and map geometry
+        run: python -m unittest tests/test_four_quadrant_transport_patrol.py
 
   powershell:
     runs-on: windows-latest
