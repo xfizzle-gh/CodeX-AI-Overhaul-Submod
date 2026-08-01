@@ -29,12 +29,16 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $sourceDeploy = Join-Path $RepoRoot "tools\deploy_attack_support_probe.ps1"
-$overlay = Join-Path $RepoRoot "tools\apply_known_good_motor_30s_test.py"
+$timingOverlay = Join-Path $RepoRoot "tools\apply_known_good_motor_30s_test.py"
+$placementOverlay = Join-Path $RepoRoot "tools\apply_motor_visible_package_overlay.py"
 if (-not (Test-Path -LiteralPath $sourceDeploy)) {
     throw "Missing trusted deployer: $sourceDeploy"
 }
-if (-not (Test-Path -LiteralPath $overlay)) {
-    throw "Missing motor test overlay: $overlay"
+if (-not (Test-Path -LiteralPath $timingOverlay)) {
+    throw "Missing motor timing overlay: $timingOverlay"
+}
+if (-not (Test-Path -LiteralPath $placementOverlay)) {
+    throw "Missing visible package placement overlay: $placementOverlay"
 }
 
 # The trusted e74ef6e deployer pins its historical experiment branch. Run an
@@ -63,13 +67,23 @@ try {
 }
 
 $multiRoot = Join-Path $WorkshopRoot "resource\map\multi"
-& python $overlay --multi-root $multiRoot
+
+& python $timingOverlay --multi-root $multiRoot
 if ($LASTEXITCODE -ne 0) {
-    throw "The 30-second motor overlay failed with exit code $LASTEXITCODE."
+    throw "The 30-second motor timing overlay failed with exit code $LASTEXITCODE."
 }
-& python $overlay --multi-root $multiRoot --check
+& python $placementOverlay --multi-root $multiRoot
 if ($LASTEXITCODE -ne 0) {
-    throw "The deployed 30-second motor overlay did not validate."
+    throw "The visible package placement overlay failed with exit code $LASTEXITCODE."
+}
+
+& python $timingOverlay --multi-root $multiRoot --check
+if ($LASTEXITCODE -ne 0) {
+    throw "The deployed 30-second motor timing overlay did not validate."
+}
+& python $placementOverlay --multi-root $multiRoot --check
+if ($LASTEXITCODE -ne 0) {
+    throw "The deployed visible package placement overlay did not validate."
 }
 
 $manifest = Join-Path $WorkshopRoot "known_good_motor_30s_test.txt"
@@ -79,6 +93,8 @@ $manifest = Join-Path $WorkshopRoot "known_good_motor_30s_test.txt"
     "friendly_attacker_truck=30s"
     "enemy_attacker_truck=30s_after_prep"
     "truck_count_per_active_motor_path=1"
+    "motor_package_placement=whole_linked_package"
+    "motor_spawn_waypoint=visible_rear_pad"
     "recurring_motor_scheduler=disabled_by_consumed_budget"
     "attack_helicopter_test=off"
 ) | Set-Content -LiteralPath $manifest -Encoding UTF8
@@ -88,4 +104,4 @@ Write-Host "Known-good motor test deployed."
 Write-Host "  Branch:   $ExpectedBranch"
 Write-Host "  Baseline: $BaselineCommit"
 Write-Host "  Workshop: $WorkshopRoot"
-Write-Host "  Result:   one truck at +30 seconds in each proven attacker path"
+Write-Host "  Result:   one whole linked truck package at a visible rear pad after +30 seconds"
