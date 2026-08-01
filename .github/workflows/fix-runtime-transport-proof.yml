@@ -40,20 +40,14 @@ jobs:
           ; Set attack_support_air_test$=0 in init to restore production-only schedule.'''
           new_comment = '''; Legacy forced airmobile test is OFF. E2TestMode controls explicit air testing.
           ; Production airmobile remains on its normal level-gated random schedule.'''
-          for rel in (
-              "resource/map/multi/attack_support_waves.inc",
-              "resource/map/multi/defense_support_waves.inc",
-          ):
-              path = Path(rel)
-              text = path.read_text(encoding="utf-8")
-              if rel.endswith("attack_support_waves.inc"):
-                  if text.count(old_comment) != 1:
-                      raise RuntimeError(f"{rel}: obsolete forced-air comment not found exactly once")
-                  text = text.replace(old_comment, new_comment)
-              path.write_text(text, encoding="utf-8")
+          attack_path = Path("resource/map/multi/attack_support_waves.inc")
+          attack = attack_path.read_text(encoding="utf-8")
+          if attack.count(old_comment) != 1:
+              raise RuntimeError("obsolete forced-air comment not found exactly once")
+          attack_path.write_text(attack.replace(old_comment, new_comment), encoding="utf-8")
 
-          path = Path("tests/test_attack_support_slot_proof.py")
-          text = path.read_text(encoding="utf-8")
+          attack_test = Path("tests/test_attack_support_slot_proof.py")
+          text = attack_test.read_text(encoding="utf-8")
           old = '''        # Day-2 test default ON in init
                   self.assertIn(
                       '{var "attack_support_air_test$"} {op "="} {value 1}', self.waves
@@ -66,15 +60,30 @@ jobs:
                       '{var "attack_support_air_test$"} {op "="} {value 1}', self.waves
                   )'''
           if text.count(old) != 1:
-              raise RuntimeError("obsolete forced-air test assertion not found exactly once")
+              raise RuntimeError("obsolete attack forced-air assertion not found exactly once")
           text = text.replace(old, new)
           text = text.replace(
               '        # Easy revert documented\n        self.assertIn("Set attack_support_air_test$=0", self.waves)\n',
               '        self.assertIn("Legacy forced airmobile test is OFF", self.waves)\n',
           )
-          path.write_text(text, encoding="utf-8")
+          attack_test.write_text(text, encoding="utf-8")
+
+          # Update any remaining test that explicitly expects the INIT ASSIGNMENT to
+          # force the old air test on. Manual-enable conditions use op "==" and are
+          # deliberately untouched.
+          old_assignment = '{var "attack_support_air_test$"} {op "="} {value 1}'
+          new_assignment = '{var "attack_support_air_test$"} {op "="} {value 0}'
+          changed = []
+          for path in Path("tests").glob("test_*.py"):
+              source = path.read_text(encoding="utf-8")
+              if old_assignment not in source:
+                  continue
+              path.write_text(source.replace(old_assignment, new_assignment), encoding="utf-8")
+              changed.append(path.as_posix())
+          if changed != ["tests/test_defense_mission_support.py"]:
+              raise RuntimeError(f"unexpected remaining forced-air assertion set: {changed}")
           PY
-          python -m py_compile tests/test_motor_runtime_isolation.py tests/test_attack_support_slot_proof.py
+          python -m py_compile tests/test_motor_runtime_isolation.py tests/test_attack_support_slot_proof.py tests/test_defense_mission_support.py
           git diff --check
 
       - name: Install test runner
@@ -119,6 +128,7 @@ jobs:
                   tools/deploy_attack_support_probe.ps1 \
                   tests/test_motor_runtime_isolation.py \
                   tests/test_attack_support_slot_proof.py \
+                  tests/test_defense_mission_support.py \
                   .github/workflows/fix-runtime-transport-proof.yml \
                   tools/patch_runtime_transport_proof.py \
                   tools/prepare_runtime_transport_patch.py
