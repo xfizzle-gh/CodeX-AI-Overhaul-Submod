@@ -1,39 +1,31 @@
-name: Defense transport control comparison
+name: Normal transport-only validation
 
 on:
   push:
     branches:
       - experiment/defense-transport-control-comparison
     paths:
-      - tools/apply_defense_motor_75s.py
-      - tools/apply_defense_motor_turnaround.py
+      - tools/apply_normal_transport_only.py
       - tools/apply_transport_control_comparison.py
-      - tools/apply_transport_control_comparison_fixed.py
       - tools/deploy_known_good_motor_30s_test.ps1
       - tools/deploy_runtime_proven_motor_60s.ps1
       - tools/deploy_friendly_defender_motor_one_shot.ps1
-      - tools/deploy_motor_drive_origin_exit_fixed.ps1
       - tools/deploy_transport_control_comparison.ps1
-      - tests/test_defense_motor_75s.py
-      - tests/test_transport_control_comparison.py
+      - tests/test_normal_transport_only.py
       - .github/workflows/defense-transport-control-comparison.yml
   pull_request:
     paths:
-      - tools/apply_defense_motor_75s.py
-      - tools/apply_defense_motor_turnaround.py
+      - tools/apply_normal_transport_only.py
       - tools/apply_transport_control_comparison.py
-      - tools/apply_transport_control_comparison_fixed.py
       - tools/deploy_known_good_motor_30s_test.ps1
       - tools/deploy_runtime_proven_motor_60s.ps1
       - tools/deploy_friendly_defender_motor_one_shot.ps1
-      - tools/deploy_motor_drive_origin_exit_fixed.ps1
       - tools/deploy_transport_control_comparison.ps1
-      - tests/test_defense_motor_75s.py
-      - tests/test_transport_control_comparison.py
+      - tests/test_normal_transport_only.py
       - .github/workflows/defense-transport-control-comparison.yml
 
 jobs:
-  comparison:
+  normal-transports:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,16 +34,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Compile comparison overlays
+      - name: Compile normal transport overlay
         run: |
-          python -m py_compile tools/apply_defense_motor_75s.py
-          python -m py_compile tools/apply_defense_motor_turnaround.py
+          python -m py_compile tools/apply_normal_transport_only.py
           python -m py_compile tools/apply_transport_control_comparison.py
-          python -m py_compile tools/apply_transport_control_comparison_fixed.py
-      - name: Validate scripted turnaround and normal transport controls
-        run: |
-          python -m unittest tests/test_defense_motor_75s.py
-          python -m unittest tests/test_transport_control_comparison.py
+      - name: Validate exactly two ordinary AI transports
+        run: python -m unittest tests/test_normal_transport_only.py
 
   powershell:
     runs-on: windows-latest
@@ -59,14 +47,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: experiment/defense-transport-control-comparison
-      - name: Parse deployment wrappers with Windows PowerShell 5.1
+      - name: Parse deployment chain with Windows PowerShell 5.1
         shell: powershell
         run: |
           foreach ($path in @(
             "tools/deploy_known_good_motor_30s_test.ps1",
             "tools/deploy_runtime_proven_motor_60s.ps1",
             "tools/deploy_friendly_defender_motor_one_shot.ps1",
-            "tools/deploy_motor_drive_origin_exit_fixed.ps1",
             "tools/deploy_transport_control_comparison.ps1"
           )) {
             $errors = $null
