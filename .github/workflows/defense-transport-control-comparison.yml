@@ -8,6 +8,7 @@ on:
       - tools/apply_four_quadrant_transport_patrol.py
       - tools/apply_four_quadrant_transport_patrol_fixed.py
       - tools/apply_transport_flag_perimeter_waypoints.py
+      - tools/apply_transport_flag_perimeter_waypoints_fixed.py
       - tools/deploy_known_good_motor_30s_test.ps1
       - tools/deploy_runtime_proven_motor_60s.ps1
       - tools/deploy_friendly_defender_motor_one_shot.ps1
@@ -19,6 +20,7 @@ on:
       - tools/apply_four_quadrant_transport_patrol.py
       - tools/apply_four_quadrant_transport_patrol_fixed.py
       - tools/apply_transport_flag_perimeter_waypoints.py
+      - tools/apply_transport_flag_perimeter_waypoints_fixed.py
       - tools/deploy_known_good_motor_30s_test.ps1
       - tools/deploy_runtime_proven_motor_60s.ps1
       - tools/deploy_friendly_defender_motor_one_shot.ps1
@@ -39,7 +41,7 @@ jobs:
       - name: Compile corrected transport and waypoint entry points
         run: |
           python -m py_compile tools/apply_four_quadrant_transport_patrol_fixed.py
-          python -m py_compile tools/apply_transport_flag_perimeter_waypoints.py
+          python -m py_compile tools/apply_transport_flag_perimeter_waypoints_fixed.py
       - name: Load corrected four-quadrant generator
         run: |
           python -c "import importlib.util, pathlib, sys; p=pathlib.Path('tools/apply_four_quadrant_transport_patrol_fixed.py'); s=importlib.util.spec_from_file_location('fourq_ci', p); m=importlib.util.module_from_spec(s); sys.modules[s.name]=m; s.loader.exec_module(m)"
