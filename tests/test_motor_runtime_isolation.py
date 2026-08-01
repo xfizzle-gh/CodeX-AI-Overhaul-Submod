@@ -104,3 +104,23 @@ def test_enemy_defender_patrol_tag_moves_to_pax_not_hull() -> None:
     hull_cleanup = body.index('{tag_add enemy_def_motor_leaving}')
     for group in ("enemy_def_p1", "enemy_def_p2", "enemy_def_p3", "enemy_def_p4"):
         assert f'{{tag_remove {group}}}' in body[hull_cleanup:]
+
+def test_deploy_guard_allows_only_the_empty_departing_hull_to_drop_attack_source() -> None:
+    deploy = (ROOT / "tools/deploy_attack_support_probe.ps1").read_text(encoding="utf-8-sig")
+    waves = (ROOT / "resource/map/multi/attack_support_waves.inc").read_text(encoding="utf-8-sig")
+
+    token = "{tag_remove attack_support_src}"
+    assert waves.count(token) == 1
+    motor = block(waves, '(define "as_finish_motor"')
+    leaving = motor.index("{tag_add am_motor_leaving}")
+    removal = motor.index(token)
+    assert leaving < removal
+    retirement = motor[motor.rindex('{"entity_state"', 0, leaving):removal + len(token) + 200]
+    assert "{selector {tag attack_support_motor_hull}}" in retirement
+    assert "{tag_remove attack_support_g1}" in retirement
+    assert "{tag_remove attack_support_g4}" in retirement
+
+    assert "$attackSourceRemovalCount -ne 1" in deploy
+    assert "$allowedMotorRetirement" in deploy
+    assert "outside the exact empty-hull retirement block" in deploy
+    assert "but the entire downstream chain selects on it" not in deploy

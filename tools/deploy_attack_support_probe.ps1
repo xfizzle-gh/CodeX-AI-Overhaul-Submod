@@ -803,8 +803,23 @@ foreach ($n in 1..16) {
 if (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch '{tag attack_support_probe}') {
     throw "Source wave engine still gates on attack_support_probe. That tag is a best-effort marker only; key on attack_support_src, which is proven queryable on these units"
 }
-if (Select-String -Quiet -LiteralPath $wavesSource -SimpleMatch '{tag_remove attack_support_src}') {
-    throw "Source wave engine removes attack_support_src, but the entire downstream chain selects on it"
+# attack_support_src remains permanent on delivered infantry because the live-unit
+# cap and downstream order flow select on it. The sole exception is the EMPTY motor
+# hull after its passengers have emitted: it must leave the infantry namespace before
+# returning to the map edge, or the generic support/patrol systems reclaim the truck.
+$attackSourceRemovalToken = '{tag_remove attack_support_src}'
+$wavesText = Get-Content -LiteralPath $wavesSource -Raw
+$attackSourceRemovalCount = [regex]::Matches(
+    $wavesText,
+    [regex]::Escape($attackSourceRemovalToken)
+).Count
+if ($attackSourceRemovalCount -ne 1) {
+    throw "Source wave engine must remove attack_support_src exactly once, from the empty departing motor hull; found $attackSourceRemovalCount removals"
+}
+$wavesCompact = [regex]::Replace($wavesText, '\s+', ' ').Trim()
+$allowedMotorRetirement = '{"entity_state" {selector {tag attack_support_motor_hull}} {tag_add am_motor_leaving} {tag_remove attack_support_src} {tag_remove attack_support_g1} {tag_remove attack_support_g2} {tag_remove attack_support_g3} {tag_remove attack_support_g4} }'
+if (-not $wavesCompact.Contains($allowedMotorRetirement)) {
+    throw "Source wave engine removes attack_support_src outside the exact empty-hull retirement block"
 }
 if ((Select-String -LiteralPath $wavesSource -SimpleMatch '{state {state inactive}}').Count -lt 3) {
     throw "Source wave engine must exclude inactive flag points on ALL THREE shuffled flag picks - a mission activates only ~2 of a map's capture points, and a squad sent to a dead objective just sprints and stands there"
