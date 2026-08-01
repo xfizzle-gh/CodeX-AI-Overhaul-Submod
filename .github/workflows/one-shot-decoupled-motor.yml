@@ -68,16 +68,17 @@ jobs:
           '''
           source = source[:start] + replacement + source[end:]
 
-          print("BEGIN PATCH_ENGINE DIAGNOSTIC")
-          lines = source.splitlines()
-          for index, line in enumerate(lines):
-              lower = line.lower()
-              if "patch_engine" in lower or "marker" in lower or "finish_motor" in lower:
-                  lo = max(0, index - 3)
-                  hi = min(len(lines), index + 5)
-                  print(f"--- lines {lo + 1}-{hi} ---")
-                  print("\n".join(f"{n + 1}: {lines[n]}" for n in range(lo, hi)))
-          print("END PATCH_ENGINE DIAGNOSTIC")
+          # Use the actual define prefixes shipped by the four support engines.
+          main_pos = source.index("def main(")
+          prefixes = '''ENGINE_PREFIXES = {
+              "resource/map/multi/attack_support_waves.inc": "as",
+              "resource/map/multi/defense_support_waves.inc": "ds",
+              "resource/map/multi/enemy_attack_support.inc": "ea",
+              "resource/map/multi/enemy_defense_support.inc": "ed",
+          }
+
+          '''
+          source = source[:main_pos] + prefixes + source[main_pos:]
 
           compile(source, ".git/decoupled_motor_runtime.py", "exec")
           (root / ".git" / "decoupled_motor_runtime.py").write_text(source, encoding="utf-8")
