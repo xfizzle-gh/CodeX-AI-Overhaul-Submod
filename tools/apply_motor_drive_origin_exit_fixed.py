@@ -16,15 +16,16 @@ spec.loader.exec_module(base)
 
 
 def fixed_upsert_exit_helper(text: str, prefix: str) -> str:
-    """Insert before the finisher regardless of the surrounding indentation."""
+    """Insert or replace a helper without depending on source indentation."""
     helper = base.EXIT_HELPERS[prefix]
     desired = base.render_exit_helper(prefix)
     helper_marker = f'(define "{helper}"'
 
     existing = text.find(helper_marker)
     if existing >= 0:
+        line_start = text.rfind("\n", 0, existing) + 1
         end = base.balanced(text, existing, "(", ")", helper)
-        return text[:existing] + desired + text[end:]
+        return text[:line_start] + desired + text[end:]
 
     finisher_marker = f'(define "{base.FINISHERS[prefix]}"'
     position = text.find(finisher_marker)
