@@ -40,8 +40,8 @@ tuning = load_module(
     ROOT / "tools" / "apply_defense_motor_turnaround.py",
 )
 comparison = load_module(
-    "transport_control_comparison_test",
-    ROOT / "tools" / "apply_transport_control_comparison.py",
+    "transport_control_comparison_fixed_test",
+    ROOT / "tools" / "apply_transport_control_comparison_fixed.py",
 )
 
 FILES = (
