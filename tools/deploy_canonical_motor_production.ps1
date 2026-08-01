@@ -35,7 +35,7 @@ if (-not (Test-Path -LiteralPath $overlay)) {
     throw "Missing canonical motor overlay: $overlay"
 }
 if (-not (Test-Path -LiteralPath $seatHotfix)) {
-    throw "Missing linked-seat motor hotfix: $seatHotfix"
+    throw "Missing motor isolation hotfix: $seatHotfix"
 }
 
 # Reuse the current four-engine deployer exactly, changing only its historical
@@ -63,26 +63,26 @@ try {
     Remove-Item -LiteralPath $tempDeployer -Force -ErrorAction SilentlyContinue
 }
 
-# First build and validate the four-engine production cadence/lifecycle exactly as
-# PR #71 defines it. Then apply the runtime seat hotfix LAST: the production overlay
-# rewrites its placement macros, so running it after the hotfix would reintroduce the
-# full-deploy selector that teleports linked occupants independently.
+# Build the four-engine cadence/lifecycle first, then isolate the motor command
+# and package tags LAST. The production overlay intentionally generates common
+# structures; the runtime isolation pass removes all motor use of infantry
+# wave_cmd/deploy selectors before the workshop build is tested.
 & python $overlay --root $WorkshopRoot
 if ($LASTEXITCODE -ne 0) {
     throw "Canonical motor production overlay failed with exit code $LASTEXITCODE."
 }
 & python $overlay --root $WorkshopRoot --check
 if ($LASTEXITCODE -ne 0) {
-    throw "Canonical motor production deployment did not validate before seat hotfix."
+    throw "Canonical motor production deployment did not validate before isolation."
 }
 
 & python $seatHotfix --root $WorkshopRoot
 if ($LASTEXITCODE -ne 0) {
-    throw "Linked-seat motor hotfix failed with exit code $LASTEXITCODE."
+    throw "Motor dispatch/staging isolation failed with exit code $LASTEXITCODE."
 }
 & python $seatHotfix --root $WorkshopRoot --check
 if ($LASTEXITCODE -ne 0) {
-    throw "Linked-seat motor deployment did not validate."
+    throw "Motor dispatch/staging isolation did not validate."
 }
 
 $manifest = Join-Path $WorkshopRoot "canonical_motor_production.txt"
@@ -93,6 +93,10 @@ $manifest = Join-Path $WorkshopRoot "canonical_motor_production.txt"
     "packages_per_faction=4"
     "first_dispatch_seconds=30"
     "recurring_dispatch_seconds=180|240|300"
+    "dispatch_lane=dedicated_motor_bit_per_engine"
+    "infantry_wave_cmd_shared=false"
+    "staging_lane=dedicated_motor_transfer_tag"
+    "generic_infantry_deploy_tag_shared=false"
     "ride_before_dismount_seconds=60"
     "post_dismount_cleanup_seconds=90"
     "package_claim=full_linked_hull_crew_passengers"
@@ -104,10 +108,11 @@ $manifest = Join-Path $WorkshopRoot "canonical_motor_production.txt"
 ) | Set-Content -LiteralPath $manifest -Encoding UTF8
 
 Write-Host ""
-Write-Host "Canonical motor linked-seat hotfix deployed."
+Write-Host "Canonical motor isolation build deployed."
 Write-Host "  Branch:      $ExpectedBranch"
 Write-Host "  Workshop:    $WorkshopRoot"
 Write-Host "  Coverage:    both sides, four factions, all four support scenarios"
 Write-Host "  Cadence:     first truck +30s; subsequent trucks at random 180/240/300s"
 Write-Host "  Lifecycle:   60s ride; passenger-only dismount; return; 90s cleanup"
-Write-Host "  Seat fix:    hull-only placement and pre-drive AI; linked cab/cargo preserved"
+Write-Host "  Isolation:   dedicated motor command + staging lane; no infantry selector overlap"
+Write-Host "  Seats:       hull-only placement/drive state; linked cab and cargo preserved"
