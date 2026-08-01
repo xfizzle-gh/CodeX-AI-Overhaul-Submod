@@ -2,20 +2,21 @@ from pathlib import Path
 
 path = Path("tools/patch_runtime_transport_proof.py")
 text = path.read_text(encoding="utf-8")
-# Relocate the global motor-band selector edit until after the finisher block is
-# replaced. Doing it earlier changes source offsets captured for that block.
+
+# The distance-band helper is telemetry only. Keep its established selector spelling;
+# vehicle-only scoping is required on actual hull orders, not on the probe.
 start = text.index("    units_hull = f'{units".replace("{units", "{{units"))
 end = text.index("    stage_two =", start)
-chunk = text[start:end]
-if "text = text.replace(units_hull, typed_units_hull)" not in chunk:
-    raise RuntimeError("preflight did not find the premature global replacement")
-chunk = chunk.replace("    text = text.replace(units_hull, typed_units_hull)\n", "")
-text = text[:start] + chunk + text[end:]
-needle = "    text = text[:start] + new_body + text[end:]\n    return text\n"
-replacement = "    text = text[:start] + new_body + text[end:]\n    text = text.replace(units_hull, typed_units_hull)\n    return text\n"
-if text.count(needle) != 1:
-    raise RuntimeError("preflight could not relocate the global units-selector replacement")
-text = text.replace(needle, replacement)
+text = text[:start] + text[end:]
+
+# Stage 9 is the invalid-package witness. Extra drive/band zero writes are redundant
+# and would change the pinned telemetry write counts.
+lines = []
+for line in text.splitlines(keepends=True):
+    if "{engine.drive_var}" in line or "{engine.band_var}" in line:
+        continue
+    lines.append(line)
+text = "".join(lines)
 
 # Keep exactly one terminal newline in the generated regression-test file.
 eof_old = '    path.write_text(text.rstrip() + addition + "\\n", encoding="utf-8")'
