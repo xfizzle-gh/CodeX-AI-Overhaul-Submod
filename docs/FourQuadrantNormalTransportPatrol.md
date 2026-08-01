@@ -26,13 +26,7 @@ Each package contains the truck, two cab crew, and eight linked passenger seats.
 
 ## Route behavior
 
-Each of the fourteen CWA conquest maps receives five generated route waypoints named:
-
-- `transport_patrol_flag_1`
-- `transport_patrol_flag_2`
-- `transport_patrol_flag_3`
-- `transport_patrol_flag_4`
-- `transport_patrol_flag_5`
+Each of the fourteen CWA conquest maps receives five generated route waypoints named `transport_patrol_flag_1` through `transport_patrol_flag_5`.
 
 A route waypoint is centered 320 map units from its campaign flag and uses a radius of 140 map units. The closest requested arrival point therefore remains approximately 180 map units from the flag center, preventing trucks from driving directly into the flag post or sandbags.
 
@@ -42,16 +36,11 @@ The truck receives a new route point every 45 seconds while at least one tagged 
 
 ## Disabled legacy behavior
 
-The active transport paths do not use:
+The active transport paths do not use timer-driven passenger emit, fixed 60- or 75-second dismount timing, forced turnaround, return-to-entry orders, scripted truck deletion, or scripted post-dismount cleanup. The old motor-test triggers and scripted motor budgets are disabled where applicable.
 
-- timer-driven passenger emit;
-- fixed 60- or 75-second dismount timing;
-- forced turnaround;
-- return-to-entry orders;
-- scripted truck deletion;
-- scripted post-dismount cleanup.
+## CI checkpoint
 
-The old motor-test triggers and scripted motor budgets are disabled where applicable.
+The four-engine/four-faction generator, contact gate, linked packages, waypoint idempotency, all fourteen real map layouts, and Windows PowerShell 5.1 deployment wrapper passed at `d4f9b7c6517d934ede7f4189783d90d807f1bf04`. Later commits only document the same runtime build.
 
 ## Deployment
 
