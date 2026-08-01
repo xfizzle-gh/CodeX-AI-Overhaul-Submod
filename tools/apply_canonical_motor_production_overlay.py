@@ -233,7 +233,10 @@ def patch_clock(text: str, engine: Engine) -> str:
     delays = list(re.finditer(r'\{"delay"\s+\{time\s+([0-9]+)\}\}', prefix))
     if len(delays) != 6:
         raise PatchError(f"{marker}: expected six schedule delays before dispatch, found {len(delays)}")
-    values = (30, 30, 30, 180, 240, 300)
+    # The existing 20-second post-dispatch rearm delay remains in each engine.
+    # Use 160/220/280 here so dispatch-to-dispatch cadence is exactly
+    # 180/240/300 seconds (3/4/5 minutes).
+    values = (30, 30, 30, 160, 220, 280)
     for match, value in reversed(list(zip(delays, values))):
         prefix = prefix[:match.start()] + f'{{"delay" {{time {value}}}}}' + prefix[match.end():]
     block = prefix + block[command:]
@@ -304,7 +307,7 @@ def validate_engine(text: str, engine: Engine) -> None:
     clock = brace_block(text, '{"' + engine.namespace + '/motor_clock"')[2]
     command = clock.index('{"set_i" {var "' + engine.namespace + '_wave_cmd$"}')
     schedule = [int(v) for v in re.findall(r'\{"delay"\s+\{time\s+([0-9]+)\}\}', clock[:command])]
-    if schedule != [30, 30, 30, 180, 240, 300]:
+    if schedule != [30, 30, 30, 160, 220, 280]:
         raise PatchError(f"{engine.relative_path}: bad schedule {schedule}")
     cleanup = brace_block(text, '{"' + engine.namespace + '/motor_cleanup"')[2]
     if cleanup.count('{"delay" {time 90}}') != 1:
