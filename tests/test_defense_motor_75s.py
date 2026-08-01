@@ -36,8 +36,8 @@ correction = load_module(
     ROOT / "tools" / "apply_motor_drive_origin_exit_fixed.py",
 )
 tuning = load_module(
-    "defense_motor_75s",
-    ROOT / "tools" / "apply_defense_motor_75s.py",
+    "defense_motor_turnaround",
+    ROOT / "tools" / "apply_defense_motor_turnaround.py",
 )
 
 FILES = (
@@ -97,7 +97,6 @@ class DefenseMotor75SecondTests(unittest.TestCase):
             self.assertEqual(block.count(tuning.RESUME_MARKER), 1)
             self.assertEqual(block.count(tuning.REASSERT_MARKER), 1)
             self.assertEqual(block.count(helper), 2)
-            self.assertEqual(block.count('{"delay" {time 0.5}}'), 1)
             self.assertEqual(block.count('{"delay" {time 1}}'), 1)
             self.assertEqual(block.count('{mode passengers}'), 1)
 
@@ -105,7 +104,7 @@ class DefenseMotor75SecondTests(unittest.TestCase):
                 '{"delay" {time 73}}' if prefix == "ea" else '{"delay" {time 75}}'
             )
             preturn = block.find(tuning.PRETURN_MARKER)
-            first_helper = block.find(helper)
+            first_helper = block.find(helper, preturn)
             stop = block.find(tuning.STOP_MARKER)
             emit = block.find('{"emit"', stop)
             resume = block.find(tuning.RESUME_MARKER)
@@ -113,6 +112,10 @@ class DefenseMotor75SecondTests(unittest.TestCase):
             reassert = block.find(tuning.REASSERT_MARKER)
             self.assertTrue(
                 0 <= ride < preturn < first_helper < stop < emit < resume < final_helper < reassert
+            )
+            self.assertEqual(
+                block[preturn:stop].count('{"delay" {time 0.5}}'),
+                1,
             )
 
             for marker in tuning.FORBIDDEN_MARKERS:
