@@ -1581,11 +1581,7 @@ $sourceE2Init = '{"set_i" {var "support_e2_test$"} {op "="} {value 0}}'
 $targetE2Init = '{"set_i" {var "support_e2_test$"} {op "="} {value ' + $E2TestMode + '}}'
 $deployedWaveCode = Set-ExactSingleReplacement $deployedWaveCode $sourceE2Init $targetE2Init 'E2 test override'
 
-if ($E2TestMode -ne 0) {
-    $sourceLegacyInit = '{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}'
-    $targetLegacyInit = '{"set_i" {var "attack_support_air_test$"} {op "="} {value 0}}'
-    $deployedWaveCode = Set-ExactSingleReplacement $deployedWaveCode $sourceLegacyInit $targetLegacyInit 'Legacy E1 air-test override'
-}
+
 
 [System.IO.File]::WriteAllText($deployedWaves, $deployedWaveCode, [System.Text.UTF8Encoding]::new($false))
 
@@ -2291,7 +2287,9 @@ $expectedE2Init = '{"set_i" {var "support_e2_test$"} {op "="} {value ' + $E2Test
 if ([regex]::Matches($validatedWaveCode, [regex]::Escape($expectedE2Init)).Count -ne 1) {
     throw "Requested E2 test mode was not written exactly once"
 }
-$expectedLegacyMode = if ($E2TestMode -eq 0) { 1 } else { 0 }
+# Legacy E1 is retired for every deployment mode. Explicit air testing is
+# controlled only by support_e2_test$ through -E2TestMode.
+$expectedLegacyMode = 0
 $expectedLegacyInit = '{"set_i" {var "attack_support_air_test$"} {op "="} {value ' + $expectedLegacyMode + '}}'
 if ([regex]::Matches($validatedWaveCode, [regex]::Escape($expectedLegacyInit)).Count -ne 1) {
     throw "Legacy E1 air test value is incorrect"
