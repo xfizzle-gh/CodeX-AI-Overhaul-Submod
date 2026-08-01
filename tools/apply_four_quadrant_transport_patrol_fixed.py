@@ -9,13 +9,25 @@ from pathlib import Path
 
 SOURCE_PATH = Path(__file__).with_name("apply_four_quadrant_transport_patrol.py")
 source = SOURCE_PATH.read_text(encoding="utf-8")
-old = '\\t\\t\\t\\t\\t\\t{{"6.entities" {{selector {{tag {source_hull}}}} {{count {{op ">="}} {{value 1}}}}}}'
-new = '\\t\\t\\t\\t\\t\\t{{"6.entities" {{selector {{tag {source_hull}}}}} {{count {{op ">="}} {{value 1}}}}}}'
-if source.count(old) != 1:
-    raise RuntimeError(
-        "Expected exactly one malformed source-hull selector in the base generator"
-    )
-source = source.replace(old, new, 1)
+
+replacements = (
+    (
+        '\\t\\t\\t\\t\\t\\t{{"6.entities" {{selector {{tag {source_hull}}}} {{count {{op ">="}} {{value 1}}}}}}',
+        '\\t\\t\\t\\t\\t\\t{{"6.entities" {{selector {{tag {source_hull}}}}} {{count {{op ">="}} {{value 1}}}}}}',
+        "source-hull availability selector",
+    ),
+    (
+        '\\t\\t\\t\\t\\t\\t{{selector {{tag {engine.deploy_tag}}}}\\n\\t\\t\\t\\t\\t\\t{{tag_remove {engine.deploy_tag}}}',
+        '\\t\\t\\t\\t\\t\\t{{selector {{tag {engine.deploy_tag}}}}}\\n\\t\\t\\t\\t\\t\\t{{tag_remove {engine.deploy_tag}}}',
+        "post-dispatch tag-removal selector",
+    ),
+)
+for old, new, label in replacements:
+    if source.count(old) != 1:
+        raise RuntimeError(
+            f"Expected exactly one malformed {label} in the base generator"
+        )
+    source = source.replace(old, new, 1)
 
 module_name = "_four_quadrant_transport_patrol_corrected"
 base = types.ModuleType(module_name)
@@ -24,7 +36,6 @@ base.__package__ = ""
 sys.modules[module_name] = base
 exec(compile(source, str(SOURCE_PATH), "exec"), base.__dict__)
 
-# Re-export the implementation for tests and callers.
 for exported in dir(base):
     if not exported.startswith("__"):
         globals()[exported] = getattr(base, exported)
