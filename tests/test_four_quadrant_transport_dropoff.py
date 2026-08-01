@@ -33,7 +33,7 @@ defender = load_module(
 )
 dropoff = load_module(
     "dropoff_overlay",
-    ROOT / "tools" / "apply_four_quadrant_transport_dropoff.py",
+    ROOT / "tools" / "apply_four_quadrant_transport_dropoff_fixed.py",
 )
 
 FILES = (
