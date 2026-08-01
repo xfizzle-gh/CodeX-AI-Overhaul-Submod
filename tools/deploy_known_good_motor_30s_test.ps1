@@ -4,7 +4,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$ExpectedBranch = "test/known-good-motor-30s"
+$ExpectedBranch = "tune/motor-dismount-35s"
 $BaselineCommit = "e74ef6e4a1977e0e7188c2f4a4f360080b7f8353"
 
 $ScriptDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -31,6 +31,7 @@ if ($LASTEXITCODE -ne 0) {
 $sourceDeploy = Join-Path $RepoRoot "tools\deploy_attack_support_probe.ps1"
 $timingOverlay = Join-Path $RepoRoot "tools\apply_known_good_motor_30s_test.py"
 $placementOverlay = Join-Path $RepoRoot "tools\apply_motor_visible_package_overlay.py"
+$dismountOverlay = Join-Path $RepoRoot "tools\apply_motor_dismount_35s_overlay.py"
 if (-not (Test-Path -LiteralPath $sourceDeploy)) {
     throw "Missing trusted deployer: $sourceDeploy"
 }
@@ -40,15 +41,18 @@ if (-not (Test-Path -LiteralPath $timingOverlay)) {
 if (-not (Test-Path -LiteralPath $placementOverlay)) {
     throw "Missing base-entry package placement overlay: $placementOverlay"
 }
+if (-not (Test-Path -LiteralPath $dismountOverlay)) {
+    throw "Missing 35-second dismount overlay: $dismountOverlay"
+}
 
 # The trusted e74ef6e deployer pins its historical experiment branch. Run an
 # ephemeral copy with only that branch assertion changed; the deployment logic
-# itself remains byte-for-byte the known-good implementation. Keep the copy in
-# tools so every relative path used by the historical deployer resolves exactly
-# as it did in the successful session.
+# itself remains the known-good implementation. Keep the copy in tools so every
+# relative path used by the historical deployer resolves exactly as it did in
+# the successful session.
 $deployText = [System.IO.File]::ReadAllText($sourceDeploy)
 $oldBranchPin = '$ExpectedBranch = "experiment/attack-mate-slot-proof"'
-$newBranchPin = '$ExpectedBranch = "test/known-good-motor-30s"'
+$newBranchPin = '$ExpectedBranch = "tune/motor-dismount-35s"'
 if (-not $deployText.Contains($oldBranchPin)) {
     throw "Trusted deployer branch pin was not found; refusing to guess."
 }
@@ -70,20 +74,28 @@ $multiRoot = Join-Path $WorkshopRoot "resource\map\multi"
 
 & python $timingOverlay --multi-root $multiRoot
 if ($LASTEXITCODE -ne 0) {
-    throw "The 30-second motor timing overlay failed with exit code $LASTEXITCODE."
+    throw "The 30-second motor dispatch overlay failed with exit code $LASTEXITCODE."
 }
 & python $placementOverlay --multi-root $multiRoot
 if ($LASTEXITCODE -ne 0) {
     throw "The base-entry package placement overlay failed with exit code $LASTEXITCODE."
 }
+& python $dismountOverlay --multi-root $multiRoot
+if ($LASTEXITCODE -ne 0) {
+    throw "The 35-second motor dismount overlay failed with exit code $LASTEXITCODE."
+}
 
 & python $timingOverlay --multi-root $multiRoot --check
 if ($LASTEXITCODE -ne 0) {
-    throw "The deployed 30-second motor timing overlay did not validate."
+    throw "The deployed 30-second motor dispatch overlay did not validate."
 }
 & python $placementOverlay --multi-root $multiRoot --check
 if ($LASTEXITCODE -ne 0) {
     throw "The deployed base-entry package placement overlay did not validate."
+}
+& python $dismountOverlay --multi-root $multiRoot --check
+if ($LASTEXITCODE -ne 0) {
+    throw "The deployed 35-second motor dismount overlay did not validate."
 }
 
 $manifest = Join-Path $WorkshopRoot "known_good_motor_30s_test.txt"
@@ -95,6 +107,7 @@ $manifest = Join-Path $WorkshopRoot "known_good_motor_30s_test.txt"
     "truck_count_per_active_motor_path=1"
     "motor_package_placement=whole_linked_package"
     "motor_spawn_waypoint=base_entry_centroid"
+    "motor_passenger_dismount=35s_after_drive_order"
     "off_map_rear_pads=disabled_for_motor"
     "recurring_motor_scheduler=disabled_by_consumed_budget"
     "attack_helicopter_test=off"
@@ -105,4 +118,4 @@ Write-Host "Known-good motor test deployed."
 Write-Host "  Branch:   $ExpectedBranch"
 Write-Host "  Baseline: $BaselineCommit"
 Write-Host "  Workshop: $WorkshopRoot"
-Write-Host "  Result:   one whole linked truck package at the base entry waypoint after +30 seconds"
+Write-Host "  Result:   one linked truck at +30 seconds; passengers dismount after 35 seconds of travel"
