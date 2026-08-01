@@ -1,0 +1,61 @@
+name: Corrected motor drive and origin exits
+
+on:
+  push:
+    branches:
+      - fix/enemy-motor-drive-origin-exit
+    paths:
+      - tools/apply_motor_drive_origin_exit_fixed.py
+      - tools/apply_defense_motor_75s.py
+      - tools/deploy_motor_drive_origin_exit_fixed.ps1
+      - tests/test_motor_drive_origin_exit_fixed.py
+      - tests/test_defense_motor_75s.py
+      - .github/workflows/motor-drive-origin-exit-fixed.yml
+  pull_request:
+    paths:
+      - tools/apply_motor_drive_origin_exit_fixed.py
+      - tools/apply_defense_motor_75s.py
+      - tools/deploy_motor_drive_origin_exit_fixed.ps1
+      - tests/test_motor_drive_origin_exit_fixed.py
+      - tests/test_defense_motor_75s.py
+      - .github/workflows/motor-drive-origin-exit-fixed.yml
+
+jobs:
+  lifecycle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/enemy-motor-drive-origin-exit
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile tested lifecycle and minimal stop alignment
+        run: |
+          python -m py_compile tools/apply_motor_drive_origin_exit.py
+          python -m py_compile tools/apply_motor_drive_origin_exit_fixed.py
+          python -m py_compile tools/apply_defense_motor_75s.py
+      - name: Validate tested lifecycle plus stop-to-emit alignment
+        run: |
+          python -m unittest tests/test_motor_drive_origin_exit_fixed.py
+          python -m unittest tests/test_defense_motor_75s.py
+
+  powershell:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/enemy-motor-drive-origin-exit
+      - name: Parse corrected deployment wrapper
+        shell: pwsh
+        run: |
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path "tools/deploy_motor_drive_origin_exit_fixed.ps1"),
+            [ref]$null,
+            [ref]$errors
+          )
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_ }
+            exit 1
+          }
