@@ -60,10 +60,21 @@ class KnownGoodMotorThirtySecondOverlayTests(unittest.TestCase):
 
         self.assertIn('(define "as_place_motor_visible"', attack)
         self.assertIn('(define "ea_place_motor_visible"', enemy)
-        self.assertIn('target_waypoint "attack_support_rear_a1"', attack)
-        self.assertIn('target_waypoint "attack_support_rear_b1"', attack)
-        self.assertIn('target_waypoint "attack_support_rear_a1"', enemy)
-        self.assertIn('target_waypoint "attack_support_rear_b1"', enemy)
+        self.assertIn('target_waypoint "attack_support_entry_a"', attack)
+        self.assertIn('target_waypoint "attack_support_entry_b"', attack)
+        self.assertIn('target_waypoint "attack_support_entry_a"', enemy)
+        self.assertIn('target_waypoint "attack_support_entry_b"', enemy)
+
+        attack_macro_start = attack.index('(define "as_place_motor_visible"')
+        attack_motor_start = attack.index('; ===== MOTORIZED INSERT (cmd 19)', attack_macro_start)
+        attack_macro = attack[attack_macro_start:attack_motor_start]
+        enemy_macro_start = enemy.index('(define "ea_place_motor_visible"')
+        enemy_motor_start = enemy.index('; ===== MOTORIZED INSERT (cmd 19)', enemy_macro_start)
+        enemy_macro = enemy[enemy_macro_start:enemy_motor_start]
+        self.assertNotIn('attack_support_rear_a1', attack_macro)
+        self.assertNotIn('attack_support_rear_b1', attack_macro)
+        self.assertNotIn('attack_support_rear_a1', enemy_macro)
+        self.assertNotIn('attack_support_rear_b1', enemy_macro)
 
         for faction in ("rusa", "ukr", "prc", "nato"):
             marker = f'{{"attack_support/ally_{faction}_motor"'
