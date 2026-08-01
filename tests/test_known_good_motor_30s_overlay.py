@@ -7,12 +7,20 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "tools" / "apply_known_good_motor_30s_test.py"
+TIMING_SCRIPT = ROOT / "tools" / "apply_known_good_motor_30s_test.py"
+PLACEMENT_SCRIPT = ROOT / "tools" / "apply_motor_visible_package_overlay.py"
 
-spec = importlib.util.spec_from_file_location("motor_30s", SCRIPT)
-assert spec and spec.loader
-motor_30s = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(motor_30s)
+
+def load_module(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+motor_30s = load_module("motor_30s", TIMING_SCRIPT)
+motor_visible = load_module("motor_visible", PLACEMENT_SCRIPT)
 
 
 class KnownGoodMotorThirtySecondOverlayTests(unittest.TestCase):
@@ -25,9 +33,14 @@ class KnownGoodMotorThirtySecondOverlayTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp.cleanup()
 
-    def test_actual_known_good_files_become_one_shot_30_second_tests(self) -> None:
+    def apply_all(self) -> None:
         motor_30s.patch_multi_root(self.multi)
+        motor_visible.patch_multi_root(self.multi)
         motor_30s.validate_multi_root(self.multi)
+        motor_visible.validate_multi_root(self.multi)
+
+    def test_actual_known_good_files_become_visible_one_shot_30_second_tests(self) -> None:
+        self.apply_all()
 
         attack = (self.multi / "attack_support_waves.inc").read_text(encoding="utf-8")
         enemy = (self.multi / "enemy_attack_support.inc").read_text(encoding="utf-8")
@@ -45,14 +58,32 @@ class KnownGoodMotorThirtySecondOverlayTests(unittest.TestCase):
         self.assertNotIn('{"delay" {time 45}}', enemy_test)
         self.assertIn('attack_support_air_test$"} {op "="} {value 0}', attack)
 
-    def test_overlay_is_idempotent(self) -> None:
-        motor_30s.patch_multi_root(self.multi)
+        self.assertIn('(define "as_place_motor_visible"', attack)
+        self.assertIn('(define "ea_place_motor_visible"', enemy)
+        self.assertIn('target_waypoint "attack_support_rear_a1"', attack)
+        self.assertIn('target_waypoint "attack_support_rear_b1"', attack)
+        self.assertIn('target_waypoint "attack_support_rear_a1"', enemy)
+        self.assertIn('target_waypoint "attack_support_rear_b1"', enemy)
+
+        for faction in ("rusa", "ukr", "prc", "nato"):
+            marker = f'{{"attack_support/ally_{faction}_motor"'
+            _, _, block = motor_visible.named_block(attack, marker)
+            self.assertIn('("as_place_motor_visible")', block)
+            self.assertNotIn('("am_place_at_entry")', block)
+
+            marker = f'{{"enemy_attack/{faction}_motor"'
+            _, _, block = motor_visible.named_block(enemy, marker)
+            self.assertIn('("ea_place_motor_visible")', block)
+            self.assertNotIn('("ea_place_at_entry")', block)
+
+    def test_combined_overlays_are_idempotent(self) -> None:
+        self.apply_all()
         first = {
             path.name: path.read_bytes()
             for path in self.multi.iterdir()
             if path.is_file()
         }
-        motor_30s.patch_multi_root(self.multi)
+        self.apply_all()
         second = {
             path.name: path.read_bytes()
             for path in self.multi.iterdir()
