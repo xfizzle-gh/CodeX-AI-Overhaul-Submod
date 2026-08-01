@@ -68,13 +68,10 @@ jobs:
           '''
           source = source[:start] + replacement + source[end:]
 
-          # The branch restored an older live-tested comment above each finisher.
-          # Locate each finisher directly by define name instead of a comment marker.
-          needle = "start = text.index(marker)"
-          replacement = 'marker = f\'(define "{prefix}_finish_motor"\'\n    start = text.index(marker)'
-          if needle not in source:
-              raise RuntimeError("Could not find finisher marker lookup in repair source")
-          source = source.replace(needle, replacement, 1)
+          diagnostic = source.index("Engine marker not found")
+          print("BEGIN PATCH_ENGINE DIAGNOSTIC")
+          print(source[max(0, diagnostic - 1800):diagnostic + 400])
+          print("END PATCH_ENGINE DIAGNOSTIC")
 
           compile(source, ".git/decoupled_motor_runtime.py", "exec")
           (root / ".git" / "decoupled_motor_runtime.py").write_text(source, encoding="utf-8")
