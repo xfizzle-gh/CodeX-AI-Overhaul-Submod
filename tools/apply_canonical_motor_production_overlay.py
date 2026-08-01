@@ -105,7 +105,6 @@ def upsert_define(text: str, name: str, rendered: str, before_marker: str) -> st
 def render_placer(engine: Engine) -> str:
     i = "\t\t\t"
     lines = [
-        i + MARKER,
         i + '(define "' + engine.placer_macro + '"',
         i + '\t{"switch"',
         i + '\t\t{"case"',
