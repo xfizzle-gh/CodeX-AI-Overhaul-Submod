@@ -39,7 +39,9 @@ if (-not (Test-Path -LiteralPath $overlay)) {
 
 # The trusted e74ef6e deployer pins its historical experiment branch. Run an
 # ephemeral copy with only that branch assertion changed; the deployment logic
-# itself remains byte-for-byte the known-good implementation.
+# itself remains byte-for-byte the known-good implementation. Keep the copy in
+# tools so every relative path used by the historical deployer resolves exactly
+# as it did in the successful session.
 $deployText = [System.IO.File]::ReadAllText($sourceDeploy)
 $oldBranchPin = '$ExpectedBranch = "experiment/attack-mate-slot-proof"'
 $newBranchPin = '$ExpectedBranch = "test/known-good-motor-30s"'
@@ -48,7 +50,7 @@ if (-not $deployText.Contains($oldBranchPin)) {
 }
 $deployText = $deployText.Replace($oldBranchPin, $newBranchPin)
 
-$tempDeploy = Join-Path $RepoRoot ".git\deploy_known_good_motor_30s_inner.ps1"
+$tempDeploy = Join-Path $ScriptDirectory "deploy_known_good_motor_30s_inner.generated.ps1"
 [System.IO.File]::WriteAllText($tempDeploy, $deployText, [System.Text.UTF8Encoding]::new($false))
 
 try {
