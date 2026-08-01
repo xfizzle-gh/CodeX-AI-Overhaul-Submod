@@ -38,7 +38,7 @@ if (-not (Test-Path -LiteralPath $timingOverlay)) {
     throw "Missing motor timing overlay: $timingOverlay"
 }
 if (-not (Test-Path -LiteralPath $placementOverlay)) {
-    throw "Missing visible package placement overlay: $placementOverlay"
+    throw "Missing base-entry package placement overlay: $placementOverlay"
 }
 
 # The trusted e74ef6e deployer pins its historical experiment branch. Run an
@@ -74,7 +74,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 & python $placementOverlay --multi-root $multiRoot
 if ($LASTEXITCODE -ne 0) {
-    throw "The visible package placement overlay failed with exit code $LASTEXITCODE."
+    throw "The base-entry package placement overlay failed with exit code $LASTEXITCODE."
 }
 
 & python $timingOverlay --multi-root $multiRoot --check
@@ -83,7 +83,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 & python $placementOverlay --multi-root $multiRoot --check
 if ($LASTEXITCODE -ne 0) {
-    throw "The deployed visible package placement overlay did not validate."
+    throw "The deployed base-entry package placement overlay did not validate."
 }
 
 $manifest = Join-Path $WorkshopRoot "known_good_motor_30s_test.txt"
@@ -94,7 +94,8 @@ $manifest = Join-Path $WorkshopRoot "known_good_motor_30s_test.txt"
     "enemy_attacker_truck=30s_after_prep"
     "truck_count_per_active_motor_path=1"
     "motor_package_placement=whole_linked_package"
-    "motor_spawn_waypoint=visible_rear_pad"
+    "motor_spawn_waypoint=base_entry_centroid"
+    "off_map_rear_pads=disabled_for_motor"
     "recurring_motor_scheduler=disabled_by_consumed_budget"
     "attack_helicopter_test=off"
 ) | Set-Content -LiteralPath $manifest -Encoding UTF8
@@ -104,4 +105,4 @@ Write-Host "Known-good motor test deployed."
 Write-Host "  Branch:   $ExpectedBranch"
 Write-Host "  Baseline: $BaselineCommit"
 Write-Host "  Workshop: $WorkshopRoot"
-Write-Host "  Result:   one whole linked truck package at a visible rear pad after +30 seconds"
+Write-Host "  Result:   one whole linked truck package at the base entry waypoint after +30 seconds"
