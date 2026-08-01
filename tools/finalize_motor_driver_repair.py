@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 from pathlib import Path
 
 BRANCH = "experiment/attack-mate-slot-proof"
 BASE_LOCAL = "7091c264b6233fd33186a551fa30794a5b216f19"
-REMOTE_PARENT = "cf0a3bbf7afd5a68bd8c270f853d58253bc4bc74"
+REMOTE_PARENT = "1546545f60cbf31d84c23bd8566f37623f429c64"
 WORKSHOP = r"E:\Steam\steamapps\workshop\content\400750\3636883799"
 
 FOCUSED = [
@@ -65,6 +66,23 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
     raise RuntimeError(f"{label}: expected one old marker, found {count}")
 
 
+def normalize_generated_whitespace(path: Path) -> None:
+    """Remove trailing horizontal whitespace and enforce one final newline.
+
+    This preserves the file's existing LF/CRLF convention and changes no non-whitespace
+    content. The original generator emitted eight whitespace-only lines plus one extra
+    blank line at EOF; git diff --check correctly rejected them after all tests passed.
+    """
+    data = path.read_bytes()
+    newline = b"\r\n" if b"\r\n" in data else b"\n"
+    cleaned = re.sub(rb"[ \t]+(?=\r?\n)", b"", data)
+    cleaned = re.sub(rb"[ \t]+\Z", b"", cleaned)
+    cleaned = re.sub(rb"(?:\r?\n)+\Z", b"", cleaned) + newline
+    if cleaned != data:
+        path.write_bytes(cleaned)
+        print(f"Normalized generated whitespace: {path}", flush=True)
+
+
 def normalize_status_path(line: str) -> str:
     path = line[3:].strip().replace("\\", "/")
     if " -> " in path:
@@ -97,12 +115,9 @@ def main() -> None:
         root,
         capture=True,
     )
-    if "standalone motor repair finalizer" not in remote_finalizer.lower():
-        raise RuntimeError("Remote branch does not contain the expected finalizer")
+    if "standalone motor repair finalizer v2" not in remote_finalizer.lower():
+        raise RuntimeError("Remote branch does not contain the expected v2 finalizer")
 
-    # The deployer intentionally retired the conditional E1 override. The full-suite
-    # test still asserted that the obsolete block existed, even though the validator
-    # now correctly requires legacy E1 to remain zero in every E2 mode.
     e2_path = root / "tests/test_e2_airmobile.py"
     e2_text = e2_path.read_text(encoding="utf-8-sig")
     old_e2 = '        self.assertIn("if ($E2TestMode -ne 0)", self.deploy)\n'
@@ -118,7 +133,6 @@ def main() -> None:
     )
     e2_path.write_text(e2_text, encoding="utf-8")
 
-    # Confirm every earlier recovery correction is already present before testing.
     required_markers = {
         "tests/test_motor_runtime_isolation.py": [
             "(?P<name>",
@@ -155,6 +169,9 @@ def main() -> None:
     if "$sourceLegacyInit =" in deploy_text or "if ($E2TestMode -ne 0)" in deploy_text:
         raise RuntimeError("Obsolete legacy-E1 deployment override is still present")
 
+    for relative in STAGE_FILES:
+        normalize_generated_whitespace(root / relative)
+
     run(
         [
             sys.executable,
@@ -184,12 +201,18 @@ def main() -> None:
     if unexpected:
         raise RuntimeError(f"Unexpected changed files: {sorted(unexpected)}")
 
-    missing_runtime = [path for path in STAGE_FILES if path not in seen]
-    if missing_runtime:
-        raise RuntimeError(
-            "Expected repair files are not modified and would not be committed: "
-            + ", ".join(missing_runtime)
-        )
+    required_changed = {
+        "resource/map/multi/attack_support_waves.inc",
+        "resource/map/multi/defense_support_waves.inc",
+        "resource/map/multi/enemy_attack_support.inc",
+        "resource/map/multi/enemy_defense_support.inc",
+        "tests/test_motor_runtime_isolation.py",
+        "tests/test_e2_airmobile.py",
+        "tools/deploy_attack_support_probe.ps1",
+    }
+    missing = required_changed - seen
+    if missing:
+        raise RuntimeError(f"Expected repair files are not modified: {sorted(missing)}")
 
     run(["git", "add", "--", *STAGE_FILES], root)
     run(
@@ -205,17 +228,18 @@ def main() -> None:
         ["git", "rev-parse", "HEAD"], root, capture=True
     ).strip()
 
-    # Remove local helper copies before rebasing. The remote helper commits are then
-    # replayed into history without untracked-file collisions.
+    # Remove only untracked helper copies before rebase. The original apply utility is
+    # tracked at BASE_LOCAL and must remain present until the remote helper history is
+    # replayed; deleting it here would make rebase refuse a dirty tracked deletion.
     for helper in HELPERS:
-        try:
-            (root / helper).unlink()
-        except FileNotFoundError:
-            pass
+        helper_status = run(
+            ["git", "status", "--porcelain", "--", helper], root, capture=True
+        )
+        if helper_status.startswith("?? "):
+            (root / helper).unlink(missing_ok=True)
 
     run(["git", "rebase", f"origin/{BRANCH}"], root)
 
-    # Delete every temporary recovery utility from the final branch state.
     for helper in HELPERS:
         path = root / helper
         if path.exists():
@@ -276,4 +300,4 @@ def main() -> None:
 if __name__ == "__main__":
     main()
 
-# Standalone motor repair finalizer.
+# Standalone motor repair finalizer v2.
