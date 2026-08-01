@@ -36,6 +36,9 @@ jobs:
           python -m py_compile tests/test_motor_runtime_isolation.py
           python -m py_compile tests/test_motor_package1_restore.py
           python -m py_compile tests/test_attack_support_slot_proof.py
+          python -m py_compile tests/test_defense_mission_support.py
+          python -m py_compile tests/test_e2_airmobile.py
+          python -m py_compile tests/test_enemy_defense_support.py
           git diff --check
 
       - name: Install test runner
@@ -133,6 +136,9 @@ jobs:
                   tests/test_motor_runtime_isolation.py \
                   tests/test_motor_package1_restore.py \
                   tests/test_attack_support_slot_proof.py \
+                  tests/test_defense_mission_support.py \
+                  tests/test_e2_airmobile.py \
+                  tests/test_enemy_defense_support.py \
                   .github/workflows tools focused-motor-failure.log hosted-suite-failure.log
           git commit -m 'Isolate motor passengers from infantry patrols'
           git push origin HEAD:experiment/attack-mate-slot-proof
