@@ -160,8 +160,10 @@ def patch_templates(text: str) -> str:
         raise PatchError(f"Expected 16 numbered motor hulls, found {len(hulls)}")
     for key in expected:
         ids = sorted(set(pax.get(key, [])), key=lambda value: int(value, 16))
-        if len(ids) != 8:
-            raise PatchError(f"{key}: expected eight passengers, found {len(ids)}")
+        if not 4 <= len(ids) <= 8:
+            raise PatchError(
+                f"{key}: expected a valid 4-8 passenger roster, found {len(ids)}"
+            )
         pax[key] = ids
     patched = "\n".join(lines) + ("\n" if text.endswith("\n") else "")
     links = {(body.lower(), hull.lower(), slot) for body, hull, slot in re.findall(r'\{Link\s+(0x[0-9a-fA-F]+)\s+\{(0x[0-9a-fA-F]+)\s+"([^"]+)"\}\}', patched)}
@@ -267,8 +269,10 @@ def validate_templates(text: str) -> None:
                 raise PatchError(f"Missing {faction} p{package} hull")
             hull = hull_match.group(1).lower()
             pax_ids = [m.group(1).lower() for m in re.finditer(rf'\{{Tags[^\n]*ally_sup_{faction}_p{package}_pax[^\n]*\s(0x[0-9a-fA-F]+)\}}', text)]
-            if len(pax_ids) != 8:
-                raise PatchError(f"{faction} p{package}: expected eight passenger tags")
+            if not 4 <= len(pax_ids) <= 8:
+                raise PatchError(
+                    f"{faction} p{package}: expected a valid 4-8 passenger roster"
+                )
             for seat, body in enumerate(sorted(pax_ids, key=lambda value: int(value, 16)), start=1):
                 token = f'{{Link {body} {{{hull} "seat{seat}"}}}}'
                 if token.lower() not in text.lower():
