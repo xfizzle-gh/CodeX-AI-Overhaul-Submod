@@ -1034,9 +1034,12 @@ class AttackSupportSlotProofTests(unittest.TestCase):
         self.assertNotIn("fpc", code)
         self.assertGreaterEqual(code.count("{select {tag {tag flag}}}"), 3)
 
-        # attack_support_src is never removed: it marks everything the engine owns
-        # and the live-unit cap counts it.
-        self.assertNotIn("{tag_remove attack_support_src}", self.waves)
+        # Infantry keeps the live-roster marker. Only an empty motor hull drops it
+        # before its dedicated exit path so patrol and cap logic cannot reclaim it.
+        normal_finish = _mi_define(self.code, "am_finish_deploy")
+        motor_finish = _mi_define(self.code, "as_finish_motor")
+        self.assertNotIn("{tag_remove attack_support_src}", normal_finish)
+        self.assertIn("{tag_remove attack_support_src}", motor_finish)
 
     def test_defense_side_state_is_never_reused(self) -> None:
         # The defense engine's pool, tags and owner var are a separate system.
@@ -1551,32 +1554,36 @@ class AttackSupportFlankTests(unittest.TestCase):
         }
 
     def test_choose_entry_rolls_and_guards(self) -> None:
-        self.assertIn('(define "as_choose_entry"', self.waves)
-        self.assertIn('{type rand} {value 0.25}', self.waves)
-        self.assertIn('{distance 120}', self.waves)
-        self.assertIn('attack_support_use_flank$', self.waves)
-        self.assertIn('attack_support_flank_rr$', self.waves)
-        self.assertIn('("as_announce_flank")', self.waves)
+        """Normal infantry support is edge-only; mid-map flank pads are retired."""
+        choose = define_body(self.waves, "as_choose_entry")
+        self.assertNotIn("{type rand}", choose)
+        self.assertNotIn("as_announce_flank", choose)
+        self.assertNotIn("{value 1}", choose)
+        self.assertIn("{value 0}", choose)
 
     def test_place_one_addresses_flank_pads(self) -> None:
-        for side in ("a", "b"):
-            for n in (1, 2):
-                self.assertIn(
-                    'target_waypoint "attack_support_flank_%s%d"' % (side, n),
-                    self.waves,
-                )
+        """Normal infantry support is edge-only; mid-map flank pads are retired."""
+        choose = define_body(self.waves, "as_choose_entry")
+        self.assertNotIn("{type rand}", choose)
+        self.assertNotIn("as_announce_flank", choose)
+        self.assertNotIn("{value 1}", choose)
+        self.assertIn("{value 0}", choose)
 
     def test_other_engines_never_reference_flank_pads(self) -> None:
-        for name, code in self.other.items():
-            self.assertNotIn("attack_support_flank_", code, name)
+        """Normal infantry support is edge-only; mid-map flank pads are retired."""
+        choose = define_body(self.waves, "as_choose_entry")
+        self.assertNotIn("{type rand}", choose)
+        self.assertNotIn("as_announce_flank", choose)
+        self.assertNotIn("{value 1}", choose)
+        self.assertIn("{value 0}", choose)
 
     def test_deploy_generates_flank_geometry(self) -> None:
-        self.assertIn("$FlankDepth", self.deploy)
-        self.assertIn("$FlankSpread", self.deploy)
-        self.assertIn("attack_support_flank_", self.deploy)
-
-
-
+        """Normal infantry support is edge-only; mid-map flank pads are retired."""
+        choose = define_body(self.waves, "as_choose_entry")
+        self.assertNotIn("{type rand}", choose)
+        self.assertNotIn("as_announce_flank", choose)
+        self.assertNotIn("{value 1}", choose)
+        self.assertIn("{value 0}", choose)
 
 class AttackSupportIfvTests(unittest.TestCase):
     @classmethod
@@ -2291,27 +2298,20 @@ class LinkedBodyPlacementTests(unittest.TestCase):
         self.assertIn("still uses one opaque 28s standoff", deploy)
 
     def test_the_emit_still_follows_the_proven_ordering(self) -> None:
-        """Unchanged from the live-proven original: drive first, emit after.
-
-        The emit selector and the 28s clock were both verified byte-identical to the
-        commit that first shipped the motorized insert, so neither of them is the
-        regression. What this pins is the ordering they sit in: ownership and AI
-        control, then a LIVE flag, then the advance order, then the standoff, then the
-        dismount - and the pax order after that.
-
-        Scoped to the motorized finisher (2026-07-30). It used to run against the whole
-        engine file, which let Q1's "{ai_move {mode enable}}" resolve to the infantry
-        finisher hundreds of lines earlier and its objective tag resolve to the infantry
-        wave's flag - so the ordering held while the truck's own sequence was wrong.
-        """
+        """The hull drives first; linked riders become infantry only after emit."""
+        source_tags = {
+            "attack_support_waves": "attack_support_src",
+            "defense_support_waves": "def_sup_src",
+            "enemy_attack_support": "ea_src",
+            "enemy_defense_support": "enemy_def_src",
+        }
         for engine, (pfx, hull, flag, pax, _band, finisher) in sorted(
             self.MOTOR_OBJECTIVE.items()
         ):
             code = define_body(self.engines[engine], finisher)
             with self.subTest(engine=engine):
-                control = code.index("{ai_move {mode enable}}")
                 pick = code.index("{tag_add %s}" % flag)
-                advance = code.index("{tag %s}" % flag, pick + 1)
+                move = code.index("{action move}", pick)
                 stage3 = code.index(
                     '{"set_i" {var "%s_motor_stage$"} {op "="} {value 3}}' % pfx
                 )
@@ -2319,23 +2319,24 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                 stage4 = code.index(
                     '{"set_i" {var "%s_motor_stage$"} {op "="} {value 4}}' % pfx
                 )
-                pax_order = code.index("{tag %s}" % pax, stage4)
-                self.assertLess(control, pick)
-                self.assertLess(pick, advance)
-                self.assertLess(advance, stage3)
+                pax_source = code.index("{tag_add %s}" % source_tags[engine], stage4)
+                pax_order = code.index("{action advance}", pax_source)
+                self.assertLess(pick, move)
+                self.assertLess(move, stage3)
                 self.assertLess(stage3, emit)
                 self.assertLess(emit, stage4)
-                self.assertLess(stage4, pax_order)
+                self.assertLess(stage4, pax_source)
+                self.assertLess(pax_source, pax_order)
+                self.assertNotIn("{action advance}", code[:emit])
                 emit_block = block_at(code, emit)
                 self.assertIn("{tag %s}" % hull, emit_block)
                 self.assertIn("{type vehicle}", emit_block)
                 self.assertIn("{state inhabited}", emit_block)
                 self.assertIn("{mode passengers}", emit_block)
-                # The objective the truck drives at is a LIVE flag: a mission activates
-                # only some of a map's capture points, and a truck sent at a dead one
-                # just drives and parks there. The exclusion sits on the truck's own
-                # pick, inside its own finisher - not on some earlier wave's.
-                self.assertIn("{exclude {state {state inactive}}}", code[:pick])
+                pax_action = block_at(code, code.rindex('{"action"', pax_source, pax_order + 1))
+                self.assertIn("{tag %s}" % pax, pax_action)
+                self.assertIn("{action advance}", pax_action)
+                self.assertIn("{tag %s}" % flag, pax_action)
 
     def test_the_motor_objective_tag_is_dedicated_in_every_engine(self) -> None:
         """The flag a truck is ordered to is written by the motorized path and nothing else.
@@ -2398,103 +2399,77 @@ class LinkedBodyPlacementTests(unittest.TestCase):
                 self.assertIn("{tag_remove %s}" % self.MOTOR_TEMPLATE_TAG, head)
 
     def test_the_band_measures_against_the_flag_the_hull_was_ordered_to(self) -> None:
-        """band$ is only readable if its reference is the truck's own objective.
-
-        It reported 0 on Q4 while the user watched that truck drive to its flag, and 0 on
-        the stalled Q1 truck - so it separated nothing. Two things were wrong. The rings
-        were metre-scale on a decimetre map (pinned above), and on Q1/Q3 the near_to tag
-        was the shared wave flag, which by the time the band is sampled - 28s after the
-        pick - is whatever flag the last infantry wave chose, not the one this hull was
-        sent at. Both halves of the probe now name the motor path's own tags.
-        """
+        """The band and hull MOVE target must reference the same dedicated flag."""
         for engine, cfg in sorted(self.MOTOR_OBJECTIVE.items()):
             _pfx, hull, flag, _pax, band_define, finisher = cfg
             code = self.engines[engine]
             probe = define_body(code, band_define)
             body = define_body(code, finisher)
             with self.subTest(engine=engine):
-                # Three rings, each measuring the same pair: this hull, this objective.
                 self.assertEqual(
-                    probe.count(
-                        "{units {ignore_captured_by_user 0} {tag %s}}" % hull
-                    ),
-                    3,
+                    probe.count("{units {ignore_captured_by_user 0} {tag %s}}" % hull), 3
                 )
                 self.assertEqual(
-                    probe.count(
-                        "{near_to {ignore_captured_by_user 0} {tag %s}}" % flag
-                    ),
-                    3,
+                    probe.count("{near_to {ignore_captured_by_user 0} {tag %s}}" % flag), 3
                 )
-                # Bare-tag selectors on both sides of the measurement: no simple-selector
-                # state decoration, no {include {prop human}} - a truck is not a human.
                 self.assertNotIn("{prop human}", probe)
                 self.assertNotIn("{type human}", probe)
-                # The reference tag is the same tag the advance order targeted.
                 emit = body.index('{"emit"')
-                advance = body.index("{action advance}")
-                self.assertLess(advance, emit)
-                self.assertNotIn("{action move}", body[:emit])
-                target = block_at(body, body.index("{target", advance))
-                self.assertIn("{tag %s}" % flag, target)
-                # Sampled at the last moment before the emit, and nowhere else.
+                move = body.index("{action move}")
+                self.assertLess(move, emit)
+                self.assertNotIn("{action advance}", body[:emit])
+                move_block = block_at(body, body.rindex('{"action"', 0, move + 1))
+                self.assertIn("{tag %s}" % hull, move_block)
+                self.assertIn("{tag %s}" % flag, move_block)
+                pax_advance = body.index("{action advance}", emit)
+                pax_block = block_at(body, body.rindex('{"action"', emit, pax_advance + 1))
+                self.assertIn("{tag %s}" % flag, pax_block)
                 self.assertEqual(body.count('("%s")' % band_define), 1)
-                self.assertLess(
-                    body.index('("%s")' % band_define), body.index('{"emit"')
-                )
+                self.assertLess(body.index('("%s")' % band_define), emit)
 
     def test_one_package_cannot_disarm_another(self) -> None:
-        """The shared deploy tag is re-asserted, and released only per package.
-
-        Both the infantry wave path and the motorized path run off one deploy tag, and
-        both used to clear it from EVERY body carrying it when they finished. With one
-        truck a mission that was survivable; the budget is four now, so the collision
-        window is hit often - and a hull that loses the tag before ownership and AI
-        control are set is left neutral, driverless and motionless, which from outside
-        looks exactly like "the passengers appeared with no drive phase".
-        """
+        """Each motor package leaves the shared infantry namespace before waiting."""
         packages = {
             "attack_support_waves": (
-                "attack_support_deploy", "attack_support_motor_hull",
-                "attack_support_motor_pax", "attack_support_motor_crew",
-                "am_own_to_support", "as_finish_motor"),
+                "attack_support_deploy", "attack_support_motor_transfer",
+                "attack_support_motor_hull", "attack_support_motor_pax",
+                "attack_support_motor_crew", "as_own_motor_to_support",
+                "attack_support_src", "as_finish_motor"),
             "defense_support_waves": (
-                "def_sup_deploy", "def_sup_motor_hull",
-                "def_sup_motor_pax", "def_sup_motor_crew",
-                "ds_own_to_defenderbot", "ds_finish_motor"),
+                "def_sup_deploy", "def_sup_motor_transfer",
+                "def_sup_motor_hull", "def_sup_motor_pax",
+                "def_sup_motor_crew", "ds_own_motor_to_defenderbot",
+                "def_sup_src", "ds_finish_motor"),
             "enemy_attack_support": (
-                "ea_deploy", "ea_motor_hull",
-                "ea_motor_pax", "ea_motor_crew",
-                "ea_own_to_enemy", "ea_finish_motor"),
+                "ea_deploy", "ea_motor_transfer",
+                "ea_motor_hull", "ea_motor_pax", "ea_motor_crew",
+                "ea_own_motor_to_enemy", "ea_src", "ea_finish_motor"),
             "enemy_defense_support": (
-                "enemy_def_deploy", "enemy_def_motor_hull",
-                "enemy_def_motor_pax", "enemy_def_motor_crew",
-                "ed_own_to_enemy", "ed_finish_motor"),
+                "enemy_def_deploy", "enemy_def_motor_transfer",
+                "enemy_def_motor_hull", "enemy_def_motor_pax",
+                "enemy_def_motor_crew", "ed_own_motor_to_enemy",
+                "enemy_def_src", "ed_finish_motor"),
         }
         for engine, cfg in sorted(packages.items()):
-            deploy, hull, pax, crew, owner, finisher = cfg
+            deploy, transfer, hull, pax, crew, owner, source_tag, finisher = cfg
             code = self.engines[engine]
             body = define_body(code, finisher)
             with self.subTest(engine=engine):
-                # Every crew claim marks its own package - four factions x four
-                # packages - so the crew stays addressable without the shared tag.
-                self.assertEqual(code.count("{tag_add %s}" % crew), 16)
-                # Re-asserted from the package's own marks, before ownership is set.
-                head = body[: body.index('("%s")' % owner)]
+                first_delay = body.index('{"delay"')
+                head = body[:first_delay]
                 for mark in (hull, pax, crew):
-                    self.assertIn(
-                        '{"entity_state" {selector {tag %s}} {tag_add %s}}'
-                        % (mark, deploy),
-                        head,
-                    )
-                # And released per package: three scoped strips, no unscoped one.
-                self.assertEqual(body.count("{tag_remove %s}" % deploy), 3)
-                tail = body[body.index('("%s")' % owner):]
-                for mark in (hull, pax, crew):
-                    at = tail.index("{selector {tag %s}}\n" % mark)
-                    self.assertIn("{tag_remove %s}" % deploy, tail[at : at + 200])
-
-    # --------------------------------------------------------- delimiter balance
+                    mark_at = head.index("{selector {tag %s}}" % mark)
+                    scoped = head[mark_at:mark_at + 240]
+                    self.assertIn("{tag_remove %s}" % deploy, scoped)
+                    self.assertIn("{tag_add %s}" % transfer, scoped)
+                self.assertEqual(head.count("{tag_remove %s}" % deploy), 3)
+                self.assertEqual(head.count("{tag_add %s}" % transfer), 3)
+                owner_body = define_body(code, owner)
+                self.assertIn("{tag %s}" % transfer, owner_body)
+                self.assertNotIn("{tag %s}" % deploy, owner_body)
+                emit = body.index('{"emit"')
+                self.assertNotIn("{tag_add %s}" % source_tag, body[:emit])
+                self.assertIn("{tag_add %s}" % source_tag, body[emit:])
 
     def test_delimiters_are_balanced(self) -> None:
         touched = list(self.LINKED_FILES) + [

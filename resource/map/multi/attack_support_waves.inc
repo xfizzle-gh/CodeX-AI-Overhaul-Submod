@@ -1,4 +1,4 @@
-﻿; Attack support waves â€” the human attacker's AI teammate reinforcement engine.
+; Attack support waves â€” the human attacker's AI teammate reinforcement engine.
 ; Included by all fourteen CWA campaign_capture_the_flag.mi maps. Runs ONLY when the
 ; human is attacking; attack_support.lua publishes id_attack_support$ /
 ; attack_support_ready$ / attack_support_use_mi$ and nothing here moves until it has.
@@ -474,55 +474,10 @@
 
 			; Pick main triple pads vs flank pads for this placement batch (attack only).
 			; 25% flank roll; round-robin flank_rr 1/2; fall back to main if enemies near pad.
+						; Normal infantry support always enters from the map edge. Mid-map flank pads
+			; produced the visible 45-second center-map spawn and are reserved from now on.
 			(define "as_choose_entry"
 				{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
-				; Airmobile batch already chose LZ — do not also roll flank.
-				{"switch"
-					{"case"
-						{condition {type cmp_i} {var "attack_support_use_air$"} {op "=="} {value 1}}
-					}
-					{"default"
-						{"switch"
-							{"case"
-								{condition {type rand} {value 0.25}}
-								{"switch"
-									{"case"
-										{condition {type cmp_i} {var "attack_support_flank_rr$"} {op ">="} {value 2}}
-										{"set_i" {var "attack_support_flank_rr$"} {op "="} {value 1}}
-									}
-									{"default"
-										{"set_i" {var "attack_support_flank_rr$"} {op "+"} {value 1}}
-									}
-								}
-								; Safety: if any live bot human is already within 120 of the chosen
-								; flank pad, stay on the main edge pads this wave.
-								{"switch"
-									{"case"
-										{condition
-											{type entities}
-											{selector
-												{ignore_captured_by_user 0}
-												{type human}
-												{state "not dead"}
-												{tag _bot}
-												{distance 120}
-											}
-											{count {op ">"} {value 0}}
-										}
-										{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
-									}
-									{"default"
-										{"set_i" {var "attack_support_use_flank$"} {op "="} {value 1}}
-										("as_announce_flank")
-									}
-								}
-							}
-							{"default"
-								{"set_i" {var "attack_support_use_flank$"} {op "="} {value 0}}
-							}
-						}
-					}
-				}
 			)
 
 			; Twelve single-body slots, not eight. A motorized package is the widest
@@ -574,6 +529,35 @@
 					{"default"
 						{"player"
 							{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+							{operation set}
+							{player "3"}
+						}
+					}
+				}
+			)
+
+			; Motor ownership is deliberately isolated from infantry deployment.
+(define "as_own_motor_to_support"
+				{"switch"
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 1}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "1"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 2}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "2"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 3}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "3"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 4}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 5}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 6}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 7}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 8}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 9}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 10}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 11}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 12}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 13}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 14}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 15}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}} {operation set} {player "16"}}}
+					{"default"
+						{"player"
+							{selector {ignore_captured_by_user 0} {tag attack_support_motor_transfer}}
 							{operation set}
 							{player "3"}
 						}
@@ -7712,43 +7696,89 @@
 				}
 			)
 
-			(define "as_finish_motor"
-				; Motorized stage code, log-only (mirrored by attack_support.lua). 0 idle, 1 claimed,
-				; 2 placed/promoted, 3 driving to the flag, 4 passengers emitted. Plain set_i:
-				; nothing on screen, so no support_debug$ gate.
-				{"delay" {time 0.5}}
+						(define "as_finish_motor"
+				; Motor package isolation: the placement helper requires the shared deploy tag,
+				; but no infantry finisher may see the truck or its linked riders after placement.
 				{"entity_state"
-					{selector
-						{source advanced}
-						{group {select {tag {tag attack_support_deploy}}}}
-					}
-					{tag_add attack_support_src}
+					{selector {tag attack_support_motor_hull}}
+					{tag_remove attack_support_deploy}
+					{tag_add attack_support_motor_transfer}
+				}
+				{"entity_state"
+					{selector {tag attack_support_motor_pax}}
+					{tag_remove attack_support_deploy}
+					{tag_add attack_support_motor_transfer}
+				}
+				{"entity_state"
+					{selector {tag attack_support_motor_crew}}
+					{tag_remove attack_support_deploy}
+					{tag_add attack_support_motor_transfer}
+				}
+				{"entity_state"
+					{selector {tag attack_support_motor_hull}}
+					{tag_remove attack_support_g1}
+					{tag_remove attack_support_g2}
+					{tag_remove attack_support_g3}
+					{tag_remove attack_support_g4}
+				}
+				{"entity_state"
+					{selector {tag attack_support_motor_pax}}
+					{tag_remove attack_support_g1}
+					{tag_remove attack_support_g2}
+					{tag_remove attack_support_g3}
+					{tag_remove attack_support_g4}
+				}
+				{"entity_state"
+					{selector {tag attack_support_motor_crew}}
+					{tag_remove attack_support_g1}
+					{tag_remove attack_support_g2}
+					{tag_remove attack_support_g3}
+					{tag_remove attack_support_g4}
+				}
+				{"delay" {time 0.1}}
+				; Promote the three roles independently. Seated passengers remain outside the
+				; generic infantry source/patrol tags until the explicit emit below.
+				{"entity_state"
+					{selector {tag attack_support_motor_hull}}
 					{tag_remove attack_support_tpl}
-					; The motorized packages come out of faction_support_templates.inc, whose
-					; prototypes are parked under ally_sup_tpl - not the attack_support_tpl the
-					; infantry pool uses. Q3 and Q4 already strip the right one; this path only
-					; stripped the infantry marker, so a dispatched truck kept a template tag.
 					{tag_remove ally_sup_tpl}
 					{tag_remove hidden}
 					{inactive off}
 					{impregnability disabled}
 					{discovered on}
 				}
+				{"entity_state"
+					{selector {tag attack_support_motor_pax}}
+					{tag_remove attack_support_tpl}
+					{tag_remove ally_sup_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+				{"entity_state"
+					{selector {tag attack_support_motor_crew}}
+					{tag_remove attack_support_tpl}
+					{tag_remove ally_sup_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+				("as_own_motor_to_support")
 				{"delay" {time 0.2}}
-				; An infantry wave that finishes during this truck's placement window strips
-				; the shared deploy tag from EVERY body carrying it - this hull and its riders
-				; included. With four trucks a mission instead of one that window is hit often.
-				; Re-assert the tag from the package's own hull/pax/crew marks before ownership
-				; and AI control are set, or the truck is left neutral, driverless and motionless
-				; - which is exactly what "the passengers appeared with no drive phase" looks
-				; like from the outside.
-				{"entity_state" {selector {tag attack_support_motor_hull}} {tag_add attack_support_deploy}}
-				{"entity_state" {selector {tag attack_support_motor_pax}} {tag_add attack_support_deploy}}
-				{"entity_state" {selector {tag attack_support_motor_crew}} {tag_add attack_support_deploy}}
-				("am_own_to_support")
-				{"delay" {time 0.4}}
 				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
+					{control AI}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag attack_support_motor_crew}}
 					{control AI}
 					{ai_move {mode enable}}
 					{weapon_prepare on}
@@ -7758,31 +7788,29 @@
 					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
 				}
 				{"ables"
-					{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
 					{remove select}
 				}
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag attack_support_motor_crew}}
+					{remove select}
+				}
+				{"entity_state"
+					{selector {tag attack_support_motor_hull}}
+					{tag_remove attack_support_motor_transfer}
+				}
+				{"entity_state"
+					{selector {tag attack_support_motor_pax}}
+					{tag_remove attack_support_motor_transfer}
+				}
+				{"entity_state"
+					{selector {tag attack_support_motor_crew}}
+					{tag_remove attack_support_motor_transfer}
+				}
 				{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 2}}
-				; Drive telemetry starts at zero for every truck.
 				{"set_i" {var "attack_support_motor_drive_t$"} {op "="} {value 0}}
 				{"set_i" {var "attack_support_motor_band$"} {op "="} {value 0}}
-				{"delay" {time 0.25}}
-				; Pick one active flag as the approach objective, into a MOTOR-ONLY tag.
-				;
-				; This used to be attack_support_flag1 - the generic wave-flag tag that
-				; am_finish_deploy (the infantry path of this same engine) clears at the top of
-				; every wave and only re-points about 1.3s later. Nothing serialises the two:
-				; infantry waves run off the wave ladder and trucks off attack_support/motor_clock,
-				; four of each per mission. An infantry finisher that starts inside this pick's
-				; window leaves the tag empty, the advance order below resolves to nothing, and
-				; the hull is left with no order at all - crew seated, drive clock running, emit
-				; firing on schedule, truck stationary. The pax order 31s later was exposed for
-				; that entire span and would follow whichever flag the last infantry wave picked.
-				; Q2 (def_sup_motor_flag) and Q4 (enemy_def_motor_flag) already own a dedicated
-				; tag; this is the same shared-tag collision class as the deploy-tag race.
-				{"entity_state"
-					{selector {tag attack_support_motor_flag}}
-					{tag_remove attack_support_motor_flag}
-				}
+				{"entity_state" {selector {tag attack_support_motor_flag}} {tag_remove attack_support_motor_flag}}
 				{"entity_state"
 					{selector
 						{source advanced}
@@ -7796,19 +7824,14 @@
 					{tag_add attack_support_motor_flag}
 				}
 				{"delay" {time 0.1}}
-				; Truck drives toward the flag (standoff handled by emit after travel delay).
+				; Vehicles use MOVE. ADVANCE lets infantry AI and patrol logic reinterpret the hull.
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
 					{drop orders}
-					{action advance}
+					{action move}
 					{target {ignore_captured_by_user 0} {tag attack_support_motor_flag}}
 				}
 				{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 3}}
-				; DRIVE CLOCK. The 28s standoff is unchanged - it is the live-proven sequence
-				; from the original motorized insert, byte for byte - but it is now readable
-				; from game.log. attack_support_motor_drive_t$ steps 0 -> 4, one step per 7 seconds
-				; that actually elapsed, so an emit observed at drive_t < 4 proves the delay did
-				; not run, and an emit at drive_t 4 with band 0 proves the hull never moved.
 				{"delay" {time 7}}
 				{"set_i" {var "attack_support_motor_drive_t$"} {op "="} {value 1}}
 				{"delay" {time 7}}
@@ -7818,7 +7841,6 @@
 				{"delay" {time 7}}
 				{"set_i" {var "attack_support_motor_drive_t$"} {op "="} {value 4}}
 				("as_motor_band")
-				; Dismount passengers only (crew stays).
 				{"emit"
 					{selector
 						{ignore_captured_by_user 0}
@@ -7827,71 +7849,91 @@
 						{state inhabited}
 					}
 					{drop orders}
-					{emit
-						{mode passengers}
-					}
+					{emit {mode passengers}}
 				}
 				{"set_i" {var "attack_support_motor_stage$"} {op "="} {value 4}}
-				{"delay" {time 3}}
-				; Pax advance on foot; truck holds. Same motor-only objective the hull drove at,
-				; so the dismounts finish the approach instead of chasing the infantry's flag.
+				{"delay" {time 1}}
+				; Only now are the passengers normal infantry eligible for combat/patrol orders.
+				{"entity_state"
+					{selector {tag attack_support_motor_pax}}
+					{tag_add attack_support_src}
+					{tag_remove hidden}
+					{inactive off}
+					{discovered on}
+				}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag attack_support_motor_pax}}
+					{control AI}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag attack_support_motor_pax}}
+					{remove select}
+				}
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag attack_support_motor_pax}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag attack_support_motor_flag}}
 				}
-				; Driver leaves the field instead of idling: drive for waypoint "0" and the
-				; cleanup trigger below removes the hull 45s later, wreck included.
+				; The empty hull is never a support infantry/patrol member. It returns to the
+				; actual edge it entered from and remains cleanup-addressable for 45 seconds.
 				{"entity_state"
-					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
+					{selector {tag attack_support_motor_hull}}
 					{tag_add am_motor_leaving}
+					{tag_remove attack_support_src}
+					{tag_remove attack_support_g1}
+					{tag_remove attack_support_g2}
+					{tag_remove attack_support_g3}
+					{tag_remove attack_support_g4}
 				}
-				{"action"
-					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
-					{drop orders}
-					{action move}
-					{waypoint "0"}
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+						{"action"
+							{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
+							{drop orders}
+							{action move}
+							{waypoint "attack_support_entry_b1"}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+						{"action"
+							{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
+							{drop orders}
+							{action move}
+							{waypoint "attack_support_entry_a1"}
+						}
+					}
+					{"default"
+						{"action"
+							{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
+							{drop orders}
+							{action move}
+							{waypoint "attack_support_entry_b1"}
+						}
+					}
 				}
-				; Scoped strip. The unscoped form cleared the deploy tag from every body that
-				; carried it, which disarmed any infantry wave that happened to be placing at
-				; the same moment - the same collision as above, in the other direction.
 				{"entity_state"
 					{selector {tag attack_support_motor_hull}}
 					{tag_remove attack_support_deploy}
+					{tag_remove attack_support_motor_hull}
 				}
 				{"entity_state"
 					{selector {tag attack_support_motor_pax}}
 					{tag_remove attack_support_deploy}
+					{tag_remove attack_support_motor_pax}
 				}
 				{"entity_state"
 					{selector {tag attack_support_motor_crew}}
 					{tag_remove attack_support_deploy}
 					{tag_remove attack_support_motor_crew}
-				}
-				{"entity_state"
-					{selector {tag attack_support_motor_hull}}
-					{tag_remove attack_support_motor_hull}
-				}
-				{"entity_state"
-					{selector {tag attack_support_motor_pax}}
-					{tag_remove attack_support_motor_pax}
-				}
-				{"entity_state"
-					{selector {tag attack_support_g1}}
-					{tag_remove attack_support_g1}
-				}
-				{"entity_state"
-					{selector {tag attack_support_g2}}
-					{tag_remove attack_support_g2}
-				}
-				{"entity_state"
-					{selector {tag attack_support_g3}}
-					{tag_remove attack_support_g3}
-				}
-				{"entity_state"
-					{selector {tag attack_support_g4}}
-					{tag_remove attack_support_g4}
 				}
 				{"set_i" {var "attack_support_transferred$"} {op "="} {value 1}}
 			)

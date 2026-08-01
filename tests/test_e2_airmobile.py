@@ -1581,8 +1581,9 @@ class E2NumericWaypointBandTests(unittest.TestCase):
     def test_engine_addresses_the_band_and_nothing_else_numeric(self) -> None:
         live = strip_comments(self.waves)
         numeric_targets = set(re.findall(r'\{waypoint "(\d+)"\}', live))
-        # "0" is the base-game roam/exit node the motorised insert already uses.
-        self.assertEqual(numeric_targets, {"0"} | set(self.BAND))
+        # Motor cleanup now routes through named map-edge entry waypoints.
+        self.assertEqual(numeric_targets, set(self.BAND))
+        self.assertNotIn('{waypoint "0"}', mi_define(live, "as_finish_motor"))
 
     def test_deploy_generates_the_band_idempotently_and_self_healing(self) -> None:
         deploy = self.deploy

@@ -153,6 +153,7 @@ class EnemyDefenseSupportTests(unittest.TestCase):
         code = self.code
         for name in (
             "ed_own_to_enemy",
+            "ed_own_motor_to_enemy",
             "ed_place",
             "ed_assign_group",
             "ed_finish",
@@ -456,26 +457,26 @@ class EnemyDefenseSupportTests(unittest.TestCase):
         assign = define_body(code, "ed_assign_group")
         for n in (1, 2, 3, 4):
             self.assertIn("{tag_add enemy_def_p%d}" % n, assign)
-        # Group choice is the caller's, so garrison teams and each spawner's arrivals
-        # land in known groups rather than a shuffle.
         for n in (1, 2, 3):
             self.assertIn(
-                '{condition {type cmp_i} {var "enemy_defense_group$"} {op "=="} {value %d}}' % n,
+                '{condition {type cmp_i} {var "enemy_defense_group$"} '
+                '{op "=="} {value %d}}' % n,
                 assign,
             )
 
-        # A deployed body loses its pool tag on the claim and never regains one, so a
-        # spawner can never re-pick a patroller. Nothing removes the group tags or the
-        # live-roster marker either.
+        normal_finish = define_body(code, "ed_finish")
+        motor_finish = define_body(code, "ed_finish_motor")
         for n in (1, 2, 3, 4):
-            self.assertNotIn("{tag_remove enemy_def_p%d}" % n, code)
-        self.assertNotIn("{tag_remove enemy_def_src}", code)
+            marker = "{tag_remove enemy_def_p%d}" % n
+            self.assertNotIn(marker, normal_finish)
+            self.assertIn(marker, motor_finish)
+        self.assertNotIn("{tag_remove enemy_def_src}", normal_finish)
+        self.assertIn("{tag_remove enemy_def_src}", motor_finish)
         self.assertNotIn("{tag_add enemy_def_rusa_line}", code)
-        # The deploy tag IS consumed at the end of every deploy, so the next claim
-        # starts from an empty set instead of re-ordering the previous arrivals.
-        self.assertIn("{tag_remove enemy_def_deploy}", define_body(code, "ed_finish"))
-
-    # -------------------------------------------------------------- spec point 3
+        self.assertIn(
+            "{tag_remove enemy_def_deploy}",
+            normal_finish,
+        )
 
     def test_reinforcements_enter_at_the_defenders_own_map_edge(self) -> None:
         code = self.code
@@ -521,28 +522,32 @@ class EnemyDefenseSupportTests(unittest.TestCase):
 
     def test_ownership_switch_covers_every_literal_player_slot(self) -> None:
         code = self.code
-        own = define_body(code, "ed_own_to_enemy")
-        # The engine will not accept a var in the {player} node, so all sixteen slots
-        # are spelled out and matched against id_1st_enemy$ - the live defender bot on
-        # an attack mission, published by conquest.lua.
+        infantry_own = define_body(code, "ed_own_to_enemy")
+        motor_own = define_body(code, "ed_own_motor_to_enemy")
         for n in range(1, 17):
-            self.assertIn(
-                '{condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value %d}}' % n,
-                own,
+            condition = (
+                '{condition {type cmp_i} {var "id_1st_enemy$"} '
+                '{op "=="} {value %d}}' % n
             )
-            self.assertIn('{player "%d"}' % n, own)
+            player = '{player "%d"}' % n
+            for own in (infantry_own, motor_own):
+                self.assertIn(condition, own)
+                self.assertIn(player, own)
         self.assertNotIn('{player "id_1st_enemy$"}', code)
-        self.assertNotIn('{player "17"}', own)
+        for own in (infantry_own, motor_own):
+            self.assertNotIn('{player "17"}', own)
         self.assertNotIn('{player "0"}', code)
-        # Ownership is handed over exactly once per deploy, after placement - once
-        # from the infantry finish and once from the motorized one. The motorized
-        # path MUST go through it: the truck crew is only a driver if it is owned.
-        self.assertEqual(code.count('("ed_own_to_enemy")'), 2)
-        for name in ("ed_finish", "ed_finish_motor"):
-            self.assertIn('("ed_own_to_enemy")', define_body(code, name))
-        self.assertIn('BotApi.Scene:SetVar("id_1st_enemy", firstEnemyId)', self.conquest)
-
-    # -------------------------------------------------------------- spec point 4
+        self.assertEqual(code.count('("ed_own_to_enemy")'), 1)
+        self.assertEqual(code.count('("ed_own_motor_to_enemy")'), 1)
+        self.assertIn('("ed_own_to_enemy")', define_body(code, "ed_finish"))
+        self.assertIn(
+            '("ed_own_motor_to_enemy")',
+            define_body(code, "ed_finish_motor"),
+        )
+        self.assertIn(
+            'BotApi.Scene:SetVar("id_1st_enemy", firstEnemyId)',
+            self.conquest,
+        )
 
     def test_fireteams_are_small_and_engage_on_contact_without_a_death_ride(self) -> None:
         code = self.code

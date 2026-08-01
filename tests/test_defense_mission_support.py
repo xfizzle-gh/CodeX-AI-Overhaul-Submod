@@ -257,7 +257,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
             (self.ds, ("ds_entry_next", "ds_announce_wave", "ds_announce_defense",
                        "ds_announce_exhausted", "ds_announce_airborne",
                        "ds_place_at_entry", "ds_place_one",
-                       "ds_own_to_defenderbot",
+                       "ds_own_to_defenderbot", "ds_own_motor_to_defenderbot",
                        "ds_report_owner", "ds_claim_anchors", "ds_assign_group",
                        "ds_finish", "ds_pick_composition", "ds_pick_garrison",
                        "ds_resolve_army", "ds_pick_hybrid_non_nato",
@@ -272,7 +272,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
                        "ds_place_flag_props")),
             (self.ea, ("ea_entry_next",
                        "ea_place_at_entry", "ea_place_one",
-                       "ea_own_to_enemy",
+                       "ea_own_to_enemy", "ea_own_motor_to_enemy",
                        "ea_resolve_army", "ea_finish", "ea_motor_band", "ea_finish_motor",
                        "ea_poke_line", "ea_poke_wpn", "ea_poke_motor",
                        "ea_pick_wave")),
@@ -838,7 +838,14 @@ class DefenceMissionSupportTests(unittest.TestCase):
             self.assertLess(
                 code.index('(define "%s"' % place), code.index('(define "%s"' % finish)
             )
-        self.assertIn('("ea_own_to_enemy")', define_body(self.ea, "ea_finish_motor"))
+        self.assertIn(
+            '("ds_own_motor_to_defenderbot")',
+            define_body(self.ds, "ds_finish_motor"),
+        )
+        self.assertIn(
+            '("ea_own_motor_to_enemy")',
+            define_body(self.ea, "ea_finish_motor"),
+        )
 
     # ------------------------------------------------------------- pool sharing
 
@@ -993,8 +1000,20 @@ class DefenceMissionSupportTests(unittest.TestCase):
                     '{"set_i" {var "%s_waves_left$"} {op "-"} {value 1}}' % prefix,
                     dispatch,
                 )
-                # The roster marker is never removed, or the cap would stop counting.
-                self.assertNotIn("{tag_remove %s}" % tag, code)
+                # Normal infantry stays counted. The empty motor hull drops the
+                # roster marker before exiting so cap and patrol logic cannot reclaim it.
+                normal_name = "ds_finish" if prefix == "defense_support" else "ea_finish"
+                motor_name = (
+                    "ds_finish_motor" if prefix == "defense_support" else "ea_finish_motor"
+                )
+                self.assertNotIn(
+                    "{tag_remove %s}" % tag,
+                    define_body(code, normal_name),
+                )
+                self.assertIn(
+                    "{tag_remove %s}" % tag,
+                    define_body(code, motor_name),
+                )
 
         # Cap parity with the quadrant each engine mirrors: friendly caps match the
         # friendly system, hostile caps the hostile one.
@@ -1324,7 +1343,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
         for n in (1, 2):
             self.assertIn("{tag_add ea_g%d}" % n, finish)
             self.assertIn("{tag_remove ea_g%d}" % n, finish)
-        self.assertNotIn("ea_g3", code)
+        self.assertNotIn("ea_g3", finish)
         self.assertEqual(finish.count("{amount 2}"), 1)
         for _s, _c, _r, take, _st in EA_DRAWS:
             self.assertEqual(take, 4)
@@ -2161,19 +2180,19 @@ class DefenceMissionSupportTests(unittest.TestCase):
 MOTOR_ENGINES = {
     "Q1 friendly attack": (Q1, 0, "attack_support", "ally_%s_motor",
                            "as_poke_faction_motor", "as_finish_motor",
-                           "am_own_to_support", "am_place_at_entry",
+                           "as_own_motor_to_support", "am_place_at_entry",
                            "attack_support", "attack_support_motor"),
     "Q2 friendly defence": (DS, 1, "defense_support", "ally_%s_motor",
                             "ds_poke_motor", "ds_finish_motor",
-                            "ds_own_to_defenderbot", "ds_place_at_entry",
+                            "ds_own_motor_to_defenderbot", "ds_place_at_entry",
                             "defense_support", "def_sup_motor"),
     "Q3 enemy attack": (EA, 1, "enemy_attack", "%s_motor",
                         "ea_poke_motor", "ea_finish_motor",
-                        "ea_own_to_enemy", "ea_place_at_entry",
+                        "ea_own_motor_to_enemy", "ea_place_at_entry",
                         "enemy_attack", "ea_motor"),
     "Q4 enemy defence": (Q4, 0, "enemy_defense", "%s_motor",
                          "ed_poke_motor", "ed_finish_motor",
-                         "ed_own_to_enemy", "ed_place",
+                         "ed_own_motor_to_enemy", "ed_place",
                          "enemy_defense", "enemy_def_motor"),
 }
 MOTOR_FACTIONS = ("rusa", "ukr", "prc", "nato")
@@ -2232,10 +2251,18 @@ class MotorizedInsertOnEveryEngineTests(unittest.TestCase):
                 self.assertEqual(code.count('(define "%s"' % poke), 1)
                 self.assertEqual(code.count('(define "%s"' % finish), 1)
                 body = define_body(code, finish)
-                # Ownership is the whole point: an unowned crew is not a driver.
+                # Motor ownership is isolated from ordinary infantry ownership so
+                # seated riders cannot be selected or ordered before explicit emit.
                 self.assertIn('("%s")' % own, body)
                 self.assertIn("{mode passengers}", body)
-                self.assertIn('{waypoint "0"}', body)
+                # Empty hulls return through the real named entry pads, not the old
+                # generic waypoint 0 that could route them back into active combat.
+                self.assertNotIn('{waypoint "0"}', body)
+                for side in ("a1", "b1"):
+                    self.assertIn(
+                        '{waypoint "attack_support_entry_%s"}' % side,
+                        body,
+                    )
                 self.assertIn("{tag_add %s}" % MOTOR_LEAVING[name], body)
                 self.assertIn("{tag_add %s_hull}" % tag_pfx, code)
                 self.assertIn("{tag_add %s_pax}" % tag_pfx, code)
@@ -2246,7 +2273,7 @@ class MotorizedInsertOnEveryEngineTests(unittest.TestCase):
                         blk.index('("%s")' % place), blk.index('("%s")' % finish)
                     )
                 # And the placement run is wide enough for the widest package:
-                # hull + 2 crew + 8 {Link}-baked riders = 11 bodies.
+                # hull + 2 crew + 8 linked riders = 11 bodies.
                 self.assertGreaterEqual(
                     define_body(code, place).count('("%s")' % PLACE_ONE[place]), 11
                 )

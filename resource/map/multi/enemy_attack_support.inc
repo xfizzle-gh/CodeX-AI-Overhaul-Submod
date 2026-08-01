@@ -294,6 +294,38 @@
 				}
 			)
 
+			; Motor ownership is deliberately isolated from infantry deployment.
+(define "ea_own_motor_to_enemy"
+				{"switch"
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 1}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "1"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 2}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "2"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 3}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "3"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 4}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 5}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 6}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 7}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 8}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 9}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 10}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 11}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 12}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 13}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 14}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 15}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag ea_motor_transfer}} {operation set} {player "16"}}}
+					{"default"
+						{"set_i" {var "enemy_attack_owner_fail$"} {op "="} {value 1}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 10} {title "ENEMY ATTACK OWNER UNRESOLVED - NO TRANSFER"}}
+							}
+							{"default"}
+						}
+					}
+				}
+			)
+
 			; bot_army$ -> enemy_attack_army$. conquest.lua publishes bot_army$ from its
 			; nationMap (1 rusa, 2 ukr, 3 nato, 4 csa, 5 sov, 6 prc, 7 frg, 8 pol) in the
 			; same mission-authority call that writes user_is_defender$, so it is already
@@ -1263,38 +1295,86 @@
 				}
 			)
 
-			(define "ea_finish_motor"
-				; Motorized stage code, log-only (mirrored by attack_support.lua). 0 idle, 1 claimed,
-				; 2 placed/promoted, 3 driving to the flag, 4 passengers emitted. Plain set_i:
-				; nothing on screen, so no support_debug$ gate.
-				{"delay" {time 0.5}}
+						(define "ea_finish_motor"
+				; Motor package isolation: the placement helper requires the shared deploy tag,
+				; but no infantry finisher may see the truck or its linked riders after placement.
 				{"entity_state"
-					{selector
-						{source advanced}
-						{group {select {tag {tag ea_deploy}}}}
-					}
-					{tag_add ea_src}
+					{selector {tag ea_motor_hull}}
+					{tag_remove ea_deploy}
+					{tag_add ea_motor_transfer}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_pax}}
+					{tag_remove ea_deploy}
+					{tag_add ea_motor_transfer}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_crew}}
+					{tag_remove ea_deploy}
+					{tag_add ea_motor_transfer}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_hull}}
+					{tag_remove ea_g1}
+					{tag_remove ea_g2}
+					{tag_remove ea_g3}
+					{tag_remove ea_g4}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_pax}}
+					{tag_remove ea_g1}
+					{tag_remove ea_g2}
+					{tag_remove ea_g3}
+					{tag_remove ea_g4}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_crew}}
+					{tag_remove ea_g1}
+					{tag_remove ea_g2}
+					{tag_remove ea_g3}
+					{tag_remove ea_g4}
+				}
+				{"delay" {time 0.1}}
+				; Promote the three roles independently. Seated passengers remain outside the
+				; generic infantry source/patrol tags until the explicit emit below.
+				{"entity_state"
+					{selector {tag ea_motor_hull}}
 					{tag_remove ally_sup_tpl}
 					{tag_remove hidden}
 					{inactive off}
 					{impregnability disabled}
 					{discovered on}
 				}
+				{"entity_state"
+					{selector {tag ea_motor_pax}}
+					{tag_remove ally_sup_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_crew}}
+					{tag_remove ally_sup_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+				("ea_own_motor_to_enemy")
 				{"delay" {time 0.2}}
-				; An infantry wave that finishes during this truck's placement window strips
-				; the shared deploy tag from EVERY body carrying it - this hull and its riders
-				; included. With four trucks a mission instead of one that window is hit often.
-				; Re-assert the tag from the package's own hull/pax/crew marks before ownership
-				; and AI control are set, or the truck is left neutral, driverless and motionless
-				; - which is exactly what "the passengers appeared with no drive phase" looks
-				; like from the outside.
-				{"entity_state" {selector {tag ea_motor_hull}} {tag_add ea_deploy}}
-				{"entity_state" {selector {tag ea_motor_pax}} {tag_add ea_deploy}}
-				{"entity_state" {selector {tag ea_motor_crew}} {tag_add ea_deploy}}
-				("ea_own_to_enemy")
-				{"delay" {time 0.4}}
 				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+					{control AI}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_crew}}
 					{control AI}
 					{ai_move {mode enable}}
 					{weapon_prepare on}
@@ -1304,26 +1384,29 @@
 					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
 				}
 				{"ables"
-					{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
 					{remove select}
 				}
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_crew}}
+					{remove select}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_hull}}
+					{tag_remove ea_motor_transfer}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_pax}}
+					{tag_remove ea_motor_transfer}
+				}
+				{"entity_state"
+					{selector {tag ea_motor_crew}}
+					{tag_remove ea_motor_transfer}
+				}
 				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 2}}
-				; Drive telemetry starts at zero for every truck.
 				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 0}}
 				{"set_i" {var "enemy_attack_motor_band$"} {op "="} {value 0}}
-				{"delay" {time 0.25}}
-				; One active flag, shuffled fresh per truck, into a MOTOR-ONLY tag.
-				;
-				; This used to be ea_flag1 - the generic wave-flag tag ea_finish (the infantry
-				; path of this same engine) clears at the top of every wave and only re-points
-				; about a second later. Nothing serialises the two, so an infantry finisher that
-				; starts inside this pick's window leaves the tag empty and the advance order
-				; below resolves to nothing: the hull is left with no order at all, which reads
-				; from outside as a truck that never moved. Q2 and Q4 already own a dedicated tag.
-				{"entity_state"
-					{selector {tag ea_motor_flag}}
-					{tag_remove ea_motor_flag}
-				}
+				{"entity_state" {selector {tag ea_motor_flag}} {tag_remove ea_motor_flag}}
 				{"entity_state"
 					{selector
 						{source advanced}
@@ -1337,18 +1420,14 @@
 					{tag_add ea_motor_flag}
 				}
 				{"delay" {time 0.1}}
+				; Vehicles use MOVE. ADVANCE lets infantry AI and patrol logic reinterpret the hull.
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
 					{drop orders}
-					{action advance}
+					{action move}
 					{target {ignore_captured_by_user 0} {tag ea_motor_flag}}
 				}
 				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 3}}
-				; DRIVE CLOCK. The 28s standoff is unchanged - it is the live-proven sequence
-				; from the original motorized insert, byte for byte - but it is now readable
-				; from game.log. enemy_attack_motor_drive_t$ steps 0 -> 4, one step per 7 seconds
-				; that actually elapsed, so an emit observed at drive_t < 4 proves the delay did
-				; not run, and an emit at drive_t 4 with band 0 proves the hull never moved.
 				{"delay" {time 7}}
 				{"set_i" {var "enemy_attack_motor_drive_t$"} {op "="} {value 1}}
 				{"delay" {time 7}}
@@ -1366,55 +1445,91 @@
 						{state inhabited}
 					}
 					{drop orders}
-					{emit
-						{mode passengers}
-					}
+					{emit {mode passengers}}
 				}
 				{"set_i" {var "enemy_attack_motor_stage$"} {op "="} {value 4}}
-				{"delay" {time 3}}
-				; Same motor-only objective the hull drove at, so the dismounts finish the
-				; approach instead of chasing whichever flag the last infantry wave picked.
+				{"delay" {time 1}}
+				; Only now are the passengers normal infantry eligible for combat/patrol orders.
+				{"entity_state"
+					{selector {tag ea_motor_pax}}
+					{tag_add ea_src}
+					{tag_remove hidden}
+					{inactive off}
+					{discovered on}
+				}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
+					{control AI}
+					{ai_move {mode enable}}
+					{weapon_prepare on}
+					{fire_mode open}
+					{move_mode free}
+					{movement {speed normal} {kind normal} {type normal}}
+					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
+				}
+				{"ables"
+					{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
+					{remove select}
+				}
 				{"action"
 					{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag ea_motor_flag}}
 				}
-				; Driver leaves the field instead of idling: drive for waypoint "0" and the
-				; cleanup trigger below removes the hull 45s later, wreck included.
+				; The empty hull is never a support infantry/patrol member. It returns to the
+				; actual edge it entered from and remains cleanup-addressable for 45 seconds.
 				{"entity_state"
-					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+					{selector {tag ea_motor_hull}}
 					{tag_add ea_motor_leaving}
+					{tag_remove ea_src}
+					{tag_remove ea_g1}
+					{tag_remove ea_g2}
+					{tag_remove ea_g3}
+					{tag_remove ea_g4}
 				}
-				{"action"
-					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
-					{drop orders}
-					{action move}
-					{waypoint "0"}
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+						{"action"
+							{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+							{drop orders}
+							{action move}
+							{waypoint "attack_support_entry_a1"}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+						{"action"
+							{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+							{drop orders}
+							{action move}
+							{waypoint "attack_support_entry_b1"}
+						}
+					}
+					{"default"
+						{"action"
+							{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+							{drop orders}
+							{action move}
+							{waypoint "attack_support_entry_a1"}
+						}
+					}
 				}
-				; Scoped strip. The unscoped form cleared the deploy tag from every body that
-				; carried it, which disarmed any infantry wave that happened to be placing at
-				; the same moment - the same collision as above, in the other direction.
 				{"entity_state"
 					{selector {tag ea_motor_hull}}
 					{tag_remove ea_deploy}
+					{tag_remove ea_motor_hull}
 				}
 				{"entity_state"
 					{selector {tag ea_motor_pax}}
 					{tag_remove ea_deploy}
+					{tag_remove ea_motor_pax}
 				}
 				{"entity_state"
 					{selector {tag ea_motor_crew}}
 					{tag_remove ea_deploy}
 					{tag_remove ea_motor_crew}
-				}
-				{"entity_state"
-					{selector {tag ea_motor_hull}}
-					{tag_remove ea_motor_hull}
-				}
-				{"entity_state"
-					{selector {tag ea_motor_pax}}
-					{tag_remove ea_motor_pax}
 				}
 				{"set_i" {var "enemy_attack_transferred$"} {op "="} {value 1}}
 			)
