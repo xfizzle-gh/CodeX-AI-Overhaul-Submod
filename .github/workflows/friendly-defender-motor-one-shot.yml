@@ -1,0 +1,52 @@
+name: Friendly defender motor one-shot
+
+on:
+  push:
+    branches:
+      - feature/motor-friendly-defender-one-shot
+    paths:
+      - tools/apply_friendly_defender_motor_one_shot.py
+      - tools/deploy_friendly_defender_motor_one_shot.ps1
+      - tests/test_friendly_defender_motor_one_shot.py
+      - .github/workflows/friendly-defender-motor-one-shot.yml
+  pull_request:
+    paths:
+      - tools/apply_friendly_defender_motor_one_shot.py
+      - tools/deploy_friendly_defender_motor_one_shot.ps1
+      - tests/test_friendly_defender_motor_one_shot.py
+      - .github/workflows/friendly-defender-motor-one-shot.yml
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/motor-friendly-defender-one-shot
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile overlay
+        run: python -m py_compile tools/apply_friendly_defender_motor_one_shot.py
+      - name: Validate derived defender path and baseline parity
+        run: python -m unittest tests/test_friendly_defender_motor_one_shot.py
+
+  powershell:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/motor-friendly-defender-one-shot
+      - name: Parse deployment wrapper
+        shell: pwsh
+        run: |
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path "tools/deploy_friendly_defender_motor_one_shot.ps1"),
+            [ref]$null,
+            [ref]$errors
+          )
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_ }
+            exit 1
+          }
