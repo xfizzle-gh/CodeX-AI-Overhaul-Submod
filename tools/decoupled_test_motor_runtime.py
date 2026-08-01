@@ -80,11 +80,16 @@ class MotorRuntimeIsolationTests(unittest.TestCase):
             with self.subTest(relative=relative):
                 text = (ROOT / relative).read_text(encoding="utf-8")
                 finisher = _define_block(text, f"{define}_finish_motor")
-                helper = _define_block(text, f"{define}_drop_motor_pax")
+                batch_helper = _define_block(text, f"{define}_drop_motor_pax")
+                body_helper = _define_block(text, f"{define}_motor_drop_one")
                 self.assertIn(f'("{define}_drop_motor_pax")', finisher)
-                self.assertIn('{"placement"', helper)
-                self.assertIn("attack_support_air_", helper)
-                self.assertIn(config["pax"], helper)
+                self.assertEqual(
+                    batch_helper.count(f'("{define}_motor_drop_one")'),
+                    8,
+                )
+                self.assertIn('{"placement"', body_helper)
+                self.assertIn("attack_support_air_", body_helper)
+                self.assertIn(config["pax"], body_helper)
 
     def test_release_has_no_occupancy_or_emit_dependency(self) -> None:
         for relative, config in ENGINES.items():
@@ -92,8 +97,9 @@ class MotorRuntimeIsolationTests(unittest.TestCase):
             with self.subTest(relative=relative):
                 text = (ROOT / relative).read_text(encoding="utf-8")
                 finisher = _define_block(text, f"{define}_finish_motor")
-                helper = _define_block(text, f"{define}_drop_motor_pax")
-                combined = finisher + helper
+                batch_helper = _define_block(text, f"{define}_drop_motor_pax")
+                body_helper = _define_block(text, f"{define}_motor_drop_one")
+                combined = finisher + batch_helper + body_helper
                 self.assertNotIn("{state inhabited}", combined)
                 self.assertNotIn("{emit", combined)
                 self.assertNotIn("emit {mode passengers}", combined)
