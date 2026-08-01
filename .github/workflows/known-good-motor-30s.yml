@@ -1,12 +1,14 @@
-name: Known-good motor 30s overlay
+name: Final motor lifecycle tuning
 
 on:
   push:
     branches:
       - test/known-good-motor-30s
+      - tune/motor-dismount-35s
     paths:
       - tools/apply_known_good_motor_30s_test.py
       - tools/apply_motor_visible_package_overlay.py
+      - tools/apply_motor_lifecycle_tuning_overlay.py
       - tools/deploy_known_good_motor_30s_test.ps1
       - tests/test_known_good_motor_30s_overlay.py
       - .github/workflows/known-good-motor-30s.yml
@@ -14,6 +16,7 @@ on:
     paths:
       - tools/apply_known_good_motor_30s_test.py
       - tools/apply_motor_visible_package_overlay.py
+      - tools/apply_motor_lifecycle_tuning_overlay.py
       - tools/deploy_known_good_motor_30s_test.ps1
       - tests/test_known_good_motor_30s_overlay.py
       - .github/workflows/known-good-motor-30s.yml
@@ -24,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: test/known-good-motor-30s
+          ref: tune/motor-dismount-35s
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -32,6 +35,7 @@ jobs:
         run: |
           python -m py_compile tools/apply_known_good_motor_30s_test.py
           python -m py_compile tools/apply_motor_visible_package_overlay.py
+          python -m py_compile tools/apply_motor_lifecycle_tuning_overlay.py
       - name: Test against known-good source files
         run: python -m unittest tests/test_known_good_motor_30s_overlay.py
 
@@ -40,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: test/known-good-motor-30s
+          ref: tune/motor-dismount-35s
       - name: Parse deployment wrapper
         shell: pwsh
         run: |
