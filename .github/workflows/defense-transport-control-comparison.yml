@@ -1,4 +1,4 @@
-name: Four-quadrant normal transport patrols
+name: Four-quadrant transport drop-offs
 
 on:
   push:
@@ -7,31 +7,33 @@ on:
     paths:
       - tools/apply_four_quadrant_transport_patrol.py
       - tools/apply_four_quadrant_transport_patrol_fixed.py
+      - tools/apply_four_quadrant_transport_dropoff.py
       - tools/apply_transport_flag_perimeter_waypoints.py
       - tools/apply_transport_flag_perimeter_waypoints_fixed.py
       - tools/deploy_known_good_motor_30s_test.ps1
       - tools/deploy_runtime_proven_motor_60s.ps1
       - tools/deploy_friendly_defender_motor_one_shot.ps1
       - tools/deploy_transport_control_comparison.ps1
-      - tests/test_four_quadrant_transport_patrol.py
+      - tests/test_four_quadrant_transport_dropoff.py
       - tests/test_transport_perimeters_actual_maps.py
       - .github/workflows/defense-transport-control-comparison.yml
   pull_request:
     paths:
       - tools/apply_four_quadrant_transport_patrol.py
       - tools/apply_four_quadrant_transport_patrol_fixed.py
+      - tools/apply_four_quadrant_transport_dropoff.py
       - tools/apply_transport_flag_perimeter_waypoints.py
       - tools/apply_transport_flag_perimeter_waypoints_fixed.py
       - tools/deploy_known_good_motor_30s_test.ps1
       - tools/deploy_runtime_proven_motor_60s.ps1
       - tools/deploy_friendly_defender_motor_one_shot.ps1
       - tools/deploy_transport_control_comparison.ps1
-      - tests/test_four_quadrant_transport_patrol.py
+      - tests/test_four_quadrant_transport_dropoff.py
       - tests/test_transport_perimeters_actual_maps.py
       - .github/workflows/defense-transport-control-comparison.yml
 
 jobs:
-  transport-patrols:
+  transport-dropoffs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,16 +42,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Compile corrected transport and waypoint entry points
+      - name: Compile drop-off and waypoint entry points
         run: |
-          python -m py_compile tools/apply_four_quadrant_transport_patrol_fixed.py
+          python -m py_compile tools/apply_four_quadrant_transport_dropoff.py
           python -m py_compile tools/apply_transport_flag_perimeter_waypoints_fixed.py
-      - name: Load corrected four-quadrant generator
+      - name: Load reversible drop-off generator
         run: |
-          python -c "import importlib.util, pathlib, sys; p=pathlib.Path('tools/apply_four_quadrant_transport_patrol_fixed.py'); s=importlib.util.spec_from_file_location('fourq_ci', p); m=importlib.util.module_from_spec(s); sys.modules[s.name]=m; s.loader.exec_module(m)"
-      - name: Validate engines, factions, contact gate, and all map geometry
+          python -c "import importlib.util, pathlib, sys; p=pathlib.Path('tools/apply_four_quadrant_transport_dropoff.py'); s=importlib.util.spec_from_file_location('dropoff_ci', p); m=importlib.util.module_from_spec(s); sys.modules[s.name]=m; s.loader.exec_module(m)"
+      - name: Validate four engines, factions, drop-off lifecycle, and real maps
         run: |
-          python -m unittest tests/test_four_quadrant_transport_patrol.py
+          python -m unittest tests/test_four_quadrant_transport_dropoff.py
           python -m unittest tests/test_transport_perimeters_actual_maps.py
 
   powershell:
