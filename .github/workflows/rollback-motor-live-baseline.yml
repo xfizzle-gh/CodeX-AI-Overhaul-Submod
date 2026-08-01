@@ -1,9 +1,9 @@
 name: Roll back motor lifecycle to live-moving baseline
 
 on:
-  push:
+  pull_request:
     branches:
-      - experiment/attack-mate-slot-proof
+      - main
     paths:
       - tools/rollback_motor_to_live_baseline.py
       - .github/workflows/rollback-motor-live-baseline.yml
@@ -14,10 +14,11 @@ permissions:
 
 concurrency:
   group: rollback-motor-live-baseline
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   rollback:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
