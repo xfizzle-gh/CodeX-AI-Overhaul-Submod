@@ -29,7 +29,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $stage2Wrapper = Join-Path $RepoRoot "tools\deploy_friendly_defender_motor_one_shot.ps1"
-$normalOnly = Join-Path $RepoRoot "tools\apply_normal_transport_only.py"
+$normalOnly = Join-Path $RepoRoot "tools\apply_normal_transport_only_fixed.py"
 if (-not (Test-Path -LiteralPath $stage2Wrapper)) {
     throw "Missing defender transport helper deployment: $stage2Wrapper"
 }
