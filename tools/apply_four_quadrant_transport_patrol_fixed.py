@@ -12,20 +12,21 @@ source = SOURCE_PATH.read_text(encoding="utf-8")
 
 replacements = (
     (
-        '\\t\\t\\t\\t\\t\\t{{"6.entities" {{selector {{tag {source_hull}}}} {{count {{op ">="}} {{value 1}}}}}}',
-        '\\t\\t\\t\\t\\t\\t{{"6.entities" {{selector {{tag {source_hull}}}}} {{count {{op ">="}} {{value 1}}}}}}',
+        '{{"6.entities" {{selector {{tag {source_hull}}}} {{count {{op ">="}} {{value 1}}}}}}',
+        '{{"6.entities" {{selector {{tag {source_hull}}}}} {{count {{op ">="}} {{value 1}}}}}}',
         "source-hull availability selector",
     ),
     (
-        '\\t\\t\\t\\t\\t\\t{{selector {{tag {engine.deploy_tag}}}}\\n\\t\\t\\t\\t\\t\\t{{tag_remove {engine.deploy_tag}}}',
-        '\\t\\t\\t\\t\\t\\t{{selector {{tag {engine.deploy_tag}}}}}\\n\\t\\t\\t\\t\\t\\t{{tag_remove {engine.deploy_tag}}}',
+        '{{selector {{tag {engine.deploy_tag}}}}',
+        '{{selector {{tag {engine.deploy_tag}}}}}',
         "post-dispatch tag-removal selector",
     ),
 )
 for old, new, label in replacements:
     if source.count(old) != 1:
         raise RuntimeError(
-            f"Expected exactly one malformed {label} in the base generator"
+            f"Expected exactly one malformed {label} in the base generator; "
+            f"found {source.count(old)}"
         )
     source = source.replace(old, new, 1)
 
