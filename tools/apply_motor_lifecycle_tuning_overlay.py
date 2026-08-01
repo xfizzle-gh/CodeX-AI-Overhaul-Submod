@@ -127,40 +127,36 @@ def named_brace_block(text: str, marker: str) -> tuple[int, int, str]:
     raise PatchError(f"Unbalanced trigger: {marker}")
 
 
+def action_to_entry(spec: EngineSpec, indent: str, entry: str) -> str:
+    return (
+        indent + '{"action"\n'
+        + indent + '\t{selector {ignore_captured_by_user 0} {tag ' + spec.hull_tag + '}}\n'
+        + indent + '\t{drop orders}\n'
+        + indent + '\t{action move}\n'
+        + indent + '\t{waypoint "' + entry + '"}\n'
+        + indent + '}'
+    )
+
+
 def withdrawal_switch(spec: EngineSpec, indent: str) -> str:
     inner = indent + "\t"
     deep = inner + "\t"
     return (
-        f'{indent}; Return to the same base-entry side used for deployment.\n'
-        f'{indent}; Map-global waypoint "0" can lie forward of the drop zone.\n'
-        f'{indent}{{"switch"\n'
-        f'{inner}{{"case"\n'
-        f'{deep}{{condition {{type cmp_i}} {{var "enemy_spawnside$"}} {{op "=="}} {{value 1}}}}\n'
-        f'{deep}{{"action"\n'
-        f'{deep}\t{{selector {{ignore_captured_by_user 0}} {{tag {spec.hull_tag}}}}\n'
-        f'{deep}\t{{drop orders}}\n'
-        f'{deep}\t{{action move}}\n'
-        f'{deep}\t{{waypoint "{spec.side_one_entry}"}}\n'
-        f'{deep}}}\n'
-        f'{inner}}}\n'
-        f'{inner}{{"case"\n'
-        f'{deep}{{condition {{type cmp_i}} {{var "enemy_spawnside$"}} {{op "=="}} {{value 2}}}}\n'
-        f'{deep}{{"action"\n'
-        f'{deep}\t{{selector {{ignore_captured_by_user 0}} {{tag {spec.hull_tag}}}}\n'
-        f'{deep}\t{{drop orders}}\n'
-        f'{deep}\t{{action move}}\n'
-        f'{deep}\t{{waypoint "{spec.side_two_entry}"}}\n'
-        f'{deep}}}\n'
-        f'{inner}}}\n'
-        f'{inner}{{"default"\n'
-        f'{deep}{{"action"\n'
-        f'{deep}\t{{selector {{ignore_captured_by_user 0}} {{tag {spec.hull_tag}}}}\n'
-        f'{deep}\t{{drop orders}}\n'
-        f'{deep}\t{{action move}}\n'
-        f'{deep}\t{{waypoint "{spec.default_entry}"}}\n'
-        f'{deep}}}\n'
-        f'{inner}}}\n'
-        f'{indent}}}'
+        indent + '; Return to the same base-entry side used for deployment.\n'
+        + indent + '; Map-global waypoint "0" can lie forward of the drop zone.\n'
+        + indent + '{"switch"\n'
+        + inner + '{"case"\n'
+        + deep + '{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}\n'
+        + action_to_entry(spec, deep, spec.side_one_entry) + '\n'
+        + inner + '}\n'
+        + inner + '{"case"\n'
+        + deep + '{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}\n'
+        + action_to_entry(spec, deep, spec.side_two_entry) + '\n'
+        + inner + '}\n'
+        + inner + '{"default"\n'
+        + action_to_entry(spec, deep, spec.default_entry) + '\n'
+        + inner + '}\n'
+        + indent + '}'
     )
 
 
