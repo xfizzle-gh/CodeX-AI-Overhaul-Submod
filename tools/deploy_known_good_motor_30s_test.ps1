@@ -55,7 +55,7 @@ if (-not $deployText.Contains($oldBranchPin)) {
 $deployText = $deployText.Replace($oldBranchPin, $newBranchPin)
 
 $tempDeploy = Join-Path $ScriptDirectory "deploy_known_good_motor_30s_inner.generated.ps1"
-[System.IO.File]::WriteAllText($tempDeploy, $deployText, [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllText($tempDeploy, $deployText, [System.Text.UTF8Encoding]::new($true))
 
 try {
     & powershell -ExecutionPolicy Bypass -File $tempDeploy -RepoRoot $RepoRoot -WorkshopRoot $WorkshopRoot
