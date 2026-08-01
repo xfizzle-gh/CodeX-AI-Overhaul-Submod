@@ -33,8 +33,8 @@ defender = load_module(
     ROOT / "tools" / "apply_friendly_defender_motor_one_shot.py",
 )
 quadrants = load_module(
-    "fourq_transport",
-    ROOT / "tools" / "apply_four_quadrant_transport_patrol.py",
+    "fourq_transport_fixed",
+    ROOT / "tools" / "apply_four_quadrant_transport_patrol_fixed.py",
 )
 perimeters = load_module(
     "fourq_perimeters",
@@ -60,7 +60,6 @@ class FourQuadrantTransportPatrolTests(unittest.TestCase):
         for name in FILES:
             shutil.copy2(ROOT / "resource/map/multi" / name, self.multi / name)
 
-        # Recreate the deployment base used by the PowerShell wrapper.
         visible.patch_multi_root(self.multi)
         timing.patch_multi_root(self.multi)
         defender.apply(self.root)
@@ -74,7 +73,6 @@ class FourQuadrantTransportPatrolTests(unittest.TestCase):
     def test_all_four_engines_and_all_four_factions_are_present(self) -> None:
         quadrants.apply(self.root)
         quadrants.validate(self.root)
-
         for engine in quadrants.ENGINES:
             text = self.text(engine.filename)
             self.assertEqual(
@@ -82,14 +80,11 @@ class FourQuadrantTransportPatrolTests(unittest.TestCase):
             )
             for faction in quadrants.FACTIONS:
                 self.assertEqual(
-                    text.count(
-                        f'{{"{engine.trigger_ns}/normal_transport_{faction}"'
-                    ),
+                    text.count(f'{{"{engine.trigger_ns}/normal_transport_{faction}"'),
                     1,
                 )
             self.assertEqual(
-                text.count(f'{{"{engine.trigger_ns}/normal_transport_patrol"'),
-                1,
+                text.count(f'{{"{engine.trigger_ns}/normal_transport_patrol"'), 1
             )
 
     def test_normal_paths_have_no_scripted_dismount_or_withdrawal(self) -> None:
@@ -107,9 +102,7 @@ class FourQuadrantTransportPatrolTests(unittest.TestCase):
             self.assertIn("{action move}", block)
             self.assertIn("{distance 80}", block)
             for step in range(1, 6):
-                self.assertIn(
-                    f'{{waypoint "transport_patrol_flag_{step}"}}', block
-                )
+                self.assertIn(f'{{waypoint "transport_patrol_flag_{step}"}}', block)
             for forbidden in (
                 '{"emit"',
                 "{mode passengers}",
@@ -135,9 +128,7 @@ class FourQuadrantTransportPatrolTests(unittest.TestCase):
             (enemy, "enemy_attack_motor_test"),
         ):
             self.assertEqual(
-                text.count(
-                    f'{{"set_i" {{var "{var}$"}} {{op "="}} {{value 0}}}}'
-                ),
+                text.count(f'{{"set_i" {{var "{var}$"}} {{op "="}} {{value 0}}}}'),
                 1,
             )
 
@@ -160,7 +151,6 @@ class FourQuadrantTransportPatrolTests(unittest.TestCase):
         self.assertEqual(
             before, {name: (self.multi / name).read_bytes() for name in FILES}
         )
-
         quadrants.apply(self.root)
         first = {name: (self.multi / name).read_bytes() for name in FILES}
         self.assertEqual(quadrants.apply(self.root), [])
@@ -190,16 +180,13 @@ class FourQuadrantTransportPatrolTests(unittest.TestCase):
                 "\t\t}\n"
                 "}\n"
             )
-            (directory / "campaign_capture_the_flag.mi").write_text(
-                text, encoding="utf-8"
-            )
+            (directory / "campaign_capture_the_flag.mi").write_text(text, encoding="utf-8")
 
     def test_perimeter_waypoints_stay_clear_of_flag_posts(self) -> None:
         self.make_maps(flag_count=2)
         changed = perimeters.apply(self.root)
         self.assertEqual(len(changed), 14)
         perimeters.validate(self.root)
-
         sample = next(iter(perimeters.map_files(self.root)))
         text = sample.read_text(encoding="utf-8-sig")
         flags = perimeters.extract_flags(text, str(sample))
@@ -213,7 +200,6 @@ class FourQuadrantTransportPatrolTests(unittest.TestCase):
                 centre_distance - perimeters.RADIUS,
                 perimeters.CLOSEST_TO_FLAG - 0.1,
             )
-
         first = {path: path.read_bytes() for path in perimeters.map_files(self.root)}
         self.assertEqual(perimeters.apply(self.root), [])
         self.assertEqual(
