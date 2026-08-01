@@ -1,0 +1,27 @@
+name: One-shot decoupled motor repair
+
+on:
+  push:
+    branches:
+      - experiment/attack-mate-slot-proof
+    paths:
+      - tools/apply_decoupled_motor_delivery.py
+      - .github/workflows/one-shot-decoupled-motor.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: experiment/attack-mate-slot-proof
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - run: python -m pip install --upgrade pytest
+      - run: python tools/apply_decoupled_motor_delivery.py
