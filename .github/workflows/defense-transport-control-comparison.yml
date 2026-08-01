@@ -1,0 +1,60 @@
+name: Defense transport control comparison
+
+on:
+  push:
+    branches:
+      - experiment/defense-transport-control-comparison
+    paths:
+      - tools/apply_defense_motor_75s.py
+      - tools/apply_transport_control_comparison.py
+      - tools/deploy_transport_control_comparison.ps1
+      - tests/test_defense_motor_75s.py
+      - tests/test_transport_control_comparison.py
+      - .github/workflows/defense-transport-control-comparison.yml
+  pull_request:
+    paths:
+      - tools/apply_defense_motor_75s.py
+      - tools/apply_transport_control_comparison.py
+      - tools/deploy_transport_control_comparison.ps1
+      - tests/test_defense_motor_75s.py
+      - tests/test_transport_control_comparison.py
+      - .github/workflows/defense-transport-control-comparison.yml
+
+jobs:
+  comparison:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/defense-transport-control-comparison
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile comparison overlays
+        run: |
+          python -m py_compile tools/apply_defense_motor_75s.py
+          python -m py_compile tools/apply_transport_control_comparison.py
+      - name: Validate scripted turnaround and normal transport controls
+        run: |
+          python -m unittest tests/test_defense_motor_75s.py
+          python -m unittest tests/test_transport_control_comparison.py
+
+  powershell:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/defense-transport-control-comparison
+      - name: Parse comparison deployment wrapper
+        shell: pwsh
+        run: |
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path "tools/deploy_transport_control_comparison.ps1"),
+            [ref]$null,
+            [ref]$errors
+          )
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_ }
+            exit 1
+          }
