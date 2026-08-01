@@ -30,15 +30,15 @@ if ($LASTEXITCODE -ne 0) {
 
 $stage2Wrapper = Join-Path $RepoRoot "tools\deploy_friendly_defender_motor_one_shot.ps1"
 $correction = Join-Path $RepoRoot "tools\apply_motor_drive_origin_exit_fixed.py"
-$timing75 = Join-Path $RepoRoot "tools\apply_defense_motor_75s.py"
+$stopDismount75 = Join-Path $RepoRoot "tools\apply_defense_motor_75s_fixed.py"
 if (-not (Test-Path -LiteralPath $stage2Wrapper)) {
     throw "Missing friendly-defender stage deployer: $stage2Wrapper"
 }
 if (-not (Test-Path -LiteralPath $correction)) {
     throw "Missing indentation-independent motor drive/exit correction: $correction"
 }
-if (-not (Test-Path -LiteralPath $timing75)) {
-    throw "Missing 75-second player-defense motor timing overlay: $timing75"
+if (-not (Test-Path -LiteralPath $stopDismount75)) {
+    throw "Missing 75-second stop-and-dismount overlay: $stopDismount75"
 }
 
 # Rebuild the exact runtime-tested Stage-2 package first. The temporary copy
@@ -67,8 +67,8 @@ try {
     Remove-Item -LiteralPath $tempWrapper -Force -ErrorAction SilentlyContinue
 }
 
-# Apply and validate movement retry plus origin-side exits while the underlying
-# Stage-2 timing is still at its canonical 60 seconds.
+# Apply and validate the enemy drive retry and side-aware origin exits while the
+# underlying Stage-2 timing is still at its canonical 60 seconds.
 & python $correction --root $WorkshopRoot
 if ($LASTEXITCODE -ne 0) {
     throw "Motor drive/exit correction failed with exit code $LASTEXITCODE."
@@ -78,15 +78,16 @@ if ($LASTEXITCODE -ne 0) {
     throw "Motor drive/exit correction did not validate."
 }
 
-# Extend only the two trucks active in a player-defense mission. The friendly-
-# attacker runtime-proven path remains at 60 seconds.
-& python $timing75 --root $WorkshopRoot
+# For the two transports active in player defense: keep passengers movement-
+# disabled in their linked seats, drive 75 seconds, stop for one second, emit
+# passengers, enable their infantry AI, then resume the empty hull's origin exit.
+& python $stopDismount75 --root $WorkshopRoot
 if ($LASTEXITCODE -ne 0) {
-    throw "75-second player-defense timing overlay failed with exit code $LASTEXITCODE."
+    throw "75-second stop-and-dismount overlay failed with exit code $LASTEXITCODE."
 }
-& python $timing75 --root $WorkshopRoot --check
+& python $stopDismount75 --root $WorkshopRoot --check
 if ($LASTEXITCODE -ne 0) {
-    throw "75-second player-defense timing did not validate."
+    throw "75-second stop-and-dismount lifecycle did not validate."
 }
 
 $manifest = Join-Path $WorkshopRoot "motor_drive_origin_exit.txt"
@@ -94,27 +95,31 @@ $manifest = Join-Path $WorkshopRoot "motor_drive_origin_exit.txt"
     "branch=$ExpectedBranch"
     "stacked_on_stage2=$Stage2Head"
     "test_mission=player_defense"
-    "friendly_defender_runtime_result=core_lifecycle_passed"
+    "friendly_defender_runtime_result=core_lifecycle_passed_before_stop_update"
     "enemy_attacker_change=drive_order_retry_after_2s"
-    "enemy_total_ride_seconds=75"
+    "enemy_total_drive_seconds=75"
     "enemy_retry_split=2s_plus_73s"
-    "friendly_defender_total_ride_seconds=75"
-    "friendly_attacker_total_ride_seconds=60"
+    "friendly_defender_total_drive_seconds=75"
+    "friendly_attacker_total_drive_seconds=60"
+    "mounted_passenger_ai_move=disabled"
+    "hull_stop_before_emit=true"
+    "hull_stop_settle_seconds=1"
+    "passenger_ai_enabled_after_emit=true"
     "friendly_defender_exit=origin_entry_edge"
     "enemy_attacker_exit=origin_entry_edge"
     "friendly_attacker_exit=origin_entry_edge"
     "generic_waypoint_0_removed=true"
-    "passenger_emit=unchanged"
+    "passenger_emit=passengers_only"
     "linked_package_placement=unchanged"
     "cleanup_seconds=90"
     "recurring_scheduler=disabled"
 ) | Set-Content -LiteralPath $manifest -Encoding UTF8
 
 Write-Host ""
-Write-Host "Motor drive/exit correction deployed."
+Write-Host "Motor stop-and-dismount correction deployed."
 Write-Host "  Branch:          $ExpectedBranch"
 Write-Host "  Test mode:       PLAYER DEFENSE"
-Write-Host "  Friendly truck:  dismount at 75s"
-Write-Host "  Enemy truck:     advance order reasserted after 2s; dismount at 75s"
-Write-Host "  Empty trucks:    return to their own insertion edge, not waypoint 0"
-Write-Host "  Preserved:       whole-package placement, seated cargo, passenger-only emit, 90s cleanup"
+Write-Host "  Friendly truck:  passengers held; drive 75s; stop 1s; dismount"
+Write-Host "  Enemy truck:     retry at 2s; passengers held; drive 75s; stop 1s; dismount"
+Write-Host "  Empty trucks:    resume speed and return to their own insertion edge"
+Write-Host "  Preserved:       whole-package placement, passenger-only emit, 90s cleanup"
