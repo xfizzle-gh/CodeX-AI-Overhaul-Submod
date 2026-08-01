@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""Place test motor packages as one linked unit at a visible rear waypoint.
+"""Place test motor packages as one linked unit at the base entry waypoint.
 
-The live log from the first +30 second test proved that the FMTV actor was
-created, but the player never saw a useful truck and the passenger emit later
-left the riders linked/inactive. The historical generic placement helper moves
-one tagged entity at a time. That is appropriate for infantry waves but is a
-bad diagnostic path for a linked vehicle package.
+The live +30 second test proved that the motor package was claimed and the FMTV
+actor existed, but it never entered the visible battlefield. The previous
+"visible" overlay still targeted generated rear_a1/rear_b1 pads. Those pads are
+outside the usable map boundary on some CWA maps, so a valid truck can exist and
+remain permanently off-map.
 
 This deployment-only overlay gives the two proven attacker-side motor engines
 a dedicated placement helper that moves the complete linked package in one
-operation to the generated rear waypoint on the correct side of the map. The
-normal motor drive, emit, infantry order, withdrawal, and cleanup code remains
-unchanged.
+operation to the original attack_support_entry_a/entry_b waypoint on the
+correct side. Those waypoints are the map's real spawn-centroid entries, not
+the outward rear-pad projections. The normal motor drive, emit, infantry order,
+withdrawal, and cleanup code remains unchanged.
 """
 
 from __future__ import annotations
@@ -47,28 +48,28 @@ def named_block(text: str, marker: str) -> tuple[int, int, str]:
 ATTACK_MACRO = r'''
 
 			; TEST OVERLAY: place the complete linked truck package in one operation.
-			; The generic infantry helper places one entity at a time, which left the
-			; first +30s FMTV outside the player's visible battlefield path.
+			; Use the original spawn-centroid entry waypoint. The generated rear_a1/b1
+			; pads can lie beyond the usable map edge and strand a valid truck off-map.
 			(define "as_place_motor_visible"
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 						{"placement"
 							{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
-							{target_waypoint "attack_support_rear_b1"}
+							{target_waypoint "attack_support_entry_b"}
 						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
 						{"placement"
 							{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
-							{target_waypoint "attack_support_rear_a1"}
+							{target_waypoint "attack_support_entry_a"}
 						}
 					}
 					{"default"
 						{"placement"
 							{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
-							{target_waypoint "attack_support_rear_b1"}
+							{target_waypoint "attack_support_entry_b"}
 						}
 					}
 				}
@@ -77,27 +78,28 @@ ATTACK_MACRO = r'''
 
 ENEMY_MACRO = r'''
 
-			; TEST OVERLAY: place the complete linked enemy truck package in one operation.
+			; TEST OVERLAY: place the complete linked enemy truck package in one operation
+			; at the attacker's original spawn-centroid entry waypoint.
 			(define "ea_place_motor_visible"
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 						{"placement"
 							{selector {ignore_captured_by_user 0} {tag ea_deploy}}
-							{target_waypoint "attack_support_rear_a1"}
+							{target_waypoint "attack_support_entry_a"}
 						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
 						{"placement"
 							{selector {ignore_captured_by_user 0} {tag ea_deploy}}
-							{target_waypoint "attack_support_rear_b1"}
+							{target_waypoint "attack_support_entry_b"}
 						}
 					}
 					{"default"
 						{"placement"
 							{selector {ignore_captured_by_user 0} {tag ea_deploy}}
-							{target_waypoint "attack_support_rear_a1"}
+							{target_waypoint "attack_support_entry_a"}
 						}
 					}
 				}
@@ -142,8 +144,39 @@ def patch_motor_blocks(text: str, *, namespace: str, old_call: str, new_call: st
 
 
 def insert_macro(text: str, *, macro_name: str, macro: str, anchor: str) -> str:
-    if f'(define "{macro_name}"' in text:
-        return text
+    marker = f'(define "{macro_name}"'
+    if marker in text:
+        start = text.find(marker)
+        brace = text.find("(", start)
+        if brace < 0:
+            raise PatchError(f"Missing macro opening: {macro_name}")
+        depth = 0
+        end = None
+        in_string = False
+        escaped = False
+        for index in range(brace, len(text)):
+            char = text[index]
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    in_string = False
+                continue
+            if char == '"':
+                in_string = True
+            elif char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+                if depth == 0:
+                    end = index + 1
+                    break
+        if end is None:
+            raise PatchError(f"Unbalanced macro: {macro_name}")
+        return text[:start] + macro.strip("\n") + text[end:]
+
     pos = text.find(anchor)
     if pos < 0:
         raise PatchError(f"Missing insertion anchor: {anchor}")
@@ -156,20 +189,30 @@ def validate_multi_root(multi_root: Path) -> None:
 
     required_attack = (
         '(define "as_place_motor_visible"',
-        'target_waypoint "attack_support_rear_b1"',
-        'target_waypoint "attack_support_rear_a1"',
+        'target_waypoint "attack_support_entry_b"',
+        'target_waypoint "attack_support_entry_a"',
     )
     required_enemy = (
         '(define "ea_place_motor_visible"',
+        'target_waypoint "attack_support_entry_a"',
+        'target_waypoint "attack_support_entry_b"',
+    )
+    forbidden = (
         'target_waypoint "attack_support_rear_a1"',
         'target_waypoint "attack_support_rear_b1"',
     )
+
     for token in required_attack:
         if token not in attack:
             raise PatchError(f"attack_support_waves.inc missing {token}")
     for token in required_enemy:
         if token not in enemy:
             raise PatchError(f"enemy_attack_support.inc missing {token}")
+    for token in forbidden:
+        if token in named_block(attack, '(define "as_place_motor_visible"')[2]:
+            raise PatchError(f"attack motor helper still uses off-map rear pad: {token}")
+        if token in named_block(enemy, '(define "ea_place_motor_visible"')[2]:
+            raise PatchError(f"enemy motor helper still uses off-map rear pad: {token}")
 
     for text, namespace, call in (
         (attack, "attack_support", '("as_place_motor_visible")'),
@@ -189,7 +232,7 @@ def validate_multi_root(multi_root: Path) -> None:
                 continue
             _, _, block = named_block(text, marker)
             if call not in block:
-                raise PatchError(f"{marker} does not use visible whole-package placement")
+                raise PatchError(f"{marker} does not use whole-package base-entry placement")
             count += 1
         if count < 3:
             raise PatchError(f"Expected at least three validated {namespace} motor triggers")
@@ -247,7 +290,7 @@ def main() -> int:
     else:
         patch_multi_root(args.multi_root)
 
-    print("Motor package placement ready: whole linked truck at visible rear waypoint.")
+    print("Motor package placement ready: whole linked truck at base entry waypoint.")
     return 0
 
 
