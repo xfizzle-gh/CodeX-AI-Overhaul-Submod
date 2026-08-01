@@ -8,6 +8,7 @@ on:
       - tools/fix_motor_lifecycle.py
       - tools/patch_motor_isolation_test.py
       - tools/patch_actual_motor_tests.py
+      - tools/patch_remaining_motor_tests.py
       - tools/patch_package1_restore_test.py
 
 permissions:
@@ -31,6 +32,8 @@ jobs:
           python tools/patch_motor_isolation_test.py
           python -m py_compile tools/patch_actual_motor_tests.py
           python tools/patch_actual_motor_tests.py
+          python -m py_compile tools/patch_remaining_motor_tests.py
+          python tools/patch_remaining_motor_tests.py
           python -m py_compile tools/patch_package1_restore_test.py
           python tools/patch_package1_restore_test.py
           python -m py_compile tests/test_motor_runtime_isolation.py
@@ -122,6 +125,7 @@ jobs:
           rm -f tools/fix_motor_lifecycle.py
           rm -f tools/patch_motor_isolation_test.py
           rm -f tools/patch_actual_motor_tests.py
+          rm -f tools/patch_remaining_motor_tests.py
           rm -f tools/patch_package1_restore_test.py
           rm -f tools/patch_existing_motor_tests.py
           rm -f tools/list_motor_test_names.py
