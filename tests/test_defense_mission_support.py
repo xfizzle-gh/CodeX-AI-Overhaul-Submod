@@ -1806,7 +1806,7 @@ class DefenceMissionSupportTests(unittest.TestCase):
                 self.assertEqual(body.count("("), body.count(")"), name)
 
     def test_defense_airmobile_parity_and_day2_force(self) -> None:
-        """Friendly defense shares attack LZ pads; Day-2 forces insert ~30s, no prep wait."""
+        """Friendly defense shares attack LZ pads; manual enable forces insert ~30s, no prep wait."""
         code = self.ds
         air = trigger_block(code, "defense_support/air_test")
         head = air[: air.index("{actions")]
@@ -1819,7 +1819,8 @@ class DefenceMissionSupportTests(unittest.TestCase):
         self.assertIn('("ds_poke_faction_air")', air)
         # garrison_init arms shared Day-2 toggle + air budget without prep.
         garr = trigger_block(code, "defense_support/garrison_init")
-        self.assertIn('{var "attack_support_air_test$"} {op "="} {value 1}', garr)
+        self.assertIn('{var "attack_support_air_test$"} {op "="} {value 0}', garr)
+        self.assertNotIn('{var "attack_support_air_test$"} {op "="} {value 1}', garr)
         self.assertIn('{var "defense_support_air_left$"} {op "="} {value 2}', garr)
         place = define_body(code, "ds_place_one")
         self.assertIn("attack_support_air_", place)
@@ -1894,9 +1895,10 @@ class DefenceMissionSupportTests(unittest.TestCase):
         # L2+ cmd 18 in pick
         hybrid = define_body(code, "ds_pick_hybrid_non_nato")
         self.assertIn('{value 18}', hybrid)
-        # Shared Day-2 toggle set on defense garrison
+        # Shared legacy force toggle parked on defense garrison
         garr = trigger_block(code, "defense_support/garrison_init")
-        self.assertIn('{var "attack_support_air_test$"} {op "="} {value 1}', garr)
+        self.assertIn('{var "attack_support_air_test$"} {op "="} {value 0}', garr)
+        self.assertNotIn('{var "attack_support_air_test$"} {op "="} {value 1}', garr)
         # No aircraft entity
         self.assertNotIn("uh-60", code.lower())
         self.assertNotIn("mi-8", code.lower())

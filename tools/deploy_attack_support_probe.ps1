@@ -702,6 +702,34 @@ foreach ($pair in @(
 )) {
     Test-SupportTimerGate $pair[0] $pair[1]
 }
+# Runtime-proof guards earned by game(38).log. E2TestMode 0 must not leave the
+# older narrative airmobile test armed, and every ground engine must retain the
+# atomic motor package plus fail-closed and per-body arrival paths.
+$forcedAirOn = '{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}'
+$forcedAirOff = '{"set_i" {var "attack_support_air_test$"} {op "="} {value 0}}'
+foreach ($pair in @(@($wavesSource, 'attack support'), @($dsSource, 'defence support'))) {
+    $code = Get-MiCode $pair[0]
+    if ($code.Contains($forcedAirOn)) {
+        throw "Source $($pair[1]) engine still forces the legacy mid-map airmobile test"
+    }
+    if (-not $code.Contains($forcedAirOff)) {
+        throw "Source $($pair[1]) engine does not explicitly park the legacy airmobile test"
+    }
+}
+foreach ($pair in @(
+    @($wavesSource, 'attack support'),
+    @($defSource, 'enemy defence'),
+    @($dsSource, 'defence support'),
+    @($eaSource, 'enemy attack')
+)) {
+    $raw = [System.IO.File]::ReadAllText($pair[0])
+    foreach ($marker in @('Per-body activation spacing', 'Atomic linked-package activation', 'INVALID MOTOR PACKAGE - REHIDE', 'Fail closed before any drive or emit')) {
+        if (-not $raw.Contains($marker)) {
+            throw "Source $($pair[1]) engine is missing runtime-proof marker: $marker"
+        }
+    }
+}
+
 # The retired allied-support experiment owned these. Its files are gone; a stale
 # declaration invites someone to re-gate a production engine behind one.
 foreach ($banned in @('allied_support_initialized', 'allied_support_wave_size', 'allied_support_target')) {

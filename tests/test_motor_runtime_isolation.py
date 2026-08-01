@@ -151,3 +151,68 @@ def test_deploy_guard_scopes_remaining_motor_source_removals() -> None:
         assert f"-LeavingTag '{leaving_tag}'" in deploy
 
     assert "removes enemy_def_src, but the live-unit cap counts it" not in deploy
+
+
+def test_legacy_forced_airmobile_test_is_parked() -> None:
+    off = '{"set_i" {var "attack_support_air_test$"} {op "="} {value 0}}'
+    on = '{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}'
+    for path in (
+        "resource/map/multi/attack_support_waves.inc",
+        "resource/map/multi/defense_support_waves.inc",
+    ):
+        text = (ROOT / path).read_text(encoding="utf-8-sig")
+        assert text.count(off) == 1
+        assert on not in text
+
+
+def test_arrivals_activate_and_rotate_one_unlinked_human_at_a_time() -> None:
+    configs = [
+        ("resource/map/multi/attack_support_waves.inc", "am_place_one", "attack_support_place_one", "attack_support_placed", "am_entry_next"),
+        ("resource/map/multi/defense_support_waves.inc", "ds_place_one", "def_sup_place_one", "def_sup_placed", "ds_entry_next"),
+        ("resource/map/multi/enemy_attack_support.inc", "ea_place_one", "ea_place_one", "ea_placed", "ea_entry_next"),
+        ("resource/map/multi/enemy_defense_support.inc", "ed_place_one", "enemy_def_place_one", "enemy_def_placed", "ed_entry_next"),
+    ]
+    for path, define, one, placed, entry_next in configs:
+        text = (ROOT / path).read_text(encoding="utf-8-sig")
+        body = block(text, f'(define "{define}"')
+        activation = body.index(f'{{tag {one}}} {{type human}}')
+        clear = body.index(f'{{tag_remove {one}}}', activation)
+        assert activation < clear
+        assert '{inactive off}' in body[activation:clear]
+        assert '{"delay" {time 0.75}}' in body[activation:clear]
+        assert f'("{entry_next}")' in body[activation:clear]
+        assert f'{{tag_add {placed}}}' in body[activation:clear + 200]
+        selector_start = body.rindex('{source advanced}', 0, activation)
+        assert 'sup_linked' in body[selector_start:activation]
+
+
+def test_runtime_proof_requires_atomic_inhabited_motor_packages() -> None:
+    for path, finisher, owner, deploy, transfer, hull, pax, crew, _, leaving in CONFIGS:
+        text = (ROOT / path).read_text(encoding="utf-8-sig")
+        body = block(text, f'(define "{finisher}"')
+        promote = body[body.index('Atomic linked-package activation'):body.index(f'("{owner}")')]
+        assert promote.count(f'{{selector {{tag {transfer}}}}}') == 1
+        assert f'{{selector {{tag {hull}}}}}' not in promote
+        assert f'{{selector {{tag {pax}}}}}' not in promote
+        assert f'{{selector {{tag {crew}}}}}' not in promote
+
+        gate = body.index(f'{{tag {hull}}} {{type vehicle}} {{state inhabited}}')
+        stage_two = body.index('{value 2}', gate)
+        stage_nine = body.index('{value 9}', stage_two)
+        assert gate < stage_two < stage_nine
+        assert 'INVALID MOTOR PACKAGE - REHIDE' in body[stage_two:]
+
+        untyped = f'{{selector {{ignore_captured_by_user 0}} {{tag {hull}}}}}'
+        assert untyped not in body
+        retirement = body.index(f'{{tag_add {leaving}}}', stage_two)
+        return_path = body[retirement:]
+        assert f'{{tag {leaving}}} {{type vehicle}}' in return_path
+        assert f'{{tag {hull}}} {{type vehicle}}' not in return_path
+
+
+def test_deploy_guard_pins_runtime_transport_repairs() -> None:
+    deploy = (ROOT / "tools/deploy_attack_support_probe.ps1").read_text(encoding="utf-8-sig")
+    assert "still forces the legacy mid-map airmobile test" in deploy
+    assert "Per-body activation spacing" in deploy
+    assert "Atomic linked-package activation" in deploy
+    assert "INVALID MOTOR PACKAGE - REHIDE" in deploy

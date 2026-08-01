@@ -1661,15 +1661,17 @@ class AttackSupportAirmobileTests(unittest.TestCase):
         self.assertIn('{"attack_support_air_left"}', self.vars)
         self.assertIn('{"attack_support_air_test"}', self.vars)
         self.assertIn('{"attack_support_use_air"}', self.vars)
-        # Day-2 test default ON in init
+        # Runtime default OFF. Explicit E2TestMode is the only forced air path.
         self.assertIn(
+            '{var "attack_support_air_test$"} {op "="} {value 0}', self.waves
+        )
+        self.assertNotIn(
             '{var "attack_support_air_test$"} {op "="} {value 1}', self.waves
         )
         self.assertIn(
             '{var "attack_support_air_left$"} {op "="} {value 2}', self.waves
         )
-        # Easy revert documented
-        self.assertIn("Set attack_support_air_test$=0", self.waves)
+        self.assertIn("Legacy forced airmobile test is OFF", self.waves)
 
     def test_force_opening_airmobile_when_test_on(self) -> None:
         init = self.waves.split('{"attack_support/init"')[1].split(
