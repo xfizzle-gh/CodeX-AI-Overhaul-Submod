@@ -13,7 +13,9 @@ class MotorPackageOneRestoreTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.text = TEMPLATE.read_text(encoding="utf-8")
-        cls.lines = cls.text.splitlines()
+        cls.tag_lines = [
+            line for line in cls.text.splitlines() if "{Tags " in line
+        ]
 
     def test_all_numbered_motor_packages_exist(self) -> None:
         for faction in FACTIONS:
@@ -26,33 +28,36 @@ class MotorPackageOneRestoreTests(unittest.TestCase):
         for faction in FACTIONS:
             for package in range(1, 5):
                 tag = f'ally_sup_{faction}_p{package}_crew'
-                lines = [line for line in self.lines if tag in line]
-                linked = [line for line in lines if "sup_linked" in line]
+                linked = [
+                    line
+                    for line in self.tag_lines
+                    if tag in line and "sup_linked" in line
+                ]
                 self.assertEqual(len(linked), 1, f"{tag} must have one linked driver")
 
     def test_passenger_tags_are_never_linked(self) -> None:
         for faction in FACTIONS:
             for package in range(1, 5):
                 tag = f'ally_sup_{faction}_p{package}_pax'
-                lines = [line for line in self.lines if tag in line]
+                lines = [line for line in self.tag_lines if tag in line]
                 self.assertTrue(lines, tag)
                 self.assertTrue(all("sup_linked" not in line for line in lines), tag)
 
-    def test_motor_link_table_has_no_passenger_or_commander_slots(self) -> None:
+    def test_motor_link_table_has_only_one_driver_per_hull(self) -> None:
         link_re = re.compile(
             r'\{Link\s+(0x[0-9a-fA-F]+)\s+\{(0x[0-9a-fA-F]+)\s+"([^"]+)"\}\}'
         )
-        slots: list[str] = []
+        links: list[tuple[int, int, str]] = []
         for body_raw, hull_raw, slot in link_re.findall(self.text):
             body = int(body_raw, 16)
             hull = int(hull_raw, 16)
             base = 0xB3A0 <= hull <= 0xB3CB and 0xB3A0 <= body <= 0xB3CB
             topup = 0xC100 <= hull <= 0xC153 and 0xC100 <= body <= 0xC153
             if base or topup:
-                slots.append(slot)
-        self.assertEqual(slots.count("driver"), 16)
-        self.assertNotIn("commander", slots)
-        self.assertFalse(any(slot.startswith("seat") for slot in slots))
+                links.append((body, hull, slot))
+        self.assertEqual(len(links), 16)
+        self.assertTrue(all(slot == "driver" for _, _, slot in links))
+        self.assertEqual(len({hull for _, hull, _ in links}), 16)
 
 
 if __name__ == "__main__":
