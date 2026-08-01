@@ -124,8 +124,8 @@ def validate_engine(text: str, engine: Engine) -> None:
         raise PatchError(f"{engine.filename}: expected one 60-second ride")
     if '{"delay" {time 28}}' in finisher:
         raise PatchError(f"{engine.filename}: stale 28-second ride remains")
-    if '{emit {mode passengers}}' not in finisher:
-        raise PatchError(f"{engine.filename}: passenger-only emit was lost")
+    if finisher.count('{"emit"') != 1 or finisher.count('{mode passengers}') != 1:
+        raise PatchError(f"{engine.filename}: original passenger-only emit was lost")
     if '{waypoint "0"}' not in finisher:
         raise PatchError(f"{engine.filename}: runtime-proven departure order changed")
 
