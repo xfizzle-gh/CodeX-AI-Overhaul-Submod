@@ -65,4 +65,4 @@ powershell -ExecutionPolicy Bypass -File .\tools\deploy_transport_control_compar
 
 ## Runtime validation matrix
 
-Test at least one player-attack and one player-defense mission. Each should produce exactly two trucks: one friendly and one enemy. Confirm that trucks follow flag-perimeter routes, avoid the central flag props, and stop receiving patrol reorders after their passengers dismount under contact.
+This implementation is CI-validated but not yet runtime-proven across all four paths. Test at least one player-attack and one player-defense mission. Each should produce exactly two trucks: one friendly and one enemy. Confirm that trucks follow flag-perimeter routes, avoid the central flag props, and stop receiving patrol reorders after their passengers dismount under contact.
