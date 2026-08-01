@@ -37,8 +37,8 @@ quadrants = load_module(
     ROOT / "tools" / "apply_four_quadrant_transport_patrol_fixed.py",
 )
 perimeters = load_module(
-    "fourq_perimeters",
-    ROOT / "tools" / "apply_transport_flag_perimeter_waypoints.py",
+    "fourq_perimeters_fixed",
+    ROOT / "tools" / "apply_transport_flag_perimeter_waypoints_fixed.py",
 )
 
 FILES = (
