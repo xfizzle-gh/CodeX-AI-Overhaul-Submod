@@ -29,23 +29,24 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $stage2Wrapper = Join-Path $RepoRoot "tools\deploy_friendly_defender_motor_one_shot.ps1"
-$normalOnly = Join-Path $RepoRoot "tools\apply_normal_transport_only_fixed.py"
-if (-not (Test-Path -LiteralPath $stage2Wrapper)) {
-    throw "Missing defender transport helper deployment: $stage2Wrapper"
-}
-if (-not (Test-Path -LiteralPath $normalOnly)) {
-    throw "Missing normal transport-only overlay: $normalOnly"
+$quadrants = Join-Path $RepoRoot "tools\apply_four_quadrant_transport_patrol.py"
+$perimeters = Join-Path $RepoRoot "tools\apply_transport_flag_perimeter_waypoints.py"
+foreach ($required in @($stage2Wrapper, $quadrants, $perimeters)) {
+    if (-not (Test-Path -LiteralPath $required)) {
+        throw "Missing required transport deployment component: $required"
+    }
 }
 
-# Build the validated linked-package base and defender-side placement/ownership
-# helpers. The normal-only overlay then removes both timer-driven dispatches.
+# Build the validated linked-package base, all support includes, and the proven
+# whole-package entry geometry. The production overlay below disables every old
+# timer-driven motor dispatch and replaces it with ordinary AI combat transports.
 $wrapperText = [System.IO.File]::ReadAllText($stage2Wrapper)
 $oldBranch = "feature/motor-friendly-defender-one-shot"
 if (-not $wrapperText.Contains($oldBranch)) {
     throw "Stage-2 branch assertion was not found; refusing to approximate deployment."
 }
 $wrapperText = $wrapperText.Replace($oldBranch, $ExpectedBranch)
-$tempWrapper = Join-Path $ScriptDirectory "deploy_normal_transport_base.generated.ps1"
+$tempWrapper = Join-Path $ScriptDirectory "deploy_four_quadrant_transport_base.generated.ps1"
 [System.IO.File]::WriteAllText(
     $tempWrapper,
     $wrapperText,
@@ -63,44 +64,62 @@ try {
     Remove-Item -LiteralPath $tempWrapper -Force -ErrorAction SilentlyContinue
 }
 
-# Replace the experiment with exactly two ordinary AI combat transports:
-# one friendly NATO FMTV and one enemy Russian Ural. No scripted dismount,
-# turnaround, return-to-edge, deletion, or cleanup remains active.
-& python $normalOnly --root $WorkshopRoot
+# Generate five fixed route slots per map. Every slot is centred approximately
+# 32m from a campaign flag and carries a 14m arrival radius, so no transport is
+# ever ordered directly onto the sandbag post or flag entity.
+& python $perimeters --root $WorkshopRoot
 if ($LASTEXITCODE -ne 0) {
-    throw "Normal transport-only overlay failed with exit code $LASTEXITCODE."
+    throw "Transport flag-perimeter waypoint generation failed with exit code $LASTEXITCODE."
 }
-& python $normalOnly --root $WorkshopRoot --check
+& python $perimeters --root $WorkshopRoot --check
 if ($LASTEXITCODE -ne 0) {
-    throw "Normal transport-only deployment did not validate."
+    throw "Transport flag-perimeter waypoints did not validate."
 }
 
-$manifest = Join-Path $WorkshopRoot "normal_transport_only.txt"
+# Install one ordinary friendly and one ordinary enemy transport for either
+# mission perspective. The four support engines are mutually gated, so exactly
+# two trucks can activate in one battle. Normal game AI owns all dismount timing.
+& python $quadrants --root $WorkshopRoot
+if ($LASTEXITCODE -ne 0) {
+    throw "Four-quadrant normal transport overlay failed with exit code $LASTEXITCODE."
+}
+& python $quadrants --root $WorkshopRoot --check
+if ($LASTEXITCODE -ne 0) {
+    throw "Four-quadrant normal transport deployment did not validate."
+}
+
+$manifest = Join-Path $WorkshopRoot "four_quadrant_normal_transport_patrol.txt"
 @(
     "branch=$ExpectedBranch"
     "validated_baseline=$ValidatedBaseline"
-    "test_mission=player_defense"
-    "required_matchup=friendly_nato_vs_enemy_rusa"
-    "active_transport_count=2"
-    "friendly_transport=fmtv"
-    "enemy_transport=ural"
-    "spawn_seconds=45"
-    "order=single_advance_to_active_flag"
-    "passengers=linked_and_seated"
+    "coverage=player_attack_friendly|player_attack_enemy|player_defense_friendly|player_defense_enemy"
+    "active_transport_count_per_mission=2"
+    "factions=rusa|ukr|nato|prc"
+    "rusa_vehicle=ural"
+    "ukr_vehicle=ural_vsu"
+    "nato_vehicle=fmtv"
+    "prc_vehicle=shaanxi_sx2190_passenger"
+    "spawn_seconds_after_engine_arm=45"
+    "route_waypoints=5"
+    "route_waypoint_offset_map_units=320"
+    "route_waypoint_radius_map_units=140"
+    "minimum_requested_distance_from_flag_map_units=180"
+    "route_interval_seconds=45"
+    "route_continues_while_passengers_within_map_units=80"
     "dismount=engine_controlled"
     "scripted_emit=false"
     "scripted_turnaround=false"
     "scripted_return=false"
     "scripted_delete=false"
     "scripted_cleanup=false"
-    "enemy_scripted_motor_budget=0"
 ) | Set-Content -LiteralPath $manifest -Encoding UTF8
 
 Write-Host ""
-Write-Host "Normal transport-only test deployed."
-Write-Host "  Mission:     PLAYER DEFENSE - NATO versus RUSSIA"
-Write-Host "  Friendly:    one loaded NATO FMTV"
-Write-Host "  Enemy:       one loaded Russian Ural"
-Write-Host "  Behavior:    ordinary AI advance; engine-controlled dismount under fire"
+Write-Host "Four-quadrant normal transport patrol deployed."
+Write-Host "  Coverage:    friendly + enemy trucks on player attack and player defense"
+Write-Host "  Factions:    Russia, Ukraine, NATO, PRC"
+Write-Host "  Route:       five flag-perimeter waypoints, never the flag post itself"
+Write-Host "  Contact:     patrol re-orders stop after passengers leave the truck"
+Write-Host "  Dismount:    ordinary game AI under fire"
 Write-Host "  Removed:     timed emit, forced turnaround, return-to-edge, deletion, cleanup"
-Write-Host "  Total:       exactly two transport trucks"
+Write-Host "  Total:       exactly two active transport trucks per mission"
