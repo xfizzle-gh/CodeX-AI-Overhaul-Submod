@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: test/known-good-motor-30s
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -33,6 +35,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: test/known-good-motor-30s
       - name: Parse deployment wrapper
         shell: pwsh
         run: |
