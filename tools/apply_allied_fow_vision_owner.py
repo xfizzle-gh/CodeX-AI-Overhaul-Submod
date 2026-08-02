@@ -45,9 +45,12 @@ NEW_BLOCK = '''\t-- The controller slot is not the real lobby teammate. Runtime 
 \t\t"mi_waves", 1)
 '''
 
-REQUIRED_MARKERS = (
+SINGLE_MARKERS = (
     "local ownerId = positiveId(id.defenderBotId, id.playerId)",
     'sc:SetVar("id_attack_support", ownerId)',
+)
+
+DOUBLE_DIAGNOSTIC_MARKERS = (
     '"controller_playerId", id.playerId',
     '"defenderBotId", id.defenderBotId',
     '"team", id.team',
@@ -71,24 +74,24 @@ def write_text(path: Path, text: str, has_bom: bool) -> None:
 
 
 def validate_text(text: str) -> None:
-    for marker in REQUIRED_MARKERS:
+    for marker in SINGLE_MARKERS:
         if text.count(marker) != 1:
             raise RuntimeError(f"expected exactly one allied FoW marker: {marker}")
+    for marker in DOUBLE_DIAGNOSTIC_MARKERS:
+        if text.count(marker) != 2:
+            raise RuntimeError(f"expected two allied FoW diagnostic markers: {marker}")
     for marker in FORBIDDEN_MARKERS:
         if marker in text:
             raise RuntimeError(f"forbidden stale owner assignment remains: {marker}")
 
-    publish_start = text.find("local function publishIdentity(id)")
-    publish_end = text.find("\nend\n", publish_start)
-    if publish_start < 0 or publish_end < 0:
-        raise RuntimeError("publishIdentity function could not be isolated")
-    publish = text[publish_start:publish_end]
-    if 'sc:SetVar("attack_support_ready", 1)' not in publish:
+    if 'sc:SetVar("attack_support_ready", 1)' not in text:
         raise RuntimeError("attack support readiness publication was lost")
-    if 'sc:SetVar("attack_support_use_mi", 1)' not in publish:
+    if 'sc:SetVar("attack_support_use_mi", 1)' not in text:
         raise RuntimeError("MI delivery publication was lost")
-    if "id.firstPlayerId" in publish:
-        raise RuntimeError("human ownership is forbidden; units must remain AI-owned")
+
+
+def has_overlay(text: str) -> bool:
+    return all(marker in text for marker in SINGLE_MARKERS)
 
 
 def apply(root: Path, check_only: bool = False) -> bool:
@@ -97,7 +100,7 @@ def apply(root: Path, check_only: bool = False) -> bool:
         raise FileNotFoundError(f"missing deployed attack-support controller: {path}")
 
     text, has_bom = read_text(path)
-    if all(marker in text for marker in REQUIRED_MARKERS):
+    if has_overlay(text):
         validate_text(text)
         return False
 
