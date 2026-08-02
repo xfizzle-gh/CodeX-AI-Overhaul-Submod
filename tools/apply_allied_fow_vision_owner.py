@@ -1,65 +1,20 @@
 #!/usr/bin/env python3
-"""Route attack-support units to the real allied AI player for native team FoW sharing.
-
-The attack-support Lua controller runs on a phantom controller slot. Its BotApi
-playerId is not the actual AI teammate shown in the game lobby. Conquest exposes
-that real allied AI as DefenderBotId. Support units must remain AI-owned and
-AI-controlled, but must belong to that real teammate so normal team vision can
-be shared with the human player.
-"""
+"""Route attack-support units to the real allied AI player for native team FoW sharing."""
 
 from __future__ import annotations
 
 import argparse
+import re
 from pathlib import Path
 
 RUNTIME_PATH = Path("resource/script/multiplayer/modes/attack_support.lua")
 
-OLD_BLOCK = '''\tsc:SetVar("id_attack_support", id.playerId)
-\tsc:SetVar("attack_support_ready", 1)
-\t-- MI waves are the working delivery path for attack support units.
-\tsc:SetVar("attack_support_use_mi", 1)
-\tlog("identity_published", "id_attack_support", id.playerId, "mi_waves", 1)
-'''
-
-NEW_BLOCK = '''\t-- The controller slot is not the real lobby teammate. Runtime logs show the
-\t-- controller as player 1 while the actual allied AI is DefenderBotId/player 4.
-\t-- Ownership must stay AI-controlled, but use the real team member so the
-\t-- engine's normal allied fog-of-war/LOS sharing can include these units.
-\tlocal ownerId = positiveId(id.defenderBotId, id.playerId)
-\tif ownerId <= 0 then
-\t\tlog("identity_publish_skipped", "allied_owner_unresolved",
-\t\t\t"controller_playerId", id.playerId,
-\t\t\t"defenderBotId", id.defenderBotId,
-\t\t\t"team", id.team)
-\t\treturn
-\tend
-\tsc:SetVar("id_attack_support", ownerId)
-\tsc:SetVar("attack_support_ready", 1)
-\t-- MI waves are the working delivery path for attack support units.
-\tsc:SetVar("attack_support_use_mi", 1)
-\tlog("identity_published", "id_attack_support", ownerId,
-\t\t"controller_playerId", id.playerId,
-\t\t"defenderBotId", id.defenderBotId,
-\t\t"team", id.team,
-\t\t"mi_waves", 1)
-'''
-
-SINGLE_MARKERS = (
-    "local ownerId = positiveId(id.defenderBotId, id.playerId)",
-    'sc:SetVar("id_attack_support", ownerId)',
+ASSIGNMENT_RE = re.compile(
+    r'''(?m)^(?P<indent>[ \t]*)sc:SetVar\(\s*["']id_attack_support["']\s*,\s*(?P<owner>[A-Za-z_][A-Za-z0-9_.]*)\s*\)\s*(?:--[^\r\n]*)?$'''
 )
 
-DOUBLE_DIAGNOSTIC_MARKERS = (
-    '"controller_playerId", id.playerId',
-    '"defenderBotId", id.defenderBotId',
-    '"team", id.team',
-)
-
-FORBIDDEN_MARKERS = (
-    'sc:SetVar("id_attack_support", id.firstPlayerId)',
-    'sc:SetVar("id_attack_support", id.playerId)',
-)
+OWNER_DECLARATION = "local ownerId = positiveId(id.defenderBotId, id.playerId)"
+FOW_LOG_MARKER = 'log("fow_owner", "id_attack_support", ownerId,'
 
 
 def read_text(path: Path) -> tuple[str, bool]:
@@ -73,17 +28,24 @@ def write_text(path: Path, text: str, has_bom: bool) -> None:
     path.write_text(text, encoding=encoding, newline="")
 
 
-def validate_text(text: str) -> None:
-    for marker in SINGLE_MARKERS:
-        if text.count(marker) != 1:
-            raise RuntimeError(f"expected exactly one allied FoW marker: {marker}")
-    for marker in DOUBLE_DIAGNOSTIC_MARKERS:
-        if text.count(marker) != 2:
-            raise RuntimeError(f"expected two allied FoW diagnostic markers: {marker}")
-    for marker in FORBIDDEN_MARKERS:
-        if marker in text:
-            raise RuntimeError(f"forbidden stale owner assignment remains: {marker}")
+def owner_matches(text: str) -> list[re.Match[str]]:
+    return list(ASSIGNMENT_RE.finditer(text))
 
+
+def validate_text(text: str) -> None:
+    matches = owner_matches(text)
+    if len(matches) != 1:
+        raise RuntimeError(
+            f"expected exactly one id_attack_support SetVar assignment, found {len(matches)}"
+        )
+    if matches[0].group("owner") != "ownerId":
+        raise RuntimeError(
+            "id_attack_support is not assigned to the resolved allied AI owner"
+        )
+    if text.count(OWNER_DECLARATION) != 1:
+        raise RuntimeError("expected exactly one allied AI owner declaration")
+    if text.count(FOW_LOG_MARKER) != 1:
+        raise RuntimeError("expected exactly one allied FoW owner diagnostic")
     if 'sc:SetVar("attack_support_ready", 1)' not in text:
         raise RuntimeError("attack support readiness publication was lost")
     if 'sc:SetVar("attack_support_use_mi", 1)' not in text:
@@ -91,7 +53,36 @@ def validate_text(text: str) -> None:
 
 
 def has_overlay(text: str) -> bool:
-    return all(marker in text for marker in SINGLE_MARKERS)
+    matches = owner_matches(text)
+    return (
+        len(matches) == 1
+        and matches[0].group("owner") == "ownerId"
+        and OWNER_DECLARATION in text
+        and FOW_LOG_MARKER in text
+    )
+
+
+def replacement(indent: str) -> str:
+    return "\n".join(
+        (
+            f"{indent}-- The Lua controller slot is not the real lobby teammate. Keep",
+            f"{indent}-- support units AI-owned, but assign them to Conquest's actual",
+            f"{indent}-- allied AI player so native team FoW/LOS sharing can apply.",
+            f"{indent}{OWNER_DECLARATION}",
+            f"{indent}if ownerId <= 0 then",
+            f'{indent}\tlog("identity_publish_skipped", "allied_owner_unresolved",',
+            f'{indent}\t\t"controller_playerId", id.playerId,',
+            f'{indent}\t\t"defenderBotId", id.defenderBotId,',
+            f'{indent}\t\t"team", id.team)',
+            f"{indent}\treturn",
+            f"{indent}end",
+            f'{indent}sc:SetVar("id_attack_support", ownerId)',
+            f'{indent}log("fow_owner", "id_attack_support", ownerId,',
+            f'{indent}\t"controller_playerId", id.playerId,',
+            f'{indent}\t"defenderBotId", id.defenderBotId,',
+            f'{indent}\t"team", id.team)',
+        )
+    )
 
 
 def apply(root: Path, check_only: bool = False) -> bool:
@@ -104,15 +95,22 @@ def apply(root: Path, check_only: bool = False) -> bool:
         validate_text(text)
         return False
 
-    count = text.count(OLD_BLOCK)
-    if count != 1:
+    matches = owner_matches(text)
+    if len(matches) != 1:
         raise RuntimeError(
-            f"expected one canonical attack-support owner block, found {count}: {path}"
+            f"expected one id_attack_support SetVar assignment, found {len(matches)}: {path}"
         )
+
+    current_owner = matches[0].group("owner")
+    if "firstPlayerId" in current_owner:
+        raise RuntimeError("refusing to patch a human-owned support assignment")
+    if OWNER_DECLARATION in text or FOW_LOG_MARKER in text:
+        raise RuntimeError("partial allied FoW overlay detected; refusing a second insertion")
     if check_only:
         raise RuntimeError("allied FoW owner overlay has not been applied")
 
-    updated = text.replace(OLD_BLOCK, NEW_BLOCK, 1)
+    match = matches[0]
+    updated = text[: match.start()] + replacement(match.group("indent")) + text[match.end() :]
     validate_text(updated)
     write_text(path, updated, has_bom)
     return True
