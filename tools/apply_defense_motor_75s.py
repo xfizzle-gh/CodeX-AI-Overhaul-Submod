@@ -2,12 +2,13 @@
 """Preserve the tested player-defense motor lifecycle and align its drop point.
 
 Applied after the movement/origin-exit correction that passed runtime:
-- friendly defender: 60 -> 75 seconds before passenger emit
+- friendly defender: 60 -> 75 seconds before the turnaround sequence
 - enemy attacker: retry remains at 2 seconds, remaining ride 58 -> 73 seconds
-- immediately before the existing emit, stop the hull and wait one second
-- restore normal hull speed immediately before the existing origin-exit helper
+- at 75 seconds, issue the tested origin-return order first
+- pause the hull, emit the existing passenger group, then resume the return
+- after the hull's final return command, reassert the infantry attack order
 
-No passenger AI, ownership, seating, placement, emit, or exit logic is changed.
+No passenger AI, ownership, seating, placement, or emit selector is changed.
 The friendly-attacker runtime-proven path remains at 60 seconds.
 """
 from __future__ import annotations
@@ -35,16 +36,26 @@ HULL_TAGS = {
     "ds": "def_sup_motor_hull",
 }
 
+PAX_TAGS = {
+    "ea": "ea_motor_pax",
+    "ds": "def_sup_motor_pax",
+}
+
+FLAG_TAGS = {
+    "ea": "ea_flag1",
+    "ds": "def_sup_motor_flag",
+}
+
 EXIT_HELPERS = {
     "ea": "ea_exit_motor_to_origin",
     "ds": "ds_exit_motor_to_origin",
 }
 
-STOP_MARKER = "; TIMED DROP ALIGNMENT — STOP HULL BEFORE EXISTING PASSENGER EMIT"
-RESUME_MARKER = "; RESTORE TESTED EMPTY-HULL SPEED BEFORE EXISTING ORIGIN EXIT"
+PRETURN_MARKER = "; TIMED DROP ALIGNMENT — BEGIN ORIGIN TURN BEFORE PASSENGER EMIT"
+STOP_MARKER = "; TIMED DROP ALIGNMENT — PAUSE HULL AT TURNAROUND"
+RESUME_MARKER = "; RESTORE TESTED EMPTY-HULL SPEED BEFORE FINAL ORIGIN EXIT"
+REASSERT_MARKER = "; KEEP DISEMBARKED INFANTRY ATTACKING AFTER HULL WITHDRAWS"
 
-# Markers from the abandoned, untested passenger-AI rewrite. These must never
-# appear in this narrow timing correction.
 FORBIDDEN_MARKERS = (
     "; PASSENGERS HELD IN LINKED SEATS UNTIL TIMED EMIT",
     "; PASSENGERS RELEASED TO AI AFTER EMIT",
@@ -103,6 +114,15 @@ def replace_delay(text: str, prefix: str, old: int, new: int) -> str:
     return text[:start] + patched + text[end:]
 
 
+def render_preturn(prefix: str, indent: str) -> str:
+    helper = EXIT_HELPERS[prefix]
+    return (
+        f'{indent}{PRETURN_MARKER}\n'
+        f'{indent}("{helper}")\n'
+        f'{indent}{{"delay" {{time 0.5}}}}'
+    )
+
+
 def render_stop(prefix: str, indent: str) -> str:
     hull = HULL_TAGS[prefix]
     return (
@@ -126,10 +146,26 @@ def render_resume(prefix: str, indent: str) -> str:
     )
 
 
-def patch_stop_and_resume(text: str, prefix: str) -> str:
-    start, end, block = paren_block(text, FINISHERS[prefix])
+def render_reassert(prefix: str, indent: str) -> str:
+    pax = PAX_TAGS[prefix]
+    flag = FLAG_TAGS[prefix]
+    return (
+        f'{indent}{REASSERT_MARKER}\n'
+        f'{indent}{{"delay" {{time 0.25}}}}\n'
+        f'{indent}{{"action"\n'
+        f'{indent}\t{{selector {{ignore_captured_by_user 0}} {{tag {pax}}}}}\n'
+        f'{indent}\t{{drop orders}}\n'
+        f'{indent}\t{{action advance}}\n'
+        f'{indent}\t{{target {{ignore_captured_by_user 0}} {{tag {flag}}}}}\n'
+        f'{indent}}}'
+    )
 
-    if STOP_MARKER not in block:
+
+def patch_turn_emit_and_reassert(text: str, prefix: str) -> str:
+    start, end, block = paren_block(text, FINISHERS[prefix])
+    helper_call = f'("{EXIT_HELPERS[prefix]}")'
+
+    if PRETURN_MARKER not in block:
         ride_token = '{"delay" {time 73}}' if prefix == "ea" else '{"delay" {time 75}}'
         ride_at = block.find(ride_token)
         if ride_at < 0:
@@ -139,16 +175,35 @@ def patch_stop_and_resume(text: str, prefix: str) -> str:
             raise PatchError(f"{prefix}: existing passenger emit is missing")
         line_start = block.rfind("\n", 0, emit_at) + 1
         indent = block[line_start:emit_at]
-        block = block[:line_start] + render_stop(prefix, indent) + "\n" + block[line_start:]
+        insertion = render_preturn(prefix, indent) + "\n" + render_stop(prefix, indent)
+        block = block[:line_start] + insertion + "\n" + block[line_start:]
 
     if RESUME_MARKER not in block:
-        helper_call = f'("{EXIT_HELPERS[prefix]}")'
-        helper_at = block.find(helper_call)
-        if helper_at < 0:
-            raise PatchError(f"{prefix}: existing origin-exit helper is missing")
-        line_start = block.rfind("\n", 0, helper_at) + 1
-        indent = block[line_start:helper_at]
+        helper_positions = []
+        cursor = 0
+        while True:
+            pos = block.find(helper_call, cursor)
+            if pos < 0:
+                break
+            helper_positions.append(pos)
+            cursor = pos + len(helper_call)
+        if len(helper_positions) < 2:
+            raise PatchError(f"{prefix}: expected preturn and final origin-exit calls")
+        final_helper_at = helper_positions[-1]
+        line_start = block.rfind("\n", 0, final_helper_at) + 1
+        indent = block[line_start:final_helper_at]
         block = block[:line_start] + render_resume(prefix, indent) + "\n" + block[line_start:]
+
+    if REASSERT_MARKER not in block:
+        final_helper_at = block.rfind(helper_call)
+        if final_helper_at < 0:
+            raise PatchError(f"{prefix}: final origin-exit helper is missing")
+        helper_line_end = block.find("\n", final_helper_at)
+        if helper_line_end < 0:
+            helper_line_end = final_helper_at + len(helper_call)
+        indent_start = block.rfind("\n", 0, final_helper_at) + 1
+        indent = block[indent_start:final_helper_at]
+        block = block[:helper_line_end + 1] + render_reassert(prefix, indent) + "\n" + block[helper_line_end + 1:]
 
     return text[:start] + block + text[end:]
 
@@ -158,7 +213,7 @@ def patch_file(text: str, prefix: str) -> str:
         text = replace_delay(text, prefix, 58, 73)
     else:
         text = replace_delay(text, prefix, 60, 75)
-    return patch_stop_and_resume(text, prefix)
+    return patch_turn_emit_and_reassert(text, prefix)
 
 
 def read_text(path: Path) -> tuple[str, bool]:
@@ -173,6 +228,8 @@ def write_text(path: Path, text: str, bom: bool) -> None:
 
 def validate_finisher(block: str, prefix: str) -> None:
     hull = HULL_TAGS[prefix]
+    pax = PAX_TAGS[prefix]
+    flag = FLAG_TAGS[prefix]
     ride_token = '{"delay" {time 73}}' if prefix == "ea" else '{"delay" {time 75}}'
     helper_call = f'("{EXIT_HELPERS[prefix]}")'
 
@@ -180,30 +237,41 @@ def validate_finisher(block: str, prefix: str) -> None:
         if marker in block:
             raise PatchError(f"{prefix}: abandoned passenger-AI rewrite marker is present")
 
-    if block.count(STOP_MARKER) != 1:
-        raise PatchError(f"{prefix}: expected exactly one stop marker")
-    if block.count(RESUME_MARKER) != 1:
-        raise PatchError(f"{prefix}: expected exactly one resume marker")
+    for marker in (PRETURN_MARKER, STOP_MARKER, RESUME_MARKER, REASSERT_MARKER):
+        if block.count(marker) != 1:
+            raise PatchError(f"{prefix}: expected exactly one marker {marker}")
+    if block.count(helper_call) != 2:
+        raise PatchError(f"{prefix}: expected exactly two origin helper calls")
+    if block.count('{"delay" {time 0.5}}') != 1:
+        raise PatchError(f"{prefix}: expected one half-second turn dwell")
     if block.count('{"delay" {time 1}}') != 1:
-        raise PatchError(f"{prefix}: expected exactly one one-second stop dwell")
+        raise PatchError(f"{prefix}: expected one one-second stop dwell")
     if block.count('{mode passengers}') != 1:
         raise PatchError(f"{prefix}: passenger-only emit contract changed")
 
     ride_at = block.find(ride_token)
+    preturn_at = block.find(PRETURN_MARKER)
     stop_at = block.find(STOP_MARKER)
     emit_at = block.find('{"emit"', stop_at)
     resume_at = block.find(RESUME_MARKER)
-    helper_at = block.find(helper_call)
-    if not (0 <= ride_at < stop_at < emit_at < resume_at < helper_at):
-        raise PatchError(f"{prefix}: ride/stop/emit/resume/exit order is invalid")
+    final_helper_at = block.rfind(helper_call)
+    reassert_at = block.find(REASSERT_MARKER)
+    if not (0 <= ride_at < preturn_at < stop_at < emit_at < resume_at < final_helper_at < reassert_at):
+        raise PatchError(f"{prefix}: ride/turn/stop/emit/exit/reassert order is invalid")
 
     stop_block = block[stop_at:emit_at]
     if f'{{tag {hull}}}' not in stop_block or '{movement {speed stop}}' not in stop_block:
         raise PatchError(f"{prefix}: hull stop state is incomplete")
 
-    resume_block = block[resume_at:helper_at]
-    if f'{{tag {hull}}}' not in resume_block or '{movement {speed normal}' not in resume_block:
-        raise PatchError(f"{prefix}: hull speed restoration is incomplete")
+    reassert_block = block[reassert_at:]
+    for token in (
+        f'{{tag {pax}}}',
+        '{drop orders}',
+        '{action advance}',
+        f'{{tag {flag}}}',
+    ):
+        if token not in reassert_block:
+            raise PatchError(f"{prefix}: post-exit infantry reassert missing {token}")
 
 
 def validate(root: Path) -> None:
@@ -233,8 +301,9 @@ def validate(root: Path) -> None:
 
     if attacker_finish.count('{"delay" {time 60}}') != 1:
         raise PatchError("Friendly-attacker validated 60-second timing changed")
-    if STOP_MARKER in attacker_finish or RESUME_MARKER in attacker_finish:
-        raise PatchError("Friendly-attacker path was modified")
+    for marker in (PRETURN_MARKER, STOP_MARKER, RESUME_MARKER, REASSERT_MARKER):
+        if marker in attacker_finish:
+            raise PatchError("Friendly-attacker path was modified")
 
 
 def apply(root: Path, *, check_only: bool = False) -> list[Path]:
@@ -267,10 +336,10 @@ def main() -> int:
 
     if args.check:
         validate(args.root)
-        print("Tested player-defense lifecycle validated with aligned 75-second stop and emit.")
+        print("Player-defense motors validated: turn, pause, emit, withdraw, infantry reassert.")
     else:
         changed = apply(args.root)
-        print(f"Minimal stop-before-emit alignment patched {len(changed)} file(s).")
+        print(f"Turnaround-aligned passenger drop patched {len(changed)} file(s).")
     return 0
 
 

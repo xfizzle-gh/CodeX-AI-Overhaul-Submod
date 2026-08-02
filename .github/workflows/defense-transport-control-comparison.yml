@@ -1,0 +1,83 @@
+name: Four-quadrant normal transport patrols
+
+on:
+  push:
+    branches:
+      - experiment/defense-transport-control-comparison
+    paths:
+      - tools/apply_four_quadrant_transport_patrol.py
+      - tools/apply_four_quadrant_transport_patrol_fixed.py
+      - tools/apply_transport_flag_perimeter_waypoints.py
+      - tools/apply_transport_flag_perimeter_waypoints_fixed.py
+      - tools/deploy_known_good_motor_30s_test.ps1
+      - tools/deploy_runtime_proven_motor_60s.ps1
+      - tools/deploy_friendly_defender_motor_one_shot.ps1
+      - tools/deploy_transport_control_comparison.ps1
+      - tools/prepare_workshop_release.ps1
+      - tests/test_four_quadrant_transport_patrol.py
+      - tests/test_transport_perimeters_actual_maps.py
+      - .github/workflows/defense-transport-control-comparison.yml
+  pull_request:
+    paths:
+      - tools/apply_four_quadrant_transport_patrol.py
+      - tools/apply_four_quadrant_transport_patrol_fixed.py
+      - tools/apply_transport_flag_perimeter_waypoints.py
+      - tools/apply_transport_flag_perimeter_waypoints_fixed.py
+      - tools/deploy_known_good_motor_30s_test.ps1
+      - tools/deploy_runtime_proven_motor_60s.ps1
+      - tools/deploy_friendly_defender_motor_one_shot.ps1
+      - tools/deploy_transport_control_comparison.ps1
+      - tools/prepare_workshop_release.ps1
+      - tests/test_four_quadrant_transport_patrol.py
+      - tests/test_transport_perimeters_actual_maps.py
+      - .github/workflows/defense-transport-control-comparison.yml
+
+jobs:
+  transport-patrols:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/defense-transport-control-comparison
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile corrected transport and waypoint entry points
+        run: |
+          python -m py_compile tools/apply_four_quadrant_transport_patrol_fixed.py
+          python -m py_compile tools/apply_transport_flag_perimeter_waypoints_fixed.py
+      - name: Load corrected four-quadrant generator
+        run: |
+          python -c "import importlib.util, pathlib, sys; p=pathlib.Path('tools/apply_four_quadrant_transport_patrol_fixed.py'); s=importlib.util.spec_from_file_location('fourq_ci', p); m=importlib.util.module_from_spec(s); sys.modules[s.name]=m; s.loader.exec_module(m)"
+      - name: Validate engines, factions, contact gate, and all map geometry
+        run: |
+          python -m unittest tests/test_four_quadrant_transport_patrol.py
+          python -m unittest tests/test_transport_perimeters_actual_maps.py
+
+  powershell:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/defense-transport-control-comparison
+      - name: Parse deployment and release-prep chain with Windows PowerShell 5.1
+        shell: powershell
+        run: |
+          foreach ($path in @(
+            "tools/deploy_known_good_motor_30s_test.ps1",
+            "tools/deploy_runtime_proven_motor_60s.ps1",
+            "tools/deploy_friendly_defender_motor_one_shot.ps1",
+            "tools/deploy_transport_control_comparison.ps1",
+            "tools/prepare_workshop_release.ps1"
+          )) {
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile(
+              (Resolve-Path $path),
+              [ref]$null,
+              [ref]$errors
+            )
+            if ($errors.Count -gt 0) {
+              $errors | ForEach-Object { Write-Error $_ }
+              exit 1
+            }
+          }

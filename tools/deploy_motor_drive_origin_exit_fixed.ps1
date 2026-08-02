@@ -30,10 +30,10 @@ if ($LASTEXITCODE -ne 0) {
 
 $stage2Wrapper = Join-Path $RepoRoot "tools\deploy_friendly_defender_motor_one_shot.ps1"
 $correction = Join-Path $RepoRoot "tools\apply_motor_drive_origin_exit_fixed.py"
-$timing75 = Join-Path $RepoRoot "tools\apply_defense_motor_75s.py"
+$timing75 = Join-Path $RepoRoot "tools\apply_defense_motor_turnaround.py"
 if (-not (Test-Path -LiteralPath $stage2Wrapper)) { throw "Missing friendly-defender stage deployer: $stage2Wrapper" }
 if (-not (Test-Path -LiteralPath $correction)) { throw "Missing tested motor drive/exit correction: $correction" }
-if (-not (Test-Path -LiteralPath $timing75)) { throw "Missing minimal 75-second stop alignment: $timing75" }
+if (-not (Test-Path -LiteralPath $timing75)) { throw "Missing turnaround-first 75-second overlay: $timing75" }
 
 # Rebuild the exact Stage-2 package used by the successful runtime test.
 $wrapperText = [System.IO.File]::ReadAllText($stage2Wrapper)
@@ -43,7 +43,7 @@ if (-not $wrapperText.Contains($oldBranch)) {
 }
 $wrapperText = $wrapperText.Replace($oldBranch, $ExpectedBranch)
 $tempWrapper = Join-Path $ScriptDirectory "deploy_motor_drive_exit_base.generated.ps1"
-[System.IO.File]::WriteAllText($tempWrapper, $wrapperText, [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllText($tempWrapper, $wrapperText, [System.Text.UTF8Encoding]::new($true))
 try {
     & powershell -ExecutionPolicy Bypass -File $tempWrapper -RepoRoot $RepoRoot -WorkshopRoot $WorkshopRoot
     if ($LASTEXITCODE -ne 0) { throw "Friendly-defender Stage-2 deployment failed with exit code $LASTEXITCODE." }
@@ -51,46 +51,46 @@ try {
     Remove-Item -LiteralPath $tempWrapper -Force -ErrorAction SilentlyContinue
 }
 
-# Reapply the exact movement retry and origin-side exits that just passed runtime.
+# Reapply the exact movement retry and origin-side exits that passed runtime.
 & python $correction --root $WorkshopRoot
 if ($LASTEXITCODE -ne 0) { throw "Motor drive/exit correction failed with exit code $LASTEXITCODE." }
 & python $correction --root $WorkshopRoot --check
 if ($LASTEXITCODE -ne 0) { throw "Motor drive/exit correction did not validate." }
 
-# Narrow delta only: preserve every tested seating/AI/ownership/placement/exit
-# instruction, extend both rides to 75s, stop the hull for one second directly
-# before the existing emit, then restore speed before the existing exit helper.
+# Preserve the tested package and ownership lifecycle. At 75 seconds, begin the
+# origin turn before emit, pause, dismount, resume withdrawal, then reassert the
+# infantry attack order after the truck's final return command.
 & python $timing75 --root $WorkshopRoot
-if ($LASTEXITCODE -ne 0) { throw "Minimal stop-before-emit alignment failed with exit code $LASTEXITCODE." }
+if ($LASTEXITCODE -ne 0) { throw "Turnaround-first drop alignment failed with exit code $LASTEXITCODE." }
 & python $timing75 --root $WorkshopRoot --check
-if ($LASTEXITCODE -ne 0) { throw "Minimal stop-before-emit alignment did not validate." }
+if ($LASTEXITCODE -ne 0) { throw "Turnaround-first drop alignment did not validate." }
 
 $manifest = Join-Path $WorkshopRoot "motor_drive_origin_exit.txt"
 @(
     "branch=$ExpectedBranch"
     "stacked_on_stage2=$Stage2Head"
     "test_mission=player_defense"
-    "runtime_baseline=game50_seated_both_trucks_and_origin_return"
+    "runtime_baseline=game51_seated_both_trucks_and_origin_return"
     "enemy_total_ride_seconds=75"
     "enemy_retry_split=2s_plus_73s"
     "friendly_defender_total_ride_seconds=75"
     "friendly_attacker_total_ride_seconds=60"
-    "hull_stop_before_existing_emit=true"
+    "origin_turn_started_before_emit=true"
+    "turn_dwell_seconds=0.5"
     "hull_stop_dwell_seconds=1"
-    "hull_speed_restored_before_existing_origin_exit=true"
+    "passenger_emit=unchanged"
+    "infantry_attack_reasserted_after_hull_exit=true"
     "passenger_ai_changes=none"
     "ownership_changes=none"
     "seating_changes=none"
     "placement_changes=none"
-    "passenger_emit=unchanged"
-    "origin_exit=unchanged"
     "cleanup_seconds=90"
     "recurring_scheduler=disabled"
 ) | Set-Content -LiteralPath $manifest -Encoding UTF8
 
 Write-Host ""
-Write-Host "Minimal drop-point alignment deployed on the tested lifecycle."
-Write-Host "  Preserved:       seated cargo, movement, ownership, placement, passenger emit, origin return"
-Write-Host "  Friendly truck:  drive 75s; stop 1s; existing passenger emit; existing return"
-Write-Host "  Enemy truck:     retry at 2s; drive 75s total; stop 1s; existing passenger emit; existing return"
-Write-Host "  Passenger AI:    unchanged from the successful game(50) test"
+Write-Host "Turnaround-first drop alignment deployed on the tested lifecycle."
+Write-Host "  Friendly truck:  drive 75s; begin return turn; pause; dismount; return"
+Write-Host "  Enemy truck:     retry at 2s; drive 75s total; begin return turn; pause; dismount; return"
+Write-Host "  Infantry:        attack order reasserted after the hull withdrawal command"
+Write-Host "  Preserved:       seating, ownership, placement, passenger-only emit, 90s cleanup"
