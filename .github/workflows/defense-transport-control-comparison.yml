@@ -13,6 +13,7 @@ on:
       - tools/deploy_runtime_proven_motor_60s.ps1
       - tools/deploy_friendly_defender_motor_one_shot.ps1
       - tools/deploy_transport_control_comparison.ps1
+      - tools/prepare_workshop_release.ps1
       - tests/test_four_quadrant_transport_patrol.py
       - tests/test_transport_perimeters_actual_maps.py
       - .github/workflows/defense-transport-control-comparison.yml
@@ -26,6 +27,7 @@ on:
       - tools/deploy_runtime_proven_motor_60s.ps1
       - tools/deploy_friendly_defender_motor_one_shot.ps1
       - tools/deploy_transport_control_comparison.ps1
+      - tools/prepare_workshop_release.ps1
       - tests/test_four_quadrant_transport_patrol.py
       - tests/test_transport_perimeters_actual_maps.py
       - .github/workflows/defense-transport-control-comparison.yml
@@ -58,14 +60,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: experiment/defense-transport-control-comparison
-      - name: Parse deployment chain with Windows PowerShell 5.1
+      - name: Parse deployment and release-prep chain with Windows PowerShell 5.1
         shell: powershell
         run: |
           foreach ($path in @(
             "tools/deploy_known_good_motor_30s_test.ps1",
             "tools/deploy_runtime_proven_motor_60s.ps1",
             "tools/deploy_friendly_defender_motor_one_shot.ps1",
-            "tools/deploy_transport_control_comparison.ps1"
+            "tools/deploy_transport_control_comparison.ps1",
+            "tools/prepare_workshop_release.ps1"
           )) {
             $errors = $null
             [void][System.Management.Automation.Language.Parser]::ParseFile(
