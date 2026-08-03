@@ -1461,6 +1461,17 @@
 	{Link 0x8027 {0x4623 "1"}}
 	{Link 0x803d {0x385f "6"}}
 	(include "../allied_support_templates.inc")
+	{Human "mp/nato/2022s/inf2_rifleman" 0xafe0
+		{Position -35000 -35000}
+		{Volume "ram"
+			{able {visible 0}{bullet 0}{throwing 0}{obstacle 0}{contact 0}{contact_ground 0}{blast 0}{select 0}{touch 0}{blockcamera 0}}
+			{disabled}
+		}
+		{Player 0}
+		{MID 9914}
+		{FsmState "stand_noaim"}
+	}
+	{Tags "allied_support_explicit_template" "not_delete" "hidden" 0xafe0}
 	{Tags "fpc1" 0x8000}
 	{Tags "fpc2" 0xc000}
 	{Tags "fpc3" 0xa000}
