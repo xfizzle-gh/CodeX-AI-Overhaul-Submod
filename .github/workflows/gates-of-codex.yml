@@ -1,0 +1,51 @@
+name: Gates of CodeX
+
+on:
+  push:
+    paths:
+      - "campaign_app/**"
+      - ".github/workflows/gates-of-codex.yml"
+  pull_request:
+    paths:
+      - "campaign_app/**"
+      - ".github/workflows/gates-of-codex.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.13"]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: campaign_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install .
+      - run: python -m unittest discover -s tests -v
+      - run: gates-of-codex --help
+
+  windows-executable:
+    runs-on: windows-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: campaign_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install . pyinstaller
+      - run: pyinstaller --noconfirm --clean --onefile --windowed --name Gates-of-CodeX run_gates_of_codex.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Gates-of-CodeX-Windows
+          path: campaign_app/dist/Gates-of-CodeX.exe
