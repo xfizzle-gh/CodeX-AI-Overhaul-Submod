@@ -1,8 +1,0 @@
-{"squad_inf2_rifle(nato)"
-    ("mp_infantry_8" side(nato) period(2022s) d(modern_nato_us) c1(us_squadlead:1) c2(us_rifleman:6) c3(us_medic:1))
-}
-
-{"squad_tank1_m1a2_sep(nato)"
-    ("dp_vehicle" side(nato) period(2022s) vehicle(m1a2_sep) crew(us_vehicleman:4))
-    ("doctrine_t1" d(modern_nato_us) cost(8))
-}
