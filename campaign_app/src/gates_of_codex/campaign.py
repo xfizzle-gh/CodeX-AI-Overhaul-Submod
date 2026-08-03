@@ -90,35 +90,77 @@ class CampaignEngine:
             if pending.defending_participants
             else None
         )
-        target = self._get_province(pending.target_province_id)
 
         if winner == pending.attacker_faction:
             if defender is not None:
                 self._apply_percentage_losses(defender, 0.65)
+            self._apply_percentage_losses(attacker, 0.25)
+        else:
+            self._apply_percentage_losses(attacker, 0.55)
+            if defender is not None:
+                self._apply_percentage_losses(defender, 0.20)
+
+        self._finalize_pending_battle_positions(winner)
+
+    def apply_external_battle_result(
+        self, winner: Faction, survivors: dict[str, list]
+    ) -> None:
+        pending = self._require_pending_battle()
+        participant_ids = {
+            participant.battalion_id
+            for participant in (
+                *pending.attacking_participants,
+                *pending.defending_participants,
+            )
+        }
+        for battalion_id, roster in survivors.items():
+            if battalion_id not in participant_ids:
+                raise ValueError(
+                    f"Survivor roster references non-participant battalion {battalion_id}"
+                )
+            battalion = self._get_battalion(battalion_id)
+            battalion.roster = list(roster)
+        self._finalize_pending_battle_positions(winner)
+
+    def _finalize_pending_battle_positions(self, winner: Faction) -> None:
+        pending = self._require_pending_battle()
+        attacker = self._get_battalion(pending.attacking_participants[0].battalion_id)
+        defender = (
+            self._get_battalion(pending.defending_participants[0].battalion_id)
+            if pending.defending_participants
+            and pending.defending_participants[0].battalion_id in self.state.battalions
+            else None
+        )
+        target = self._get_province(pending.target_province_id)
+
+        if winner == pending.attacker_faction:
+            if defender is not None:
                 if defender.is_destroyed:
                     self.state.battalions.pop(defender.battalion_id, None)
                 else:
-                    retreat = self._find_retreat_province(defender, excluding=target.province_id)
+                    retreat = self._find_retreat_province(
+                        defender, excluding=target.province_id
+                    )
                     if retreat is None:
                         self.state.battalions.pop(defender.battalion_id, None)
                     else:
                         defender.province_id = retreat
-            self._apply_percentage_losses(attacker, 0.25)
-            attacker.province_id = target.province_id
-            attacker.movement_remaining = 0
-            attacker.combat_actions_remaining = max(0, attacker.combat_actions_remaining - 1)
-            target.owner = attacker.faction
-        else:
-            self._apply_percentage_losses(attacker, 0.55)
-            attacker.movement_remaining = 0
-            attacker.combat_actions_remaining = max(0, attacker.combat_actions_remaining - 1)
             if attacker.is_destroyed:
                 self.state.battalions.pop(attacker.battalion_id, None)
-            if defender is not None:
-                self._apply_percentage_losses(defender, 0.20)
-                if defender.is_destroyed:
-                    self.state.battalions.pop(defender.battalion_id, None)
+            else:
+                attacker.province_id = target.province_id
+                target.owner = attacker.faction
+        else:
+            if attacker.is_destroyed:
+                self.state.battalions.pop(attacker.battalion_id, None)
+            if defender is not None and defender.is_destroyed:
+                self.state.battalions.pop(defender.battalion_id, None)
 
+        if attacker.battalion_id in self.state.battalions:
+            attacker.movement_remaining = 0
+            attacker.combat_actions_remaining = max(
+                0, attacker.combat_actions_remaining - 1
+            )
         pending.completed = True
         self.state.pending_battle = None
         self.state.validate()
