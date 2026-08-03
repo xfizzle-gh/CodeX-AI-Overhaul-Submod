@@ -1,0 +1,2493 @@
+from __future__ import annotations
+
+import re
+import unittest
+from pathlib import Path
+
+def _mi_define(text: str, name: str) -> str:
+    """Return the balanced (define "<name>" ...) form, including nested calls."""
+    marker = f'(define "{name}"'
+    start = text.index(marker)
+    depth = 0
+    for pos in range(start, len(text)):
+        if text[pos] == "(":
+            depth += 1
+        elif text[pos] == ")":
+            depth -= 1
+            if depth == 0:
+                return text[start : pos + 1]
+    raise AssertionError(f"unbalanced MI define: {name}")
+
+
+ROOT = Path(__file__).resolve().parents[1]
+GAME_SET = ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set"
+BOT_MAIN = ROOT / "resource/script/multiplayer/bot.main.lua"
+ATTACK_SUPPORT = ROOT / "resource/script/multiplayer/modes/attack_support.lua"
+VARS = ROOT / "resource/map/multi/dcg_vars.inc"
+WAVES = ROOT / "resource/map/multi/attack_support_waves.inc"
+TEMPLATES = ROOT / "resource/map/multi/attack_support_templates.inc"
+FACTION_TEMPLATES = ROOT / "resource/map/multi/faction_support_templates.inc"
+# The publisher of user_nation$, which the faction fold reads.
+DCG_SCRIPT = ROOT / "resource/map/multi/dcg_script.inc"
+DEPLOY = ROOT / "tools/deploy_attack_support_probe.ps1"
+
+# The four wave engines, one per quadrant of the support parity. Anything that has to
+# hold across all of them - the support_debug$ diagnostic gate, the triple-entry
+# round robin - is pinned against this list rather than one file at a time.
+ENGINES = (
+    "attack_support_waves",
+    "enemy_defense_support",
+    "defense_support_waves",
+    "enemy_attack_support",
+)
+
+# Files retired with the productionised wave engine. The Lua brain went with them:
+# Scene.Squads is empty for MI-delivered units, so it could never see a squad to
+# order, and the inert allied_attack_waves.inc skeleton was never wired to a map.
+RETIRED = (
+    ROOT / "resource/map/multi/attack_support_probe.inc",
+    ROOT / "resource/map/multi/allied_attack_waves.inc",
+    ROOT / "resource/script/multiplayer/modes/attack_support_brain.lua",
+    ROOT / "tests/test_allied_attack_waves.py",
+)
+
+# Where each map's attack_support_entry_<side> waypoint sits, as a fraction of that
+# side's spawn centroid. 0,0 is the map centre, so scaling the centroid down pulls
+# the arrival point inward. 1.00 puts it exactly on the spawn centroid - the
+# map-edge spawn area. This is the balance knob: lower it to have attack support waves
+# arrive further forward, and regenerate the 28 waypoints from the spawn markers.
+EDGE_FACTOR = 1.00
+
+# composition trigger, command value, pool tag, infantry taken per wave
+COMPOSITIONS = (
+    ("comp_usmc", 1, "attack_support_inf_usmc", 5),
+    ("comp_1ad", 2, "attack_support_inf_1ad", 5),
+    ("comp_acav", 3, "attack_support_inf_1ad", 4),
+    ("comp_pzgren", 4, "attack_support_inf_pzgd", 6),
+    ("comp_arf", 5, "attack_support_inf_arf", 5),
+)
+
+# Faction-aware pools, keyed by the player's own nation rather than a fixed NATO
+# roster. faction_support_army$ folds user_nation$ down to these four: sov and pol
+# fall in with rusa, csa and frg with nato, exactly as the enemy engines fold
+# bot_army$. Depths are per faction; every one is shared by the attack and the
+# defence engine, which never run on the same mission.
+FACTION_ARMIES = (("rusa", 1), ("ukr", 2), ("nato", 3), ("prc", 4))
+# comp suffix -> (wave command, bodies drawn per wave, pool depth per faction)
+# The line depth is 30, not 24: the defence engine that shares this pool crews the
+# three flag emplacements out of it, two bodies per gun, and the top-up at the end of
+# faction_support_templates.inc funds those six draws one for one. The attack engine
+# is unaffected - it never places flag props - so its worst case is unchanged.
+FACTION_COMPS = (
+    ("line", 10, 6, 30),
+    ("wpn", 11, 5, 16),
+    ("recon", 12, 5, 15),
+    ("assault", 13, 5, 16),
+    ("eng", 14, 5, 12),
+    ("manpad", 15, 2, 8),
+)
+# Light vehicles are attack-only and counter-gated rather than pool-counted:
+# Ukraine fields three humvees, NATO two Fenneks, and no other faction has any.
+FACTION_VEH = (("ukr", 2, 3), ("nato", 3, 2))
+# The full fold from user_nation$ (published by dcg/player_nation) to the four
+# faction pools. Anything unmapped fails closed to NATO.
+NATION_FOLD = {1: 1, 5: 1, 8: 1, 2: 2, 3: 3, 4: 3, 7: 3, 6: 4}
+
+
+def strip_comments(text: str) -> str:
+    """MI comment-stripped view. Headers quote bad forms as cautionary examples,
+    so every structural count must run on code only."""
+    return "\n".join(line.split(";", 1)[0] for line in text.splitlines())
+
+
+def block_at(text: str, start: int) -> str:
+    """Return the balanced {...} block that opens at or after `start`."""
+    open_at = text.index("{", start)
+    depth = 0
+    for pos in range(open_at, len(text)):
+        char = text[pos]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return text[open_at : pos + 1]
+    raise AssertionError("unbalanced block starting at %d" % open_at)
+
+
+def trigger_block(code: str, name: str) -> str:
+    return block_at(code, code.index('{"attack_support/%s"' % name))
+
+
+def define_body(code: str, name: str) -> str:
+    """Return the whole balanced (define "name" ... ) form, calls included."""
+    open_at = code.index('(define "%s"' % name)
+    depth = 0
+    for pos in range(open_at, len(code)):
+        char = code[pos]
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth == 0:
+                return code[open_at : pos + 1]
+    raise AssertionError("unbalanced define %s" % name)
+
+
+class AttackSupportSlotProofTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.game_set = GAME_SET.read_text(encoding="utf-8")
+        cls.bot_main = BOT_MAIN.read_text(encoding="utf-8")
+        cls.attack_support = ATTACK_SUPPORT.read_text(encoding="utf-8")
+        cls.vars = VARS.read_text(encoding="utf-8")
+        cls.waves = WAVES.read_text(encoding="utf-8")
+        cls.templates = TEMPLATES.read_text(encoding="utf-8")
+        cls.deploy = DEPLOY.read_text(encoding="utf-8")
+        cls.code = strip_comments(cls.waves)
+        cls.faction_tpl = strip_comments(FACTION_TEMPLATES.read_text(encoding="utf-8"))
+        cls.dcg_script = strip_comments(DCG_SCRIPT.read_text(encoding="utf-8"))
+
+    def test_player_nation_fold_matches_what_the_mission_publishes(self) -> None:
+        """faction_support_army$ is folded out of user_nation$, which dcg_script.inc's
+        dcg/player_nation trigger publishes. If the fold and the publisher ever
+        disagree, a player draws another nation's troops - or, worse, silently gets
+        the NATO default. So both halves are pinned here, together."""
+        resolve = define_body(self.code, "as_resolve_army")
+        for nation, army in sorted(NATION_FOLD.items()):
+            with self.subTest(user_nation=nation):
+                case = (
+                    '{"case"\n'
+                    '\t\t\t\t\t\t{condition {type cmp_i} {var "user_nation$"} '
+                    '{op "=="} {value %d}}\n' % nation
+                )
+                at = resolve.index(
+                    '{condition {type cmp_i} {var "user_nation$"} {op "=="} '
+                    "{value %d}}" % nation
+                )
+                self.assertIn(
+                    '{"set_i" {var "faction_support_army$"} {op "="} {value %d}}' % army,
+                    resolve[at : at + 200],
+                    "user_nation %d must fold to army %d" % (nation, army),
+                )
+                del case
+        # Exactly the eight published nations are handled, nothing invented.
+        handled = set(
+            int(m) for m in re.findall(
+                r'\{condition \{type cmp_i\} \{var "user_nation\$"\} \{op "=="\} '
+                r"\{value (\d+)\}\}",
+                resolve,
+            )
+        )
+        self.assertEqual(handled, set(NATION_FOLD))
+        # Fail closed: an unpublished nation lands on NATO, never on nothing.
+        default = resolve[resolve.rindex('{"default"'):]
+        self.assertIn(
+            '{"set_i" {var "faction_support_army$"} {op "="} {value 3}}', default
+        )
+
+        # The publisher side. dcg/player_nation must emit every value the fold maps.
+        # It writes some cases one-line and some across four lines, so match on the
+        # var/op/value triple with whitespace collapsed rather than on a literal.
+        flat = re.sub(r"\s+", " ", self.dcg_script)
+        published = set(
+            int(m) for m in re.findall(
+                r'\{ ?"set_i" \{var "user_nation\$"\} \{op "="\} \{value (\d+)\} ?\}',
+                flat,
+            )
+        )
+        self.assertTrue(published, "found no user_nation$ writes at all")
+        missing = set(NATION_FOLD) - published
+        self.assertFalse(
+            missing, "the fold maps nations the mission never publishes: %s" % missing
+        )
+        # And nothing is published that the fold would drop on the floor.
+        unmapped = published - set(NATION_FOLD)
+        self.assertFalse(
+            unmapped, "published nations with no fold entry: %s" % unmapped
+        )
+        # Published ~1s in (0.9s delay), and every consumer of the fold runs far
+        # later than that - the attack opening wave is 30s+ - so nothing reads a
+        # silent zero. See the header note in attack_support_waves.inc.
+        init = trigger_block(self.code, "init")
+        before_resolve = init[: init.index('("as_resolve_army")')]
+        waits = [int(m) for m in re.findall(r'\{"delay" \{time (\d+)\}\}',
+                                            before_resolve)]
+        self.assertTrue(waits, "resolve runs with no delay ahead of it")
+        # Worst case the engine waits the shortest opening bucket, which is 30s -
+        # comfortably past the ~1s at which dcg/player_nation publishes.
+        self.assertGreaterEqual(min(waits), 30)
+
+    def test_faction_pool_is_deep_enough_for_every_faction(self) -> None:
+        """Depths are per faction, and each pool is shared by the attack and defence
+        engines - which never run on the same mission, so each only has to cover ONE
+        engine's worst case. The binding number is the L3 budget of 8 waves."""
+        code = self.faction_tpl
+        # 526 + 100 motor top-up (4 factions x [3 hulls + 6 crew + 16 pax]) so each
+        # faction can field four trucks a mission: 1 hull + 2 crew + 6 pax per truck.
+        self.assertEqual(code.count('{Able "-select"}'), 634)
+        self.assertEqual(code.count("{Player 0}"), 634)
+        self.assertEqual(code.count('"ally_sup_tpl"'), 633)
+        self.assertEqual(code.count('"hidden"'), 633)
+        for fac in ("rusa", "ukr", "nato", "prc"):
+            self.assertEqual(code.count('"ally_sup_%s_motor_hull"' % fac), 4)
+            self.assertEqual(code.count('"ally_sup_%s_motor_crew"' % fac), 8)
+            self.assertEqual(code.count('"ally_sup_%s_motor_pax"' % fac), 24)
+
+        for key, _army in FACTION_ARMIES:
+            for suffix, _cmd, take, depth in FACTION_COMPS:
+                tag = "ally_sup_%s_%s" % (key, suffix)
+                with self.subTest(pool=tag):
+                    self.assertEqual(code.count('"%s"' % tag), depth, tag)
+                    # Larger 5-6 body arrivals intentionally consume specialist
+                    # pools faster. Every pool must still field at least two complete
+                    # squads; after that the command falls back to the deep line pool
+                    # rather than deploying a partial team.
+                    self.assertGreaterEqual(depth // take, 2, tag)
+            # No faction can be exhausted outright: the largest per-wave draw is 4
+            # bodies, so an 8-wave L3 run can consume at most 32 from a faction that
+            # parks 91 or more.
+            total = sum(
+                code.count('"ally_sup_%s_%s"' % (key, suffix))
+                for suffix, _c, _t, _d in FACTION_COMPS
+            )
+            self.assertGreaterEqual(total, 8 * 4, key)
+            self.assertEqual(total, 97)
+
+        # Vehicles: Ukraine three, NATO two, nobody else any. Counter-gated rather
+        # than pool-counted, so the counter is what must match the parked instances.
+        for key, _army, instances in FACTION_VEH:
+            self.assertEqual(code.count('"ally_sup_%s_veh"' % key), instances * 3, key)
+            for n in range(1, instances + 1):
+                self.assertEqual(code.count('"ally_sup_%s_veh%d"' % (key, n)), 3)
+            self.assertIn(
+                '{"set_i" {var "attack_support_%s_veh_left$"} {op "="} {value %d}}'
+                % (key, instances),
+                self.code,
+            )
+        for key in ("rusa", "prc"):
+            self.assertNotIn('"ally_sup_%s_veh"' % key, code)
+
+        # Bands: this pool must not collide with either neighbour in a resolved map.
+        ids = re.findall(r"\{(?:Entity|Human) \"[^\"]*\" (0x[0-9a-f]+)", code)
+        self.assertEqual(len(ids), 634)
+        self.assertEqual(len(set(ids)), 634)
+        # 0xc1 is the motor top-up band, swept against every pool and base map.
+        self.assertTrue(all(i.startswith(("0xb2", "0xb3", "0xb4", "0xc1", "0xc2")) for i in ids))
+        mids = [int(m) for m in re.findall(r"\{MID (\d+)\}", code)]
+        self.assertEqual(len(set(mids)), 634)
+        self.assertGreaterEqual(min(mids), 9300)
+        # Real breeds only, and none of the retired idioms.
+        self.assertNotIn('{Human ""', code)
+        self.assertNotIn("{Inventory", code)
+        for banned in ("{clone}", "{include {prop human}}", "allied_support"):
+            self.assertNotIn(banned, code, banned)
+        self.assertEqual(code.count("{"), code.count("}"))
+
+    def test_team_a_requests_exactly_one_ai_mate_slot(self) -> None:
+        self.assertEqual(self.game_set.count("{aiTeamPlayers 1}"), 1)
+        team_a = self.game_set.index('{"a"')
+        team_b = self.game_set.index('{"b"', team_a)
+        self.assertIn("{aiTeamPlayers 1}", self.game_set[team_a:team_b])
+        self.assertIn("{minTeamSlots 7}", self.game_set[team_a:team_b])
+
+    def test_router_routes_team_a_mate_regardless_of_first_player_id(self) -> None:
+        for marker in (
+            'local ROUTER_PREFIX = "CODEX_ATTACK_SUPPORT_ROUTER"',
+            "local function isAttackSupportCandidate(identity)",
+            "local function safeRequire(path)",
+            'safeRequire("resource/script/multiplayer/modes/attack_support")',
+            'local gameModeScriptPath = "resource/script/multiplayer/modes/" .. mode',
+            "pcall(initialize)",
+        ):
+            self.assertIn(marker, self.bot_main)
+
+        # The FirstPlayerId skip gate is a proven regression: live logs showed the
+        # engine publishing FirstPlayerId for the Team A AI process, not the human.
+        self.assertNotIn("first_player_slot", self.bot_main)
+        self.assertNotIn("identity.playerId == identity.firstPlayerId", self.bot_main)
+        self.assertIn("Never use FirstPlayerId to exclude a", self.bot_main)
+        self.assertNotIn("team_a_attack_safe_route", self.bot_main)
+
+    def test_mate_publishes_identity_and_arms_the_mi_wave_engine(self) -> None:
+        for marker in (
+            'local PREFIX = "CODEX_ATTACK_SUPPORT"',
+            'sc:SetVar("id_attack_support", id.playerId)',
+            'sc:SetVar("attack_support_ready", 1)',
+            # The enable switch for the MI wave engine. Lua Spawn on this slot
+            # never reports an available unit, so MI delivery is the only path
+            # that puts bodies on the map; the attack support module must arm it explicitly.
+            'sc:SetVar("attack_support_use_mi", 1)',
+            "if id.attacking ~= true then return end",
+        ):
+            self.assertIn(marker, self.attack_support)
+
+        # Attack support is on by default on an attack mission. Publishing the
+        # identity IS the arming step; there is no separate enable var to forget.
+        self.assertNotIn("allied_attack_enabled", self.attack_support)
+
+    def test_mate_never_touches_the_slot_unsafe_engine_surface(self) -> None:
+        # Every entry here cost a native crash to learn. Reading the spawn-point
+        # fields or pulling in utility.lua / logic.main.lua AVs on a slot that has
+        # no spawn deck, and the Lua spawn/purchase calls are inert there anyway.
+        forbidden = (
+            "spawnPointName",
+            "PlayerSpawnPoint",
+            "require(",
+            ":Spawn(",
+            ":SpawnAt(",
+            ":Purchase(",
+            "GameModeSpawnUnit(",
+        )
+        code = "\n".join(
+            line.split("--", 1)[0] for line in self.attack_support.splitlines()
+        )
+        for marker in forbidden:
+            self.assertNotIn(marker, code)
+
+        # Nothing may reach the engine unguarded: every BotApi accessor returns a
+        # table/nil fallback and every event body runs inside pcall.
+        for marker in (
+            "local function safeEvent(name, fn)",
+            "local ok, err = pcall(fn, ...)",
+            "return (BotApi and BotApi.Instance) or {}",
+        ):
+            self.assertIn(marker, self.attack_support)
+
+    def test_mate_orders_only_squads_it_can_see(self) -> None:
+        # Orders are now live (the read-only diagnostics checkpoint is retired),
+        # but they stay wrapped: an unsupported command must not take the slot down.
+        self.assertIn("pcall(function() c:CaptureFlag(squad, flagName) end)", self.attack_support)
+        self.assertIn("pcall(function() c:SeekAndDestroy(squad) end)", self.attack_support)
+        # Flag names come from the scene, never from a hardcoded fpc*/flag list.
+        self.assertIn("local function pickFlagName()", self.attack_support)
+        self.assertIn('type(sc.Flags) ~= "table"', self.attack_support)
+        self.assertNotIn("fpc", self.attack_support)
+
+    def test_engine_state_is_mirrored_to_the_game_log(self) -> None:
+        """With the on-screen diagnostics gated behind support_debug$, game.log is the
+        only place a shipped run can be read back. This slot loads on every
+        campaign_capture_the_flag mission, attack or defence, so it mirrors all four
+        wave engines from one place - always on, log only."""
+        lua = self.attack_support
+
+        # Reads are pcall-guarded with printable fallbacks. GetVar is not proven on this
+        # BotApi surface and this is the slot that AVs when a native getter is misused.
+        self.assertIn("local function readVar(name)", lua)
+        self.assertIn(
+            "local ok, v = pcall(function() return sc:GetVar(name) end)", lua
+        )
+        for fallback in ('return "na"', 'return "err"', 'return "nil"'):
+            self.assertIn(fallback, lua)
+
+        # One line per engine, plus the resolved player-faction pool.
+        self.assertIn(
+            'emit("mirror", "q", state.quant,\n'
+            '\t\t"faction_support_army", readVar("faction_support_army"))',
+            lua,
+        )
+        body = lua[lua.index("local function mirrorEngineState()") :]
+        body = body[: body.index("\nend\n")]
+        calls = body.split('emit("mirror", ')
+        self.assertEqual(
+            len(calls), 7, "expected the header line, the E2 leg line and four engines"
+        )
+        # The E2 leg lifecycle. leg_done is the var half of the terminal marker the
+        # orphan sweep reads as a tag off the aircraft, so a run can be read back
+        # without guessing whether a leg ended or an aircraft was simply abandoned.
+        leg = next(c for c in calls if c.startswith('"e2_leg",'))
+        for label, var in (
+            ("leg_done", "support_e2_leg_done"),
+            ("air_try", "support_e2_air_try"),
+            ("air_age", "support_e2_air_age"),
+            ("clock_t", "support_e2_clock_t"),
+        ):
+            self.assertIn('"%s", readVar("%s")' % (label, var), leg)
+        for engine, extra in (
+            ("attack_support", ()),
+            (
+                "enemy_defense",
+                (
+                    ("garrison_place", "enemy_defense_place"),
+                    ("garrison_group", "enemy_defense_group"),
+                ),
+            ),
+            ("defense_support", ()),
+            ("enemy_attack", ()),
+        ):
+            call = next(c for c in calls if c.startswith('"%s",' % engine))
+            for field in ("armed", "wave_num", "waves_left"):
+                self.assertIn(
+                    '"%s", readVar("%s_%s")' % (field, engine, field), call, engine
+                )
+            for label, var in extra:
+                self.assertIn('"%s", readVar("%s")' % (label, var), call)
+
+        # Ungated writer: the mirror must not disappear with the DEBUG_LOG chatter.
+        self.assertIn("local function emit(", lua)
+        self.assertIn(
+            "local function log(...)\n\tif not DEBUG_LOG then return end\n\temit(...)", lua
+        )
+        self.assertNotIn("\tlog(", body)
+
+        # Cadence, and the pre-existing heartbeat is untouched.
+        self.assertIn("local MIRROR_QUANTS = 200", lua)
+        self.assertIn("if state.quant % MIRROR_QUANTS == 0 then", lua)
+        self.assertIn("mirrorEngineState()", lua)
+        self.assertIn("mirrorMotor()", lua)
+        self.assertIn('log("heartbeat", "q", state.quant)', lua)
+
+    def test_lua_locals_are_defined_before_use(self) -> None:
+        # Lua resolves a call sited above its `local function` to a nil global,
+        # which crashes the bot silently the moment that path first runs. Order
+        # matters for every helper the event bodies reach.
+        for source, pairs in (
+            (
+                self.attack_support,
+                (
+                    ("local function emit(", "emit("),
+                    ("local function log(", "log("),
+                    ("local function readVar(name)", "readVar("),
+                    ("local function identity()", "identity()"),
+                    ("local function publishIdentity(id)", "publishIdentity(id)"),
+                    ("local function pickFlagName()", "pickFlagName()"),
+                    ("local function orderSquad(squad)", "orderSquad(squad)"),
+                    ("local function orderNewSquads()", "orderNewSquads()"),
+                    ("local function mirrorMotor()", "mirrorMotor()"),
+                    ("local function mirrorEngineState()", "mirrorEngineState()"),
+                    ("local function safeEvent(name, fn)", 'safeEvent("GameStart"'),
+                ),
+            ),
+            (
+                self.bot_main,
+                (
+                    ("local function routerLog(", "routerLog("),
+                    ("local function safeRequire(path)", "safeRequire("),
+                ),
+            ),
+        ):
+            for definition, use in pairs:
+                at_def = source.index(definition)
+                at_use = source.index(use, at_def + len(definition))
+                self.assertLess(at_def, at_use, "%s used before definition" % use)
+                self.assertNotIn(use, source[:at_def])
+
+    def test_mi_defines_are_declared_before_they_are_called(self) -> None:
+        code = self.code
+        for name in (
+            "am_place_at_entry",
+            "am_own_to_support",
+            "am_finish_deploy",
+            "am_deploy_next_hmmwv",
+            "am_pick_composition",
+        ):
+            definition = '(define "%s"' % name
+            self.assertEqual(code.count(definition), 1, name)
+            at_def = code.index(definition)
+            self.assertNotIn('("%s")' % name, code[:at_def], "%s called above its define" % name)
+
+    def test_wave_state_is_explicitly_declared(self) -> None:
+        for marker in (
+            '{"attack_support_armed"}',
+            '{"attack_support_transferred"}',
+            '{"attack_support_stage"}',
+            '{"attack_support_wave_cmd"}',
+            '{"attack_support_wave_num"}',
+            '{"attack_support_waves_left"}',
+            '{"attack_support_busy"}',
+            '{"attack_support_next_ok"}',
+            '{"attack_support_hmmwv_left"}',
+            '{"attack_support_use_mi"}',
+            '{"enemy_spawnside"}',
+            '{"id_attack_support"}',
+            '{"attack_support_ready"}',
+        ):
+            self.assertIn(marker, self.vars)
+
+        # Every var the engine reads is declared. defense_level$ is the one
+        # exception by design: CE owns it and declares it in ce/ce_vars.inc.
+        declared = set(re.findall(r'\{"([a-z0-9_]+)"\}', self.vars))
+        declared.add("defense_level")
+        for name in sorted(set(re.findall(r'\{var "([a-z0-9_]+)\$"\}', self.code))):
+            self.assertIn(name, declared, "undeclared var read: %s$" % name)
+
+    def test_retired_wave_skeleton_and_brain_are_gone(self) -> None:
+        for path in RETIRED:
+            self.assertFalse(path.exists(), "retired file is back: %s" % path)
+        # Nothing may point at them any more, and no stale state may linger.
+        for name in (
+            "allied_attack_enabled",
+            "allied_attack_started",
+            "allied_attack_wave_num",
+            "allied_attack_owner_fail",
+            "allied_attack_retasked",
+        ):
+            self.assertNotIn(name, self.vars)
+        self.assertNotIn("attack_support_brain", self.bot_main)
+        self.assertNotIn("allied_attack", self.code)
+        for mi_path in sorted((ROOT / "resource/map/multi").glob("*/campaign_capture_the_flag.mi")):
+            text = mi_path.read_text(encoding="utf-8")
+            with self.subTest(map=mi_path.parent.name):
+                self.assertNotIn("allied_attack_waves.inc", text)
+                self.assertNotIn("attack_support_probe.inc", text)
+
+    def test_init_arms_once_then_hands_over_to_the_clock(self) -> None:
+        code = self.code
+        self.assertEqual(code.count('{"attack_support/init"'), 1)
+        init = trigger_block(code, "init")
+
+        # Arms exactly once and never resets its own latch, so it cannot re-run
+        # and stack a second schedule.
+        self.assertIn('{"1.cmp_i" {var "attack_support_armed$"} {op "=="} {value 0}}', init)
+        self.assertIn('{"set_i" {var "attack_support_armed$"} {op "="} {value 1}}', init)
+        self.assertNotIn('{"set_i" {var "attack_support_armed$"} {op "="} {value 0}}', code)
+
+        # Readiness gates: attack side only, and only once attack support has
+        # published its identity and armed MI delivery.
+        for term in (
+            '{"2.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}',
+            '{"3.cmp_i" {var "attack_support_ready$"} {op "=="} {value 1}}',
+            '{"4.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}',
+            '{"5.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}',
+        ):
+            self.assertIn(term, init)
+
+        # Opening wave fixed ~30s in (Day-2 airmobile test guarantee).
+        # air_test$=1 forces cmd 18; air_test$=0 uses am_pick_composition.
+        self.assertEqual(code.count('{"delay" {time 30}}'), 1)
+        self.assertIn('("as_resolve_army")', init)
+        self.assertIn('("as_poke_faction_air")', init)
+        self.assertIn('("am_pick_composition")', init)
+        self.assertLess(init.index('("as_resolve_army")'),
+                        init.index('("as_poke_faction_air")'))
+        # The command is cleared on entry so a stale command cannot deploy a wave.
+        self.assertIn('{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}', init)
+
+        # The clock is held shut until the opening wave has landed - its condition
+        # is otherwise already true here and it would fire alongside init.
+        busy_on = init.index('{"set_i" {var "attack_support_busy$"} {op "="} {value 1}}')
+        ok_off = init.index('{"set_i" {var "attack_support_next_ok$"} {op "="} {value 0}}')
+        ok_on = init.index('{"set_i" {var "attack_support_next_ok$"} {op "="} {value 1}}')
+        busy_off = init.index('{"set_i" {var "attack_support_busy$"} {op "="} {value 0}}')
+        opening = init.index('("as_resolve_army")')
+        self.assertLess(busy_on, opening)
+        self.assertLess(ok_off, opening)
+        self.assertLess(opening, ok_on)
+        self.assertLess(opening, busy_off)
+        self.assertIn('{"trigger" {name "attack_support/clock"}}', init)
+
+    def test_wave_budget_scales_with_defense_level(self) -> None:
+        init = trigger_block(self.code, "init")
+        # defense_level$ is the campaign progression signal computed by the CE
+        # mission setup (1-3). Level 0 - not published yet - falls back to L1.
+        for level, waves in ((3, 8), (2, 6)):
+            case = init.index(
+                '{condition {type cmp_i} {var "defense_level$"} {op "=="} {value %d}}' % level
+            )
+            body = init[case : case + 400]
+            self.assertIn(
+                '{"set_i" {var "attack_support_waves_left$"} {op "="} {value %d}}' % waves,
+                body,
+            )
+        self.assertIn(
+            '{"set_i" {var "attack_support_waves_left$"} {op "="} {value 4}}', init
+        )
+        # The opening wave is part of the budget, not a freebie on top of it.
+        self.assertIn('{"set_i" {var "attack_support_waves_left$"} {op "-"} {value 1}}', init)
+
+    def test_cadence_clock_is_self_rearming_and_randomized(self) -> None:
+        code = self.code
+        self.assertEqual(code.count('{"attack_support/clock"'), 1)
+        clock = trigger_block(code, "clock")
+
+        for term in (
+            '{"1.cmp_i" {var "attack_support_next_ok$"} {op "=="} {value 1}}',
+            '{"2.cmp_i" {var "attack_support_busy$"} {op "=="} {value 0}}',
+            '{"3.cmp_i" {var "attack_support_waves_left$"} {op ">"} {value 0}}',
+            '{"4.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}',
+        ):
+            self.assertIn(term, clock)
+
+        # Randomized 120-240s cadence as a weighted {type rand} cascade - about 20%
+        # tighter than the retired 150-300s ladder, so wave 2 arrives in ~3-5 min
+        # rather than 5-6. The 0.2/0.25/0.33/0.5 ladder keeps the five buckets ~20%.
+        for value in ("0.2", "0.25", "0.33", "0.5"):
+            self.assertIn("{condition {type rand} {value %s}}" % value, clock)
+        for seconds in (120, 150, 180, 210, 240):
+            self.assertEqual(clock.count('{"delay" {time %d}}' % seconds), 1, seconds)
+
+        # Re-arms itself: one cycle always ends by clearing busy and firing again.
+        self.assertIn('{"set_i" {var "attack_support_busy$"} {op "="} {value 1}}', clock)
+        self.assertIn('{"set_i" {var "attack_support_busy$"} {op "="} {value 0}}', clock)
+        self.assertIn('{"trigger" {name "attack_support/clock"}}', clock)
+        # Exhaustion is the condition simply ceasing to match, plus a report.
+        self.assertIn("ATTACK SUPPORT WAVES EXHAUSTED", clock)
+
+    def test_live_unit_cap_defers_without_consuming_a_wave(self) -> None:
+        code = self.code
+        clock = trigger_block(code, "clock")
+        # Counted on the simple selector form the mission scripts use for live
+        # units. The advanced selector's prop/state decorations zero the match on
+        # these entities, and attack_support_src is never removed, so it is the
+        # roster marker. Fails open: a bad count over-spawns rather than stalling.
+        self.assertIn(
+            "{selector\n"
+            "\t\t\t\t\t\t\t\t\t{ignore_captured_by_user 0}\n"
+            "\t\t\t\t\t\t\t\t\t{tag attack_support_src}\n"
+            "\t\t\t\t\t\t\t\t\t{type human}\n"
+            '\t\t\t\t\t\t\t\t\t{state "not dead"}\n'
+            "\t\t\t\t\t\t\t\t}",
+            clock,
+        )
+        self.assertIn('{count {op ">"} {value 14}}', clock)
+
+        # Anchored on the live-count condition rather than on the timer title: every
+        # diagnostic now sits inside its own support_debug$ switch, so the nearest
+        # {"case"} above a title is that gate's case, not the defer branch's.
+        defer = block_at(clock, clock.rindex('{"case"', 0, clock.index('{count {op ">"} {value 14}}')))
+        self.assertIn("ATTACK SUPPORT NEAR CAP DEFER", defer)
+        # A defer costs nothing: no wave consumed, no composition dispatched.
+        self.assertNotIn('{"set_i" {var "attack_support_waves_left$"}', defer)
+        self.assertNotIn('{"set_i" {var "attack_support_wave_num$"}', defer)
+        self.assertNotIn("am_pick_composition", defer)
+
+        dispatch = block_at(clock, clock.index('{"default"', clock.index(defer) + len(defer)))
+        self.assertIn('{"set_i" {var "attack_support_wave_num$"} {op "+"} {value 1}}', dispatch)
+        self.assertIn('{"set_i" {var "attack_support_waves_left$"} {op "-"} {value 1}}', dispatch)
+        self.assertIn('("am_pick_composition")', dispatch)
+
+    def test_composition_pool_widens_with_the_campaign_level(self) -> None:
+        """The pick is two-branched since the faction-aware pools landed: a player
+        on a non-NATO nation draws entirely from its own faction pools, while NATO
+        keeps the original specialty compositions and has the shared hybrid comps
+        injected on top at L2/L3. Both branches must still widen with the level."""
+        code = self.code
+        pick = define_body(code, "am_pick_composition")
+        hybrid = define_body(code, "as_pick_hybrid_non_nato")
+
+        def levels(body: str) -> dict:
+            """L3 / L2 case bodies plus the L1 default that trails them."""
+            out = {}
+            for level in (3, 2):
+                at = body.index(
+                    '{condition {type cmp_i} {var "defense_level$"} {op "=="} {value %d}}'
+                    % level
+                )
+                out[level] = block_at(body, body.rindex('{"case"', 0, at))
+            after = body.index(out[2]) + len(out[2])
+            out[1] = block_at(body, body.index('{"default"', after))
+            return out
+
+        def offered(block: str) -> set:
+            return set(
+                int(m)
+                for m in re.findall(
+                    r'\{"set_i" \{var "attack_support_wave_cmd\$"\} \{op "="\} \{value (\d+)\}\}',
+                    block,
+                )
+            )
+
+        # Non-NATO: L1 is line + recon only; L2 adds wpn/assault/eng and the rare
+        # vehicle; L3 additionally unlocks the MANPAD team.
+        nn = levels(hybrid)
+        self.assertEqual(offered(nn[1]), {10, 12})
+        self.assertEqual(offered(nn[2]), {10, 11, 12, 13, 14, 16, 17, 18, 19})
+        self.assertEqual(offered(nn[3]), {10, 11, 12, 13, 14, 15, 16, 17, 18, 19})
+        # MANPAD is the L3-only unlock, and L1 offers no vehicle.
+        self.assertNotIn(15, offered(nn[2]))
+        self.assertNotIn(16, offered(nn[1]))
+
+        # NATO: specialty comps 1-5 survive, with hybrid comps injected at L2/L3.
+        na = levels(pick)
+        self.assertEqual(offered(na[1]), {1, 2, 5, 12})
+        self.assertEqual(offered(na[2]), {1, 2, 3, 5, 12, 13, 14, 16, 19})
+        # NATO L3 specialty mix; airmobile/IFV injects live in hybrid + init force path.
+        self.assertEqual(offered(na[3]), {1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 19})
+        # The NATO branch never draws the generic faction line/wpn pools directly;
+        # those are reached only through the pool-short fallback below.
+        for lvl in (1, 2, 3):
+            self.assertNotIn(10, offered(na[lvl]))
+            self.assertNotIn(11, offered(na[lvl]))
+
+        # Every specialty case picks one composition and pokes exactly that trigger.
+        for cmd, name in ((4, "comp_pzgren"), (3, "comp_acav"), (5, "comp_arf"),
+                          (2, "comp_1ad"), (1, "comp_usmc")):
+            at = pick.index(
+                '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value %d}}' % cmd
+            )
+            self.assertIn(
+                '{"trigger" {name "attack_support/%s"}}' % name, pick[at : at + 200]
+            )
+        # Every hybrid case pokes the matching faction fan-out define.
+        for cmd, poke in ((10, "line"), (11, "wpn"), (12, "recon"), (13, "assault"),
+                          (14, "eng"), (15, "manpad"), (16, "veh"), (17, "ifv"), (18, "air")):
+            at = hybrid.index(
+                '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value %d}}' % cmd
+            )
+            self.assertIn('("as_poke_faction_%s")' % poke, hybrid[at : at + 200])
+
+        # Pool-short fallback: step down to the player's own line pool, then give up
+        # on this cycle rather than spin. A composition clears the command on entry,
+        # so a command still standing means that pool could not field the wave.
+        self.assertIn("ATTACK SUPPORT POOL SHORT - FACTION LINE", pick)
+        self.assertIn("ATTACK SUPPORT POOL EXHAUSTED", pick)
+        short = pick.index("ATTACK SUPPORT POOL SHORT - FACTION LINE")
+        gaveup = pick.index("ATTACK SUPPORT POOL EXHAUSTED")
+        self.assertLess(short, gaveup)
+        # The step-down sets the faction line command and pokes it.
+        self.assertIn(
+            '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 10}}',
+            pick[:short],
+        )
+        self.assertIn('("as_poke_faction_line")', pick[:short])
+        # Both fallback stages trigger on "a command is still standing".
+        self.assertIn(
+            '{condition {type cmp_i} {var "attack_support_wave_cmd$"} {op ">"} {value 0}}',
+            pick[:short],
+        )
+        self.assertIn(
+            '{condition {type cmp_i} {var "attack_support_wave_cmd$"} {op ">"} {value 0}}',
+            pick[short:gaveup],
+        )
+        # Giving up clears the command so the next cycle starts clean.
+        self.assertIn(
+            '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}',
+            pick[short:gaveup + 200],
+        )
+
+    def test_every_composition_is_command_gated_and_pool_gated(self) -> None:
+        code = self.code
+        for name, cmd, pool, size in COMPOSITIONS:
+            with self.subTest(composition=name):
+                self.assertEqual(code.count('{"attack_support/%s"' % name), 1)
+                block = trigger_block(code, name)
+                head = block[: block.index("{actions")]
+                actions = block[block.index("{actions") :]
+
+                # COMMAND GATING is the fix for waves auto-firing on entity
+                # presence alone, which detonated all three of the old test waves
+                # at once. Each composition needs its own command value AND clears
+                # it as its first action, so one issue runs exactly one wave.
+                self.assertIn(
+                    '{"2.cmp_i" {var "attack_support_wave_cmd$"} {op "=="} {value %d}}' % cmd,
+                    head,
+                )
+                self.assertIn('{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}', head)
+                self.assertIn('{"3.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}', head)
+                self.assertIn(
+                    '{"set_i" {var "attack_support_wave_cmd$"} {op "="} {value 0}}',
+                    actions[:200],
+                )
+
+                # Pool gating: a deploy strips the pool tag from the bodies it
+                # takes, so counting the tag is exactly "still parked".
+                self.assertIn("{selector {tag %s}}" % pool, head)
+                self.assertIn('{count {op ">="} {value %d}}' % size, head)
+                self.assertIn("{amount %d}" % size, actions)
+                self.assertIn("{group {select {tag {tag %s}}}}" % pool, actions)
+                self.assertIn("{tag_remove %s}" % pool, actions)
+                self.assertIn("{tag_add attack_support_deploy}", actions)
+
+                # Placement then the shared deploy flow, in that order.
+                self.assertIn('("am_place_at_entry")', actions)
+                self.assertIn('("am_finish_deploy")', actions)
+                self.assertLess(
+                    actions.index('("am_place_at_entry")'),
+                    actions.index('("am_finish_deploy")'),
+                )
+
+        # Waves stay small: a fireteam, optionally with one or two vehicles.
+        for _, _, _, size in COMPOSITIONS:
+            self.assertGreaterEqual(size, 3)
+            self.assertLessEqual(size, 7)
+
+        # Stage reporting: 1 armed, then <composition>1 entered / <composition>2 done.
+        for value in (1, 11, 12, 21, 22, 31, 32, 41, 42):
+            self.assertIn(
+                '{"set_i" {var "attack_support_stage$"} {op "="} {value %d}}' % value, code
+            )
+
+    def test_vehicle_instances_deploy_whole_and_in_order(self) -> None:
+        code = self.code
+        deploy = define_body(code, "am_deploy_next_hmmwv")
+        # A humvee's crew is {Link}ed to that one hull, so an instance can only move
+        # as a whole - never a count of bodies out of a shared vehicle pool, which
+        # would land a hull without its driver. Instances are taken in order off a
+        # countdown, so two concurrent waves cannot claim the same one.
+        for left, instance in ((4, 1), (3, 2), (2, 3), (1, 4)):
+            at = deploy.index(
+                '{condition {type cmp_i} {var "attack_support_hmmwv_left$"} {op "=="} {value %d}}'
+                % left
+            )
+            case = block_at(deploy, deploy.rindex('{"case"', 0, at))
+            self.assertIn(
+                "{group {select {tag {tag attack_support_hmmwv%d}}}}" % instance, case
+            )
+            self.assertIn(
+                '{"set_i" {var "attack_support_hmmwv_left$"} {op "-"} {value 1}}', case
+            )
+        self.assertEqual(code.count('("am_deploy_next_hmmwv")'), 3)
+
+        # Level 2 fields one vehicle, level 3 fields two - and each gates on there
+        # being that many instances left.
+        acav = trigger_block(code, "comp_acav")
+        pzgren = trigger_block(code, "comp_pzgren")
+        self.assertIn(
+            '{"5.cmp_i" {var "attack_support_hmmwv_left$"} {op ">"} {value 0}}',
+            acav[: acav.index("{actions")],
+        )
+        self.assertIn(
+            '{"5.cmp_i" {var "attack_support_hmmwv_left$"} {op ">"} {value 1}}',
+            pzgren[: pzgren.index("{actions")],
+        )
+        self.assertEqual(acav.count('("am_deploy_next_hmmwv")'), 1)
+        self.assertEqual(pzgren.count('("am_deploy_next_hmmwv")'), 2)
+        # Infantry go in first and the vehicles follow with a gap: placed into the
+        # same spot together they clip and flip.
+        for block in (acav, pzgren):
+            self.assertLess(
+                block.index('("am_finish_deploy")'), block.index('("am_deploy_next_hmmwv")')
+            )
+
+    def test_entry_side_is_chosen_at_runtime(self) -> None:
+        code = self.code
+        # Main + flank + airmobile LZ placement sites (count drifts with default branches).
+        self.assertGreaterEqual(code.count('{"placement"'), 20)
+        for point in (1, 2, 3):
+            # E2 no longer PLACES an aircraft onto a ground entry pad - it clones and
+            # teleports it to a numeric air waypoint - so the aircraft's own point-1
+            # branches are gone. What is left on point 1 is E2's fail-4 infantry
+            # standoff fallback plus the ordinary wave placements.
+            expected_a = 2 if point == 1 else 1
+            expected_b = 4 if point == 1 else 2
+            self.assertEqual(
+                code.count('{target_waypoint "attack_support_entry_a%d"}' % point), expected_a
+            )
+            self.assertEqual(
+                code.count('{target_waypoint "attack_support_entry_b%d"}' % point), expected_b
+            )
+        for point in (1, 2):
+            self.assertEqual(
+                code.count('{target_waypoint "attack_support_flank_a%d"}' % point), 1
+            )
+            self.assertEqual(
+                code.count('{target_waypoint "attack_support_flank_b%d"}' % point), 2
+            )
+        # Air pads present on both sides (counts need not be symmetric — default falls to b1).
+        self.assertGreaterEqual(
+            code.count('{target_waypoint "attack_support_air_a1"}'), 1
+        )
+        self.assertGreaterEqual(
+            code.count('{target_waypoint "attack_support_air_b1"}'), 1
+        )
+        # Never the bare legacy alias: that one exists for move orders, not placements.
+        for side in "ab":
+            self.assertNotIn(
+                '{target_waypoint "attack_support_entry_%s"}' % side, code
+            )
+
+        # Enemy on side a means we enter from b, and vice versa - never the same.
+        # Each spawnside==1 case block must only place on b pads; spawnside==2 on a pads.
+        for m in re.finditer(
+            r'\{var "enemy_spawnside\$"\} \{op "=="\} \{value 1\}(.*?)'
+            r'(?=\{var "enemy_spawnside\$"\} \{op "=="\} \{value 2\}|\Z)',
+            code,
+            re.S,
+        ):
+            chunk = m.group(1)
+            if "target_waypoint" not in chunk:
+                continue
+            self.assertNotIn("entry_a", chunk)
+            self.assertNotIn("flank_a", chunk)
+            self.assertNotIn("air_a", chunk)
+            self.assertTrue(
+                ("entry_b" in chunk) or ("flank_b" in chunk) or ("air_b" in chunk),
+                chunk[:120],
+            )
+        for m in re.finditer(
+            r'\{var "enemy_spawnside\$"\} \{op "=="\} \{value 2\}(.*?)'
+            r'(?=\{var "enemy_spawnside\$"\} \{op "=="\} \{value 1\}|\{"default"|\Z)',
+            code,
+            re.S,
+        ):
+            chunk = m.group(1)
+            if "target_waypoint" not in chunk:
+                continue
+            # Stop at the branch's own default that still places on b (fallback side).
+            cut = chunk.find('{"default"')
+            if cut > 0:
+                chunk = chunk[:cut]
+            if "target_waypoint" not in chunk:
+                continue
+            self.assertNotIn("entry_b", chunk)
+            self.assertNotIn("flank_b", chunk)
+            self.assertNotIn("air_b", chunk)
+            self.assertTrue(
+                ("entry_a" in chunk) or ("flank_a" in chunk) or ("air_a" in chunk),
+                chunk[:120],
+            )
+
+        # Placement happens before promotion on EVERY deploy. Pinning a bare count
+        # went stale the moment the faction pools added comps, so instead require
+        # that the two always come in pairs and that every deploying trigger uses
+        # them - that is the property that actually matters.
+        # Motor uses am_place_at_entry + as_finish_motor (not am_finish_deploy).
+        self.assertEqual(
+            code.count('("am_place_at_entry")'),
+            code.count('("am_finish_deploy")') + code.count('("as_finish_motor")'),
+        )
+        # motor_test is a scheduler: it pokes the faction motor triggers, which deploy.
+        # E2 has dedicated MOVE-placement and flight contracts in
+        # test_e2_airmobile.py; this enumeration covers legacy wave deployers only.
+        deployers = [n for n in re.findall(r'\{"attack_support/([a-z0-9_]+)"', code)
+                     if n not in ("init", "clock", "motor_clock", "motor_cleanup")
+                     and not n.startswith("e2_")]
+        self.assertTrue(deployers)
+        for name in deployers:
+            with self.subTest(deployer=name):
+                block = trigger_block(code, name)
+                self.assertIn('("am_place_at_entry")', block)
+                finish = (
+                    '("am_finish_deploy")'
+                    if '("am_finish_deploy")' in block
+                    else '("as_finish_motor")'
+                )
+                self.assertIn(finish, block)
+                self.assertLess(block.index('("am_place_at_entry")'), block.index(finish))
+        place = code.index('(define "am_place_at_entry"')
+        finish = code.index('(define "am_finish_deploy"')
+        self.assertLess(place, finish)
+
+        # Bodies land one at a time. Placing a whole fireteam onto one pad piles
+        # them up, so am_place_at_entry is a run of single-body placements and then
+        # clears the one-shot marker.
+        placer = define_body(code, "am_place_at_entry")
+        self.assertGreaterEqual(placer.count('("am_place_one")'), 6)
+        self.assertIn('{tag_remove attack_support_placed}', placer)
+        one = define_body(code, "am_place_one")
+        self.assertIn('{amount 1}', one)
+        self.assertIn('{exclude {tag {tag attack_support_placed}}}', one)
+
+    def test_ownership_switch_covers_every_literal_player_slot(self) -> None:
+        code = self.code
+        # The engine will not accept a var in the {player} node, so all sixteen
+        # slots are spelled out and matched against id_attack_support$.
+        own = code.index('(define "am_own_to_support"')
+        block = code[own : code.index('(define "am_finish_deploy"')]
+        for n in range(1, 17):
+            self.assertIn(
+                '{condition {type cmp_i} {var "id_attack_support$"} {op "=="} '
+                '{value %d}}' % n,
+                block,
+            )
+            self.assertIn('{player "%d"}' % n, block)
+        self.assertNotIn('{player "id_attack_support$"}', code)
+        self.assertNotIn('{player "17"}', block)
+        # Ownership is handed over exactly once per deploy, after placement.
+        self.assertGreaterEqual(code.count('("am_own_to_support")'), 1)
+        self.assertIn('{"set_i" {var "attack_support_transferred$"} {op "="} {value 1}}', code)
+
+    def test_engine_never_clones_and_never_decorates_the_pool_selector(self) -> None:
+        code = self.code
+        # NO CLONING, with ONE scoped exception. Three promote designs (runtime tag,
+        # gamezone, player-0 identity) each matched zero freshly created entities: a
+        # new entity's provenance is invisible to every selector we can express here,
+        # so ground units are MOVED and keep the tags we put on them.
+        #
+        # The exception is E2 AIRCRAFT DISPATCH, and only that: the base game's own
+        # aircraft call-in clones a hidden parked template to a numeric waypoint whose
+        # {commands} block then re-tags the arrival. That solves exactly the provenance
+        # problem above, and it is the only place a clone's identity is recoverable.
+        # Strip that one define and the general ban must still hold, unchanged.
+        e2_clone = _mi_define(code, "e2_clone_aircraft")
+        self.assertEqual(e2_clone.count("{clone}"), 3)
+        self.assertIn('{approach "safe teleport & rotate"}', e2_clone)
+        self.assertIn("{include {tag {tag hidden}}}", e2_clone)
+        code_no_e2_clone = code.replace(e2_clone, "")
+        self.assertNotIn("{clone}", code_no_e2_clone)
+        self.assertNotIn('{zone {zone "gamezone"}}', code)
+        self.assertNotIn('{player "0"}', code)
+        # {zone "gamezone"} is allowed only inside player-facing {"talk"} selectors
+        # (stock radio UI). Strip those blocks before the pool-selector ban.
+        code_no_talk = re.sub(
+            r'\{"talk"[\s\S]*?\n\t\t\t\t\t\t\}',
+            "",
+            code,
+        )
+        self.assertNotIn("{zone ", code_no_talk)
+
+        # SELECTOR RULE: decorating the advanced selector that addresses pool
+        # units zeroes the match. Live proof in one run: a bare select moved all
+        # four; the same select plus a prop/state decoration matched nothing in
+        # the very next action. Selecting the deploy set must stay bare.
+        self.assertNotIn("{prop {prop human}}", code)
+        self.assertNotIn("{include {prop human}}", code)
+        self.assertNotIn("{state {state operatable}}", code)
+        # {include ...} is likewise allowed ONLY in the E2 clone dispatch, where
+        # {include {tag {tag hidden}}} is what lets the selector reach a hidden parked
+        # template at all - the base game's own dispatch carries the same clause.
+        self.assertNotIn("{include", code_no_e2_clone)
+        self.assertIn("{group {select {tag {tag attack_support_deploy}}}}", code)
+
+        # fpc1..fpc5 tags are absent from one of the fourteen maps entirely, which
+        # left the units standing still on a live run. Capture points are
+        # addressed as {tag flag}, the way the mission scripts do it throughout.
+        self.assertNotIn("fpc", code)
+        self.assertGreaterEqual(code.count("{select {tag {tag flag}}}"), 3)
+
+        # Infantry keeps the live-roster marker. Only an empty motor hull drops it
+        # before its dedicated exit path so patrol and cap logic cannot reclaim it.
+        normal_finish = _mi_define(self.code, "am_finish_deploy")
+        motor_finish = _mi_define(self.code, "as_finish_motor")
+        self.assertNotIn("{tag_remove attack_support_src}", normal_finish)
+        self.assertIn("{tag_remove attack_support_src}", motor_finish)
+
+    def test_defense_side_state_is_never_reused(self) -> None:
+        # The defense engine's pool, tags and owner var are a separate system.
+        # Reaching into them from here hands attack support units to the defender
+        # bot, or lets CE wipe them.
+        for forbidden in (
+            "allied_wave_fresh",
+            "{tag allied_support}",
+            "{tag allied_support_template}",
+            "_ai_defender",
+            "allied_support_src",
+            '{var "id_defenderbot$"}',
+        ):
+            self.assertNotIn(forbidden, self.code)
+
+    def test_only_active_flag_points_are_targeted(self) -> None:
+        code = self.code
+        # A mission activates only ~2 of a map's flag points; without this filter
+        # the squad sprinted to a dead objective. All three shuffled picks must
+        # exclude inactive, and each must exclude the earlier picks so the three
+        # tags land on three different flags.
+        self.assertGreaterEqual(code.count("{state {state inactive}}"), 3)
+        self.assertGreaterEqual(code.count("{sort {type shuffle}}"), 3)
+        for n in (1, 2, 3):
+            anchor = "{tag_add attack_support_flag%d}" % n
+            self.assertGreaterEqual(code.count(anchor), 1)
+            pick = code.rindex("{select {tag {tag flag}}}", 0, code.index(anchor))
+            window = code[pick : code.index(anchor)]
+            self.assertIn("{state {state inactive}}", window)
+            for earlier in range(1, n):
+                self.assertIn("{tag {tag attack_support_flag%d}}" % earlier, window)
+
+        # Every fireteam advances on a claimed flag, not on a raw coordinate.
+        for n in (1, 2, 3, 4):
+            self.assertIn(
+                "{selector {ignore_captured_by_user 0} {tag attack_support_g%d}}" % n, code
+            )
+        self.assertIn(
+            "{target {ignore_captured_by_user 0} {tag attack_support_flag1}}", code
+        )
+        self.assertIn(
+            "{target {ignore_captured_by_user 0} {tag attack_support_flag2}}", code
+        )
+        self.assertIn(
+            "{target {ignore_captured_by_user 0} {tag attack_support_flag3}}", code
+        )
+
+    def test_deploy_promotes_hands_to_ai_and_splits_into_fireteams(self) -> None:
+        code = self.code
+        finish = code.index('(define "am_finish_deploy"')
+        block = code[finish : code.index('(define "am_deploy_next_hmmwv"')]
+        for marker in (
+            "{tag_add attack_support_src}",
+            "{tag_remove attack_support_tpl}",
+            "{tag_remove hidden}",
+            "{inactive off}",
+            "{impregnability disabled}",
+            "{discovered on}",
+            "{control AI}",
+            "{ai_move {mode enable}}",
+            "{weapon_prepare on}",
+            "{fire_mode open}",
+            # Selection is stripped so the human cannot inherit attack support units.
+            "{remove select}",
+        ):
+            self.assertIn(marker, block)
+
+        # Four staggered fireteams rather than one blob walking a single line.
+        for n in (1, 2, 3, 4):
+            self.assertIn("{tag_add attack_support_g%d}" % n, block)
+            self.assertIn("{tag_remove attack_support_g%d}" % n, block)
+        self.assertEqual(block.count("{amount 2}"), 3)
+
+        # The retired {"actor_to_cover"} cover beat is gone; the line is now broken
+        # by scattering the fireteams across up to three DIFFERENT active flags, so
+        # elements peel apart instead of pausing together. Each pick excludes the
+        # ones already taken, which is what stops all three landing on one flag.
+        self.assertNotIn('{"actor_to_cover"', block)
+        for n in (1, 2, 3):
+            self.assertEqual(block.count("{tag_add attack_support_flag%d}" % n), 1, n)
+            # Stale picks from the previous wave are cleared before choosing again.
+            self.assertIn("{tag_remove attack_support_flag%d}" % n, block)
+        second = block.index("{tag_add attack_support_flag2}")
+        third = block.index("{tag_add attack_support_flag3}")
+        self.assertIn("{tag {tag attack_support_flag1}}", block[:second])
+        for prior in (1, 2):
+            self.assertIn("{tag {tag attack_support_flag%d}}" % prior, block[:third])
+        # Every fireteam then advances rather than beelining from a raw coordinate.
+        self.assertEqual(block.count("{action advance}"), 4)
+
+        # The deploy tag is consumed at the end of every deploy, so the next wave
+        # starts from an empty set instead of re-ordering the previous one.
+        self.assertIn("{tag_remove attack_support_deploy}", block)
+
+    def test_wave_pool_is_deep_enough_for_the_level_budget(self) -> None:
+        code = strip_comments(self.templates)
+
+        # 84 parked prototypes - the original 64 plus the 20-strong ARF pool that
+        # came in with composition 5. A wave MOVES pool originals out and never
+        # returns them, so the pool carries the whole L3 budget of 8 waves across
+        # every composition it can draw. Parked off-map at player 0, claimed by tag.
+        self.assertEqual(code.count('{Able "-select"}'), 84)
+        self.assertEqual(code.count("{Tags "), 84)
+        self.assertEqual(code.count("{Player 0}"), 84)
+        self.assertEqual(code.count('"attack_support_tpl"'), 84)
+        self.assertEqual(code.count('"hidden"'), 84)
+        for pool, count in (
+            ("attack_support_inf_usmc", 20),
+            ("attack_support_inf_1ad", 20),
+            ("attack_support_inf_pzgd", 12),
+            ("attack_support_inf_arf", 20),
+        ):
+            self.assertEqual(code.count('"%s"' % pool), count, pool)
+
+        # This file shares every fully-resolved map with enemy_defense_templates.inc,
+        # whose MID band opens at 9100. The ARF block originally numbered itself
+        # 9084..9103 and duplicated four MIDs in all fourteen maps, so the whole
+        # file must stay strictly below that band.
+        mids = [int(m) for m in re.findall(r"\{MID (\d+)\}", code)]
+        self.assertEqual(len(mids), 84)
+        self.assertEqual(len(set(mids)), 84, "duplicate MID inside the pool")
+        self.assertLess(max(mids), 9100, "pool runs into the enemy-defence MID band")
+        self.assertEqual((min(mids), max(mids)), (9000, 9083))
+        # Deepest pool is the fallback composition's, since every short draw ends there.
+        self.assertGreaterEqual(
+            code.count('"attack_support_inf_usmc"'), code.count('"attack_support_inf_pzgd"')
+        )
+
+        # Real breeds only. The breed-less {Human ""} + baked {Inventory} pool was
+        # where every selector anomaly showed up, and it spawned unarmed bodies.
+        self.assertNotIn('{Human ""', code)
+        self.assertNotIn("{Inventory", code)
+        for breed in (
+            "mp/nato/2022s/usmc_rifleman",
+            "mp/nato/2022s/1ad_rifleman",
+            "mp/nato/2022s/pzgd_rifleman",
+            "mp/nato/2022s/usarmy_crew",
+        ):
+            self.assertIn('{Human "%s"' % breed, code)
+            self.assertTrue(
+                (
+                    ROOT.parent / "3261086933/resource/set/breed" / (breed + ".set")
+                ).exists()
+                or breed in (ROOT / "resource/set/multiplayer/units/conquest/inf_nato.set")
+                .read_text(encoding="utf-8"),
+                "breed not resolvable: %s" % breed,
+            )
+
+        # Four crewed humvee instances, each with explicit links, so every one
+        # arrives drivable with the M2HB manned rather than as an empty hull.
+        self.assertEqual(code.count('{Entity "humvee_m2hb_usa"'), 4)
+        self.assertEqual(code.count("{Link "), 8)
+        for host in ("0xaf54", "0xaf57", "0xaf5a", "0xaf5d"):
+            self.assertIn('{%s "driver"}' % host, code)
+            self.assertIn('{%s "gunner2"}' % host, code)
+        # One tag per instance: a crew is bound to one hull, so instances deploy
+        # whole and one at a time.
+        for n in (1, 2, 3, 4):
+            self.assertEqual(code.count('"attack_support_hmmwv%d"' % n), 3)
+
+        # Ids and MIDs stay unique, and must not disturb either neighbouring pool's
+        # block: enemy_defense_templates.inc owns 0xb1xx / MID 9100+ and
+        # faction_support_templates.inc owns 0xb2xx-0xb3xx / MID 9300+.
+        ids = re.findall(r"\{(?:Entity|Human) \"[^\"]*\" (0x[0-9a-f]+)", code)
+        self.assertEqual(len(ids), 84)
+        self.assertEqual(len(set(ids)), 84)
+        mids = re.findall(r"\{MID (\d+)\}", code)
+        self.assertEqual(len(set(mids)), 84)
+        self.assertNotIn("0xaf0", code)
+        self.assertTrue(all(i.startswith("0xaf") for i in ids), "id band drifted")
+        self.assertEqual(code.count("{"), code.count("}"))
+
+    def test_all_cwa_maps_include_the_wave_engine(self) -> None:
+        maps = sorted(
+            p for p in (ROOT / "resource/map/multi").iterdir()
+            if p.is_dir() and p.name.startswith("dcg_[cwa71]_")
+        )
+        self.assertEqual(len(maps), 14)
+        for d in maps:
+            mi = (d / "campaign_capture_the_flag.mi").read_text(encoding="utf-8")
+            with self.subTest(map=d.name):
+                self.assertEqual(mi.count('(include "../attack_support_waves.inc")'), 1)
+                # The engine's real-breed pool goes in the ENTITIES section, and it is
+                # the first thing there now: the retired allied-support experiment's
+                # includes were the original anchors and the deploy script converts
+                # them into these two in place rather than deleting them, so a pristine
+                # map still lands the includes in exactly the same positions.
+                self.assertEqual(
+                    mi.count('(include "../attack_support_templates.inc")'), 1
+                )
+                # read_text normalises CRLF, so match on \n here.
+                self.assertIn(
+                    '(include "../attack_support_templates.inc")\n'
+                    '\t(include "../faction_support_templates.inc")\n'
+                    '\t(include "../enemy_defense_templates.inc")',
+                    mi,
+                )
+                # Nothing from the retired allied-support experiment survives: the two
+                # .inc files are deleted, so a surviving include is a dangling
+                # reference the engine cannot resolve.
+                self.assertNotIn("allied_support", mi)
+                # Engine state declaration on every map, border included: an
+                # undeclared MI var read is a silent zero, and a map without
+                # dcg_vars.inc leaves all four wave engines gated shut.
+                self.assertEqual(mi.count('(include "../dcg_vars.inc")'), 1)
+
+                # Both entry sides. The dynamic campaign swaps attacker/defender
+                # spawns per mission instance - the same map put us on the safe
+                # side one run and in enemy territory the next - so a single
+                # static entry can never be right. Each map carries one waypoint
+                # per side and the engine chooses at runtime.
+                self.assertEqual(mi.count('{"attack_support_entry_a"'), 1)
+                self.assertEqual(mi.count('{"attack_support_entry_b"'), 1)
+                # The pre-split name must be fully gone, not merely rare.
+                self.assertNotIn('{"attack_support_entry"', mi)
+
+                entries = {}
+                for side in ("a", "b"):
+                    wp = re.search(
+                        r'\{"attack_support_entry_%s"\s*\n\s*\{position '
+                        r'(-?[\d.]+) (-?[\d.]+) [\d.]+\}\s*\n\s*\{radius 150\}' % side,
+                        mi,
+                    )
+                    self.assertIsNotNone(
+                        wp, "malformed attack_support_entry_%s block" % side
+                    )
+                    entries[side] = (float(wp.group(1)), float(wp.group(2)))
+
+                tags = dict(
+                    (m.group(2).lower(), re.findall(r'"([^"]*)"', m.group(1)))
+                    for m in re.finditer(
+                        r'\{Tags ((?:"[^"]*"\s*)+)(0x[0-9a-fA-F]+)\}', mi
+                    )
+                )
+                pos = {}
+                for m in re.finditer(
+                    r'\{(?:Entity|Human|Vehicle)\s+"[^"]*"\s+(0x[0-9a-fA-F]+)(.*?)\n\t\}',
+                    mi,
+                    re.S,
+                ):
+                    p = re.search(r"\{Position\s+(-?[\d.]+)\s+(-?[\d.]+)", m.group(2))
+                    if p:
+                        pos[m.group(1).lower()] = (float(p.group(1)), float(p.group(2)))
+
+                def centroid(side):
+                    pts = [pos[e] for e, ts in tags.items() if side in ts and e in pos]
+                    self.assertTrue(pts, "no %s spawns in %s" % (side, d.name))
+                    return (
+                        sum(p[0] for p in pts) / len(pts),
+                        sum(p[1] for p in pts) / len(pts),
+                    )
+
+                cent = {"a": centroid("spawn_a"), "b": centroid("spawn_b")}
+                for side, (x, y) in entries.items():
+                    other = "b" if side == "a" else "a"
+                    own, opp = cent[side], cent[other]
+                    d_own = ((x - own[0]) ** 2 + (y - own[1]) ** 2) ** 0.5
+                    d_opp = ((x - opp[0]) ** 2 + (y - opp[1]) ** 2) ** 0.5
+                    self.assertLess(
+                        d_own, d_opp, "entry_%s is on the wrong side" % side
+                    )
+                    # Each entry sits ON its own spawn centroid, so attack support waves
+                    # arrive at the map-edge spawn area rather than already
+                    # pushed into open ground. EDGE_FACTOR is the tuning knob:
+                    # scale the centroid toward the origin (0,0 is map centre) to
+                    # move the arrival point forward. 1.00 = spawn edge.
+                    self.assertAlmostEqual(x, own[0] * EDGE_FACTOR, places=1)
+                    self.assertAlmostEqual(y, own[1] * EDGE_FACTOR, places=1)
+
+    def test_deployment_patches_exactly_the_cwa_map_family(self) -> None:
+        for marker in (
+            "$MyInvocation.MyCommand.Path",
+            'Join-Path $ScriptDirectory ".."',
+            '$ExpectedBranch = "experiment/attack-mate-slot-proof"',
+            "git -C $RepoRoot branch --show-current",
+            "Never use FirstPlayerId to exclude a",
+            "safeRequire",
+            'resource\\map\\multi\\dcg_vars.inc',
+            'resource\\map\\multi\\attack_support_waves.inc',
+            'resource\\map\\multi\\attack_support_templates.inc',
+            '(include "../attack_support_templates.inc")',
+            # The retired allied-support includes are the insertion anchors for these
+            # two, and a pristine base map has nothing else in either place. So they
+            # are converted in place rather than deleted.
+            '@(\'(include "../allied_support_templates.inc")\', \'(include "../attack_support_templates.inc")\')',
+            '{Human "mp/nato/2022s/usmc_rifleman"',
+            "Expected exactly one wave-templates include in",
+            "Expected exactly one wave-engine include in",
+            "^dcg_\\[cwa71\\]_",
+            "Expected 14 CWA campaign_capture_the_flag.mi files",
+            '(include "../attack_support_waves.inc")',
+            "_attack_support_probe_backups",
+            '{var "user_is_defender$"}',
+            '{var "attack_support_wave_cmd$"}',
+            '{var "attack_support_waves_left$"}',
+            '{var "attack_support_hmmwv_left$"}',
+            "superseded blind startup delay",
+            # New-design guards.
+            '{"attack_support/clock"',
+            '{"attack_support/comp_pzgren"',
+            '{"trigger" {name "attack_support/clock"}}',
+            "ATTACK SUPPORT NEAR CAP DEFER",
+            "{state \"not dead\"}",
+            "must park 84 prototypes",
+            # The player-nation pool has to be shipped, include-injected and depth
+            # checked by the deploy, or the faction waves reference nothing.
+            "resource\\map\\multi\\faction_support_templates.inc",
+            '(include "../faction_support_templates.inc")',
+            "must park 634 prototypes",
+            '{"attack_support_air_left"}',
+            '{"attack_support_air_test"}',
+            "attack_support_air_",
+            "ce_mission_messages.pot",
+            'ally_sup_rusa_line',
+            "must not park a vehicle pool",
+            # Border's inline vars block is converted to the shared include so the
+            # engine gates stop reading silent zeroes there.
+            "BORDER-VARS converted inline vars block in",
+            '(include "../dcg_vars.inc")',
+        ):
+            self.assertIn(marker, self.deploy)
+
+        # The old include name must be stripped from any map an earlier deploy
+        # touched, and the orphaned files removed, or a map loads two wave engines.
+        self.assertIn('(include "../attack_support_probe.inc")', self.deploy)
+        self.assertIn("REMOVED ORPHAN", self.deploy)
+        for orphan in (
+            'resource\\map\\multi\\attack_support_probe.inc',
+            'resource\\map\\multi\\allied_attack_waves.inc',
+            'resource\\script\\multiplayer\\modes\\attack_support_brain.lua',
+        ):
+            self.assertIn(orphan, self.deploy)
+
+        # Deploy script may mention the bad route only as a rejection check.
+        self.assertIn('SimpleMatch "team_a_attack_safe_route"', self.deploy)
+        self.assertNotIn("team_a_attack_safe_route =", self.deploy)
+
+    def test_delimiters_are_balanced(self) -> None:
+        for text in (self.bot_main, self.attack_support):
+            self.assertEqual(text.count("("), text.count(")"))
+
+        for text in (self.waves, self.templates):
+            code = strip_comments(text)
+            self.assertEqual(code.count("{"), code.count("}"))
+            self.assertEqual(code.count("("), code.count(")"))
+
+
+class SupportDiagnosticGateTests(unittest.TestCase):
+    """Every on-screen timer is gated on support_debug$ (diagnostics, default OFF)
+    or support_announce$ (player text, default ON via init). No ungated timers."""
+
+    DEBUG_GATE = '{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}'
+    ANNOUNCE_GATE = (
+        '{condition {type cmp_i} {var "support_announce$"} {op "=="} {value 1}}'
+    )
+    ANY_GATE = re.compile(
+        r'\{condition \{type cmp_i\} \{var "support_(?:debug|announce)\$"\} '
+        r'\{op "=="\} \{value 1\}\}\s*\{"timer"'
+    )
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.engines = {
+            name: strip_comments(
+                (ROOT / ("resource/map/multi/%s.inc" % name)).read_text(encoding="utf-8")
+            )
+            for name in ENGINES
+        }
+        cls.raw_engines = {
+            name: (ROOT / ("resource/map/multi/%s.inc" % name)).read_text(
+                encoding="utf-8"
+            )
+            for name in ENGINES
+        }
+        cls.vars = VARS.read_text(encoding="utf-8")
+        cls.deploy = DEPLOY.read_text(encoding="utf-8")
+        cls.pot = (
+            ROOT
+            / "localizations/default/interface/text/mission/multi/support_events.pot"
+        ).read_text(encoding="utf-8")
+
+    def test_no_engine_ships_an_ungated_on_screen_timer(self) -> None:
+        for name, code in self.engines.items():
+            timers = code.count('{"timer"')
+            gated = len(self.ANY_GATE.findall(code))
+            self.assertGreater(timers, 0, "%s lost its timers entirely" % name)
+            self.assertEqual(
+                timers - gated, 0, "%s has %d ungated timer(s)" % (name, timers - gated)
+            )
+
+    def test_gate_uses_one_consistent_minimal_shape(self) -> None:
+        for name, code in self.engines.items():
+            # Timers are diagnostics only (support_debug$). Announce uses {"talk"}.
+            gates = code.count(self.DEBUG_GATE)
+            self.assertEqual(code.count('{"timer"'), gates, name)
+            self.assertGreaterEqual(code.count('{"default"}'), gates, name)
+
+    def test_debug_toggle_is_declared_and_never_forced_on(self) -> None:
+        self.assertIn('{"support_debug"}', self.vars)
+        for name, code in self.engines.items():
+            self.assertNotIn(
+                '{var "support_debug$"} {op "="}', code, "%s writes debug toggle" % name
+            )
+
+    def test_announce_toggle_is_declared_and_enabled_at_init(self) -> None:
+        self.assertIn('{"support_announce"}', self.vars)
+        # Friendly engines only — enemy engines stay silent (no HUD spam on spawns).
+        for name in ("attack_support_waves", "defense_support_waves"):
+            code = self.engines[name]
+            self.assertIn(
+                '{var "support_announce$"} {op "="} {value 1}',
+                code,
+                "%s never enables announcements" % name,
+            )
+        for name in ("enemy_attack_support", "enemy_defense_support"):
+            self.assertNotIn(
+                "mission/multi/support/",
+                self.raw_engines[name],
+                "%s still has player announce keys" % name,
+            )
+
+    def test_announce_keys_are_localized(self) -> None:
+        keys = [
+            "mission/multi/support/wave_inbound",
+            "mission/multi/support/vehicle_inbound",
+            "mission/multi/support/flank_inbound",
+            "mission/multi/support/waves_exhausted",
+            "mission/multi/support/defense_reinforced",
+            "mission/multi/support/enemy_activity",
+            "mission/multi/support/airborne_inbound",
+            "mission/multi/support/airborne_inbound_nato",
+            "mission/multi/support/airborne_inbound_rusa",
+            "mission/multi/support/airborne_inbound_ukr",
+            "mission/multi/support/airborne_inbound_prc",
+        ]
+        for key in keys:
+            self.assertIn('msgctxt "%s"' % key, self.pot)
+            # filled msgstr (repo convention)
+            idx = self.pot.index('msgctxt "%s"' % key)
+            chunk = self.pot[idx : idx + 400]
+            self.assertRegex(chunk, r'msgstr "[^"]+"')
+
+
+    def test_friendly_announce_uses_talk(self) -> None:
+        """Player lines use stock talk (portrait), not timer HUD spam."""
+        for name in ("attack_support_waves", "defense_support_waves"):
+            code = self.raw_engines[name]
+            self.assertIn('{"talk"', code, name)
+            self.assertIn('{text "mission/multi/support/', code, name)
+            # announce macros must not use timer titles
+            for m in re.finditer(
+                r'\(define "(?:as|ds)_announce_[a-z_]+"[\s\S]*?\n\t\t\t\)',
+                code,
+            ):
+                body = m.group(0)
+                self.assertNotIn('{"timer"', body, m.group(0)[:80])
+
+    def test_engines_reference_only_known_announce_keys(self) -> None:
+        key_re = re.compile(r'(?:title|text) "mission/multi/support/([^"]+)"')
+        known = {
+            "wave_inbound",
+            "vehicle_inbound",
+            "flank_inbound",
+            "waves_exhausted",
+            "defense_reinforced",
+            "enemy_activity",
+            "airborne_inbound",
+            "airborne_inbound_nato",
+            "airborne_inbound_rusa",
+            "airborne_inbound_ukr",
+            "airborne_inbound_prc",
+            "motorized_inbound",
+            "e2_helo_inbound",
+            "e2_para_inbound",
+            "e2_insert_failed",
+        }
+        for name, code in self.raw_engines.items():
+            for match in key_re.finditer(code):
+                self.assertIn(match.group(1), known, name)
+
+    def test_toggle_is_documented_in_every_engine_header_and_the_deploy(self) -> None:
+        for name in ENGINES:
+            header = self.raw_engines[name]
+            head = "\n".join(
+                line for line in header.splitlines() if line.startswith(";")
+            )
+            self.assertIn("support_debug$", head, "%s header undocumented" % name)
+            if name in ("attack_support_waves", "defense_support_waves"):
+                self.assertIn("support_announce$", head, "%s announce undocumented" % name)
+        self.assertIn("Test-SupportTimerGate", self.deploy)
+        self.assertEqual(self.deploy.count("Test-SupportTimerGate $pair[0]"), 2)
+        self.assertIn("support_announce", self.deploy)
+
+
+
+class AttackSupportFlankTests(unittest.TestCase):
+    """Phase 2: flanking arrival pads for friendly attack support only."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.waves = (ROOT / "resource/map/multi/attack_support_waves.inc").read_text(
+            encoding="utf-8"
+        )
+        cls.deploy = DEPLOY.read_text(encoding="utf-8")
+        cls.other = {
+            name: (ROOT / ("resource/map/multi/%s.inc" % name)).read_text(encoding="utf-8")
+            for name in (
+                "defense_support_waves",
+                "enemy_defense_support",
+                "enemy_attack_support",
+            )
+        }
+
+    def test_choose_entry_rolls_and_guards(self) -> None:
+        """Normal infantry support is edge-only; mid-map flank pads are retired."""
+        choose = define_body(self.waves, "as_choose_entry")
+        self.assertNotIn("{type rand}", choose)
+        self.assertNotIn("as_announce_flank", choose)
+        self.assertNotIn("{value 1}", choose)
+        self.assertIn("{value 0}", choose)
+
+    def test_place_one_addresses_flank_pads(self) -> None:
+        """Normal infantry support is edge-only; mid-map flank pads are retired."""
+        choose = define_body(self.waves, "as_choose_entry")
+        self.assertNotIn("{type rand}", choose)
+        self.assertNotIn("as_announce_flank", choose)
+        self.assertNotIn("{value 1}", choose)
+        self.assertIn("{value 0}", choose)
+
+    def test_other_engines_never_reference_flank_pads(self) -> None:
+        """Normal infantry support is edge-only; mid-map flank pads are retired."""
+        choose = define_body(self.waves, "as_choose_entry")
+        self.assertNotIn("{type rand}", choose)
+        self.assertNotIn("as_announce_flank", choose)
+        self.assertNotIn("{value 1}", choose)
+        self.assertIn("{value 0}", choose)
+
+    def test_deploy_generates_flank_geometry(self) -> None:
+        """Normal infantry support is edge-only; mid-map flank pads are retired."""
+        choose = define_body(self.waves, "as_choose_entry")
+        self.assertNotIn("{type rand}", choose)
+        self.assertNotIn("as_announce_flank", choose)
+        self.assertNotIn("{value 1}", choose)
+        self.assertIn("{value 0}", choose)
+
+class AttackSupportIfvTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.waves = (ROOT / "resource/map/multi/attack_support_waves.inc").read_text(
+            encoding="utf-8"
+        )
+        cls.tpl = (
+            ROOT / "resource/map/multi/faction_support_templates.inc"
+        ).read_text(encoding="utf-8")
+        cls.vars = VARS.read_text(encoding="utf-8")
+
+    def test_ifv_entities_and_breeds(self) -> None:
+        for hull in ("bmp2_rus", "bmp2_ukr", "zbl08", "m2a3"):
+            self.assertIn(hull, self.tpl)
+        for crew in (
+            "rus_vehicleman",
+            "ukr_vehicleman",
+            "pla_crew",
+            "usarmy_crew",
+        ):
+            self.assertIn(crew, self.tpl)
+
+    def test_ifv_mid_band_and_ids(self) -> None:
+        mids = [int(x) for x in re.findall(r"\{MID (\d+)\}", self.tpl)]
+        ifv_mids = [m for m in mids if 9700 <= m <= 9731]
+        self.assertEqual(len(ifv_mids), 32)
+        self.assertIn("0xb380", self.tpl)
+
+    def test_ifv_cmd_and_cap(self) -> None:
+        self.assertIn('{"attack_support_ifv_left"}', self.vars)
+        self.assertIn(
+            '{var "attack_support_ifv_left$"} {op "="} {value 1}', self.waves
+        )
+        self.assertIn(
+            '{var "attack_support_wave_cmd$"} {op "="} {value 17}', self.waves
+        )
+        self.assertIn('("as_poke_faction_ifv")', self.waves)
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            self.assertIn("attack_support/ally_%s_ifv" % fac, self.waves)
+
+    def test_ifv_attack_only(self) -> None:
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            parts = self.waves.split('{"attack_support/ally_%s_ifv"' % fac)
+            self.assertGreaterEqual(len(parts), 2, fac)
+            block = parts[1][:900]
+            self.assertIn('{var "user_is_defender$"} {op "=="} {value 0}', block)
+
+
+
+
+class AttackSupportAirmobileTests(unittest.TestCase):
+    """Phase 5 E1: narrative airmobile insert + Day-2 test toggle."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.waves = (ROOT / "resource/map/multi/attack_support_waves.inc").read_text(
+            encoding="utf-8"
+        )
+        cls.vars = VARS.read_text(encoding="utf-8")
+        cls.deploy = DEPLOY.read_text(encoding="utf-8")
+        cls.pot = (
+            ROOT / "localizations/default/interface/text/mission/multi/support_events.pot"
+        ).read_text(encoding="utf-8")
+        cls.other = {
+            n: (ROOT / ("resource/map/multi/%s.inc" % n)).read_text(encoding="utf-8")
+            for n in (
+                "defense_support_waves",
+                "enemy_defense_support",
+                "enemy_attack_support",
+            )
+        }
+
+    def test_air_vars_and_test_toggle(self) -> None:
+        self.assertIn('{"attack_support_air_left"}', self.vars)
+        self.assertIn('{"attack_support_air_test"}', self.vars)
+        self.assertIn('{"attack_support_use_air"}', self.vars)
+        # Runtime default OFF. Explicit E2TestMode is the only forced air path.
+        self.assertIn(
+            '{var "attack_support_air_test$"} {op "="} {value 0}', self.waves
+        )
+        self.assertNotIn(
+            '{var "attack_support_air_test$"} {op "="} {value 1}', self.waves
+        )
+        self.assertIn(
+            '{var "attack_support_air_left$"} {op "="} {value 2}', self.waves
+        )
+        self.assertIn("Legacy forced airmobile test is OFF", self.waves)
+
+    def test_force_opening_airmobile_when_test_on(self) -> None:
+        init = self.waves.split('{"attack_support/init"')[1].split(
+            '{"attack_support/clock"'
+        )[0]
+        self.assertIn('{var "attack_support_wave_cmd$"} {op "="} {value 18}', init)
+        self.assertIn('("as_poke_faction_air")', init)
+        self.assertIn('{"delay" {time 30}}', init)
+
+    def test_air_triggers_and_pads(self) -> None:
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            self.assertIn('{"attack_support/ally_%s_air"' % fac, self.waves)
+        for side in "ab":
+            for n in (1, 2):
+                self.assertIn(
+                    'target_waypoint "attack_support_air_%s%d"' % (side, n),
+                    self.waves,
+                )
+        self.assertIn('("as_announce_airborne")', self.waves)
+        self.assertIn("$AirDepth", self.deploy)
+
+    def test_other_engines_never_reference_air_pads(self) -> None:
+        # Friendly defense shares airmobile LZ pads (parity). Enemy engines must not.
+        for name, code in self.other.items():
+            if name == "defense_support_waves":
+                self.assertIn("attack_support_air_", code, name)
+                continue
+            self.assertNotIn("attack_support_air_", code, name)
+
+    def test_airborne_lines_localized(self) -> None:
+        for key in (
+            "airborne_inbound",
+            "airborne_inbound_nato",
+            "airborne_inbound_rusa",
+            "airborne_inbound_ukr",
+            "airborne_inbound_prc",
+        ):
+            self.assertIn('msgctxt "mission/multi/support/%s"' % key, self.pot)
+
+
+class CeMissionMessagesPotTests(unittest.TestCase):
+    def test_ce_orphan_pot_exists_and_has_entries(self) -> None:
+        pot = (
+            ROOT
+            / "localizations/default/interface/text/mission/multi/ce_mission_messages.pot"
+        )
+        self.assertTrue(pot.is_file())
+        text = pot.read_text(encoding="utf-8")
+        self.assertGreaterEqual(text.count("msgctxt "), 20)
+        self.assertIn("mission/multi/dcg_error01", text)
+
+
+
+class AttackSupportMotorizedInsertTests(unittest.TestCase):
+    """Cmd 19 motorized truck insert: all four factions (PRC = SX2190 passenger)."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.waves = (ROOT / "resource/map/multi/attack_support_waves.inc").read_text(encoding="utf-8")
+        cls.tpl = (ROOT / "resource/map/multi/faction_support_templates.inc").read_text(encoding="utf-8")
+        cls.vars = VARS.read_text(encoding="utf-8")
+        cls.pot = (ROOT / "localizations/default/interface/text/mission/multi/support_events.pot").read_text(encoding="utf-8")
+
+    def test_motor_var_budget_and_announce(self) -> None:
+        self.assertIn('{"attack_support_motor_left"}', self.vars)
+        self.assertIn('{var "attack_support_motor_left$"} {op "="} {value 4}', self.waves)
+        self.assertIn("motorized_inbound", self.pot)
+        self.assertIn('("as_announce_motor")', self.waves)
+
+    def test_motor_triggers_all_four_factions(self) -> None:
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            self.assertIn('{"attack_support/ally_%s_motor"' % fac, self.waves)
+            self.assertIn("ally_sup_%s_motor_hull" % fac, self.tpl)
+
+    def test_motor_entities_and_links(self) -> None:
+        self.assertIn('{Entity "ural"', self.tpl)
+        self.assertIn('{Entity "ural_vsu"', self.tpl)
+        self.assertIn('{Entity "fmtv"', self.tpl)
+        self.assertIn('{Entity "shaanxi_sx2190_passenger"', self.tpl)
+        self.assertIn('{Link 0xb3a1 {0xb3a0 "driver"}}', self.tpl)
+        self.assertIn('{Link 0xb3c2 {0xb3c1 "driver"}}', self.tpl)
+        self.assertIn('{Link 0xb3c4 {0xb3c1 "seat1"}}', self.tpl)
+        self.assertIn('("as_finish_motor")', self.waves)
+        self.assertIn("{mode passengers}", self.waves)
+        self.assertIn("attack_support_motor_hull", self.waves)
+        self.assertIn("attack_support_motor_pax", self.waves)
+
+    def test_motor_inert_on_defense(self) -> None:
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            block = self.waves.split('{"attack_support/ally_%s_motor"' % fac)[1].split('{"attack_support/')[0]
+            self.assertIn('{var "user_is_defender$"} {op "=="} {value 0}', block)
+
+    def test_numbered_packages_match_the_parked_links(self) -> None:
+        """A package is one truck and only the bodies that belong to that truck.
+
+        The live bug this pins shut: two riders {Link}-baked into truck 1 were
+        tagged into package 2, so package 2's claim reached into a truck that was
+        already on the road. Package membership is therefore derived from the
+        {Link} table here, never from a hand-kept count.
+        """
+        parent = {}
+        for child, hull, _slot in re.findall(
+            r'\{Link (0x[0-9a-f]+) \{(0x[0-9a-f]+) "([^"]+)"\}\}', self.tpl
+        ):
+            parent[child] = hull
+        pkg = {}
+        for m in re.finditer(r'\{Tags ([^}]*?)(0x[0-9a-f]+)\}', self.tpl):
+            eid = m.group(2)
+            for tag in re.findall(r'"([^"]+)"', m.group(1)):
+                hit = re.fullmatch(r"ally_sup_(\w+?)_p(\d)_(hull|crew|pax)", tag)
+                if hit:
+                    pkg.setdefault(
+                        (hit.group(1), int(hit.group(2))), {"hull": [], "crew": [], "pax": []}
+                    )[hit.group(3)].append(eid)
+        self.assertEqual(len(pkg), 16, sorted(pkg))
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            pax_total = 0
+            for n in (1, 2, 3, 4):
+                with self.subTest(faction=fac, package=n):
+                    part = pkg[(fac, n)]
+                    self.assertEqual(len(part["hull"]), 1, part)
+                    self.assertEqual(len(part["crew"]), 2, part)
+                    self.assertGreaterEqual(len(part["pax"]), 4, part)
+                    hull = part["hull"][0]
+                    # Crew are always baked into their own hull.
+                    for crew in part["crew"]:
+                        self.assertEqual(parent.get(crew), hull, (fac, n, crew))
+                    # Riders are either baked into THIS hull or parked loose. A body
+                    # baked into a different hull may never appear in this package.
+                    for man in part["pax"]:
+                        self.assertIn(parent.get(man), (hull, None), (fac, n, man))
+                    pax_total += len(part["pax"])
+            # Every parked dismount belongs to exactly one package.
+            self.assertEqual(pax_total, 24, fac)
+            self.assertEqual(self.tpl.count('"ally_sup_%s_motor_pax"' % fac), 24, fac)
+
+    def test_package_claim_takes_the_first_package_still_parked(self) -> None:
+        """Cases are keyed on availability, not on the cursor.
+
+        Two engines run on every mission - Q1 alongside Q4 on an attack mission,
+        Q2 alongside Q3 on a defence one - and a mirror matchup (NATO vs CSA,
+        RUSA vs SOV, both folded to one army value) puts both of them on the same
+        faction's four packages. A cursor-keyed case would hand truck 1 to both.
+        Each claim therefore strips the numbered tags it took, and the switch walks
+        p1..p4 taking the first one still parked.
+        """
+        self.assertIn('{"attack_support_motor_pkg"}', self.vars)
+        self.assertIn('{var "attack_support_motor_pkg$"} {op "="} {value 1}', self.waves)
+        self.assertEqual(
+            self.waves.count('{var "attack_support_motor_pkg$"} {op "+"} {value 1}'), 4
+        )
+        for fac in ("rusa", "ukr", "prc", "nato"):
+            block = self.waves.split('{"attack_support/ally_%s_motor"' % fac)[1].split('{"attack_support/')[0]
+            seen = []
+            for n in (1, 2, 3, 4):
+                with self.subTest(faction=fac, package=n):
+                    gate = ('{condition {type entities} {selector {tag ally_sup_%s_p%d_hull}} '
+                            '{count {op ">="} {value 1}}}' % (fac, n))
+                    self.assertIn(gate, block)
+                    seen.append(block.index(gate))
+                    for kind in ("hull", "crew", "pax"):
+                        # Bare single-tag select on the parked package tag only...
+                        self.assertIn(
+                            '{selector {source advanced} {group {select {tag {tag ally_sup_%s_p%d_%s}}}}}'
+                            % (fac, n, kind),
+                            block,
+                        )
+                        # ...and the claim strips it, so the co-running engine skips it.
+                        self.assertIn('{tag_remove ally_sup_%s_p%d_%s}' % (fac, n, kind), block)
+            self.assertEqual(seen, sorted(seen), "packages must be tried in order")
+            # The cursor may no longer select anything: it is a per-engine counter.
+            self.assertNotIn('{var "attack_support_motor_pkg$"} {op "=="}', block)
+            # Crew ride through the ownership switch or the truck has no driver.
+            self.assertNotIn("{include", block)
+            self.assertNotIn("{state operatable}", block)
+
+    def test_entry_has_a_slot_for_every_body_in_the_widest_package(self) -> None:
+        """11 bodies is the widest batch (hull + 2 crew + 8 baked riders)."""
+        placer = define_body(self.waves, "am_place_at_entry")
+        self.assertGreaterEqual(placer.count('("am_place_one")'), 11)
+
+
+class LinkedBodyPlacementTests(unittest.TestCase):
+    """A {Link}-baked body must never be {"placement"}d on its own.
+
+    The live defect this closes: a claimed motorized package is eleven bodies -
+    hull, two crew and eight riders - and the per-body placement define teleported
+    every one of them to the same entry pad. The links survived (the emit still
+    produced eight dismounts at the flag) but each rider's world transform had been
+    overwritten with that one pad point, so all eight rendered clipped into the
+    driver position until the emit handed them a fresh one. The seat names were
+    never the problem; the placement primitive was. Fix: tag every {Link} child
+    "sup_linked" and exclude that tag from every engine's per-body selector, so the
+    hull is placed and the link carries its occupants.
+    """
+
+    LINKED_TAG = "sup_linked"
+    # The per-body placement define of each engine, keyed by engine file.
+    PLACE_ONE = {
+        "attack_support_waves": "am_place_one",
+        "defense_support_waves": "ds_place_one",
+        "enemy_attack_support": "ea_place_one",
+        "enemy_defense_support": "ed_place_one",
+    }
+    # Template files that carry {Link} lines and therefore carry the tag.
+    LINKED_FILES = (
+        "resource/map/multi/faction_support_templates.inc",
+        "resource/map/multi/attack_support_templates.inc",
+    )
+    # Template files deliberately WITHOUT links - nothing to tag, and a link
+    # appearing there later must be a deliberate decision, not a silent one.
+    UNLINKED_FILES = (
+        "resource/map/multi/enemy_defense_templates.inc",
+        "resource/map/multi/flag_props_templates.inc",
+    )
+
+    # ---- verified seat tables, read off the entity defs (recon 2026-07-30) ----
+    # ural            Code:X entity/codx_vehicle/rus/car/ural/ural.def
+    # ural_vsu        Code:X entity/codx_vehicle/ukr/car/ural_vsu/ural_vsu.def
+    # fmtv            Code:X entity/codx_vehicle/nato/car/fmtv/fmtv.def
+    # shaanxi_...     West-81 entity/-vehicle/prc/car/shaanxi_sx2190_passenger/
+    # All four expose driver + commander from ("crew_2_human") and at least ten
+    # numbered passenger places, so eight riders always fit: there is no overflow
+    # case and no reason to park a rider unlinked.
+    MOTOR_HULLS = ("ural", "ural_vsu", "fmtv", "shaanxi_sx2190_passenger")
+    CREW_PLACES = ("driver", "commander")
+    PAX_PLACES = tuple("seat%d" % n for n in range(1, 9))
+    # Places each hull actually owns. We use the first eight of each.
+    HULL_SEAT_COUNT = {
+        "ural": 10,
+        "ural_vsu": 10,
+        "fmtv": 12,
+        "shaanxi_sx2190_passenger": 15,
+    }
+    # TRAP 1: fmtv declares place seat12 but its model carries bones seat01..seat11
+    # only, so seat12 has no bone. Never link a body there.
+    FMTV_BONELESS_PLACE = "seat12"
+    # TRAP 2: the SX2190's bones are offset by one - place seatN sits on bone
+    # seat<N-1>, zero padded, so place seat1 is bone seat00. The other three trucks
+    # are 1:1 (place seat1 -> bone seat01).
+    SHAANXI_BONE_OFFSET = 1
+    # TRAP 3: the SX2190's passenger placer group is PLURAL. The other three use the
+    # singular. Anything that addresses the group by name has to fold on the hull.
+    SHAANXI_PLACER_GROUP = "passengers"
+    TRUCK_PLACER_GROUP = "passenger"
+
+    # The motorized insert of each engine, as the tags its own sequence runs on:
+    #   engine -> (var prefix, hull tag, OBJECTIVE tag, pax tag, band define, finisher)
+    # The objective tag is the load-bearing entry. Q2 and Q4 shipped with a dedicated,
+    # motor-only tag; Q1 and Q3 ordered against the engine's generic wave-flag tag
+    # (attack_support_flag1 / ea_flag1), which the same engine's infantry finisher clears
+    # at the top of every wave and only re-points about a second later. Nothing
+    # serialises the two - infantry runs off the wave ladder, trucks off motor_clock -
+    # so an infantry finisher landing in that window left the advance order with an empty
+    # target and the hull with no order at all: crew seated, drive clock running, emit on
+    # schedule, truck stationary. All four are dedicated now.
+    MOTOR_OBJECTIVE = {
+        "attack_support_waves": (
+            "attack_support", "attack_support_motor_hull",
+            "attack_support_motor_flag", "attack_support_motor_pax",
+            "as_motor_band", "as_finish_motor"),
+        "defense_support_waves": (
+            "defense_support", "def_sup_motor_hull",
+            "def_sup_motor_flag", "def_sup_motor_pax",
+            "ds_motor_band", "ds_finish_motor"),
+        "enemy_attack_support": (
+            "enemy_attack", "ea_motor_hull",
+            "ea_motor_flag", "ea_motor_pax",
+            "ea_motor_band", "ea_finish_motor"),
+        "enemy_defense_support": (
+            "enemy_defense", "enemy_def_motor_hull",
+            "enemy_def_motor_flag", "enemy_def_motor_pax",
+            "ed_motor_band", "ed_finish_motor"),
+    }
+    # The generic wave-flag tags of the two engines that HAVE an infantry scatter path.
+    # They stay in the file - the infantry finisher owns them - but no motor code may
+    # read or write one. Q2 and Q4 have none: their infantry paths garrison at the
+    # enemy_def_af*/def_sup_af* pads instead, which is why their motor paths were born
+    # with a dedicated objective tag and never carried this defect.
+    SHARED_WAVE_FLAGS = {
+        "attack_support_waves": ("attack_support_flag1", "attack_support_flag2",
+                                 "attack_support_flag3"),
+        "enemy_attack_support": ("ea_flag1", "ea_flag2", "ea_flag3"),
+    }
+    # The template tag each engine's motorized promote step must strip. The packages all
+    # come out of faction_support_templates.inc, whose prototypes are parked under
+    # ally_sup_tpl - not the attack_support_tpl the Q1 infantry pool uses.
+    MOTOR_TEMPLATE_TAG = "ally_sup_tpl"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.raw = {
+            path: (ROOT / path).read_text(encoding="utf-8") for path in cls.LINKED_FILES
+        }
+        cls.code = {path: strip_comments(text) for path, text in cls.raw.items()}
+        cls.engines = {
+            name: strip_comments(
+                (ROOT / ("resource/map/multi/%s.inc" % name)).read_text(encoding="utf-8")
+            )
+            for name in ENGINES
+        }
+        cls.vars = VARS.read_text(encoding="utf-8")
+        cls.lua = ATTACK_SUPPORT.read_text(encoding="utf-8")
+
+    @staticmethod
+    def links(code: str):
+        """(child, parent, place) for every {Link} line, in file order."""
+        return re.findall(
+            r'\{Link (0x[0-9a-f]+) \{(0x[0-9a-f]+) "([^"]+)"\}\}', code
+        )
+
+    @staticmethod
+    def tagged(code: str, tag: str):
+        """Ids whose {Tags ...} line carries `tag`."""
+        out = set()
+        for m in re.finditer(r"\{Tags ([^}]*?)(0x[0-9a-f]+)\}", code):
+            if tag in re.findall(r'"([^"]+)"', m.group(1)):
+                out.add(m.group(2))
+        return out
+
+    # --------------------------------------------------- the verified seat table
+
+    def test_motor_packages_use_the_verified_seat_places(self) -> None:
+        """Crew ride driver/commander; the eight riders ride seat1..seat8.
+
+        This is the table read off the four entity defs, pinned so a future edit
+        cannot quietly move a rider onto a place the hull does not have.
+        """
+        code = self.code["resource/map/multi/faction_support_templates.inc"]
+        entities = dict(
+            (eid, name)
+            for name, eid in re.findall(r'\{Entity "([^"]+)" (0x[0-9a-f]+)', code)
+        )
+        by_hull = {}
+        for child, hull, place in self.links(code):
+            by_hull.setdefault(hull, []).append(place)
+
+        # The p1 motor packages: the only hulls carrying eight seatN riders.
+        motor_hulls = {
+            hull: entities[hull]
+            for hull, places in by_hull.items()
+            if set(self.PAX_PLACES) <= set(places)
+        }
+        self.assertEqual(
+            sorted(motor_hulls.values()), sorted(self.MOTOR_HULLS), motor_hulls
+        )
+        for hull, name in sorted(motor_hulls.items()):
+            with self.subTest(hull=name):
+                places = by_hull[hull]
+                # Exactly ten links: two crew places and eight seats, no repeats.
+                self.assertEqual(len(places), len(set(places)), places)
+                self.assertEqual(
+                    tuple(places), self.CREW_PLACES + self.PAX_PLACES, places
+                )
+                # Every seat used is within the places the hull actually declares.
+                for n in range(1, 9):
+                    self.assertLessEqual(n, self.HULL_SEAT_COUNT[name])
+
+    def test_fmtv_never_uses_the_place_with_no_bone(self) -> None:
+        """fmtv declares seat12 but its model has no seat12 bone (only ..seat11)."""
+        self.assertEqual(self.FMTV_BONELESS_PLACE, "seat12")
+        self.assertNotIn(self.FMTV_BONELESS_PLACE, self.PAX_PLACES)
+        for path, code in self.code.items():
+            for _child, _hull, place in self.links(code):
+                self.assertNotEqual(place, self.FMTV_BONELESS_PLACE, path)
+
+    def test_shaanxi_traps_are_recorded(self) -> None:
+        """Two SX2190 quirks that will bite the next reader of these seat names.
+
+        Neither is expressible in the .inc - a {Link} names the PLACE, and the
+        place names are the same seat1..seat8 as every other truck - so they are
+        pinned here as constants instead of being rediscovered the hard way.
+        """
+        # Bone offset: place seatN sits on bone seat<N-1>, zero padded.
+        self.assertEqual(self.SHAANXI_BONE_OFFSET, 1)
+        self.assertEqual("seat%02d" % (1 - self.SHAANXI_BONE_OFFSET), "seat00")
+        self.assertEqual("seat%02d" % (8 - self.SHAANXI_BONE_OFFSET), "seat07")
+        # Placer group is plural on the SX2190 and singular on the other three.
+        self.assertEqual(self.SHAANXI_PLACER_GROUP, "passengers")
+        self.assertEqual(self.TRUCK_PLACER_GROUP, "passenger")
+        self.assertNotEqual(self.SHAANXI_PLACER_GROUP, self.TRUCK_PLACER_GROUP)
+        # Nothing in our own MI addresses a placer group by name; if that ever
+        # changes it has to fold on the hull, so the plural cannot be assumed away.
+        for name, code in self.engines.items():
+            self.assertNotIn("{group %s}" % self.TRUCK_PLACER_GROUP, code, name)
+            self.assertNotIn("{group %s}" % self.SHAANXI_PLACER_GROUP, code, name)
+
+    # ------------------------------------------------------ the sup_linked tag
+
+    def test_sup_linked_marks_exactly_the_link_children(self) -> None:
+        """Derived from the {Link} table, never hand-kept.
+
+        Every child of a {Link} carries the tag, no other id does, and the parents
+        (the hulls) never carry it - a hull is what the engine still has to place.
+        """
+        total = 0
+        for path in self.LINKED_FILES:
+            code = self.code[path]
+            children = {child for child, _hull, _place in self.links(code)}
+            parents = {hull for _child, hull, _place in self.links(code)}
+            with self.subTest(file=path):
+                self.assertTrue(children)
+                # A hull is never itself linked into something else.
+                self.assertFalse(children & parents)
+                self.assertEqual(self.tagged(code, self.LINKED_TAG), children)
+                # Tag order: inserted immediately before "hidden", tags kept.
+                for child in sorted(children):
+                    self.assertIn('"%s" "hidden" %s}' % (self.LINKED_TAG, child), code)
+            total += len(children)
+        # 197 in the faction pools (all motor packages, IFV, light vehicle, E2 aircrew and
+        # 16 Link-baked helicopter passengers) plus the 8 humvee crew in the
+        # original attack pool.
+        self.assertEqual(total, 205)
+
+    def test_files_without_links_carry_no_linked_tag(self) -> None:
+        for path in self.UNLINKED_FILES:
+            code = strip_comments((ROOT / path).read_text(encoding="utf-8"))
+            with self.subTest(file=path):
+                self.assertEqual(self.links(code), [])
+                self.assertNotIn(self.LINKED_TAG, code)
+
+    def test_sup_linked_is_permanent(self) -> None:
+        """No engine may clear it: a rider is baked in for the whole mission."""
+        for path in sorted(ROOT.joinpath("resource").rglob("*")):
+            if path.suffix.lower() not in (".inc", ".lua", ".mi", ".set"):
+                continue
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            if self.LINKED_TAG not in text:
+                continue
+            with self.subTest(file=str(path.relative_to(ROOT))):
+                self.assertNotIn("{tag_remove %s}" % self.LINKED_TAG, text)
+
+    def test_every_engine_excludes_linked_bodies_from_per_body_placement(self) -> None:
+        clause = "{exclude {tag {tag %s}}}" % self.LINKED_TAG
+        for engine, define in sorted(self.PLACE_ONE.items()):
+            with self.subTest(engine=engine):
+                body = define_body(self.engines[engine], define)
+                self.assertIn(clause, body)
+                # It sits in the advanced-group selector that picks the next body,
+                # beside the already-placed exclusion - not somewhere downstream.
+                self.assertIn("{source advanced}", body)
+                head = body[: body.index("{amount 1}")]
+                self.assertIn(clause, head)
+                # And the placement primitive is still MOVE, never a clone.
+                self.assertIn('{"placement"', body)
+                self.assertNotIn("{clone", body)
+
+    def test_a_claimed_package_still_has_a_body_to_place(self) -> None:
+        """The hull is never a {Link} child, so it is never excluded.
+
+        If it ever became one the whole package would be filtered out of the
+        placement selector and the truck would stay parked at its corner.
+        """
+        code = self.code["resource/map/multi/faction_support_templates.inc"]
+        children = {child for child, _hull, _place in self.links(code)}
+        hulls = set()
+        for m in re.finditer(r"\{Tags ([^}]*?)(0x[0-9a-f]+)\}", code):
+            for tag in re.findall(r'"([^"]+)"', m.group(1)):
+                if re.fullmatch(r"ally_sup_\w+?_p\d_hull", tag):
+                    hulls.add(m.group(2))
+        self.assertEqual(len(hulls), 16, sorted(hulls))
+        self.assertFalse(hulls & children)
+        self.assertFalse(hulls & self.tagged(code, self.LINKED_TAG))
+
+    # -------------------------------------------------- motorized stage mirror
+
+    def test_motor_stage_is_declared_written_reset_and_mirrored(self) -> None:
+        """A truck dispatched but never seen has to be decidable from game.log.
+
+        motor_left says the budget moved; motor_stage says how far that dispatch
+        got. 1 claimed, 2 placed/promoted, 3 driving to the flag, 4 emitted - so a
+        stall is readable as the stage it stopped at, with no on-screen debug.
+        """
+        mirror = self.lua[self.lua.index("local function mirrorEngineState()"):]
+        mirror = mirror[: mirror.index("\nend")]
+        stages = {
+            "attack_support_waves": "attack_support_motor_stage",
+            "defense_support_waves": "defense_support_motor_stage",
+            "enemy_attack_support": "enemy_attack_motor_stage",
+            "enemy_defense_support": "enemy_defense_motor_stage",
+        }
+        for engine, var in sorted(stages.items()):
+            code = self.engines[engine]
+            with self.subTest(engine=engine):
+                self.assertIn('{"%s"}' % var, self.vars)
+                # Reset in init, beside the other motor vars.
+                init = code[: code.index('{"set_i" {var "%s$"} {op "="} {value 1}}' % var)]
+                self.assertIn('{"set_i" {var "%s$"} {op "="} {value 0}}' % var, init)
+                # The last live-moving baseline initializes the stage once. It does
+                # not synthesize a stage-9 failure latch or a later reset.
+                self.assertEqual(
+                    code.count('{"set_i" {var "%s$"} {op "="} {value 0}}' % var), 1
+                )
+                # One claim write per faction trigger, right where the budget drops.
+                self.assertEqual(
+                    code.count('{"set_i" {var "%s$"} {op "="} {value 1}}' % var), 4
+                )
+                # Placed / driving / emitted are written once each, in the shared
+                # motorized finisher, in that order.
+                seen = []
+                for n in (2, 3, 4):
+                    write = '{"set_i" {var "%s$"} {op "="} {value %d}}' % (var, n)
+                    self.assertEqual(code.count(write), 1, n)
+                    seen.append(code.index(write))
+                self.assertEqual(seen, sorted(seen))
+                # Integers only, and log-only: never gated on the debug toggle.
+                self.assertNotIn('{var "%s$"} {op "+"}' % var, code)
+                self.assertNotIn('{var "%s$"} {op "-"}' % var, code)
+                # Mirrored to game.log by the attack support slot, in the per-engine
+                # mirror line rather than the single-sided motor block.
+                self.assertIn('readVar("%s")' % var, mirror)
+                # The budget counter is mirrored beside it, per engine.
+                self.assertIn('readVar("%s")' % var.replace("_stage", "_left"), mirror)
+        # All four quadrants, not just the friendly attack one.
+        self.assertEqual(mirror.count('"motor_stage"'), 4)
+        self.assertEqual(mirror.count('"motor_left"'), 4)
+
+    # ------------------------------------------------ the drive phase itself
+
+    def test_the_drive_phase_is_instrumented_in_every_engine(self) -> None:
+        """motor_stage alone cannot tell a 28s drive from no drive at all.
+
+        Live run 2026-07-30: the passengers appeared at the truck with no drive phase,
+        and motor_stage stepped 0 -> 4 inside a single ~5s mirror window on both active
+        engines. Stage 3 -> 4 looks identical whether the standoff ran or not, so the
+        claim was unfalsifiable from the log. Two integers fix that:
+          <engine>_motor_drive_t  0 -> 4, one step per 7s of the standoff that actually
+                                  elapsed. An emit at drive_t < 4 proves the delay did
+                                  not run.
+          <engine>_motor_band     the hull's distance to the nearest active capture flag at
+                                  the instant before the emit: 1 inside 600, 2 inside
+                                  1500, 3 inside 4000, 0 further out. drive_t 4 with
+                                  band 0 proves the hull never moved.
+        The total standoff is unchanged at 28 seconds, which is the live-proven value.
+
+        RINGS (tightened 2026-07-30). The bands first shipped as 60/150/400 and reported
+        0 on every engine, including a Q4 drive the user watched succeed - so the metric
+        could not distinguish a stationary truck from a moving one, which is exactly the
+        question it exists to answer. Map coordinates are DECIMETRES (the same finding
+        that widened the E2 para release band): 60/150/400 units is 6 m / 15 m / 40 m,
+        and an entry pad sits roughly 5000 units from the nearest flag, so no real drive
+        could ever land inside them. The rings are the decimetre spellings of the metre
+        distances the comment always claimed.
+        """
+        mirror = self.lua[self.lua.index("local function mirrorEngineState()"):]
+        mirror = mirror[: mirror.index("\nend")]
+        prefixes = {
+            "attack_support_waves": ("attack_support", "as_motor_band", "attack_support_motor_flag"),
+            "defense_support_waves": ("defense_support", "ds_motor_band", "def_sup_motor_flag"),
+            "enemy_attack_support": ("enemy_attack", "ea_motor_band", "ea_motor_flag"),
+            "enemy_defense_support": ("enemy_defense", "ed_motor_band", "enemy_def_motor_flag"),
+        }
+        for engine, (pfx, band_define, objective) in sorted(prefixes.items()):
+            code = self.engines[engine]
+            drive = "%s_motor_drive_t" % pfx
+            band = "%s_motor_band" % pfx
+            with self.subTest(engine=engine):
+                # Declared once, in the one var block every managed map pulls in.
+                self.assertIn('{"%s"}' % drive, self.vars)
+                self.assertIn('{"%s"}' % band, self.vars)
+                # Written 0 twice - at init, and again as the package is promoted -
+                # then once per step of the standoff.
+                self.assertEqual(
+                    code.count('{"set_i" {var "%s$"} {op "="} {value 0}}' % drive), 2
+                )
+                for step in (1, 2, 3, 4):
+                    self.assertEqual(
+                        code.count(
+                            '{"set_i" {var "%s$"} {op "="} {value %d}}' % (drive, step)
+                        ),
+                        1,
+                        step,
+                    )
+                # Monotonic, in order, integers only, never a var-to-var copy.
+                seen = [
+                    code.index('{"set_i" {var "%s$"} {op "="} {value %d}}' % (drive, n))
+                    for n in (1, 2, 3, 4)
+                ]
+                self.assertEqual(seen, sorted(seen))
+                self.assertNotIn('{var "%s$"} {op "+"}' % drive, code)
+                self.assertNotIn('{var "%s$"} {op "="} {var ' % drive, code)
+                self.assertNotIn('{var "%s$"} {op "="} {var ' % band, code)
+                # The 28s standoff is four instrumented 7s steps now, never one block.
+                self.assertNotIn('{"delay" {time 28}}', code)
+                stage3 = code.index(
+                    '{"set_i" {var "%s_motor_stage$"} {op "="} {value 3}}' % pfx
+                )
+                emit = code.index('{"emit"', stage3)
+                standoff = code[stage3:emit]
+                self.assertEqual(standoff.count('{"delay" {time 7}}'), 4)
+                for step in (1, 2, 3, 4):
+                    self.assertIn(
+                        '{"set_i" {var "%s$"} {op "="} {value %d}}' % (drive, step),
+                        standoff,
+                    )
+                # The distance band is a bounded near-check against the live capture-flag
+                # set at the last moment before emit, expressed as an integer and never
+                # as a coordinate or a runtime-added objective tag.
+                self.assertIn('("%s")' % band_define, standoff)
+                probe = define_body(code, band_define)
+                self.assertEqual(probe.count("{type near}"), 3)
+                self.assertEqual(
+                    probe.count("{near_to {ignore_captured_by_user 0} {tag %s}}" % objective), 3
+                )
+                self.assertNotIn(
+                    "{near_to {ignore_captured_by_user 0} {tag flag}}", probe
+                )
+                for value, distance in ((1, 600), (2, 1500), (3, 4000)):
+                    self.assertIn(
+                        '{"set_i" {var "%s$"} {op "="} {value %d}}' % (band, value), probe
+                    )
+                    self.assertIn("{distance %d}" % distance, probe)
+                # The metre-scale spellings are gone: a ring of 60 units is 6 metres and
+                # nothing this engine dispatches ever gets that close before the emit.
+                for stale in (60, 150, 400):
+                    self.assertNotIn("{distance %d}" % stale, probe)
+                # Both are mirrored to game.log beside the stage they disambiguate.
+                self.assertIn('readVar("%s")' % drive, mirror)
+                self.assertIn('readVar("%s")' % band, mirror)
+        # All four quadrants report both, exactly once each.
+        self.assertEqual(mirror.count('"motor_drive_t"'), 4)
+        self.assertEqual(mirror.count('"motor_band"'), 4)
+        # And the deploy refuses a build that drops either half.
+        deploy = DEPLOY.read_text(encoding="utf-8")
+        self.assertIn("MOTORIZED INSERT: THE DRIVE PHASE IS PART OF THE CONTRACT", deploy)
+        self.assertIn("is missing drive-clock step", deploy)
+        self.assertIn("is missing the truck distance-to-objective band", deploy)
+        self.assertIn("still uses one opaque 28s standoff", deploy)
+
+    def test_the_emit_still_follows_the_proven_ordering(self) -> None:
+        """The hull drives first; linked riders become infantry only after emit."""
+        source_tags = {
+            "attack_support_waves": "attack_support_src",
+            "defense_support_waves": "def_sup_src",
+            "enemy_attack_support": "ea_src",
+            "enemy_defense_support": "enemy_def_src",
+        }
+        for engine, (pfx, hull, flag, pax, _band, finisher) in sorted(
+            self.MOTOR_OBJECTIVE.items()
+        ):
+            code = define_body(self.engines[engine], finisher)
+            with self.subTest(engine=engine):
+                pick = code.index("{tag_add %s}" % flag)
+                move = code.index("{action move}", pick)
+                stage3 = code.index(
+                    '{"set_i" {var "%s_motor_stage$"} {op "="} {value 3}}' % pfx
+                )
+                emit = code.index('{"emit"', stage3)
+                stage4 = code.index(
+                    '{"set_i" {var "%s_motor_stage$"} {op "="} {value 4}}' % pfx
+                )
+                pax_source = code.index("{tag_add %s}" % source_tags[engine], stage4)
+                pax_order = code.index("{action advance}", pax_source)
+                self.assertLess(pick, move)
+                self.assertLess(move, stage3)
+                # Last live-moving ordering: drive, timed transit, emit, then stage 4.
+                self.assertLess(stage3, emit)
+                self.assertLess(emit, stage4)
+                self.assertLess(stage4, pax_source)
+                self.assertLess(pax_source, pax_order)
+                self.assertNotIn("{action advance}", code[:emit])
+                emit_block = block_at(code, emit)
+                self.assertIn("{tag %s}" % hull, emit_block)
+                self.assertIn("{type vehicle}", emit_block)
+                self.assertIn("{state inhabited}", emit_block)
+                self.assertIn("{mode passengers}", emit_block)
+                pax_action = block_at(code, code.rindex('{"action"', pax_source, pax_order + 1))
+                self.assertIn("{tag %s}" % pax, pax_action)
+                self.assertIn("{action advance}", pax_action)
+                self.assertIn("{tag %s}" % flag, pax_action)
+
+    def test_the_motor_objective_tag_is_dedicated_in_every_engine(self) -> None:
+        """The flag a truck is ordered to is written by the motorized path and nothing else.
+
+        Live run 2026-07-30, NATO on a human-ATTACK mission: the Q1 truck reached stage 4
+        with drive_t 4 and never moved. Q4 - the same sequence, live-proven - drove and
+        emitted correctly on the same missions. The divergence is this tag. Q1 picked its
+        objective into attack_support_flag1 and Q3 into ea_flag1, the generic wave-flag
+        tags their own infantry finishers (am_finish_deploy / ea_finish) clear at the top
+        of EVERY wave and only re-point about a second later. The advance order sits 0.1s
+        after the pick and the pax order 31s after it, and nothing serialises the two
+        paths, so an infantry wave landing in that hole resolves the order against an
+        empty target: the hull is left with no order at all, which is indistinguishable
+        from a truck that was never told to drive. Same class as the deploy-tag collision.
+
+        The pin: each engine's objective tag appears ONLY inside that engine's motorized
+        finisher and its band probe, and the motorized finisher names no generic wave flag.
+        """
+        for engine, cfg in sorted(self.MOTOR_OBJECTIVE.items()):
+            _pfx, _hull, flag, _pax, band_define, finisher = cfg
+            code = self.engines[engine]
+            body = define_body(code, finisher)
+            probe = define_body(code, band_define)
+            with self.subTest(engine=engine):
+                # Dedicated: every occurrence in the engine is in one of those two forms.
+                self.assertEqual(code.count(flag), body.count(flag) + probe.count(flag), flag)
+                self.assertEqual(probe.count(flag), 3, flag)
+                self.assertEqual(
+                    probe.count("{near_to {ignore_captured_by_user 0} {tag flag}}"), 0
+                )
+                # Cleared then re-picked by the motorized path itself, once each.
+                self.assertEqual(body.count("{tag_remove %s}" % flag), 1)
+                self.assertEqual(body.count("{tag_add %s}" % flag), 1)
+                # And used as the target of exactly two orders: the hull, then the pax.
+                self.assertEqual(
+                    body.count(
+                        "{target {ignore_captured_by_user 0} {tag %s}}" % flag
+                    ),
+                    2,
+                )
+                # The pick is a shuffled draw from the LIVE flags only, in the advanced
+                # form - never a simple selector carrying a state decoration, which this
+                # repo has twice watched match nothing at all.
+                pick = body.index("{tag_add %s}" % flag)
+                selector = body[body.rindex('{"entity_state"', 0, pick):pick]
+                self.assertIn("{select {tag {tag flag}}}", selector)
+                self.assertIn("{exclude {state {state inactive}}}", selector)
+                self.assertIn("{sort {type shuffle}}", selector)
+                self.assertIn("{amount 1}", selector)
+                self.assertNotIn("{state operatable}", body)
+                self.assertNotIn("{state operatable}", probe)
+                # No generic wave flag is named anywhere in the motorized path.
+                for shared in self.SHARED_WAVE_FLAGS.get(engine, ()):
+                    self.assertNotIn(shared, body, shared)
+                    self.assertNotIn(shared, probe, shared)
+                # The promote step strips the template tag the motor packages actually
+                # carry. Q1 stripped only the infantry pool's marker, so a dispatched
+                # truck kept a parked-prototype tag it should have shed.
+                head = body[: body.index("{tag_add %s}" % flag)]
+                self.assertIn("{tag_remove %s}" % self.MOTOR_TEMPLATE_TAG, head)
+
+    def test_the_band_measures_against_the_flag_the_hull_was_ordered_to(self) -> None:
+        """The band and hull MOVE target must reference the same dedicated flag."""
+        for engine, cfg in sorted(self.MOTOR_OBJECTIVE.items()):
+            _pfx, hull, flag, _pax, band_define, finisher = cfg
+            code = self.engines[engine]
+            probe = define_body(code, band_define)
+            body = define_body(code, finisher)
+            with self.subTest(engine=engine):
+                self.assertEqual(
+                    probe.count("{units {ignore_captured_by_user 0} {tag %s}}" % hull), 3
+                )
+                self.assertEqual(
+                    probe.count("{near_to {ignore_captured_by_user 0} {tag %s}}" % flag), 3
+                )
+                self.assertNotIn("{prop human}", probe)
+                self.assertNotIn("{type human}", probe)
+                emit = body.index('{"emit"')
+                move = body.index("{action move}")
+                self.assertLess(move, emit)
+                self.assertNotIn("{action advance}", body[:emit])
+                move_block = block_at(body, body.rindex('{"action"', 0, move + 1))
+                self.assertIn("{tag %s}" % hull, move_block)
+                self.assertIn("{tag %s}" % flag, move_block)
+                pax_advance = body.index("{action advance}", emit)
+                pax_block = block_at(body, body.rindex('{"action"', emit, pax_advance + 1))
+                self.assertIn("{tag %s}" % flag, pax_block)
+                self.assertEqual(body.count('("%s")' % band_define), 1)
+                self.assertLess(body.index('("%s")' % band_define), emit)
+
+    def test_one_package_cannot_disarm_another(self) -> None:
+        """Each motor package leaves the shared infantry namespace before waiting."""
+        packages = {
+            "attack_support_waves": (
+                "attack_support_deploy", "attack_support_motor_transfer",
+                "attack_support_motor_hull", "attack_support_motor_pax",
+                "attack_support_motor_crew", "as_own_motor_to_support",
+                "attack_support_src", "as_finish_motor"),
+            "defense_support_waves": (
+                "def_sup_deploy", "def_sup_motor_transfer",
+                "def_sup_motor_hull", "def_sup_motor_pax",
+                "def_sup_motor_crew", "ds_own_motor_to_defenderbot",
+                "def_sup_src", "ds_finish_motor"),
+            "enemy_attack_support": (
+                "ea_deploy", "ea_motor_transfer",
+                "ea_motor_hull", "ea_motor_pax", "ea_motor_crew",
+                "ea_own_motor_to_enemy", "ea_src", "ea_finish_motor"),
+            "enemy_defense_support": (
+                "enemy_def_deploy", "enemy_def_motor_transfer",
+                "enemy_def_motor_hull", "enemy_def_motor_pax",
+                "enemy_def_motor_crew", "ed_own_motor_to_enemy",
+                "enemy_def_src", "ed_finish_motor"),
+        }
+        for engine, cfg in sorted(packages.items()):
+            deploy, transfer, hull, pax, crew, owner, source_tag, finisher = cfg
+            code = self.engines[engine]
+            body = define_body(code, finisher)
+            with self.subTest(engine=engine):
+                first_delay = body.index('{"delay"')
+                head = body[:first_delay]
+                for mark in (hull, pax, crew):
+                    mark_at = head.index("{selector {tag %s}}" % mark)
+                    scoped = head[mark_at:mark_at + 240]
+                    self.assertIn("{tag_remove %s}" % deploy, scoped)
+                    self.assertIn("{tag_add %s}" % transfer, scoped)
+                self.assertEqual(head.count("{tag_remove %s}" % deploy), 3)
+                self.assertEqual(head.count("{tag_add %s}" % transfer), 3)
+                owner_body = define_body(code, owner)
+                self.assertIn("{tag %s}" % transfer, owner_body)
+                self.assertNotIn("{tag %s}" % deploy, owner_body)
+                emit = body.index('{"emit"')
+                self.assertNotIn("{tag_add %s}" % source_tag, body[:emit])
+                self.assertIn("{tag_add %s}" % source_tag, body[emit:])
+
+    def test_delimiters_are_balanced(self) -> None:
+        touched = list(self.LINKED_FILES) + [
+            "resource/map/multi/%s.inc" % name for name in ENGINES
+        ] + ["resource/map/multi/dcg_vars.inc"]
+        for path in touched:
+            code = strip_comments((ROOT / path).read_text(encoding="utf-8"))
+            with self.subTest(file=path):
+                self.assertEqual(code.count("{"), code.count("}"))
+                self.assertEqual(code.count("("), code.count(")"))
+        self.assertEqual(self.lua.count("("), self.lua.count(")"))
+
+
+if __name__ == "__main__":
+    unittest.main()

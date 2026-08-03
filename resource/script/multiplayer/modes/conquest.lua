@@ -51,6 +51,8 @@ local UnitSpawnWaitTime = 1.0 * 60000 -- 1:30min (ms)
 
 -- Time delay for units to get a new move order after spawn move order. Loops.
 local OrderRotationPeriod = 1.75 * 60000 -- 1:45 min (ms)
+-- Re-issue a move shortly after spawn in case the first order is skipped/eaten.
+local SpawnOrderNudgeDelay = 5 * 1000 -- 5s
 
 botDefender = false
 botDifficultyModifier = 0
@@ -88,6 +90,34 @@ local function publishConquestIds()
 	if firstEnemyId > 0 then BotApi.Scene:SetVar("id_1st_enemy", firstEnemyId) end
 	if defenderBotId > 0 then BotApi.Scene:SetVar("id_defenderbot", defenderBotId) end
 	if firstPlayerId > 0 then BotApi.Scene:SetVar("id_1st_player", firstPlayerId) end
+end
+
+-- Attack-side scripts need the physical side the enemy bot spawned on: the
+-- dynamic campaign swaps attacker/defender spawns per mission instance, so a
+-- static entry waypoint is never correct. utility.lua derives spawnSide from
+-- BotApi.Instance.spawnPointName ("a1" -> "a"). One writer only: this is
+-- published from the mission-authority branch alongside the perspective vars.
+-- Must be a sibling of publishConquestIds (NOT nested). Nested scope made the
+-- setVarsInMissionScript call resolve to nil and hard-crash enemy bot init.
+local function publishEnemySpawnSide()
+	local side = spawnSide
+	if type(side) ~= "string" or side == "" then
+		local sp = BotApi.Instance and BotApi.Instance.spawnPointName
+		if type(sp) == "string" and #sp > 0 then
+			side = string.sub(sp, 1, 1)
+		end
+	end
+	local sideNum = 0
+	if side == "a" or side == "A" then
+		sideNum = 1
+	elseif side == "b" or side == "B" then
+		sideNum = 2
+	end
+	-- Always publish a number (never nil) so Scene:SetVar cannot native-fault.
+	BotApi.Scene:SetVar("enemy_spawnside", sideNum)
+	if printDebug then
+		print("Print: enemy_spawnside published", sideNum, "rawSide", tostring(side), "spawnPoint", tostring(BotApi.Instance and BotApi.Instance.spawnPointName))
+	end
 end
 
 local DifficultySettings = {
@@ -152,6 +182,7 @@ local function setVarsInMissionScript()
 
 	-- Everything below is enemy-bot perspective and must have one writer.
 	BotApi.Scene:SetVar("user_is_defender", botDefender and 0 or 1)
+	publishEnemySpawnSide()
 
 	local botNation = BotApi.Instance.army
 	local botDifficulty = BotApi.Instance.difficulty
@@ -214,8 +245,10 @@ local function setVarsInMissionScript()
 	return true
 end
 
--- Each order tick: 50% SeekAndDestroy / 50% CaptureFlag.
+-- Each order tick: 50% scatter flank / 50% weighted CaptureFlag.
+-- Flank = real path order (uniform non-owned flag, or waypoint) so squads leave spawn and spread.
 local FlankOrderChance = 0.50
+local FlankWaypointChance = 0.30
 local waveSpawnPossible = true
 local waveSpawnActive = true
 local waveUnitCount = 0
@@ -310,27 +343,6 @@ end
         -- return selectRandomDivision()-- selectDivisionWithProbability(divisionsWithProbability)
     -- end
 -- end
-
--- 进阶切换功能
-local function advancedDivisionSwitch(currentDivision, waveNumber)
-    if currentDivision == "inf_div" and waveNumber == 5 then
-        -- local possibleDivisions = {
-            -- {name = "art_div", probability = 70},  -- 70% 概率
-            -- {name = "mech_div", probability = 30}, -- 30% 概率
-        -- }
-        local possibleDivisions = {"mech_div", "inf_div"}
-        return possibleDivisions[math.random(#possibleDivisions)]-- return selectDivisionWithProbability(possibleDivisions)
-    elseif currentDivision == "tank_div" and waveNumber == 5 then
-        -- local possibleDivisions = {
-            -- {name = "heavytank_div", probability = 60}, -- 60% 概率
-            -- {name = "unique_div", probability = 40},   -- 40% 概率
-        -- }
-        local possibleDivisions = {"heavytank_div", "tank_div"}
-        return possibleDivisions[math.random(#possibleDivisions)]-- return selectDivisionWithProbability(possibleDivisions)
-    else
-        return selectRandomDivision()-- return selectDivisionWithProbability(divisionsWithProbability)
-    end
-end
 
 -- 示例：初始随机选择师
 local currentDivision = selectRandomDivision()  -- 初始随机选择师
@@ -777,30 +789,51 @@ local function retryMissionIdentityOnce()
 	if printDebug then print("DCG identity retry", "playerId", myId, "firstEnemyId", firstEnemyId, "defenderBotId", defenderBotId, "firstPlayerId", firstPlayerId) end
 end
 
-function OnGameQuant()
-	retryMissionIdentityOnce()
-	TrySpawnUnit()
-
-	local waypoints = BotApi.Scene.Waypoints
-	if #waypoints == 0 then
-		for i, squad in pairs(BotApi.Scene.Squads) do
-			if not Context.SquadTimers[squad] then
-				SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
-			end
-		end
-	end
+-- Attack missions often never raise PrepTimeOver. Publish prep_inform once the
+-- human is confirmed attacker so MI attack probes are not gated forever.
+-- NOTE: must stay ABOVE OnGameQuant — a local defined after its caller resolves
+-- to a nil global at call time and hard-crashes the bot on its first quant.
+-- botDefender is THIS BOT's role: true means the bot defends, so the human is the
+-- ATTACKER (SetVar("user_is_defender", botDefender and 0 or 1) right above, and
+-- OnPrepTimeOver's "when player was defending, bot is attacker" branch uses
+-- `not botDefender`). The early return therefore has to fire on `not botDefender`:
+-- that is the human-DEFENCE mission, which runs a real 480s preparation phase and
+-- must wait for OnPrepTimeOver. Publishing prep_inform there at the first quant
+-- made every prep_inform consumer treat prep as already over at t=0 - it fired
+-- dcg_script's dcg2/userdefend/prep_end during the player's own placement, and it
+-- would let the defence-mission wave engines deploy into the prep phase.
+local attackPrepInformPublished = false
+local function ensureAttackPrepInform()
+	if attackPrepInformPublished then return end
+	if not botDefender then return end -- bot is attacker => human is defender; wait for real prep
+	if not isMissionAuthority or not isMissionAuthority() then return end
+	BotApi.Scene:SetVar("prep_inform", 1)
+	attackPrepInformPublished = true
+	if printDebug then print("Print: prep_inform set to 1 (human attack / no defense prep).") end
 end
 
-function GotoNextWaypoint(squad)
-	local waypoints = BotApi.Scene.Waypoints
-	BotApi.Commands:CaptureFlag(squad, waypoints[math.random(#waypoints)]) --captureflag is basically gothereandattack
-	if printDebug then print("Print: #captureFlag call inside GoToNextWaypoint") end
+function OnGameQuant()
+	retryMissionIdentityOnce()
+	ensureAttackPrepInform()
+	TrySpawnUnit()
+
+	-- Always keep order timers (waypoint maps used to skip this and only got a one-shot move).
+	for i, squad in pairs(BotApi.Scene.Squads) do
+		if not Context.SquadTimers[squad] then
+			SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
+		end
+	end
 end
 
 function OnWaypoint(args)
 	if not args or not args.squadId then return end
 	if not BotApi.Scene:IsSquadExists(args.squadId) then return end
-	GotoNextWaypoint(args.squadId)
+	-- Hand off to CaptureFlag loop so flanks/scatter apply after first waypoint.
+	if not Context.SquadTimers[args.squadId] then
+		SetSquadOrder(CaptureFlag, args.squadId, OrderRotationPeriod)
+	else
+		CaptureFlag(args.squadId)
+	end
 end
 
 -- NOTE: Returns true if squad tagged "_lua_mi" / "repairing" / alert tags.
@@ -824,11 +857,46 @@ function IsSquadInScript(squad)
 	return false
 end
 
+-- MI/repair only — alert must not block a forced spawn kick.
+local function IsSquadReserved(squad)
+	return BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing")
+end
+
 	-- NOTE: Returns true if squad tagged "_lua_ignore" for general ignore.
 function IsSquadToIgnore(squad)
 	if BotApi.Scene:IsSquadTagged(squad, "_lua_ignore") then
 		return true
 	end
+end
+
+-- Scatter move: ~30% waypoint / ~70% uniform non-owned flag (enemy+neutral); S&D only if nothing else.
+-- Ignores priority weighting so flanks fan out instead of bunching on the same objective.
+local function IssueScatterOrder(squad, flags, logTag)
+	local waypoints = BotApi.Scene.Waypoints
+	local hasWaypoints = waypoints and #waypoints > 0
+
+	local candidates = {}
+	for _, f in pairs(flags) do
+		if f.owner ~= team then
+			table.insert(candidates, f)
+		end
+	end
+
+	local preferWaypoint = hasWaypoints and (#candidates == 0 or math.random() <= FlankWaypointChance)
+	if preferWaypoint then
+		local wp = waypoints[math.random(#waypoints)]
+		if printDebug then print("Print:", logTag, "waypoint", wp, "squad", squad, "Player#", BotApi.Instance.playerId) end
+		return BotApi.Commands:CaptureFlag(squad, wp)
+	end
+
+	if #candidates > 0 then
+		local pick = candidates[math.random(#candidates)]
+		if printDebug then print("Print:", logTag, "flag", pick.name, "squad", squad, "Player#", BotApi.Instance.playerId) end
+		return BotApi.Commands:CaptureFlag(squad, pick.name)
+	end
+
+	if printDebug then print("Print:", logTag, "S&D fallback squad", squad, "Player#", BotApi.Instance.playerId) end
+	BotApi.Commands:SeekAndDestroy(squad)
 end
 
 function CaptureFlag(squad)
@@ -846,15 +914,15 @@ function CaptureFlag(squad)
             if printDebug then print("Print: [see_enemy] seek by squad ", squad, "Player#", BotApi.Instance.playerId) end
             BotApi.Commands:SeekAndDestroy(squad)
         else
-            if printDebug then print("Print: [see_enemy] donothing by squad ", squad, "Player#", BotApi.Instance.playerId) end
+            -- Was idle for full OrderRotationPeriod; give a real path instead.
+            IssueScatterOrder(squad, flags, "[see_enemy] scatter")
         end
         return
     end
 
-    -- 50/50 S&D vs CaptureFlag every order tick.
+    -- 50/50 scatter flank vs weighted CaptureFlag every order tick.
     if math.random() <= FlankOrderChance then
-        if printDebug then print("Print: [flank order] S&D squad", squad, "Player#", BotApi.Instance.playerId) end
-        BotApi.Commands:SeekAndDestroy(squad)
+        IssueScatterOrder(squad, flags, "[flank order]")
         return
     end
 
@@ -873,6 +941,25 @@ local function IsSquadActive(squad)
 	return squad ~= nil and BotApi.Scene:IsSquadExists(squad)
 end
 
+local function ScheduleSpawnOrderNudge(squad)
+	if Context.SpawnSeekTimer[squad] then
+		BotApi.Events:KillQuantTimer(Context.SpawnSeekTimer[squad])
+		Context.SpawnSeekTimer[squad] = nil
+	end
+	Context.SpawnSeekTimer[squad] = BotApi.Events:SetQuantTimer(function()
+		Context.SpawnSeekTimer[squad] = nil
+		if not IsSquadActive(squad) then return end
+		if IsSquadReserved(squad) then return end
+		if printDebug then print("Print: [spawn nudge] squad", squad, "Player#", BotApi.Instance.playerId) end
+		-- Force a real path (ignore alert/ignore tags for this kick only).
+		local flags = {}
+		for i, flag in pairs(BotApi.Scene.Flags) do
+			table.insert(flags, {id = i, name = flag.name, priority = getDefaultFlagPriority(flag), owner = flag.occupant})
+		end
+		IssueScatterOrder(squad, flags, "[spawn nudge]")
+	end, SpawnOrderNudgeDelay)
+end
+
 function OnGameSpawn(args)
     if not args or not args.squadId then return end
     local squad = args.squadId
@@ -887,13 +974,11 @@ function OnGameSpawn(args)
         SelectAiSpawnStrategy()
     end
 
-    local waypoints = BotApi.Scene.Waypoints
-    if #waypoints == 0 then
-        SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
-    else
-        GotoNextWaypoint(squad)
-    end
-
+	-- Always register the CaptureFlag order loop (scatter uses waypoints when present).
+	-- Waypoint maps used to get a single move order at spawn and never re-order,
+	-- which left squads standing at the spawn line for the rest of the match.
+	SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
+	ScheduleSpawnOrderNudge(squad)
 end
 
 -- v1.064+: prep phase ended (timer or Skip Preparation). Mission scripts key off prep_inform.

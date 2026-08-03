@@ -4,7 +4,6 @@
 		{Constrain none}
 		{Placer
 			{State "sandbags" {Unlinked}}
-			{State "ammo" {Unlinked}}
 		}
 		{Extender "map_point"
 			{name f1}
@@ -155,7 +154,6 @@
 		{Constrain none}
 		{Placer
 			{State "sandbags" {Unlinked}}
-			{State "ammo" {Unlinked}}
 		}
 		{Extender "map_point"
 			{name f2}
@@ -2025,7 +2023,24 @@
 		}
 		{FsmState "snipe"}
 	}
-	(include "../allied_support_templates.inc")
+	{Entity "flagpoint_ammo" 0xfd00
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd01
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Link 0xfd00 {0x802f "ammo"}}
+	{Link 0xfd01 {0x8013 "ammo"}}
+	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "switch_left" 0x381c}
 	{Tags "switch_right" 0x2c01}
 	{Tags "keep_places_without_door" 0x60a9}
@@ -3733,12 +3748,19 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
+			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
+			(include "../defense_support_waves.inc")
+			(include "../enemy_attack_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"allied_support_entry"
+			{"attack_support_entry_a"
 				{position -8198.70 -151.56 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b"
+				{position 5261.03 82.70 0.00}
 				{radius 150}
 			}
 			{"0"

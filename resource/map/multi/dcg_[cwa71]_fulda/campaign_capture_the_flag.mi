@@ -2,9 +2,6 @@
 	{Entity "flag_point_campaign_1" 0xa000
 		{Position -1108.23 1905.06}
 		{xform zl 36.06}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f1}
 			{zone
@@ -26,9 +23,6 @@
 	{Entity "flag_point_campaign_2" 0xe000
 		{Position -145.42 -852.31}
 		{xform zl 82}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f2}
 			{zone
@@ -50,9 +44,6 @@
 	{Entity "flag_point_campaign_3" 0xb000
 		{Position 1999.56 374.79}
 		{xform zl -6.93}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f3}
 			{zone
@@ -74,9 +65,6 @@
 	{Entity "flag_point_campaign_4" 0xd000
 		{Position -1525.5 -3085.78}
 		{xform zl 24.01}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f4}
 			{zone
@@ -2175,7 +2163,38 @@
 	{Link 0x8032 {0xc65 "4"}}
 	{Link 0x8039 {0x3325 "4"}}
 	{Link 0xf00b {0x4cf2 "church_c1" "21"}}
-	(include "../allied_support_templates.inc")
+	{Entity "flagpoint_ammo" 0xfd00
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd01
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd02
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd03
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Link 0xfd00 {0xa000 "ammo"}}
+	{Link 0xfd01 {0xe000 "ammo"}}
+	{Link 0xfd02 {0xb000 "ammo"}}
+	{Link 0xfd03 {0xd000 "ammo"}}
+	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "keep_places_without_door" 0x405a}
 	{Tags "keep_places_without_door" 0x4142}
 	{Tags "keep_places_without_door" 0x4178}
@@ -3990,12 +4009,19 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
+			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
+			(include "../defense_support_waves.inc")
+			(include "../enemy_attack_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"allied_support_entry"
-				{position -447.29 8971.17 0.00}
+			{"attack_support_entry_a"
+				{position -1971.15 8970.91 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b"
+				{position -455.40 -8614.81 0.00}
 				{radius 150}
 			}
 			{"0"

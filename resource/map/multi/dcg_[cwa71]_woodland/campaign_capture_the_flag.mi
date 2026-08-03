@@ -2,9 +2,6 @@
 	{Entity "flag_point_campaign_1" 0x8000
 		{Position 28.92 54.84}
 		{xform zl 87.14}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f1}
 			{zone
@@ -26,9 +23,6 @@
 	{Entity "flag_point_campaign_2" 0xc000
 		{Position -374.33 -3705.34}
 		{xform zl 131.35}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f2}
 			{zone
@@ -50,9 +44,6 @@
 	{Entity "flag_point_campaign_3" 0xa000
 		{Position 45.78 4162.15}
 		{xform zl 151.88}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f3}
 			{zone
@@ -1460,7 +1451,31 @@
 	}
 	{Link 0x8027 {0x4623 "1"}}
 	{Link 0x803d {0x385f "6"}}
-	(include "../allied_support_templates.inc")
+	{Entity "flagpoint_ammo" 0xfd00
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd01
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd02
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Link 0xfd00 {0x8000 "ammo"}}
+	{Link 0xfd01 {0xc000 "ammo"}}
+	{Link 0xfd02 {0xa000 "ammo"}}
+	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "fpc1" 0x8000}
 	{Tags "fpc2" 0xc000}
 	{Tags "fpc3" 0xa000}
@@ -2736,12 +2751,19 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
+			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
+			(include "../defense_support_waves.inc")
+			(include "../enemy_attack_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"allied_support_entry"
-				{position -7497.91 -526.98 7.14}
+			{"attack_support_entry_a"
+				{position -7497.91 -526.98 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b"
+				{position 7366.74 175.21 0.00}
 				{radius 150}
 			}
 			{"0"

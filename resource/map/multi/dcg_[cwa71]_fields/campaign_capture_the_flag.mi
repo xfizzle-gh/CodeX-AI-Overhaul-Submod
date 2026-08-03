@@ -186,9 +186,6 @@
 	{Entity "flag_point_campaign_1" 0xc000
 		{Position 735.29 75.36}
 		{xform zl 121.98}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f1}
 			{zone
@@ -210,9 +207,6 @@
 	{Entity "flag_point_campaign_2" 0xa000
 		{Position -763.86 -378.09}
 		{xform zl -66.01}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f2}
 			{zone
@@ -1285,7 +1279,24 @@
 	{Link 0x8045 {0x21fb "church_base" "8"}}
 	{Link 0x8048 {0x21fb "church_c1" "21"}}
 	{Link 0x8049 {0x21fb "church_base" "25"}}
-	(include "../allied_support_templates.inc")
+	{Entity "flagpoint_ammo" 0xfd00
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd01
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Link 0xfd00 {0xc000 "ammo"}}
+	{Link 0xfd01 {0xa000 "ammo"}}
+	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "spawn_b" "b2" 0x8009}
 	{Tags "spawn_b" "b1" 0x800a}
 	{Tags "spawn_b" "b3" 0x800b}
@@ -2521,12 +2532,19 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
+			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
+			(include "../defense_support_waves.inc")
+			(include "../enemy_attack_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"allied_support_entry"
-				{position -5691.72 -800.01 55.97}
+			{"attack_support_entry_a"
+				{position -5691.72 -800.01 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b"
+				{position 5637.29 1310.84 0.00}
 				{radius 150}
 			}
 			{"0"

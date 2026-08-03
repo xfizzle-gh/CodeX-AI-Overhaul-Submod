@@ -1,0 +1,66 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: CodeX Support Events\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "mission/multi/support/wave_inbound"
+msgid "Command, friendly fireteam is moving up to support us."
+msgstr "Command, friendly fireteam is moving up to support us."
+
+msgctxt "mission/multi/support/vehicle_inbound"
+msgid "Light armor on the way - keep the lane clear."
+msgstr "Light armor on the way - keep the lane clear."
+
+msgctxt "mission/multi/support/flank_inbound"
+msgid "Friendlies coming in on the flank. Watch your fire."
+msgstr "Friendlies coming in on the flank. Watch your fire."
+
+msgctxt "mission/multi/support/waves_exhausted"
+msgid "That is the last of the support we are getting."
+msgstr "That is the last of the support we are getting."
+
+msgctxt "mission/multi/support/defense_reinforced"
+msgid "Reinforcements on the flag. Holding this ground."
+msgstr "Reinforcements on the flag. Holding this ground."
+
+msgctxt "mission/multi/support/enemy_activity"
+msgid "Enemy movement on the line - stay sharp."
+msgstr "Enemy movement on the line - stay sharp."
+
+msgctxt "mission/multi/support/airborne_inbound"
+msgid "Birds inbound! Friendly air assault team hitting the LZ."
+msgstr "Birds inbound! Friendly air assault team hitting the LZ."
+
+msgctxt "mission/multi/support/airborne_inbound_nato"
+msgid "UH-60 inbound - friendlies fast-roping the LZ."
+msgstr "UH-60 inbound - friendlies fast-roping the LZ."
+
+msgctxt "mission/multi/support/airborne_inbound_rusa"
+msgid "Mi-8 on final - our assault team is on the LZ."
+msgstr "Mi-8 on final - our assault team is on the LZ."
+
+msgctxt "mission/multi/support/airborne_inbound_ukr"
+msgid "Mi-17 inbound - friendlies inserting on the LZ."
+msgstr "Mi-17 inbound - friendlies inserting on the LZ."
+
+msgctxt "mission/multi/support/airborne_inbound_prc"
+msgid "Mi-171 inbound - Army Aviation inserting friendlies."
+msgstr "Mi-171 inbound - Army Aviation inserting friendlies."
+
+msgctxt "mission/multi/support/motorized_inbound"
+msgid "Motorized team inbound - troop truck on the approach."
+msgstr "Motorized team inbound - troop truck on the approach."
+msgctxt "mission/multi/support/e2_helo_inbound"
+msgid "Airmobile flight inbound."
+msgstr ""
+
+msgctxt "mission/multi/support/e2_para_inbound"
+msgid "Airborne drop inbound."
+msgstr ""
+
+msgctxt "mission/multi/support/e2_insert_failed"
+msgid "Air insertion aborted."
+msgstr ""

@@ -21,7 +21,7 @@
 (include "/map/multi/HF-dcg_dynamic_weather.inc")
 (include "/map/multi/dcg_functions.mi")
 (include "/map/multi/dcg_ai_smoke.inc")
-(include "/map/multi/indomitus_ai_combat.inc") ; Indomitus combat AI (recrew/bail/pursue/TNT/flag smoke/arty CF)
+(include "/map/multi/codex_ai_combat.inc") ; combat AI: recrew/bail, pursue, TNT, flag smoke, arty counterfire
 
 ; Full CE AI stack + map setup (defender balance, patrol, repair, lua bridge, spawns)
 (include "/map/multi/ce/ai_logic/ce_ai_spawn_triggers.inc")

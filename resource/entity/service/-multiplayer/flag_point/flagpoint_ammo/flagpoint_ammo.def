@@ -1,0 +1,33 @@
+{game_entity
+	(include "/properties/construction.inc")
+	(include "/properties/resupply_hotmod.inc")
+	{props "wood"}
+	{obstacleid "unbreakable"}
+	("flag_ammo_heavy")
+	{extension "flagpoint_ammo.mdl"}
+	{volume "body1_vol1"
+		{Tags "body" " fire"}
+		{thickness 10}
+		{able {visible 1}}
+	}
+	{volume "body2_vol1"
+		{Tags "body" " fire"}
+		{thickness 10}
+		{able {Obstacle 0}}
+	}
+	{volume "body3"
+		{Tags "body" " fire"}
+		{thickness 10}
+		{able {Obstacle 0}}
+	}
+	{volume "body4_vol1"
+		{Tags "body" " fire"}
+		{thickness 10}
+		{able {Obstacle 0}}
+	}
+	{volume "body5_vol1"
+		{Tags "body" " fire"}
+		{thickness 10}
+		{able {visible 1}}
+	}
+}

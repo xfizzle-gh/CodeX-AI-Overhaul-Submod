@@ -1,6 +1,7 @@
 ;SDL
 ; PRC Battle Zones normal-MP and doctrine-point ground roster.
-; Skirmish only. No Conquest files, MLRS, aircraft, helicopters, drones, or air-support actions.
+; Skirmish only. No Conquest files, MLRS, offensive air, fixed-wing call-ins, drones, or strike air-support actions.
+; Army Aviation troop transport (Mi-171 family) is allowed.
 
 ;===============================================================================
 ; 112TH RAPID COMBINED ARMS

@@ -2,9 +2,6 @@
 	{Entity "flag_point_campaign_1" 0x8000
 		{Position -532.37 -438.44}
 		{xform zl 91.52}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f1}
 			{zone
@@ -26,9 +23,6 @@
 	{Entity "flag_point_campaign_2" 0xc000
 		{Position 290.32 1919.95}
 		{xform zl 140.44}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f2}
 			{zone
@@ -50,9 +44,6 @@
 	{Entity "flag_point_campaign_3" 0xa000
 		{Position 5034.25 3231.46}
 		{xform zl -84.92}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f3}
 			{zone
@@ -74,9 +65,6 @@
 	{Entity "flag_point_campaign_4" 0xe000
 		{Position -5833.1 -1538.67 -0.06}
 		{xform zl 130.14}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f4}
 			{zone
@@ -1787,7 +1775,38 @@
 		{Player 0}
 		{MID 101}
 	}
-	(include "../allied_support_templates.inc")
+	{Entity "flagpoint_ammo" 0xfd00
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd01
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd02
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd03
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Link 0xfd00 {0x8000 "ammo"}}
+	{Link 0xfd01 {0xc000 "ammo"}}
+	{Link 0xfd02 {0xa000 "ammo"}}
+	{Link 0xfd03 {0xe000 "ammo"}}
+	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "bare" 0x6e2}
 	{Tags "bare" 0x93d}
 	{Tags "bare" 0x2872}
@@ -3353,12 +3372,19 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
+			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
+			(include "../defense_support_waves.inc")
+			(include "../enemy_attack_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"allied_support_entry"
+			{"attack_support_entry_a"
 				{position 254.90 8213.70 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b"
+				{position 1003.94 -8014.21 0.00}
 				{radius 150}
 			}
 			{"0"

@@ -1,8 +1,11 @@
-; Indomitus-derived generic combat AI (portable for Code:X)
-; Source: Indomitus v1.755 dcg_script.inc — stripped of 40K-only systems
-; Blocks: recrew/bail portables & tanks, pursue, tank alt fight, TNT/hedgehogs, flag smoke, player arty counterfire
+; This combat AI layer is derived from the Indomitus mod and is used with
+; permission, granted by David [GDBG] of the Indomitus team, 2026-02-19 00:41.
+;
+; Generic combat AI, portable across Code:X missions. Blocks: recrew and bail
+; for portables & tanks, AI pursue, tank alternate fight, TNT/hedgehog demolition,
+; AI flag smoke, and player artillery counterfire.
 
-; ----- player_artillery_fire (from Indomitus L11087-L11156) -----
+; ----- player_artillery_fire -----
 			{"dcg/betterai/player_artillery_fire"
 				{condition
 					{terms
@@ -74,7 +77,7 @@
 				}
 			}
 
-; ----- player_artillery_counterfire (from Indomitus L11157-L11396) -----
+; ----- player_artillery_counterfire -----
 			{"dcg/betterai/player_artillery_counterfire"
 				{condition
 					{terms
@@ -316,7 +319,7 @@
 				}
 			}
 
-; ----- bail_portables (from Indomitus L19397-L21351) -----
+; ----- bail_portables -----
 			{"ai/bail_portables"
 				{condition
 					{terms
@@ -2273,7 +2276,7 @@
 				}
 			}
 
-; ----- tank_alt_fight (from Indomitus L21352-L22006) -----
+; ----- tank_alt_fight -----
 			{"ai/tank_alt_fight"
 				{condition
 					{type 1}
@@ -2930,7 +2933,7 @@
 				}
 			}
 
-; ----- recrew_portables (from Indomitus L22007-L22591) -----
+; ----- recrew_portables -----
 			{"ai/recrew_portables"
 				{condition
 					{type 1}
@@ -3517,7 +3520,7 @@
 				}
 			}
 
-; ----- ai_flag_smoke (from Indomitus L22592-L23024) -----
+; ----- ai_flag_smoke -----
 			{"ai/ai_flag_smoke"
 				{condition
 					{type 1}
@@ -3952,7 +3955,7 @@
 				}
 			}
 
-; ----- chance_ai_pursue (from Indomitus L23025-L23844) -----
+; ----- chance_ai_pursue -----
 			{"ai/chance_ai_pursue"
 				{condition
 					{type 1}
@@ -4774,7 +4777,7 @@
 				}
 			}
 
-; ----- recrew_tank (from Indomitus L23845-L24447) -----
+; ----- recrew_tank -----
 			{"ai/recrew_tank"
 				{condition
 					{terms
@@ -5379,7 +5382,7 @@
 				}
 			}
 
-; ----- ai_tnt_hedgehogs (from Indomitus L24448-L25266) -----
+; ----- ai_tnt_hedgehogs -----
 			{"ai/ai_tnt_hedgehogs"
 				{condition
 					{expression "(1 & 2) | (1 & 3)"}
@@ -6200,7 +6203,7 @@
 				}
 			}
 
-; ----- ai_tnt_do (from Indomitus L25267-L26809) -----
+; ----- ai_tnt_do -----
 			{"ai/ai_tnt_do"
 				{condition
 					{terms
