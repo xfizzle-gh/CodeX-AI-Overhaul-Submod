@@ -5,10 +5,37 @@
 ;
 ; Budget by defense_level$ (CE): L1 2x4, L2 3x5, L3 4x6. Level 0 defaults to L1.
 ; TEST DELAY: chance uses 60s. Restore PRODUCTION 4-8 min block below when proven.
+;
+; Per-mission gate: support_mission/roll enables allied support 50% of missions.
+
+			{"support_mission/roll"
+				{condition
+					{expression "1"}
+					{terms
+						{"1.cmp_i"
+							{var "support_mission_roll_done$"}
+							{op "=="}
+							{value 0}
+						}
+					}
+				}
+				{actions
+					{"set_i" {var "support_mission_roll_done$"} {op "="} {value 1}}
+					{"switch"
+						{"case"
+							{condition {type rand} {value 0.5}}
+							{"set_i" {var "support_mission_enabled$"} {op "="} {value 1}}
+						}
+						{"default"
+							{"set_i" {var "support_mission_enabled$"} {op "="} {value 0}}
+						}
+					}
+				}
+			}
 
 			{"allied_support/init"
 				{condition
-					{expression "1 & 2 & 3 & 4"}
+					{expression "1 & 2 & 3 & 4 & 5"}
 					{terms
 						{"1.cmp_i"
 							{var "user_is_defender$"}
@@ -29,6 +56,11 @@
 							{var "allied_support_initialized$"}
 							{op "=="}
 							{value 0}
+						}
+						{"5.cmp_i"
+							{var "support_mission_enabled$"}
+							{op "=="}
+							{value 1}
 						}
 					}
 				}

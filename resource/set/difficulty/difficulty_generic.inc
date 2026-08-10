@@ -1,12 +1,12 @@
 	{any
 		{translate_damage 5}		;// damage multiplier for blast-wave damage to humans
-		{cover_hitchance 1.0}			;// the probability of hitting a soldier behind cover
-		{cover_damage 1.0}			;// damage when protected by cover
+		{cover_hitchance 1}			;// the probability of hitting a soldier behind cover
+		{cover_damage 1}			;// damage when protected by cover
 
-		{crawl_hitchance 1.0}			;// the probability of hitting a soldier in crawl position
-		{crawl_damage 1.0}			;// damage when in prone position
+		{crawl_hitchance 1}			;// the probability of hitting a soldier in crawl position
+		{crawl_damage 0.75}			;// damage when in prone position
 
-		{vehicle_burst 1}		;// increase bullet count in 1 burst for all vehicles (values < 1 reduce shots in burst)
+		{vehicle_burst 1.20}		;// increase bullet count in 1 burst for all vehicles (values < 1 reduce shots in burst)
 		{cover_mgun_burst 1}		;// increase bullet count in 1 burst of soldier with mgun in horizontal cover
 		{cover_mgun_delay 0.75}		;// decrease timeout between bursts of soldier with mgun in horizontal cover
 
@@ -32,10 +32,10 @@
 		{death_delay_max 400}		;// max bleeding out time in seconds
 
 		{firing_timeout 1.00}		;// time out between bursts (modifier on FiringTimeout)
-		{grenade_timeout 16.00}		;// time out between grenades (modifier on FiringTimeout)
+		{grenade_timeout 0.50}		;// time out between grenades (modifier on FiringTimeout)
 
 		{ai_damage 1.0}				;// damage multiplier for AI humans against other AI humans, does not effect player controlled units
-		{burst 0.75}					;// multiplier to number of bullets in burst from weapon settings
-		{accuracy 0.95}				;// accuracy multiplier from weapon settings
-		{health 1.0}					;// health multiplier from soldier settings
+		{burst 0.75}				;// multiplier to number of bullets in burst from weapon settings (AI overhaul only change)
+		{accuracy 1}				;// accuracy multiplier from weapon settings
+		{health 1}					;// health multiplier from soldier settings
 	}

@@ -23,3 +23,11 @@
 			{"bots_divisions"}
 			{"weatherid"}
 			{"prep_spawn_snap"}
+			{"support_mission_roll_done"}
+			{"support_mission_enabled"}
+			{"allied_support_initialized"}
+			{"allied_support_busy"}
+			{"allied_support_target"}
+			{"allied_support_wave_num"}
+			{"allied_support_wave_size"}
+			{"allied_support_waves_left"}
