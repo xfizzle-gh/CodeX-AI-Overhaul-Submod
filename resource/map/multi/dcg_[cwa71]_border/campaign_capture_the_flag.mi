@@ -170,9 +170,6 @@
 	{Entity "flag_point_campaign_1" 0xe007
 		{Position 59.98 -49.14}
 		{xform zl -115.88}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f1}
 			{zone
@@ -194,9 +191,6 @@
 	{Entity "flag_point_campaign_2" 0xe00a
 		{Position 5209.25 -2691.64}
 		{xform zl -33.52}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f2}
 			{zone
@@ -218,9 +212,6 @@
 	{Entity "flag_point_campaign_3" 0xe00d
 		{Position -4891.58 3947.67}
 		{xform zl 28.24}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f3}
 			{zone
@@ -242,9 +233,6 @@
 	{Entity "flag_point_campaign_4" 0xe010
 		{Position 4.29 -4152.65 159.47}
 		{xform zl 179.08}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f4}
 			{zone
@@ -290,9 +278,6 @@
 	{Entity "flag_point_campaign_5" 0x8006
 		{Position -59.16 4044.02}
 		{xform zl 0.57}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f5}
 			{zone
@@ -2629,7 +2614,45 @@
 	{Link 0x807a {0x589e "1"}}
 	{Link 0x807b {0x802 "1"}}
 	{Link 0x807c {0x803 "1"}}
-	(include "../allied_support_templates.inc")
+	{Entity "flagpoint_ammo" 0xfd00
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd01
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd02
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd03
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd04
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Link 0xfd00 {0xe007 "ammo"}}
+	{Link 0xfd01 {0xe00a "ammo"}}
+	{Link 0xfd02 {0xe00d "ammo"}}
+	{Link 0xfd03 {0xe010 "ammo"}}
+	{Link 0xfd04 {0x8006 "ammo"}}
+	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "spawn_a" "a1" 0x9000}
 	{Tags "spawn_a" "a2" 0xa001}
 	{Tags "spawn_a" "a3" 0xc001}
@@ -4202,23 +4225,17 @@
 			{scoreCurrent 0}
 		}
 		{vars
-			{"music_intense"}
+			(include "../dcg_vars.inc")
 			{"balance"}
-			{"user_nation"}
-			{"dcg_error"}
-			{"dcg_on"}
-			{"enemyid"}
-			{"ai_air_on"}
-			{"user_team"}
-			{"def_team"}
-			{"tier2"}
-			{"arrows"}
 		}
 		{functions
 			(include "../dcg_functions.inc")
 		}
 		{triggers
-			(include "../allied_support_waves.inc")
+			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
+			(include "../defense_support_waves.inc")
+			(include "../enemy_attack_support.inc")
 			(include "/map/nikral's trigger.mi")
 	(include "/map/blow_panels_trigger.inc")
 			{"parachute"
@@ -30027,9 +30044,223 @@
 			}
 		}
 		{waypoints
-			{"allied_support_entry"
-				{position -8519.59 -1634.30 36.35}
+			{"attack_support_entry_a"
+				{position -8519.59 -1634.30 0.00}
 				{radius 150}
+			}
+			{"attack_support_air_a1"
+				{position -3390.43 1557.89 0.00}
+				{radius 150}
+			}
+			{"attack_support_air_a2"
+				{position -2573.28 -2701.90 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_a1"
+				{position -4831.80 2164.71 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_a2"
+				{position -3687.79 -3799.01 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_a1"
+				{position -9797.53 -1879.45 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_a1"
+				{position -8519.59 -1634.30 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_a2"
+				{position -9848.39 -1614.28 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_a2"
+				{position -8570.46 -1369.13 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_a3"
+				{position -9593.32 -1702.81 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_a3"
+				{position -8315.38 -1457.67 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b"
+				{position 8538.02 1003.95 0.00}
+				{radius 150}
+			}
+			{"attack_support_air_b1"
+				{position 3239.29 -1783.12 0.00}
+				{radius 150}
+			}
+			{"attack_support_air_b2"
+				{position 2737.32 2485.89 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_b1"
+				{position 4620.39 -2486.33 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_b2"
+				{position 3917.63 3490.28 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_b1"
+				{position 9818.72 1154.54 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b1"
+				{position 8538.02 1003.95 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_b2"
+				{position 9850.25 886.39 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b2"
+				{position 8569.55 735.80 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_b3"
+				{position 9602.26 993.16 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b3"
+				{position 8321.56 842.57 0.00}
+				{radius 150}
+			}
+			{"transport_patrol_flag_1"
+				{position -187.55 153.66 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_2"
+				{position 4924.96 -2544.75 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_3"
+				{position -4642.56 3746.70 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_4"
+				{position 3.96 -3832.65 159.47}
+				{radius 140}
+			}
+			{"transport_patrol_flag_5"
+				{position -54.48 3724.05 0.00}
+				{radius 140}
+			}
+			{"21"
+				{position -9797.53 -1879.45 0.00}
+				{radius 800}
+				{commands
+					{"entity_state"
+						{tag_add support_e2_arrival}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"actor_state"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{control AI}
+						{fire_mode return}
+						{movement
+							{speed fast}
+						}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"action"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{drop orders}
+						{action move}
+						{target
+							{ignore_captured_by_user 0}
+							{amount 1}
+							{tag support_e2_flag_target}
+						}
+					}
+					{"delay"
+						{time 0.1}
+					}
+					{"effect"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{effect takeoff_load}
+					}
+				}
+			}
+			{"23"
+				{position -9797.53 -1879.45 170.00}
+			}
+			{"22"
+				{position 9818.72 1154.54 0.00}
+				{radius 800}
+				{commands
+					{"entity_state"
+						{tag_add support_e2_arrival}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"actor_state"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{control AI}
+						{fire_mode return}
+						{movement
+							{speed fast}
+						}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"action"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{drop orders}
+						{action move}
+						{target
+							{ignore_captured_by_user 0}
+							{amount 1}
+							{tag support_e2_flag_target}
+						}
+					}
+					{"delay"
+						{time 0.1}
+					}
+					{"effect"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{effect takeoff_load}
+					}
+				}
+			}
+			{"24"
+				{position 9818.72 1154.54 170.00}
 			}
 			{"0"
 				{position -8578.86 -4229.39 0}

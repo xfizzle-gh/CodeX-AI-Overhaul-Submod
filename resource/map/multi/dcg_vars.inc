@@ -18,16 +18,101 @@
 			{"prep_inform"}
 			{"user_is_defender"}
 			{"user_nation"}
+			{"user_nation_hint"}
+			{"faction_support_army"}
 			{"user_team"}
 			{"tier2"}
 			{"bots_divisions"}
 			{"weatherid"}
 			{"prep_spawn_snap"}
+			{"support_debug"}
+			{"support_announce"}
 			{"support_mission_roll_done"}
 			{"support_mission_enabled"}
-			{"allied_support_initialized"}
-			{"allied_support_busy"}
-			{"allied_support_target"}
-			{"allied_support_wave_num"}
-			{"allied_support_wave_size"}
-			{"allied_support_waves_left"}
+			{"attack_support_entry_rr"}
+			{"attack_support_flank_rr"}
+			{"attack_support_ifv_left"}
+			{"attack_support_motor_left"}
+			{"attack_support_use_air"}
+			{"attack_support_air_test"}
+			{"attack_support_air_left"}
+			{"defense_support_air_test_done"}
+			{"defense_support_use_air"}
+			{"defense_support_air_left"}
+			{"attack_support_use_flank"}
+			{"flag_props_done"}
+			{"enemy_defense_entry_rr"}
+			{"defense_support_entry_rr"}
+			{"enemy_attack_entry_rr"}
+			{"attack_support_armed"}
+			{"attack_support_transferred"}
+			{"attack_support_stage"}
+			{"attack_support_wave_cmd"}
+			{"attack_support_wave_num"}
+			{"attack_support_waves_left"}
+			{"attack_support_busy"}
+			{"attack_support_next_ok"}
+			{"attack_support_hmmwv_left"}
+			{"attack_support_ukr_veh_left"}
+			{"attack_support_nato_veh_left"}
+			{"attack_support_use_mi"}
+			{"enemy_spawnside"}
+			{"id_attack_support"}
+			{"attack_support_ready"}
+			{"enemy_defense_armed"}
+			{"enemy_defense_army"}
+			{"enemy_defense_stage"}
+			{"enemy_defense_transferred"}
+			{"enemy_defense_wave_cmd"}
+			{"enemy_defense_wave_num"}
+			{"enemy_defense_waves_left"}
+			{"enemy_defense_place"}
+			{"enemy_defense_group"}
+			{"enemy_defense_trickle_ok"}
+			{"enemy_defense_trickle_busy"}
+			{"enemy_defense_surge_ok"}
+			{"enemy_defense_surge_busy"}
+			{"defense_support_armed"}
+			{"defense_support_transferred"}
+			{"defense_support_stage"}
+			{"defense_support_wave_cmd"}
+			{"defense_support_wave_num"}
+			{"defense_support_waves_left"}
+			{"defense_support_busy"}
+			{"defense_support_next_ok"}
+			{"defense_support_group"}
+			{"defense_support_owner_fail"}
+			{"defense_support_place"}
+			{"defense_support_motor_left"}
+			{"defense_support_motor_test_done"}
+			{"defense_support_garrison_done"}
+			{"enemy_attack_armed"}
+			{"enemy_attack_army"}
+			{"enemy_attack_stage"}
+			{"enemy_attack_transferred"}
+			{"enemy_attack_wave_cmd"}
+			{"enemy_attack_wave_num"}
+			{"enemy_attack_waves_left"}
+			{"enemy_attack_busy"}
+			{"enemy_attack_next_ok"}
+			{"enemy_attack_owner_fail"}
+			{"enemy_attack_motor_left"}
+			{"attack_support_motor_test"}
+			{"attack_support_motor_test_done"}
+			{"enemy_attack_motor_test"}
+			{"enemy_attack_motor_test_done"}
+; BEGIN FOUR-QUADRANT NORMAL TRANSPORT VARS
+			{"transport_as_done"}
+			{"transport_as_step"}
+			{"transport_ed_done"}
+			{"transport_ed_step"}
+			{"transport_ds_done"}
+			{"transport_ds_step"}
+			{"transport_ea_done"}
+			{"transport_ea_step"}
+; END FOUR-QUADRANT NORMAL TRANSPORT VARS
+			{"support_e2_test"}
+			{"support_e2_stage"}
+			{"support_e2_fail"}
+			{"support_e2_lz"}
+			{"support_e2_flag"}

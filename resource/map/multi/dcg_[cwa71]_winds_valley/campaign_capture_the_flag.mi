@@ -2,9 +2,6 @@
 	{Entity "flag_point_campaign_1" 0x8000
 		{Position -532.37 -438.44}
 		{xform zl 91.52}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f1}
 			{zone
@@ -26,9 +23,6 @@
 	{Entity "flag_point_campaign_2" 0xc000
 		{Position 290.32 1919.95}
 		{xform zl 140.44}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f2}
 			{zone
@@ -50,9 +44,6 @@
 	{Entity "flag_point_campaign_3" 0xa000
 		{Position 5034.25 3231.46}
 		{xform zl -84.92}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f3}
 			{zone
@@ -74,9 +65,6 @@
 	{Entity "flag_point_campaign_4" 0xe000
 		{Position -5833.1 -1538.67 -0.06}
 		{xform zl 130.14}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f4}
 			{zone
@@ -1787,7 +1775,38 @@
 		{Player 0}
 		{MID 101}
 	}
-	(include "../allied_support_templates.inc")
+	{Entity "flagpoint_ammo" 0xfd00
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd01
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd02
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd03
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Link 0xfd00 {0x8000 "ammo"}}
+	{Link 0xfd01 {0xc000 "ammo"}}
+	{Link 0xfd02 {0xa000 "ammo"}}
+	{Link 0xfd03 {0xe000 "ammo"}}
+	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "bare" 0x6e2}
 	{Tags "bare" 0x93d}
 	{Tags "bare" 0x2872}
@@ -3353,13 +3372,230 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
+			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
+			(include "../defense_support_waves.inc")
+			(include "../enemy_attack_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"allied_support_entry"
+			{"attack_support_entry_a"
 				{position 254.90 8213.70 0.00}
 				{radius 150}
+			}
+			{"attack_support_air_a1"
+				{position 2142.64 2811.07 0.00}
+				{radius 150}
+			}
+			{"attack_support_air_a2"
+				{position -1964.21 2938.52 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_a1"
+				{position 3002.25 4017.64 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_a2"
+				{position -2747.35 4196.07 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_a1"
+				{position 293.14 9445.76 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_a1"
+				{position 254.90 8213.70 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_a2"
+				{position 563.01 9437.38 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_a2"
+				{position 524.77 8205.32 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_a3"
+				{position 420.82 9207.85 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_a3"
+				{position 382.58 7975.80 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b"
+				{position 1003.94 -8014.21 0.00}
+				{radius 150}
+			}
+			{"attack_support_air_b1"
+				{position -1652.17 -3055.96 0.00}
+				{radius 150}
+			}
+			{"attack_support_air_b2"
+				{position 2354.93 -2553.99 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_b1"
+				{position -2303.00 -4358.48 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_b2"
+				{position 3306.94 -3655.73 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_b1"
+				{position 1154.53 -9216.34 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b1"
+				{position 1003.94 -8014.21 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_b2"
+				{position 886.62 -9249.90 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b2"
+				{position 736.03 -8047.77 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_b3"
+				{position 991.51 -9001.11 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b3"
+				{position 840.92 -7798.98 0.00}
+				{radius 150}
+			}
+			{"transport_patrol_flag_1"
+				{position -285.36 -235.01 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_2"
+				{position 242.48 1603.55 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_3"
+				{position 4764.96 3058.60 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_4"
+				{position -5523.68 -1457.05 -0.06}
+				{radius 140}
+			}
+			{"transport_patrol_flag_5"
+				{position -639.05 -136.75 0.00}
+				{radius 140}
+			}
+			{"21"
+				{position 293.14 9445.76 0.00}
+				{radius 800}
+				{commands
+					{"entity_state"
+						{tag_add support_e2_arrival}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"actor_state"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{control AI}
+						{fire_mode return}
+						{movement
+							{speed fast}
+						}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"action"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{drop orders}
+						{action move}
+						{target
+							{ignore_captured_by_user 0}
+							{amount 1}
+							{tag support_e2_flag_target}
+						}
+					}
+					{"delay"
+						{time 0.1}
+					}
+					{"effect"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{effect takeoff_load}
+					}
+				}
+			}
+			{"23"
+				{position 293.14 9445.76 170.00}
+			}
+			{"22"
+				{position 1154.53 -9216.34 0.00}
+				{radius 800}
+				{commands
+					{"entity_state"
+						{tag_add support_e2_arrival}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"actor_state"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{control AI}
+						{fire_mode return}
+						{movement
+							{speed fast}
+						}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"action"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{drop orders}
+						{action move}
+						{target
+							{ignore_captured_by_user 0}
+							{amount 1}
+							{tag support_e2_flag_target}
+						}
+					}
+					{"delay"
+						{time 0.1}
+					}
+					{"effect"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{effect takeoff_load}
+					}
+				}
+			}
+			{"24"
+				{position 1154.53 -9216.34 170.00}
 			}
 			{"0"
 				{position 2225.45 6892.57 86.51}

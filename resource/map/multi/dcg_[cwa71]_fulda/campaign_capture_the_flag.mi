@@ -2,9 +2,6 @@
 	{Entity "flag_point_campaign_1" 0xa000
 		{Position -1108.23 1905.06}
 		{xform zl 36.06}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f1}
 			{zone
@@ -26,9 +23,6 @@
 	{Entity "flag_point_campaign_2" 0xe000
 		{Position -145.42 -852.31}
 		{xform zl 82}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f2}
 			{zone
@@ -50,9 +44,6 @@
 	{Entity "flag_point_campaign_3" 0xb000
 		{Position 1999.56 374.79}
 		{xform zl -6.93}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f3}
 			{zone
@@ -74,9 +65,6 @@
 	{Entity "flag_point_campaign_4" 0xd000
 		{Position -1525.5 -3085.78}
 		{xform zl 24.01}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f4}
 			{zone
@@ -2175,7 +2163,38 @@
 	{Link 0x8032 {0xc65 "4"}}
 	{Link 0x8039 {0x3325 "4"}}
 	{Link 0xf00b {0x4cf2 "church_c1" "21"}}
-	(include "../allied_support_templates.inc")
+	{Entity "flagpoint_ammo" 0xfd00
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd01
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd02
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd03
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Link 0xfd00 {0xa000 "ammo"}}
+	{Link 0xfd01 {0xe000 "ammo"}}
+	{Link 0xfd02 {0xb000 "ammo"}}
+	{Link 0xfd03 {0xd000 "ammo"}}
+	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "keep_places_without_door" 0x405a}
 	{Tags "keep_places_without_door" 0x4142}
 	{Tags "keep_places_without_door" 0x4178}
@@ -3990,13 +4009,230 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
+			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
+			(include "../defense_support_waves.inc")
+			(include "../enemy_attack_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"allied_support_entry"
-				{position -447.29 8971.17 0.00}
+			{"attack_support_entry_a"
+				{position -1971.15 8970.91 0.00}
 				{radius 150}
+			}
+			{"attack_support_air_a1"
+				{position 1552.83 3632.61 0.00}
+				{radius 150}
+			}
+			{"attack_support_air_a2"
+				{position -2932.63 2647.03 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_a1"
+				{position 2154.24 5175.36 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_a2"
+				{position -4125.39 3795.55 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_a1"
+				{position -2266.82 10316.55 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_a1"
+				{position -1971.15 8970.91 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_a2"
+				{position -2003.11 10374.49 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_a2"
+				{position -1707.44 9028.85 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_a3"
+				{position -2084.79 10117.14 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_a3"
+				{position -1789.11 8771.50 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b"
+				{position -455.40 -8614.81 0.00}
+				{radius 150}
+			}
+			{"attack_support_air_b1"
+				{position -2313.09 -2901.33 0.00}
+				{radius 150}
+			}
+			{"attack_support_air_b2"
+				{position 1994.31 -3129.03 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_b1"
+				{position -3242.88 -4148.02 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_b2"
+				{position 2787.48 -4466.80 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_b1"
+				{position -523.71 -9907.03 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b1"
+				{position -455.40 -8614.81 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_b2"
+				{position -793.33 -9892.78 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b2"
+				{position -725.02 -8600.56 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_b3"
+				{position -646.18 -9666.40 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b3"
+				{position -577.87 -8374.18 0.00}
+				{radius 150}
+			}
+			{"transport_patrol_flag_1"
+				{position -947.32 1628.46 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_2"
+				{position -91.60 -536.87 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_3"
+				{position 1685.04 315.84 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_4"
+				{position -1383.69 -2798.92 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_5"
+				{position -793.28 1961.66 0.00}
+				{radius 140}
+			}
+			{"21"
+				{position -2266.82 10316.55 0.00}
+				{radius 800}
+				{commands
+					{"entity_state"
+						{tag_add support_e2_arrival}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"actor_state"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{control AI}
+						{fire_mode return}
+						{movement
+							{speed fast}
+						}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"action"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{drop orders}
+						{action move}
+						{target
+							{ignore_captured_by_user 0}
+							{amount 1}
+							{tag support_e2_flag_target}
+						}
+					}
+					{"delay"
+						{time 0.1}
+					}
+					{"effect"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{effect takeoff_load}
+					}
+				}
+			}
+			{"23"
+				{position -2266.82 10316.55 170.00}
+			}
+			{"22"
+				{position -523.71 -9907.03 0.00}
+				{radius 800}
+				{commands
+					{"entity_state"
+						{tag_add support_e2_arrival}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"actor_state"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{control AI}
+						{fire_mode return}
+						{movement
+							{speed fast}
+						}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"action"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{drop orders}
+						{action move}
+						{target
+							{ignore_captured_by_user 0}
+							{amount 1}
+							{tag support_e2_flag_target}
+						}
+					}
+					{"delay"
+						{time 0.1}
+					}
+					{"effect"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{effect takeoff_load}
+					}
+				}
+			}
+			{"24"
+				{position -523.71 -9907.03 170.00}
 			}
 			{"0"
 				{position 1464.63 -7270.84 0}

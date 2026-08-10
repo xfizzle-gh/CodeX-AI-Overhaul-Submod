@@ -186,9 +186,6 @@
 	{Entity "flag_point_campaign_1" 0xc000
 		{Position 735.29 75.36}
 		{xform zl 121.98}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f1}
 			{zone
@@ -210,9 +207,6 @@
 	{Entity "flag_point_campaign_2" 0xa000
 		{Position -763.86 -378.09}
 		{xform zl -66.01}
-		{Placer
-			{State "ammo" {Unlinked}}
-		}
 		{Extender "map_point"
 			{name f2}
 			{zone
@@ -1285,7 +1279,24 @@
 	{Link 0x8045 {0x21fb "church_base" "8"}}
 	{Link 0x8048 {0x21fb "church_c1" "21"}}
 	{Link 0x8049 {0x21fb "church_base" "25"}}
-	(include "../allied_support_templates.inc")
+	{Entity "flagpoint_ammo" 0xfd00
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Entity "flagpoint_ammo" 0xfd01
+		{Extender "supply_zone"
+			{enabled}
+			{current 0}
+		}
+	}
+	{Link 0xfd00 {0xc000 "ammo"}}
+	{Link 0xfd01 {0xa000 "ammo"}}
+	(include "../attack_support_templates.inc")
+	(include "../faction_support_templates.inc")
+	(include "../enemy_defense_templates.inc")
+	(include "../flag_props_templates.inc")
 	{Tags "spawn_b" "b2" 0x8009}
 	{Tags "spawn_b" "b1" 0x800a}
 	{Tags "spawn_b" "b3" 0x800b}
@@ -2521,13 +2532,230 @@
 					}
 				}
 			}
-			(include "../allied_support_waves.inc")
+			(include "../attack_support_waves.inc")
+			(include "../enemy_defense_support.inc")
+			(include "../defense_support_waves.inc")
+			(include "../enemy_attack_support.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
-			{"allied_support_entry"
-				{position -5691.72 -800.01 55.97}
+			{"attack_support_entry_a"
+				{position -5691.72 -800.01 0.00}
 				{radius 150}
+			}
+			{"attack_support_air_a1"
+				{position -2192.10 1142.93 0.00}
+				{radius 150}
+			}
+			{"attack_support_air_a2"
+				{position -1792.10 -1702.93 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_a1"
+				{position -3125.86 1592.10 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_a2"
+				{position -2565.86 -2392.11 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_a1"
+				{position -6545.48 -920.01 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_a1"
+				{position -5691.72 -800.01 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_a2"
+				{position -6583.06 -652.64 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_a2"
+				{position -5729.30 -532.64 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_a3"
+				{position -6332.72 -753.78 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_a3"
+				{position -5478.96 -633.78 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b"
+				{position 5637.29 1310.84 0.00}
+				{radius 150}
+			}
+			{"attack_support_air_b1"
+				{position 2300.76 -950.53 0.00}
+				{radius 150}
+			}
+			{"attack_support_air_b2"
+				{position 1645.34 1868.12 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_b1"
+				{position 3277.44 -1317.63 0.00}
+				{radius 150}
+			}
+			{"attack_support_flank_b2"
+				{position 2359.85 2628.47 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_b1"
+				{position 6482.88 1507.47 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b1"
+				{position 5637.29 1310.84 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_b2"
+				{position 6544.04 1244.48 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b2"
+				{position 5698.44 1047.86 0.00}
+				{radius 150}
+			}
+			{"attack_support_rear_b3"
+				{position 6285.71 1323.02 0.00}
+				{radius 150}
+			}
+			{"attack_support_entry_b3"
+				{position 5440.12 1126.39 0.00}
+				{radius 150}
+			}
+			{"transport_patrol_flag_1"
+				{position 416.96 42.73 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_2"
+				{position -477.07 -236.14 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_3"
+				{position 657.07 -234.93 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_4"
+				{position -799.16 -60.04 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_5"
+				{position 1000.12 -104.27 0.00}
+				{radius 140}
+			}
+			{"21"
+				{position -6545.48 -920.01 0.00}
+				{radius 800}
+				{commands
+					{"entity_state"
+						{tag_add support_e2_arrival}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"actor_state"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{control AI}
+						{fire_mode return}
+						{movement
+							{speed fast}
+						}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"action"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{drop orders}
+						{action move}
+						{target
+							{ignore_captured_by_user 0}
+							{amount 1}
+							{tag support_e2_flag_target}
+						}
+					}
+					{"delay"
+						{time 0.1}
+					}
+					{"effect"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{effect takeoff_load}
+					}
+				}
+			}
+			{"23"
+				{position -6545.48 -920.01 170.00}
+			}
+			{"22"
+				{position 6482.88 1507.47 0.00}
+				{radius 800}
+				{commands
+					{"entity_state"
+						{tag_add support_e2_arrival}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"actor_state"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{control AI}
+						{fire_mode return}
+						{movement
+							{speed fast}
+						}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"action"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{drop orders}
+						{action move}
+						{target
+							{ignore_captured_by_user 0}
+							{amount 1}
+							{tag support_e2_flag_target}
+						}
+					}
+					{"delay"
+						{time 0.1}
+					}
+					{"effect"
+						{selector
+							{source standart}
+							{ignore_captured_by_user 0}
+							{tag support_e2_arrival}
+						}
+						{effect takeoff_load}
+					}
+				}
+			}
+			{"24"
+				{position 6482.88 1507.47 170.00}
 			}
 			{"0"
 				{position 4671.7 3108.9 57.26}
