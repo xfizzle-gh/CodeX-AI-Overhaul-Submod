@@ -3541,7 +3541,8 @@
 				}
 			}
 			
-;// Medic AI		
+;// Medic AI
+			;// One medic claims one downed body so the whole squad does not stack on a single rez.
 			{"hf medic ai/run towards nearest wounded"
 				{condition
 					{terms
@@ -3561,6 +3562,35 @@
 										{tag
 											{tag _user}
 										}
+										{tag
+											{tag medic_claimed}
+										}
+									}
+								}
+							}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag bot_medic}
+										}
+									}
+									{exclude
+										{state
+											{state "dead inactive"}
+										}
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag _user}
+										}
+										{tag
+											{tag medic_busy}
+										}
 									}
 								}
 							}
@@ -3571,77 +3601,267 @@
 					{"delay"
 						{time 0.1}
 					}
-					{"entity_state"
-						{selector
-							{tag bot_medic}
-						}
-						{tag_add _lua_mi}
-					}
-					{"delay"
-						{time 0.1}
-					}
-					{"actor_state"
-						{selector
-							{tag bot_medic}
-							{type human}
-							{state "not dead"}
-						}
-						{fire_mode return}
-						{movement
-							{speed fast}
-						}
-					}
-					{"delay"
-						{time 0.1}
-					}
-					{"action"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag bot_medic}
+					{"loop" 8
+						{"entity_state"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag bot_medic}
+										}
+									}
+									{exclude
+										{state
+											{state "dead inactive"}
+										}
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag _user}
+										}
+										{tag
+											{tag medic_busy}
+										}
+										{tag
+											{tag medic_assign}
+										}
 									}
 								}
-								{exclude
-									{state
-										{state "dead inactive"}
+								{sort
+									{type entity}
+									{entity
+										{source advanced}
+										{group
+											{select
+												{tag
+													{tag bleeding}
+												}
+											}
+											{exclude
+												{state
+													{state user_control}
+												}
+												{tag
+													{tag _user}
+												}
+												{tag
+													{tag medic_claimed}
+												}
+												{tag
+													{tag medic_to_rez}
+												}
+											}
+										}
 									}
-									{state
-										{state user_control}
+								}
+								{amount 1
+								}
+							}
+							{tag_add medic_assign}
+						}
+						{"delay"
+							{time 0.1}
+						}
+						{"entity_state"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag bleeding}
+										}
 									}
-									{tag
-										{tag _user}
+									{exclude
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag _user}
+										}
+										{tag
+											{tag medic_claimed}
+										}
+										{tag
+											{tag medic_to_rez}
+										}
+									}
+								}
+								{sort
+									{type entity}
+									{entity
+										{amount 1
+										}
+										{tag medic_assign}
+									}
+								}
+								{amount 1
+								}
+							}
+							{tag_add medic_to_rez}
+						}
+						{"delay"
+							{time 0.1}
+						}
+						{"entity_state"
+							{selector
+								{tag medic_assign}
+							}
+							{tag_add _lua_mi}
+						}
+						{"actor_state"
+							{selector
+								{tag medic_assign}
+								{type human}
+								{state "not dead"}
+							}
+							{fire_mode return}
+							{movement
+								{speed fast}
+							}
+						}
+						{"delay"
+							{time 0.1}
+						}
+						{"action"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag medic_assign}
+										}
+									}
+									{exclude
+										{state
+											{state "dead inactive"}
+										}
+										{state
+											{state user_control}
+										}
+									}
+								}
+								{amount 1
+								}
+							}
+							{drop "orders sensor"}
+							{action move}
+							{target
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag medic_to_rez}
+										}
+									}
+									{exclude
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag _user}
+										}
+									}
+								}
+								{amount 1
+								}
+								{sort
+									{type entity}
+									{entity
+										{amount 1
+										}
+										{tag medic_assign}
 									}
 								}
 							}
 						}
-						{drop "orders sensor"}
-						{action move}
-						{target
+						{"delay"
+							{time 0.1}
+						}
+						{"entity_state"
+							{selector
+								{tag medic_to_rez}
+							}
+							{tag_add medic_claimed}
+							{tag_remove medic_to_rez}
+						}
+						{"entity_state"
+							{selector
+								{tag medic_assign}
+							}
+							{tag_add medic_busy}
+							{tag_remove medic_assign}
+						}
+						{"delay"
+							{time 0.1}
+						}
+					}
+					{"delay"
+						{time 20}
+					}
+					{"entity_state"
+						{selector
 							{source advanced}
 							{group
 								{select
+									{tag
+										{tag medic_claimed}
+									}
+								}
+								{exclude
 									{tag
 										{tag bleeding}
 									}
 								}
-								{exclude
-									{state
-										{state user_control}
-									}
+							}
+						}
+						{tag_remove medic_claimed}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
 									{tag
-										{tag _user}
+										{tag medic_busy}
+									}
+								}
+								{include
+									{state
+										{state "dead inactive"}
 									}
 								}
 							}
-							{sort
-								{type entity}
-							}
 						}
+						{tag_remove medic_busy}
+					}
+					{"entity_state"
+						{selector
+							{tag medic_busy}
+						}
+						{tag_remove medic_busy}
+					}
+					{"entity_state"
+						{selector
+							{tag medic_claimed}
+						}
+						{tag_remove medic_claimed}
+					}
+					{"entity_state"
+						{selector
+							{tag medic_assign}
+						}
+						{tag_remove medic_assign}
+					}
+					{"entity_state"
+						{selector
+							{tag medic_to_rez}
+						}
+						{tag_remove medic_to_rez}
 					}
 					{"delay"
-						{time 25}
+						{time 0.5}
 					}
 					{"trigger"
 						{name "hf medic ai/run towards nearest wounded"}

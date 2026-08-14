@@ -1553,7 +1553,7 @@ min_stage(1) max_stage(8) name(ulman_squad)
 }
 
 {"t72a"
-	("vehicle" period(2022s) min_stage(6) max_stage(99) side(rusa) crew(rus_vehicleman:3) cw(0) cp(17))
+	("vehicle" period(2022s) min_stage(6) max_stage(14) side(rusa) crew(rus_vehicleman:3) cw(0) cp(17))
 	{cost 800} {not_for_player_sale 1}
 }
 

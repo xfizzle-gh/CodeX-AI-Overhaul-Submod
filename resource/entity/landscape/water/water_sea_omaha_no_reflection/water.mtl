@@ -1,0 +1,10 @@
+{material water
+	{color 0xF51D2526}
+	{period 2.5}
+	{simple "$/water/sea-water"}
+	{bumpVolume "$/water/nwave02"}
+	{envamount 1.0}
+	{blend blend}
+	{tile}
+	{FakeReflection}
+}

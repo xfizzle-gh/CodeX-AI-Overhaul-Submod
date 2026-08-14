@@ -1185,7 +1185,7 @@ min_stage(8) max_stage(99) name(21th_inf_razv_m107)
 }
 
 {"leopard_1a5_ukr"
-("vehicle" period(2022s) min_stage(5) max_stage(99) side(ukr) crew(ukr_vehicleman:4) cw(0) cp(17))
+("vehicle" period(2022s) min_stage(5) max_stage(12) side(ukr) crew(ukr_vehicleman:4) cw(0) cp(17))
 {cost 600}
 }
 
@@ -1195,12 +1195,12 @@ min_stage(8) max_stage(99) name(21th_inf_razv_m107)
 }
 
 {"t62m1_ukr"
-("vehicle" period(2022s) min_stage(5) max_stage(99) side(ukr) crew(ukr_vehicleman:4) cw(0) cp(17))
+("vehicle" period(2022s) min_stage(5) max_stage(10) side(ukr) crew(ukr_vehicleman:4) cw(0) cp(17))
 {cost 550}
 }
 
 {"t72a_ukr"
-("vehicle" period(2022s) min_stage(7) max_stage(99) side(ukr) crew(ukr_vehicleman:3) cw(0) cp(17))
+("vehicle" period(2022s) min_stage(7) max_stage(14) side(ukr) crew(ukr_vehicleman:3) cw(0) cp(17))
 {cost 800}
 }
 

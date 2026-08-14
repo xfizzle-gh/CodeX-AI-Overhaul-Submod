@@ -1126,17 +1126,17 @@ c1(usmc_teamlead:2) c2(usmc_mg:1) c3(usmc_rifleman:3) c4(usmc_m2hb_crew:1) c5(us
 }
 
 {"t_55m_fin"
-	("vehicle" period(2022s) min_stage(1) max_stage(99) side(nato) crew(nato_vehicleman:4) cw(0) cp(15))
+	("vehicle" period(2022s) min_stage(1) max_stage(10) side(nato) crew(nato_vehicleman:4) cw(0) cp(15))
 	{cost 550}
 }
 
 {"leopard_1a5_n"
-	("vehicle"  period(2022s) min_stage(3) max_stage(99) side(nato) crew(nato_vehicleman:4) cw(0) cp(17))
+	("vehicle"  period(2022s) min_stage(3) max_stage(12) side(nato) crew(nato_vehicleman:4) cw(0) cp(17))
 	{cost 650}
 }
 
 {"leopard_c2_mexas"
-	("vehicle"  period(2022s) min_stage(4) max_stage(99) side(nato) crew(nato_vehicleman:4) cw(0) cp(17))
+	("vehicle"  period(2022s) min_stage(4) max_stage(12) side(nato) crew(nato_vehicleman:4) cw(0) cp(17))
 	{cost 700}
 }
 

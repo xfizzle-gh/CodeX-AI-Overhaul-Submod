@@ -5,7 +5,10 @@ printDebug = true
 printTempDebug = false
 
 spawnPoint = BotApi.Instance.spawnPointName
-spawnSide = string.sub(spawnPoint,1,1)
+if type(spawnPoint) ~= "string" or spawnPoint == "" then
+	spawnPoint = "a1"
+end
+spawnSide = string.sub(spawnPoint, 1, 1)
 gameMode = BotApi.Instance.gameMode
 enemyTeam = BotApi.Instance.enemyTeam
 team = BotApi.Instance.team
@@ -345,7 +348,11 @@ function OnGameStartUtility(purchasesModuleSuffix)
         purchases = {}
     end
 
-    -- Set up context
+    if not ApplyPurchaseOverlay then
+        pcall(require, [[/script/multiplayer/modes/purchase_overlay]])
+    end
+    if ApplyPurchaseOverlay then ApplyPurchaseOverlay(purchases) end
+
     Context.Purchase = PIter:new(purchases)
 
     -- Update and set cooldown. unit selection now happens when the bot is ready to spawn

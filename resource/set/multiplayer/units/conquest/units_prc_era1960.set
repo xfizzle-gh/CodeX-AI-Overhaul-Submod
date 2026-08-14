@@ -391,15 +391,15 @@
 
 
 {"ztz59"
-	("vehicle" period(2022s) min_stage(3) max_stage(99) side(prc) crew(pla_vehicleman:4) cw(0) cp(10))
+	("vehicle" period(2022s) min_stage(3) max_stage(10) side(prc) crew(pla_vehicleman:4) cw(0) cp(10))
 	{cost 320} 
 }
 {"ztz79"
-	("vehicle2" period(2022s) min_stage(4) max_stage(99) side(prc) crew1(pla_vehicleman:3) crew2(pla_vehicleman:1) cw(0) cp(12))
+	("vehicle2" period(2022s) min_stage(4) max_stage(10) side(prc) crew1(pla_vehicleman:3) crew2(pla_vehicleman:1) cw(0) cp(12))
 	{cost 450} 
 }
 {"ztz88a"
-	("vehicle" period(2022s) min_stage(5) max_stage(99) side(prc) crew(pla_vehicleman:4) cw(0) cp(14))
+	("vehicle" period(2022s) min_stage(5) max_stage(12) side(prc) crew(pla_vehicleman:4) cw(0) cp(14))
 	{cost 650}
 }
 

@@ -116,3 +116,7 @@
 			{"support_e2_fail"}
 			{"support_e2_lz"}
 			{"support_e2_flag"}
+			{"support_templates_inert"}
+			{"support_templates_culled"}
+			{"support_templates_ally"}
+			{"support_templates_enemy"}

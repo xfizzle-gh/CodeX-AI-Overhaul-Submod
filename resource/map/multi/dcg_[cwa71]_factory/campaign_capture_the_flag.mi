@@ -3748,6 +3748,7 @@
 					}
 				}
 			}
+			(include "../support_templates_inert.inc")
 			(include "../attack_support_waves.inc")
 			(include "../enemy_defense_support.inc")
 			(include "../defense_support_waves.inc")

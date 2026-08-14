@@ -652,10 +652,10 @@
 	}
 
 	{on "personage_check"
+		;// 70% chance to go wounded/revive-able in MP; SP always eligible.
+		;// Still blocked for swimming/burned/crush/no_revive edge cases.
 		{if not tagged "hero_unit"				;// exception for unit to be revive-able in missions
-			{if not user_control
-				{able "personage" 0}
-			else swimming
+			{if swimming
 				{able "personage" 0}
 			else burned
 				{able "personage" 0}
@@ -665,7 +665,8 @@
 				{able "personage" 0}
 				{tags remove "no_revive"}
 			else
-				{if rand 0.5
+				{able "personage" 1}
+				{if rand 0.3
 					{call_synced "mp_personage_0"}
 				}
 			}
