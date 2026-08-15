@@ -173,12 +173,7 @@
 			{"ai_logic/ai_add_smoke_grenade"
 				{condition
 					{terms
-						{"1.cmp_i"
-							{var "ai_attack_started$"}
-							{op ">"}
-							{value 0}
-						}
-						{"2.entities"
+						{"1.entities"
 							{selector
 								{source advanced}
 								{group
@@ -188,27 +183,22 @@
 										}
 									}
 									{include
-										{with_item
-											{type amount}
-											{item "smoke_grenade"}
-											{min 1}
-										}
 										{prop
 											{prop human}
 										}
+										{state
+											{state operatable}
+										}
 									}
 									{exclude
-										{tag
-											{tag cmp_def}
-										}
-										{tag
-											{tag _def}
-										}
 										{tag
 											{tag _user_ally}
 										}
 										{tag
 											{tag ignore_give_smoke}
+										}
+										{tag
+											{tag _user}
 										}
 										{state
 											{state user_control}
@@ -248,27 +238,22 @@
 									}
 								}
 								{include
-									{with_item
-										{type amount}
-										{item "smoke_grenade"}
-										{min 1}
-									}
 									{prop
 										{prop human}
 									}
+									{state
+										{state operatable}
+									}
 								}
 								{exclude
-									{tag
-										{tag cmp_def}
-									}
-									{tag
-										{tag _def}
-									}
 									{tag
 										{tag _user_ally}
 									}
 									{tag
 										{tag ignore_give_smoke}
+									}
+									{tag
+										{tag _user}
 									}
 									{state
 										{state user_control}
@@ -286,7 +271,7 @@
 									}
 								}
 							}
-							{amount 15
+							{amount 20
 							}
 						}
 						{effect add_custom_smoke_grenade}
@@ -308,9 +293,9 @@
 									{type human}
 									{state operatable}
 								}
-								{action add}
-								{item "ai_rdg1_smoke" "grenade"}
-								{stack 0}
+							{action add}
+							{item "ai_rdg1_smoke" "grenade"}
+							{stack 1}
 							}
 						}
 						{"case"
@@ -318,37 +303,17 @@
 								{type cmp_i}
 								{var "bot_army$"}
 								{op "=="}
-								{value 2}
+								{value 5}
 							}
-							{"switch"
-								{"case"
-									{condition
-										{type rand}
-										{value 0.75}
-									}
-									{"inventory"
-										{selector
-											{tag give_custom_smoke_grenade}
-											{type human}
-											{state operatable}
-										}
-										{action add}
-										{item "ai_m24_smoke" "grenade"}
-										{stack 0}
-									}
+							{"inventory"
+								{selector
+									{tag give_custom_smoke_grenade}
+									{type human}
+									{state operatable}
 								}
-								{"default"
-									{"inventory"
-										{selector
-											{tag give_custom_smoke_grenade}
-											{type human}
-											{state operatable}
-										}
-										{action add}
-										{item "ai_nbk39" "grenade"}
-										{stack 0}
-									}
-								}
+							{action add}
+							{item "ai_rdg1_smoke" "grenade"}
+							{stack 1}
 							}
 						}
 						{"case"
@@ -356,75 +321,17 @@
 								{type cmp_i}
 								{var "bot_army$"}
 								{op "=="}
-								{value 3}
+								{value 6}
 							}
-							{"switch"
-								{"case"
-									{condition
-										{type rand}
-										{value 0.4}
-									}
-									{"inventory"
-										{selector
-											{tag give_custom_smoke_grenade}
-											{type human}
-											{state operatable}
-										}
-										{action add}
-										{item "ai_m42_wp" "grenade"}
-										{stack 0}
-									}
+							{"inventory"
+								{selector
+									{tag give_custom_smoke_grenade}
+									{type human}
+									{state operatable}
 								}
-								{"default"
-									{"inventory"
-										{selector
-											{tag give_custom_smoke_grenade}
-											{type human}
-											{state operatable}
-										}
-										{action add}
-										{item "ai_m43_smoke" "grenade"}
-										{stack 0}
-									}
-								}
-							}
-						}
-						{"case"
-							{condition
-								{type cmp_i}
-								{var "bot_army$"}
-								{op "=="}
-								{value 4}
-							}
-							{"switch"
-								{## "case"
-									{condition
-										{type rand}
-										{value 0.4}
-									}
-									{"inventory"
-										{selector
-											{tag give_custom_smoke_grenade}
-											{type human}
-											{state operatable}
-										}
-										{action add}
-										{item "ai_m15_wp" "grenade"}
-										{stack 0}
-									}
-								}
-								{"default"
-									{"inventory"
-										{selector
-											{tag give_custom_smoke_grenade}
-											{type human}
-											{state operatable}
-										}
-										{action add}
-										{item "ai_anm8_smoke" "grenade"}
-										{stack 0}
-									}
-								}
+							{action add}
+							{item "ai_rdg1_smoke" "grenade"}
+							{stack 1}
 							}
 						}
 						{"default"
@@ -434,9 +341,9 @@
 									{type human}
 									{state operatable}
 								}
-								{action add}
-								{item "ai_nbk39" "grenade"}
-								{stack 0}
+							{action add}
+							{item "ai_anm8_smoke" "grenade"}
+							{stack 1}
 							}
 						}
 					}
@@ -450,6 +357,7 @@
 							{state operatable}
 						}
 						{tag_add ignore_give_smoke}
+						{tag_add smk_}
 						{tag_remove give_custom_smoke_grenade}
 					}
 					{"delay"

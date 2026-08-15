@@ -1,5 +1,6 @@
 {from "pattern throwable"
 	{mass 0.6}
+	{tag "smoke_grenade"}
 
 	{special
 		{PrepareCursor "grenade_sm"}

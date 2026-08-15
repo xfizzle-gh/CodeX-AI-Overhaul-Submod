@@ -1,5 +1,0 @@
-;SDL
-; Fallback if anything still applies mid — same modern roster.
-{units
-	(include "roster_2022s.set")
-}

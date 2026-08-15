@@ -1900,8 +1900,14 @@ min_stage(1) max_stage(8) name(ulman_squad)
 }
 
 {"il-76td_para_ai"
-	("squad_vehicle_ai8" period(2022s) min_stage(1) max_stage(99) side(rusa) vehicle(il-76td_para) crew1(rus_pliot:5) crew2(106vdv_squadlead:1) crew3(106vdv_mg:2) crew4(106vdv_greenader:2) crew5(106vdv_antitank:2) crew6(106vdv_medic:2) crew7(106vdv_ags17crew:2) crew8(106vdv_rifleman:3) cw(0) cp(10))
-	{cost 150}
+	("squad_vehicle_ai8" period(2022s) min_stage(1) max_stage(99) side(rusa) vehicle(il-76td_para) crew1(rus_pliot:5) crew2(106vdv_squadlead:1) crew3(106vdv_mg:2) crew4(106vdv_greenader:2) crew5(106vdv_antitank:2) crew6(106vdv_medic:2) crew7(106vdv_ags17crew:2) crew8(106vdv_rifleman:3) cw(0) cp(0))
+	{cost 0}
+	{not_for_player_sale 1}
+}
+
+{"il-76td_bmd2_ai"
+	("squad_vehicle_ai7" period(2022s) min_stage(1) max_stage(99) side(rusa) vehicle(il-76td_bmd2) crew1(rus_pliot:5) crew2(vdv_vehicleman1:2) crew3(106vdv_squadlead:1) crew4(106vdv_greenader:1) crew5(106vdv_antitank:1) crew6(106vdv_mg:1) crew7(106vdv_rifleman:1) cw(0) cp(0))
+	{cost 0}
 	{not_for_player_sale 1}
 }
 

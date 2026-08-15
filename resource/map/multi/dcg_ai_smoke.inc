@@ -1,24 +1,18 @@
-;// Clean DCG-only AI infantry smoke response.
-;// Uses attack_ground because throw_sk_grenade is unreliable in scripted AI flows.
-
 			{"codex/ai_smoke/infantry"
 				{condition
 					{type 1}
 					{terms
-						{"1.cmp_i"
-							{var "dcg_on$"}
-							{op ">"}
-							{value 2}
-						}
-						{"2.see_actors"
+						{"1.see_actors"
 							{selector
 								{source advanced}
 								{ignore_captured_by_user 0}
 								{group
-									{include
-										{tag
-											{tag bot}
+									{select
+										{zone
+											{zone "gamezone"}
 										}
+									}
+									{include
 										{prop
 											{prop human}
 										}
@@ -34,18 +28,14 @@
 											{state linked}
 										}
 										{tag
+											{tag _user}
+										}
+										{tag
 											{tag _cx_smoke_busy}
 										}
 										{tag
 											{tag _lua_mi}
 										}
-										{tag
-											{tag _lua_alert}
-										}
-										{tag
-											{tag _e_active}
-										}
-										{cover}
 									}
 								}
 							}
@@ -60,7 +50,7 @@
 									}
 									{include
 										{state
-											{state "operatable user_control"}
+											{state operatable}
 										}
 									}
 									{exclude
@@ -72,9 +62,8 @@
 							}
 							{distance
 								{mode near_than}
-								{meters 75}
+								{meters 80}
 							}
-							{detection visible}
 							{tag
 								{"tag pair"}
 								{"for selector" _cx_smoke_seen}
@@ -84,702 +73,312 @@
 					}
 				}
 				{actions
-					{"switch"
-						{"case"
-							{condition
-								{expression "1 & 2"}
-								{terms
-									{"1.entities"
-										{selector
-											{source advanced}
-											{ignore_captured_by_user 0}
-											{group
-												{select
-													{tag
-														{tag _cx_smoke_seen}
-													}
-												}
-												{include
-													{with_item
-														{type amount}
-														{item "nbk39" "grenade"}
-														{min 1}
-													}
-												}
-											}
-											{group
-												{select
-													{tag
-														{tag _cx_smoke_seen}
-													}
-												}
-												{include
-													{with_item
-														{type amount}
-														{item "ai_nbk39" "grenade"}
-														{min 1}
-													}
-												}
-											}
-											{group
-												{select
-													{tag
-														{tag _cx_smoke_seen}
-													}
-												}
-												{include
-													{with_item
-														{type amount}
-														{item "rdg1_smoke" "grenade"}
-														{min 1}
-													}
-												}
-											}
-											{group
-												{select
-													{tag
-														{tag _cx_smoke_seen}
-													}
-												}
-												{include
-													{with_item
-														{type amount}
-														{item "ai_rdg1_smoke" "grenade"}
-														{min 1}
-													}
-												}
-											}
-											{group
-												{select
-													{tag
-														{tag _cx_smoke_seen}
-													}
-												}
-												{include
-													{with_item
-														{type amount}
-														{item "m24_smoke" "grenade"}
-														{min 1}
-													}
-												}
-											}
-											{group
-												{select
-													{tag
-														{tag _cx_smoke_seen}
-													}
-												}
-												{include
-													{with_item
-														{type amount}
-														{item "ai_m24_smoke" "grenade"}
-														{min 1}
-													}
-												}
-											}
-											{group
-												{select
-													{tag
-														{tag _cx_smoke_seen}
-													}
-												}
-												{include
-													{with_item
-														{type amount}
-														{item "rdgm_smoke" "grenade"}
-														{min 1}
-													}
-												}
-											}
-											{group
-												{select
-													{tag
-														{tag _cx_smoke_seen}
-													}
-												}
-												{include
-													{with_item
-														{type amount}
-														{item "anm8_smoke" "grenade"}
-														{min 1}
-													}
-												}
-											}
-											{group
-												{select
-													{tag
-														{tag _cx_smoke_seen}
-													}
-												}
-												{include
-													{with_item
-														{type amount}
-														{item "ai_anm8_smoke" "grenade"}
-														{min 1}
-													}
-												}
-											}
-											{group
-												{select
-													{tag
-														{tag _cx_smoke_seen}
-													}
-												}
-												{include
-													{with_item
-														{type amount}
-														{item "m43_smoke" "grenade"}
-														{min 1}
-													}
-												}
-											}
-											{group
-												{select
-													{tag
-														{tag _cx_smoke_seen}
-													}
-												}
-												{include
-													{with_item
-														{type amount}
-														{item "ai_m43_smoke" "grenade"}
-														{min 1}
-													}
-												}
-											}
-										}
+					{"delay"
+						{time 0.1}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{ignore_captured_by_user 0}
+							{group
+								{select
+									{tag
+										{tag _cx_smoke_seen}
 									}
-									{"2.rand"
-										{value 1.0}
+								}
+								{exclude
+									{tag
+										{tag _cx_smoke_busy}
+									}
+									{state
+										{state "dead inactive"}
 									}
 								}
 							}
-							{"entity_state"
-								{selector
-									{source advanced}
-									{ignore_captured_by_user 0}
-									{group
-										{select
-											{tag
-												{tag _cx_smoke_seen}
-											}
-										}
-										{include
-											{with_item
-												{type amount}
-												{item "nbk39" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{group
-										{select
-											{tag
-												{tag _cx_smoke_seen}
-											}
-										}
-										{include
-											{with_item
-												{type amount}
-												{item "ai_nbk39" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{group
-										{select
-											{tag
-												{tag _cx_smoke_seen}
-											}
-										}
-										{include
-											{with_item
-												{type amount}
-												{item "rdg1_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{group
-										{select
-											{tag
-												{tag _cx_smoke_seen}
-											}
-										}
-										{include
-											{with_item
-												{type amount}
-												{item "ai_rdg1_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{group
-										{select
-											{tag
-												{tag _cx_smoke_seen}
-											}
-										}
-										{include
-											{with_item
-												{type amount}
-												{item "m24_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{group
-										{select
-											{tag
-												{tag _cx_smoke_seen}
-											}
-										}
-										{include
-											{with_item
-												{type amount}
-												{item "ai_m24_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{group
-										{select
-											{tag
-												{tag _cx_smoke_seen}
-											}
-										}
-										{include
-											{with_item
-												{type amount}
-												{item "rdgm_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{group
-										{select
-											{tag
-												{tag _cx_smoke_seen}
-											}
-										}
-										{include
-											{with_item
-												{type amount}
-												{item "anm8_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{group
-										{select
-											{tag
-												{tag _cx_smoke_seen}
-											}
-										}
-										{include
-											{with_item
-												{type amount}
-												{item "ai_anm8_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{group
-										{select
-											{tag
-												{tag _cx_smoke_seen}
-											}
-										}
-										{include
-											{with_item
-												{type amount}
-												{item "m43_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{group
-										{select
-											{tag
-												{tag _cx_smoke_seen}
-											}
-										}
-										{include
-											{with_item
-												{type amount}
-												{item "ai_m43_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{sort
-										{type entity}
-										{entity
-											{tag _cx_smoke_target}
-										}
-									}
-									{amount 1}
-								}
-								{tag_add _cx_smoke_thrower}
-								{tag_add _cx_smoke_busy}
-								{tag_add _lua_mi}
-							}
-							{"switch"
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state operatable}
-											{with_item
-												{type amount}
-												{item "nbk39" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{"inventory"
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state "not dead"}
-										}
-										{action take}
-										{item "nbk39" "grenade"}
-									}
-								}
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state operatable}
-											{with_item
-												{type amount}
-												{item "ai_nbk39" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{"inventory"
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state "not dead"}
-										}
-										{action take}
-										{item "ai_nbk39" "grenade"}
-									}
-								}
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state operatable}
-											{with_item
-												{type amount}
-												{item "rdg1_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{"inventory"
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state "not dead"}
-										}
-										{action take}
-										{item "rdg1_smoke" "grenade"}
-									}
-								}
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state operatable}
-											{with_item
-												{type amount}
-												{item "ai_rdg1_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{"inventory"
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state "not dead"}
-										}
-										{action take}
-										{item "ai_rdg1_smoke" "grenade"}
-									}
-								}
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state operatable}
-											{with_item
-												{type amount}
-												{item "m24_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{"inventory"
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state "not dead"}
-										}
-										{action take}
-										{item "m24_smoke" "grenade"}
-									}
-								}
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state operatable}
-											{with_item
-												{type amount}
-												{item "ai_m24_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{"inventory"
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state "not dead"}
-										}
-										{action take}
-										{item "ai_m24_smoke" "grenade"}
-									}
-								}
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state operatable}
-											{with_item
-												{type amount}
-												{item "rdgm_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{"inventory"
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state "not dead"}
-										}
-										{action take}
-										{item "rdgm_smoke" "grenade"}
-									}
-								}
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state operatable}
-											{with_item
-												{type amount}
-												{item "anm8_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{"inventory"
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state "not dead"}
-										}
-										{action take}
-										{item "anm8_smoke" "grenade"}
-									}
-								}
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state operatable}
-											{with_item
-												{type amount}
-												{item "ai_anm8_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{"inventory"
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state "not dead"}
-										}
-										{action take}
-										{item "ai_anm8_smoke" "grenade"}
-									}
-								}
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state operatable}
-											{with_item
-												{type amount}
-												{item "m43_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{"inventory"
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state "not dead"}
-										}
-										{action take}
-										{item "m43_smoke" "grenade"}
-									}
-								}
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state operatable}
-											{with_item
-												{type amount}
-												{item "ai_m43_smoke" "grenade"}
-												{min 1}
-											}
-										}
-									}
-									{"inventory"
-										{selector
-											{tag _cx_smoke_thrower}
-											{type human}
-											{state "not dead"}
-										}
-										{action take}
-										{item "ai_m43_smoke" "grenade"}
-									}
-								}
-								{"default"}
-							}
-							{"delay"
-								{time 0.35}
-							}
-							{"action"
-								{selector
-									{ignore_captured_by_user 0}
-									{tag _cx_smoke_thrower}
-									{type human}
-									{state "not dead"}
-								}
-								{drop "orders sensor senseless"}
-								{action attack_ground}
-								{target
-									{source advanced}
-									{ignore_captured_by_user 0}
-									{group
-										{select
-											{tag
-												{tag _cx_smoke_target}
-											}
-										}
-										{include
-											{state
-												{state operatable}
-											}
-										}
-										{exclude
-											{state
-												{state inactive}
-											}
-										}
-									}
-								}
-							}
-							{"delay"
-								{time 4}
-							}
-							{"entity_state"
-								{selector
-									{ignore_captured_by_user 0}
-									{tag _cx_smoke_thrower}
-								}
-								{tag_remove _lua_mi}
-								{tag_remove _cx_smoke_busy}
-								{tag_remove _cx_smoke_thrower}
-							}
-							{"entity_state"
-								{selector
-									{ignore_captured_by_user 0}
-									{tag _cx_smoke_seen}
-								}
-								{tag_remove _cx_smoke_seen}
-							}
-							{"entity_state"
-								{selector
-									{ignore_captured_by_user 0}
-									{tag _cx_smoke_target}
-								}
-								{tag_remove _cx_smoke_target}
-							}
-							{"delay"
-								{time 2}
-							}
-							{"trigger"
-								{name "codex/ai_smoke/infantry"}
+							{amount 1
 							}
 						}
-						{"default"
-							{"entity_state"
-								{selector
-									{ignore_captured_by_user 0}
-									{tag _cx_smoke_seen}
+						{tag_add _cx_smoke_thrower}
+						{tag_add _cx_smoke_busy}
+					}
+					{"inventory"
+						{selector
+							{tag _cx_smoke_thrower}
+							{state "not dead"}
+						}
+						{action add}
+						{item "ai_anm8_smoke" "grenade"}
+					}
+					{"delay"
+						{time 0.25}
+					}
+					{"inventory"
+						{selector
+							{tag _cx_smoke_thrower}
+							{state "not dead"}
+						}
+						{action take}
+						{item "ai_anm8_smoke" "grenade"}
+					}
+					{"delay"
+						{time 0.4}
+					}
+					{"actor_state"
+						{selector
+							{tag _cx_smoke_thrower}
+							{state "not dead"}
+						}
+						{fire_mode hold}
+					}
+					{"action"
+						{selector
+							{ignore_captured_by_user 0}
+							{tag _cx_smoke_thrower}
+							{type human}
+							{state "not dead"}
+						}
+						{drop "orders sensor senseless"}
+						{action attack_ground}
+						{target
+							{ignore_captured_by_user 0}
+							{tag _cx_smoke_target}
+						}
+					}
+					{"delay"
+						{time 5}
+					}
+					{"entity_state"
+						{selector
+							{tag _cx_smoke_thrower}
+						}
+						{tag_remove _cx_smoke_busy}
+						{tag_remove _cx_smoke_thrower}
+						{tag_remove _cx_smoke_seen}
+					}
+					{"entity_state"
+						{selector
+							{tag _cx_smoke_target}
+						}
+						{tag_remove _cx_smoke_target}
+					}
+					{"delay"
+						{time 8}
+					}
+					{"trigger"
+						{name "codex/ai_smoke/infantry"}
+					}
+				}
+			}
+
+			{"codex/ai_smoke/assault_flag"
+				{condition
+					{type 1}
+					{terms
+						{"1.near"
+							{units
+								{source advanced}
+								{ignore_captured_by_user 0}
+								{group
+									{select
+										{zone
+											{zone "gamezone"}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+										{state
+											{state operatable}
+										}
+									}
+									{exclude
+										{state
+											{state user_control}
+										}
+										{state
+											{state linked}
+										}
+										{tag
+											{tag _user}
+										}
+										{tag
+											{tag _cx_smoke_busy}
+										}
+									}
 								}
-								{tag_remove _cx_smoke_seen}
 							}
-							{"entity_state"
-								{selector
-									{ignore_captured_by_user 0}
-									{tag _cx_smoke_target}
+							{near_to
+								{source advanced}
+								{ignore_captured_by_user 0}
+								{group
+									{select
+										{tag
+											{tag fpc1}
+										}
+										{tag
+											{tag fpc2}
+										}
+										{tag
+											{tag fpc3}
+										}
+										{tag
+											{tag fpc4}
+										}
+										{tag
+											{tag fpc5}
+										}
+										{tag
+											{tag flag}
+										}
+									}
+									{exclude
+										{state
+											{state inactive}
+										}
+									}
 								}
-								{tag_remove _cx_smoke_target}
 							}
-							{"delay"
-								{time 2.5}
+							{distance 45}
+						}
+					}
+				}
+				{actions
+					{"delay"
+						{time 0.1}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{ignore_captured_by_user 0}
+							{group
+								{select
+									{zone
+										{zone "gamezone"}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+									{state
+										{state operatable}
+									}
+								}
+								{exclude
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag _user}
+									}
+									{tag
+										{tag _cx_smoke_busy}
+									}
+								}
 							}
-							{"trigger"
-								{name "codex/ai_smoke/infantry"}
+							{amount 1
 							}
 						}
+						{tag_add _cx_smoke_thrower}
+						{tag_add _cx_smoke_busy}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag fpc1}
+									}
+									{tag
+										{tag fpc2}
+									}
+									{tag
+										{tag fpc3}
+									}
+									{tag
+										{tag fpc4}
+									}
+									{tag
+										{tag fpc5}
+									}
+									{tag
+										{tag flag}
+									}
+								}
+								{exclude
+									{state
+										{state inactive}
+									}
+								}
+							}
+							{sort
+								{type entity}
+								{entity
+									{tag _cx_smoke_thrower}
+								}
+							}
+							{amount 1
+							}
+						}
+						{tag_add _cx_smoke_target}
+					}
+					{"inventory"
+						{selector
+							{tag _cx_smoke_thrower}
+							{state "not dead"}
+						}
+						{action add}
+						{item "ai_anm8_smoke" "grenade"}
+					}
+					{"delay"
+						{time 0.25}
+					}
+					{"inventory"
+						{selector
+							{tag _cx_smoke_thrower}
+							{state "not dead"}
+						}
+						{action take}
+						{item "ai_anm8_smoke" "grenade"}
+					}
+					{"delay"
+						{time 0.4}
+					}
+					{"action"
+						{selector
+							{tag _cx_smoke_thrower}
+							{type human}
+							{state "not dead"}
+						}
+						{drop "orders sensor senseless"}
+						{action attack_ground}
+						{target
+							{tag _cx_smoke_target}
+						}
+					}
+					{"delay"
+						{time 5}
+					}
+					{"entity_state"
+						{selector
+							{tag _cx_smoke_thrower}
+						}
+						{tag_remove _cx_smoke_busy}
+						{tag_remove _cx_smoke_thrower}
+					}
+					{"entity_state"
+						{selector
+							{tag _cx_smoke_target}
+						}
+						{tag_remove _cx_smoke_target}
+					}
+					{"delay"
+						{time 12}
+					}
+					{"trigger"
+						{name "codex/ai_smoke/assault_flag"}
 					}
 				}
 			}

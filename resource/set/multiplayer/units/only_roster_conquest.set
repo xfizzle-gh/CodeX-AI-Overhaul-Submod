@@ -1,5 +1,0 @@
-;SDL
-; DC/conquest apply path — same modern unit pool.
-{units
-	(include "roster_2022s.set")
-}

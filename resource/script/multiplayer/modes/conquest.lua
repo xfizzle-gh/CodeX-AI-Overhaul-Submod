@@ -20,30 +20,15 @@ StartSpawnTime = {
 
 -- Time from last purchase AI will wait before attempting to buy a new unit.
 SpawnCooldownTime = {
-    -- Time between each wave
-    DCGWaveOffMin = 3.0 * 60 * 1000, 
-    DCGWaveOffMax = 5.0 * 60 * 1000,
-    -- Time between each wave (Defender)	
-    DCGWaveOffMin_Defender = 3.5 * 60 * 1000, 
-    DCGWaveOffMax_Defender = 5.0 * 60 * 1000,
-   -- Time between each wave (Attacker)
-    DCGWaveOffMin_Attacker = 3.0 * 60 * 1000, 
-    DCGWaveOffMax_Attacker = 5.0 * 60 * 1000,
-   -- Time between each spawn
-    DCGMin = 5 * 1000, 
-    DCGMax = 8 * 1000,
+    DCGWaveOffMin = 2.5 * 60000,
+    DCGWaveOffMax = 4 * 60000,
+    DCGMin = 2 * 1000,
+    DCGMax = 5 * 1000,
 }
 
--- Number of possible units than can be in a wave attack
 WaveUnit = {
-    Min = 4,
-    Max = 7,
-    -- Defender-specific range
-    Min_Defender = 3,
-    Max_Defender = 5,
-    -- Attacker-specific range
-    Min_Attacker = 4,
-    Max_Attacker = 7,
+    Min = 8,
+    Max = 14,
 }
 
 -- Sets time limit AI will wait for a unit it has chosen to buy if the unit is not yet available
@@ -58,8 +43,7 @@ botDefender = false
 botDifficultyModifier = 0
 enableWaveCounter = true
 
--- Global reduction for all runtime AI purchase waves.
-local NormalWaveSizeScale = 0.765
+
 
 -- One conquest.lua runs per bot. Resolve engine-owned identities once per instance.
 local myId = BotApi.Instance.playerId or 0
@@ -122,19 +106,19 @@ end
 
 local DifficultySettings = {
     easy = {
-        waveScale = 0.60,
-        waveGrowthScale = 0.45,
+        waveScale = 0.85,
+        waveGrowthScale = 1.00,
     },
     normal = {
-        waveScale = 0.78,
-        waveGrowthScale = 0.70,
+        waveScale = 0.92,
+        waveGrowthScale = 1.00,
     },
     hard = {
-        waveScale = 0.95,
-        waveGrowthScale = 0.90,
+        waveScale = 1.06,
+        waveGrowthScale = 1.00,
     },
     heroic = {
-        waveScale = 1.00,
+        waveScale = 1.12,
         waveGrowthScale = 1.00,
     },
 }
@@ -155,10 +139,13 @@ local conquestSpawnPointIndex = 0
 -- Sequential bot spawns (v1.064+). Override default utility Spawn().
 function GameModeSpawnUnit(unit, maxSquadSize)
 	if BotApi.Commands.SpawnAt and BotApi.Commands:SpawnAt(unit, maxSquadSize, conquestSpawnPointIndex) then
-		conquestSpawnPointIndex = conquestSpawnPointIndex + 1
+		if setAiSpawnIndex then
+			conquestSpawnPointIndex = setAiSpawnIndex(conquestSpawnPointIndex)
+		else
+			conquestSpawnPointIndex = conquestSpawnPointIndex + 1
+		end
 		return true
 	end
-	-- Fallback if SpawnAt unavailable (older engine / Code:X utility path)
 	return BotApi.Commands:Spawn(unit, maxSquadSize)
 end
 
@@ -246,173 +233,167 @@ local function setVarsInMissionScript()
 end
 
 -- Each order tick: 50% scatter flank / 50% weighted CaptureFlag.
--- Flank = real path order (uniform non-owned flag, or waypoint) so squads leave spawn and spread.
+-- Flank uses CWA attack_support_flank_* / entry_* (never rear/air).
 local FlankOrderChance = 0.50
-local FlankWaypointChance = 0.30
-local waveSpawnPossible = true
+local FlankWaypointChance = 0.55
+local FlankFirstOrderChance = 0.45
+local loggedWaypointNames = false
+local waveSpawnPossible
 local waveSpawnActive = true
 local waveUnitCount = 0
 local waveNumber = 0
 local waveUnitTotal
--- local waveUnitTotal = math.random(WaveUnit.Min, WaveUnit.Max)
--- local waveUnitTotal = math.random(adjustedMin, adjustedMax)
-if printDebug then print("Print: waveUnitTotal", waveUnitTotal) end
 
--- 定义每个师的优先级调整乘数
-local divisions = {
-    ["inf_div"] = { attackerMultiplier = 10, defenderMultiplier = 5, mechMultiplier = 0.25,
-					infantryMultiplier = 1.5, signallerMultiplier = 1.0, cannonMultiplier = 0.5, artMultiplier = 0.5, tankMultiplier = 0.75, 
-					heavyMultiplier = 0.5, uniqueMultiplier = 0.25, airMultiplier = 0.5, tbgMultiplier = 0.5, ibgMultiplier = 1.0, abgMultiplier = 0.5
-				  },
-    ["art_div"] = { attackerMultiplier = 5, defenderMultiplier = 3, mechMultiplier = 0.25,
-					infantryMultiplier = 0.75, signallerMultiplier = 2.0, cannonMultiplier = 1.5, artMultiplier = 1.5, tankMultiplier = 0.75, 
-					heavyMultiplier = 0.5, uniqueMultiplier = 0.5, airMultiplier = 0.5, tbgMultiplier = 0.5, ibgMultiplier = 0.5, abgMultiplier = 1.0
-				  },
-    ["tank_div"] = { attackerMultiplier = 4, defenderMultiplier = 4, mechMultiplier = 0.75,
-					infantryMultiplier = 0.5, signallerMultiplier = 0.5, cannonMultiplier = 0.5, artMultiplier = 0.5, tankMultiplier = 1.5, 
-					heavyMultiplier = 0.75, uniqueMultiplier = 0.5, airMultiplier = 0.5, tbgMultiplier = 1.0, ibgMultiplier = 0.5, abgMultiplier = 0.5
-				   },
-    ["heavytank_div"] = { attackerMultiplier = 5, defenderMultiplier = 2, mechMultiplier = 0.75,
-					infantryMultiplier = 0.5, signallerMultiplier = 0.5, cannonMultiplier = 0.5, artMultiplier = 0.5, tankMultiplier = 0.5, 
-					heavyMultiplier = 1.5, uniqueMultiplier = 0.5, airMultiplier = 0.5, tbgMultiplier = 1.0, ibgMultiplier = 0.5, abgMultiplier = 0.5
-						},
-    ["air_div"] = { attackerMultiplier = 2, defenderMultiplier = 3, mechMultiplier = 0.25,
-					infantryMultiplier = 0.75, signallerMultiplier = 0.75, cannonMultiplier = 0.75, artMultiplier = 0.5, tankMultiplier = 1.0, 
-					heavyMultiplier = 0.75, uniqueMultiplier = 0.5, airMultiplier = 1.5, tbgMultiplier = 0.5, ibgMultiplier = 0.5, abgMultiplier = 0.5
-				  },
-    ["standard_div"] = { attackerMultiplier = 1, defenderMultiplier = 1, mechMultiplier = 0.5,
-					infantryMultiplier = 1.0, signallerMultiplier = 0.5, cannonMultiplier = 0.75, artMultiplier = 0.5, tankMultiplier = 0.75, 
-					heavyMultiplier = 0.5, uniqueMultiplier = 0.25, airMultiplier = 0.25, tbgMultiplier = 0.5, ibgMultiplier = 0.5, abgMultiplier = 0.5
-					   },
-    ["mech_div"] = { attackerMultiplier = 3, defenderMultiplier = 3, mechMultiplier = 1.0,
-					infantryMultiplier = 1.0, signallerMultiplier = 1.0, cannonMultiplier = 0.5, artMultiplier = 0.5, tankMultiplier = 0.75, 
-					heavyMultiplier = 0.5, uniqueMultiplier = 1.0, airMultiplier = 1.0, tbgMultiplier = 1.0, ibgMultiplier = 1.0, abgMultiplier = 0.5
-				   },
-    ["unique_div"] = { attackerMultiplier = 4, defenderMultiplier = 4, mechMultiplier = 1.25,
-					infantryMultiplier = 0.75, signallerMultiplier = 1.5, cannonMultiplier = 0.75, artMultiplier = 1.0, tankMultiplier = 1.5, 
-					heavyMultiplier = 1.0, uniqueMultiplier = 2.0, airMultiplier = 1.0, tbgMultiplier = 1.0, ibgMultiplier = 1.0, abgMultiplier = 1.0
-				     }
-}
-
--- 选择一个师（根据实际需求选择）
-local divisionNames = {"inf_div", "art_div", "tank_div", "heavytank_div", "air_div", "standard_div", "mech_div", "unique_div"}
-
--- local divisionsWithProbability = {
-    -- {name = "inf_div", probability = 10},  -- 10% 概率
-    -- {name = "art_div", probability = 10},  -- 10% 概率
-    -- {name = "tank_div", probability = 20}, -- 15% 概率
-    -- {name = "heavytank_div", probability = 15}, -- 15% 概率
-    -- {name = "air_div", probability = 10},  -- 10% 概率
-    -- {name = "standard_div", probability = 15}, -- 15% 概率
-    -- {name = "mech_div", probability = 10},  -- 10% 概率
-    -- {name = "unique_div", probability = 10},  -- 10% 概率（特殊）
--- }
-
--- 加权随机选择函数
--- local function selectDivisionWithProbability(divisions)
-    -- local totalProbability = 0
-    -- for _, div in ipairs(divisions) do
-        -- totalProbability = totalProbability + div.probability
-    -- end
-
-    -- local randomValue = math.random(1, totalProbability)
-    -- local cumulativeProbability = 0
-    -- for _, div in ipairs(divisions) do
-        -- cumulativeProbability = cumulativeProbability + div.probability
-        -- if randomValue <= cumulativeProbability then
-            -- return div.name
-        -- end
-    -- end
--- end
-
--- local selectedDivision = divisionNames[math.random(#divisionNames)]
--- 基础随机选择
-local function selectRandomDivision()
-    return divisionNames[math.random(#divisionNames)]
+local function rollWaveSize()
+	local raw = math.random(WaveUnit.Min, WaveUnit.Max)
+	local scale = (ActiveDifficultySettings and ActiveDifficultySettings.waveScale) or 1
+	return math.max(1, math.floor(raw * scale + 0.5))
 end
 
--- 根据波次选择师
--- local function selectDivisionBasedOnWave(waveNumber)
-    -- if waveNumber == 3 then
-        -- return "art_div"
-    -- elseif waveNumber == 5 then
-        -- return "tank_div"
-    -- elseif waveNumber == 7 then
-        -- return "air_div"
-    -- else
-        -- return selectRandomDivision()-- selectDivisionWithProbability(divisionsWithProbability)
-    -- end
--- end
+local function setDocVarsInNattorSpeak()
+	BotApi.Scene:SetVar("ai_divisions", 0)
+	BotApi.Scene:SetVar("bots_divisions", 0)
+end
 
--- 示例：初始随机选择师
-local currentDivision = selectRandomDivision()  -- 初始随机选择师
+local usedOpeningArty = false
+local lastWaveArty = -1
 
--- 获取该师的优先级调整参数
-local divisionParams = divisions[currentDivision]-- [selectedDivision]
+local function flagSlot(name)
+	local n = tostring(name or ""):match("(%d+)$")
+	n = n and tonumber(n) or nil
+	if n and n >= 1 and n <= 5 then return n end
+	return nil
+end
 
--- 获取该师的讲述人系统
-local function setDocVarsInNattorSpeak(currentDivision)
-	
-	local divisionsOnAi = { inf_div = 1, art_div = 2, tank_div = 3, heavytank_div = 4, air_div = 5, standard_div = 6, mech_div = 7, unique_div = 8}
-	local divisionsOnMissionScript = {
-		prc = { inf_div = 5, art_div = 6, tank_div = 9, heavytank_div = 9, air_div = 9, standard_div = 5, mech_div = 9, unique_div = 9},
-		frg = { inf_div = 10, art_div = 6, tank_div = 11, heavytank_div = 11, air_div = 6, standard_div = 10, mech_div = 10, unique_div = 11}
-	}
-	local divisionNumberDebug = divisionsOnAi[currentDivision] or 0
-	local botNation = BotApi.Instance and BotApi.Instance.army or ""
-	local missionDivisionNumber = divisionNumberDebug
-	if divisionsOnMissionScript[botNation] then
-		missionDivisionNumber = divisionsOnMissionScript[botNation][currentDivision] or divisionNumberDebug
+local function publishLiveArtyFlags()
+	local live = {0, 0, 0, 0, 0}
+	local n = 0
+	for _, flag in pairs(BotApi.Scene.Flags or {}) do
+		local i = flagSlot(flag.name)
+		if i then
+			live[i] = 1
+			n = n + 1
+			if printDebug then print("DCG live flag", flag.name, "slot", i) end
+		end
 	end
-
-	BotApi.Scene:SetVar("ai_divisions", divisionNumberDebug)
-	BotApi.Scene:SetVar("bots_divisions", missionDivisionNumber)
-
-	print("hoboe_by_ordos_debug,divisionNumber=",divisionNumberDebug) 
+	for i = 1, 5 do
+		BotApi.Scene:SetVar("arty_f" .. i, live[i])
+	end
+	return n, live
 end
 
-local waveNumberExtraUnits = {
-    [3] = 3,  -- waveNumber 为 3 时，额外增加 5
-    [5] = 5, -- waveNumber 为 5 时，额外增加 7
-    [7] = 7, -- waveNumber 为 7 时，额外增加 10
-    [10] = 10, -- waveNumber 为 10 时，额外增加 13
-    [13] = 13, -- waveNumber 为 13 时，额外增加 15
-    [15] = 15, -- waveNumber 为 15 时，额外增加 17
-}
-
--- 自定义四舍五入函数
-function math.round(x)
-    return math.floor(x + 0.5)
+local function requestOpeningArty()
+	if usedOpeningArty then return end
+	usedOpeningArty = true
+	local n = publishLiveArtyFlags()
+	if n < 1 then n = 1 end
+	BotApi.Scene:SetVar("arty_prep_open", n)
+	if printDebug then print("DCG arty_prep_open requested", n) end
 end
 
--- 计算 waveUnitTotal 的函数
-function calculateWaveUnitTotal()-- (currentDivision, waveNumber, botDefender)
-	local ExtraUnitsValue = math.round((waveNumberExtraUnits[waveNumber] or 0) * ActiveDifficultySettings.waveGrowthScale)
-	local divisionParams = divisions[currentDivision]
-	local rawWaveTotal
+local function requestWaveArty(wave)
+	local w = wave
+	if w < 1 then w = 1 end
+	if lastWaveArty == w then return end
+	lastWaveArty = w
+	local _, live = publishLiveArtyFlags()
+	local slots = {}
+	for i = 1, 5 do
+		if live[i] == 1 then slots[#slots + 1] = i end
+	end
+	local slot = (#slots > 0) and slots[math.random(#slots)] or 1
+	BotApi.Scene:SetVar("arty_wave_slot", slot)
+	BotApi.Scene:SetVar("arty_prep_wave", w)
+	if not botDefender then
+		BotApi.Scene:SetVar("arty_smoke", 1)
+	end
+	if printDebug then print("DCG arty_prep_wave requested", w, "slot", slot) end
+end
 
-	if botDefender then
-		rawWaveTotal = math.random(WaveUnit.Min_Defender, WaveUnit.Max_Defender) + divisionParams.defenderMultiplier + ExtraUnitsValue
+local function startAmbientArty()
+end
+
+local function spawnParaDrop(kind, tries)
+	if not isMissionAuthority or not isMissionAuthority() then return end
+	tries = tries or 0
+	local army = BotApi.Instance.army
+	local west = (army == "nato" or army == "ukr" or army == "csa" or army == "frg")
+	local paraKind = 1
+	local unit = west and "c130_para_ai" or "il-76td_para_ai"
+	if kind == "veh" then
+		paraKind = 2
+		unit = west and "c130_lav25_ai" or "il-76td_bmd2_ai"
+	end
+	local ok = GameModeSpawnUnit(unit, MaxSquadSize or 7)
+	if not ok and kind == "veh" then
+		paraKind = 1
+		unit = west and "c130_para_ai" or "il-76td_para_ai"
+		ok = GameModeSpawnUnit(unit, MaxSquadSize or 7)
+	end
+	if not ok then
+		if tries < 8 then
+			if printDebug then print("DCG codex_para retry", tries + 1) end
+			BotApi.Events:SetQuantTimer(function() spawnParaDrop(kind, tries + 1) end, 4000)
+		elseif printDebug then
+			print("DCG codex_para spawn FAIL")
+		end
+		return
+	end
+	local _, live = publishLiveArtyFlags()
+	local quiet = {}
+	for i = 1, 5 do
+		if live[i] ~= 1 then quiet[#quiet + 1] = i end
+	end
+	local lz
+	if #quiet > 0 then
+		lz = quiet[math.random(#quiet)]
 	else
-		rawWaveTotal = math.random(WaveUnit.Min_Attacker, WaveUnit.Max_Attacker) + divisionParams.attackerMultiplier + math.round(ExtraUnitsValue/2)
+		lz = 5 + math.random(1, 4)
 	end
+	BotApi.Scene:SetVar("codex_para_lz", lz)
+	BotApi.Scene:SetVar("codex_para_kind", paraKind)
+	BotApi.Scene:SetVar("codex_para", 1)
+	if printDebug then print("DCG codex_para spawn", unit, "kind", paraKind, "lz", lz) end
+end
 
-	waveUnitTotal = math.max(3, math.round(rawWaveTotal * ActiveDifficultySettings.waveScale * NormalWaveSizeScale))
-	if printDebug then print("Print: waveUnitTotal", waveUnitTotal, "waveNumber", waveNumber, "normalWaveSizeScale", NormalWaveSizeScale) end
+local paraScheduled = false
+local function scheduleParaDrops()
+	if paraScheduled then return end
+	if not isMissionAuthority or not isMissionAuthority() then return end
+	paraScheduled = true
+	if botDefender then
+		BotApi.Events:SetQuantTimer(function() spawnParaDrop("inf") end, 90000)
+		BotApi.Events:SetQuantTimer(function() spawnParaDrop("veh") end, 180000)
+	else
+		BotApi.Events:SetQuantTimer(function() spawnParaDrop("inf") end, 40000)
+		BotApi.Events:SetQuantTimer(function() spawnParaDrop("veh") end, 150000)
+	end
 end
 
 function WaveAttack()
-	if not waveUnitTotal then calculateWaveUnitTotal() end
-	waveSpawnPossible = true
-
-	if waveUnitCount >= waveUnitTotal then
-		waveSpawnActive = false
-		waveUnitCount = 0
-		waveNumber = waveNumber + 1
-		calculateWaveUnitTotal()
-		if printDebug then print("Print: waveNumber", waveNumber, "SelectedDivision", currentDivision) end
-	else
-		waveSpawnActive = true
+	if not waveUnitTotal then
+		waveUnitTotal = rollWaveSize()
+	end
+	if not botDefender then
+		waveSpawnPossible = true
+	end
+	if waveSpawnPossible then
+		if waveUnitCount >= waveUnitTotal then
+			waveUnitTotal = rollWaveSize()
+			waveSpawnActive = false
+			waveUnitCount = 0
+			waveNumber = waveNumber + 1
+			if isMissionAuthority and isMissionAuthority() then
+				BotApi.Scene:SetVar("wave_number", waveNumber)
+				requestWaveArty(waveNumber)
+			end
+			if printDebug then print("Print: waveUnitTotal", waveUnitTotal, "waveNumber", waveNumber) end
+		else
+			if waveUnitCount == 0 and ActivateAiStrategy then
+				waveUnitTotal = ActivateAiStrategy(waveUnitTotal)
+			end
+			waveSpawnActive = true
+		end
 	end
 end
 
@@ -423,35 +404,38 @@ function WaveUnitCounter()
 	end
 end
 
+function EndWaveOnPurchaseFail()
+	if not waveSpawnPossible or not waveSpawnActive then return end
+	if waveUnitCount <= 0 then return end
+	waveSpawnActive = false
+	waveUnitCount = 0
+	waveNumber = waveNumber + 1
+	if isMissionAuthority and isMissionAuthority() then
+		BotApi.Scene:SetVar("wave_number", waveNumber)
+		requestWaveArty(waveNumber)
+	end
+	if printDebug then print("DCG wave ended on purchase fail", "waveNumber", waveNumber) end
+end
+
 local firstPurchase = true
 function GameModeSpawnCooldown()
 	WaveAttack()
 	local spawnTime
-	local cadence = "within-wave"
-
 	if botDefender and firstPurchase then
 		spawnTime = {Min = StartSpawnTime.DefenseMin, Max = StartSpawnTime.DefenseMax}
-		cadence = "enemy-defender-opening"
 	elseif firstPurchase then
 		spawnTime = {Min = StartSpawnTime.AttackMin, Max = StartSpawnTime.AttackMax}
-		cadence = "enemy-attacker-opening"
 	elseif not waveSpawnActive then
-		if botDefender then
-			spawnTime = {Min = SpawnCooldownTime.DCGWaveOffMin_Defender, Max = SpawnCooldownTime.DCGWaveOffMax_Defender}
-			cadence = "enemy-defender"
-		else
-			spawnTime = {Min = SpawnCooldownTime.DCGWaveOffMin_Attacker, Max = SpawnCooldownTime.DCGWaveOffMax_Attacker}
-			cadence = "enemy-attacker"
-		end
+		spawnTime = {Min = SpawnCooldownTime.DCGWaveOffMin, Max = SpawnCooldownTime.DCGWaveOffMax}
 	else
 		spawnTime = {Min = SpawnCooldownTime.DCGMin, Max = SpawnCooldownTime.DCGMax}
 	end
-
 	local cooldown = math.random(spawnTime.Min, spawnTime.Max)
-	if printDebug then print("DCG cadence", cadence, "playerId", myId, "waveNumber", waveNumber, "cooldownSeconds", cooldown / 1000) end
+	if printDebug then print("DCG cadence", "playerId", myId, "waveNumber", waveNumber, "cooldownSeconds", cooldown / 1000) end
 	firstPurchase = false
 	return cooldown
 end
+
 
 function table.shuffle(tbl)
 	local rand = math.random
@@ -635,187 +619,47 @@ function GetUnitToSpawn(units)
 	end
 
 	return GetRandomItem(unitsToSpawn, function(t)
-		
-		-- search "type" array for specific element
-		local function UnitType (val)
-			for index, value in ipairs(t.type) do
-				if value == val then
-					return true
-				end
-			end
-			return false
+		local base = t.priority
+		if GetUnitPriority then
+			base = GetUnitPriority(t)
 		end
-
-		local basePriority = t.priority
-		local priorityMultiplier = 1
 		if modernUnlocked and earlyLeftover[t.unit] then
-			priorityMultiplier = priorityMultiplier * 0.2
+			base = base * 0.2
 		end
-
-
-		if unitCounts.BotInfantry < 45 then -- minimum amount of infantry
-			if UnitType("Infantry") and not UnitType("Unique") then
-				priorityMultiplier = priorityMultiplier * (divisionParams.infantryMultiplier)
-			end
-		elseif unitCounts.BotInfantry >= 80 then -- maximum amount of infantry
-			if UnitType("Infantry") and not UnitType("Unique") then
-				priorityMultiplier = priorityMultiplier * (divisionParams.infantryMultiplier) * 0.25
-			end
-		end
-
-		if UnitType("Tankbg") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.tbgMultiplier)
-		end
-
-		if UnitType("Artbg") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.abgMultiplier)
-		end
-
-		if UnitType("Infantrybg") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.ibgMultiplier)
-		end
-
-		if UnitType("Mech") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.mechMultiplier)
-		end
-
-		if UnitType("Cannon") and not UnitType("Artillery") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.cannonMultiplier)
-		end
-
-		if UnitType("Cannon") and UnitType("Artillery") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.artMultiplier)
-		end
-
-		if UnitType("MobileArtillery") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.artMultiplier)
-		end
-
-		if UnitType("Tank") and not UnitType("Heavy") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.tankMultiplier)
-		end
-
-		if UnitType("Tank") and UnitType("Heavy") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.heavyMultiplier)
-		end
-
-		if UnitType("Sortie") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.airMultiplier)
-		end
-
-		if UnitType("Ifv") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.mechMultiplier) * 0.5
-		end
-
-		if UnitType("Vehicle") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.mechMultiplier) * 0.5
-		end
-
-		if UnitType("Signaller") and not UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.signallerMultiplier)
-		end
-
-		if unitCounts.BotInfantry < 45 then -- minimum amount of infantry
-			if UnitType("Infantry") and UnitType("Unique") then
-				priorityMultiplier = priorityMultiplier * (divisionParams.infantryMultiplier) * (divisionParams.uniqueMultiplier)
-			end
-		elseif unitCounts.BotInfantry >= 80 then -- maximum amount of infantry
-			if UnitType("Infantry") and UnitType("Unique") then
-				priorityMultiplier = priorityMultiplier * (divisionParams.infantryMultiplier) * (divisionParams.uniqueMultiplier) * 0.25
-			end
-		end
-
-		if UnitType("Tankbg") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.tbgMultiplier) * (divisionParams.uniqueMultiplier)
-		end
-
-		if UnitType("Artbg") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.abgMultiplier) * (divisionParams.uniqueMultiplier)
-		end
-
-		if UnitType("Infantrybg") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.ibgMultiplier) * (divisionParams.uniqueMultiplier)
-		end
-
-		if UnitType("Mech") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.mechMultiplier) * (divisionParams.uniqueMultiplier)
-		end
-
-		if UnitType("Cannon") and not UnitType("Artillery") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.cannonMultiplier) * (divisionParams.uniqueMultiplier)
-		end
-
-		if UnitType("Cannon") and UnitType("Artillery") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.artMultiplier) * (divisionParams.uniqueMultiplier)
-		end
-
-		if UnitType("MobileArtillery") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.artMultiplier) * (divisionParams.uniqueMultiplier)
-		end
-
-		if UnitType("Tank") and not UnitType("Heavy") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.tankMultiplier) * (divisionParams.uniqueMultiplier)
-		end
-
-		if UnitType("Tank") and UnitType("Heavy") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.heavyMultiplier) * (divisionParams.uniqueMultiplier)
-		end
-
-		if UnitType("Sortie") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.airMultiplier) * (divisionParams.uniqueMultiplier)
-		end
-
-		if UnitType("Ifv") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.mechMultiplier) * (divisionParams.uniqueMultiplier) * 0.4
-		end
-
-		if UnitType("Vehicle") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.mechMultiplier) * (divisionParams.uniqueMultiplier) * 0.4
-		end
-
-		if UnitType("Signaller") and UnitType("Unique") then
-			priorityMultiplier = priorityMultiplier * (divisionParams.signallerMultiplier) * (divisionParams.uniqueMultiplier)
-		end
-
-		if UnitType("inf_div") and currentDivision == "inf_div" then
-			priorityMultiplier = priorityMultiplier * 150
-		end
-
-		if UnitType("art_div") and currentDivision == "art_div" then
-			priorityMultiplier = priorityMultiplier * 150
-		end
-
-		if UnitType("tank_div") and currentDivision == "tank_div" then
-			priorityMultiplier = priorityMultiplier * 150
-		end
-
-		if UnitType("heavytank_div") and currentDivision == "heavytank_div" then
-			priorityMultiplier = priorityMultiplier * 150
-		end
-
-		if UnitType("air_div") and currentDivision == "air_div" then
-			priorityMultiplier = priorityMultiplier * 150
-		end
-
-		if UnitType("mech_div") and currentDivision == "mech_div" then
-			priorityMultiplier = priorityMultiplier * 150
-		end
-
-		if UnitType("unique_div") and currentDivision == "unique_div" then
-			priorityMultiplier = priorityMultiplier * 150
-		end
-
-		return basePriority * priorityMultiplier
+		return base
 	end)
+end
+
+local function ApplyWaveCadence()
+	if WaveUnitOverride then
+		if botDefender then
+			WaveUnit.Min = WaveUnitOverride.DefendMin
+			WaveUnit.Max = WaveUnitOverride.DefendMax
+		else
+			WaveUnit.Min = WaveUnitOverride.AttackMin
+			WaveUnit.Max = WaveUnitOverride.AttackMax
+		end
+	end
+	if DCGWaveOffOverwrite then
+		if botDefender then
+			SpawnCooldownTime.DCGWaveOffMin = DCGWaveOffOverwrite.DefenseMinWaveOff
+			SpawnCooldownTime.DCGWaveOffMax = DCGWaveOffOverwrite.DefenseMaxWaveOff
+		else
+			SpawnCooldownTime.DCGWaveOffMin = DCGWaveOffOverwrite.AttackMinWaveOff
+			SpawnCooldownTime.DCGWaveOffMax = DCGWaveOffOverwrite.AttackMaxWaveOff
+		end
+	end
+	if printDebug then print("DCG WaveUnit", WaveUnit.Min, WaveUnit.Max, "waveOffMin", SpawnCooldownTime.DCGWaveOffMin / 1000) end
 end
 
 function OnGameStart()
 	isAttackerOrDefender()
 	ApplyDifficultyScaling()
+	ApplyWaveCadence()
 	CheckIfChallengeMap()
 	local wroteMissionVars = setVarsInMissionScript()
 	if wroteMissionVars then
-		setDocVarsInNattorSpeak(currentDivision)
+		setDocVarsInNattorSpeak()
 	elseif firstEnemyId <= 0 or defenderBotId <= 0 or firstPlayerId <= 0 then
 		-- Retry once on the first quant: new Conquest IDs may settle after GameStart.
 		missionIdentityRetryPending = true
@@ -828,7 +672,7 @@ local function retryMissionIdentityOnce()
 	missionIdentityRetryPending = false
 	refreshConquestIdentity()
 	local wroteMissionVars = setVarsInMissionScript()
-	if wroteMissionVars then setDocVarsInNattorSpeak(currentDivision) end
+	if wroteMissionVars then setDocVarsInNattorSpeak() end
 	if printDebug then print("DCG identity retry", "playerId", myId, "firstEnemyId", firstEnemyId, "defenderBotId", defenderBotId, "firstPlayerId", firstPlayerId) end
 end
 
@@ -852,6 +696,8 @@ local function ensureAttackPrepInform()
 	if not isMissionAuthority or not isMissionAuthority() then return end
 	BotApi.Scene:SetVar("prep_inform", 1)
 	attackPrepInformPublished = true
+	startAmbientArty()
+	scheduleParaDrops()
 	if printDebug then print("Print: prep_inform set to 1 (human attack / no defense prep).") end
 end
 
@@ -912,12 +758,49 @@ function IsSquadToIgnore(squad)
 	end
 end
 
--- Scatter move: ~30% waypoint / ~70% uniform non-owned flag (enemy+neutral); S&D only if nothing else.
--- Ignores priority weighting so flanks fan out instead of bunching on the same objective.
-local function IssueScatterOrder(squad, flags, logTag)
-	local waypoints = BotApi.Scene.Waypoints
-	local hasWaypoints = waypoints and #waypoints > 0
+local function waypointName(wp)
+	if type(wp) == "string" then return wp end
+	if type(wp) == "table" then return wp.name or wp.id end
+	return nil
+end
 
+local function collectNamedWaypoints(needles)
+	local out = {}
+	local wps = BotApi.Scene.Waypoints
+	if not wps then return out end
+	if printDebug and not loggedWaypointNames then
+		loggedWaypointNames = true
+		local names = {}
+		for i = 1, #wps do names[i] = tostring(waypointName(wps[i]) or wps[i]) end
+		print("DCG waypoints", table.concat(names, ","))
+	end
+	for i = 1, #wps do
+		local name = waypointName(wps[i])
+		if name then
+			for n = 1, #needles do
+				if string.find(name, needles[n], 1, true) then
+					table.insert(out, name)
+					break
+				end
+			end
+		end
+	end
+	return out
+end
+
+local function pickFlankWaypoint()
+	local side = spawnSide
+	if type(side) ~= "string" or side == "" then side = "a" end
+	side = string.lower(side)
+	local flanks = collectNamedWaypoints({"attack_support_flank_" .. side})
+	if #flanks == 0 then flanks = collectNamedWaypoints({"attack_support_flank_"}) end
+	if #flanks > 0 then return flanks[math.random(#flanks)] end
+	local entries = collectNamedWaypoints({"attack_support_entry_" .. side})
+	if #entries > 0 then return entries[math.random(#entries)] end
+	return nil
+end
+
+local function IssueScatterOrder(squad, flags, logTag)
 	local candidates = {}
 	for _, f in pairs(flags) do
 		if f.owner ~= team then
@@ -925,11 +808,11 @@ local function IssueScatterOrder(squad, flags, logTag)
 		end
 	end
 
-	local preferWaypoint = hasWaypoints and (#candidates == 0 or math.random() <= FlankWaypointChance)
+	local flank = pickFlankWaypoint()
+	local preferWaypoint = flank and (#candidates == 0 or math.random() <= FlankWaypointChance)
 	if preferWaypoint then
-		local wp = waypoints[math.random(#waypoints)]
-		if printDebug then print("Print:", logTag, "waypoint", wp, "squad", squad, "Player#", BotApi.Instance.playerId) end
-		return BotApi.Commands:CaptureFlag(squad, wp)
+		if printDebug then print("Print:", logTag, "waypoint", flank, "squad", squad, "Player#", BotApi.Instance.playerId) end
+		return BotApi.Commands:CaptureFlag(squad, flank)
 	end
 
 	if #candidates > 0 then
@@ -1007,12 +890,21 @@ function OnGameSpawn(args)
     if not args or not args.squadId then return end
     local squad = args.squadId
     if not IsSquadActive(squad) then return end
+	if sceneVarRequested and not sceneVariableSquad then
+		sceneVariableSquad = squad
+		sceneVarRequested = false
+		if printDebug then print("Spawned Scene variable successfully!", squad) end
+		if StartSceneCheckTimer then StartSceneCheckTimer() end
+		if SetGeneralSquadTagCheckTimer then SetGeneralSquadTagCheckTimer() end
+		return
+	end
 	if printDebug then print("DCG spawned squad", squad, "botPlayerId", myId, "defenderBotId", defenderBotId, "waveNumber", waveNumber) end
 
 	-- Only mark attack-started / rearrange spawns when the bot is the attacker.
 	if not botDefender and not ai_attack_started then
         ai_attack_started = true
         BotApi.Scene:SetVar("ai_attack_started", 1)
+        requestOpeningArty()
         if printDebug then print("AI has started their attack!") end
         SelectAiSpawnStrategy()
     end
@@ -1020,6 +912,13 @@ function OnGameSpawn(args)
 	-- Always register the CaptureFlag order loop (scatter uses waypoints when present).
 	-- Waypoint maps used to get a single move order at spawn and never re-order,
 	-- which left squads standing at the spawn line for the rest of the match.
+	if not botDefender and math.random() <= FlankFirstOrderChance then
+		local flank = pickFlankWaypoint()
+		if flank then
+			BotApi.Commands:CaptureFlag(squad, flank)
+			if printDebug then print("Print: [spawn flank]", flank, "squad", squad, "Player#", BotApi.Instance.playerId) end
+		end
+	end
 	SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
 	ScheduleSpawnOrderNudge(squad)
 end
@@ -1027,14 +926,17 @@ end
 -- v1.064+: prep phase ended (timer or Skip Preparation). Mission scripts key off prep_inform.
 function OnPrepTimeOver()
 	BotApi.Scene:SetVar("prep_inform", 1)
+	startAmbientArty()
 	if printDebug then print("Print: prep_inform set to 1, Player defense prep is over.") end
 
 	-- When player was defending, bot is attacker — release attack start for CE scripts.
 	if not botDefender and not ai_attack_started then
 		ai_attack_started = true
 		BotApi.Scene:SetVar("ai_attack_started", 1)
+		requestOpeningArty()
 		if printDebug then print("AI attack released after prep time.") end
 		if SelectAiSpawnStrategy then SelectAiSpawnStrategy() end
+		scheduleParaDrops()
 	end
 end
 

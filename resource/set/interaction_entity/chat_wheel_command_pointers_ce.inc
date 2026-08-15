@@ -22,6 +22,15 @@
 	}
 }
 
+{"pointer_defend"
+	{on spawn
+		{tags add "pointer_defend"}
+		{delay 20
+			{delete}
+		}
+	}
+}
+
 {"pointer_enemy"
 	{on spawn
 		{delay 0.5

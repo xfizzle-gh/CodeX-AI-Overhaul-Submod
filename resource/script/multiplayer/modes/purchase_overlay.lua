@@ -53,6 +53,25 @@ local PriorityOverlay = {
 	["ztz96_a_gy"] = 1.2,
 	["ztz99a"] = 1.7,
 	["wz1001"] = 1.6,
+
+	["mg_stand_nsvt_rus_ai"] = 1.4,
+	["mg_stand_nsvt_ukr_ai"] = 1.4,
+	["2b14_mortar_rus_ai"] = 0.8,
+	["2b11_mortar_rus_ai"] = 0.8,
+	["2b14_mortar_ukr_ai"] = 0.8,
+	["2b11_mortar_ukr_ai"] = 0.8,
+	["fh70_new"] = 0.9,
+	["m777a1"] = 0.9,
+	["m777"] = 0.8,
+	["squad_122mm_d-30(rusa)"] = 0.9,
+	["122mm_d-30_ukr"] = 0.9,
+	["2s1_gvozdika_rus"] = 0.8,
+	["2s3m_akatsiya_rus"] = 0.8,
+	["2s19_msta"] = 0.8,
+	["pzh2000_n"] = 0.8,
+	["pzh2000_ukr"] = 0.8,
+	["plz05"] = 0.8,
+	["plz83"] = 0.8,
 }
 
 function ApplyPurchaseOverlay(purchases)

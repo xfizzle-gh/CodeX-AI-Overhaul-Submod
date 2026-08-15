@@ -34,57 +34,24 @@ Context = {
 strategyTable = {
   StrategyUnitTypes = {
   },
-  BotInfantry = {
-    min = 25,
-    max = 50,
-  },
-  BotATInfantry = {
-    min = 2,
-    max = 4,
-  },
-  BotInfantrySignaller = {
-    min = 1,
-    max = 2,
-  },
-  BotArtillery = {
-    min = 1,
-    max = 2,
-  },
-  BotMortars = {
-    min = 1,
-    max = 2,
-  },
-  BotEmplacements = {
-    min = 1,
-    max = 3,
-  },
-  BotTanks = {
-    min = 2,
-    max = 4,
-  },
-  BotHeavyTanks = {
-    min = 1,
-    max = 1,
-  },
-  BotSPGs = {
-    min = 1,
-    max = 2,
-  },
-  BotTankDestroyers = {
-    min = 2,
-    max = 4,
-  },
-  BotAircraft = {
-    min = 3,
+  BotInfantry = 1.0,
+  BotTeamInfantry = 1.0,
+  BotATInfantry = 1.0,
+  BotInfantrySignaller = 1.0,
+  BotArtillery = 1.0,
+  BotMortars = 1.0,
+  BotEmplacements = 1.0,
+  BotTanks = 1.0,
+  BotHeavyTanks = 1.0,
+  BotArmored = 1.0,
+  BotSPGs = 1.0,
+  BotTankDestroyers = 1.0,
+  BotAircraft = 1.0,
+  BotReconAircraft = 1.0,
+  BotParatroopers = 0.4,
+  forceUnitCount = {
+    min = 4,
     max = 8,
-  },
-  BotReconAircraft = {
-    min = 1,
-    max = 2,
-  },
-  BotArmored = {
-    min = 2,
-    max = 5,
   },
 }
 
@@ -373,8 +340,8 @@ function GetUnitPriority(t)
     end  
   end
 
-  if UnitType("Armored") then     
-    priorityMultiplier = priorityMultiplier * strategyTable.BotArmored
+  if UnitType("Armored") or UnitType("Ifv") then
+    priorityMultiplier = priorityMultiplier * (strategyTable.BotArmored or 1)
   end
 
   if UnitType("Cannon") then 
@@ -389,13 +356,13 @@ function GetUnitPriority(t)
     priorityMultiplier = priorityMultiplier * strategyTable.BotMortars
   end
 
-  if UnitType("Aircraft") then     
+  if UnitType("Aircraft") or UnitType("Sortie") then
     if UnitType("ReconPlane") then 
-      priorityMultiplier = priorityMultiplier * strategyTable.BotReconAircraft
+      priorityMultiplier = priorityMultiplier * (strategyTable.BotReconAircraft or 1)
     elseif UnitType("Paratroopers") then   
-      priorityMultiplier = priorityMultiplier * strategyTable.BotParatroopers
+      priorityMultiplier = priorityMultiplier * (strategyTable.BotParatroopers or 1)
     else 
-      priorityMultiplier = priorityMultiplier * strategyTable.BotAircraft
+      priorityMultiplier = priorityMultiplier * (strategyTable.BotAircraft or 1)
     end
   end
 

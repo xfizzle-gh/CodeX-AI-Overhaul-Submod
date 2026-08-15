@@ -94,4 +94,5 @@
 	(include "chat_wheel_command_pointers_ce.inc")
 
 	(include "construction/placement_ce.inc")
+	(include "codex_arty_spread.inc")
 }

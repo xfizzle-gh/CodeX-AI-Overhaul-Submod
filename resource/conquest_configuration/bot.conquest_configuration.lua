@@ -69,11 +69,11 @@
     -- Number of possible units than can be in a wave attack in conquest
 	WaveUnitOverride = {
 	    -- Bot is attacker
-	    AttackMin = 4,
-	    AttackMax = 7,
+	    AttackMin = 6,
+	    AttackMax = 12,
 	    -- Bot is defender
 	    DefendMin = 3,
-	    DefendMax = 5,
+	    DefendMax = 7,
 	}
 
 -- ================================= Advanced Settings =========================================

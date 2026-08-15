@@ -510,47 +510,71 @@
 					{"delay"
 						{time 1}
 					}
-					{"actor_to_waypoint"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{zone
-										{zone "gamezone"}
-									}
-								}
-								{include
-									{state
-										{state user_control}
-									}
-								}
-								{exclude
-									{state
-										{state inactive}
-									}
-									{state
-										{state dead}
-									}
-								}
+					{"switch"
+						{"case"
+							{condition
+								{type cmp_i}
+								{var "enemy_spawnside$"}
+								{op "=="}
+								{value 1}
 							}
-							{group
-								{select
-									{tag
-										{tag _user}
+							{"actor_to_waypoint"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{zone
+												{zone "gamezone"}
+											}
+										}
+										{include
+											{state
+												{state user_control}
+											}
+										}
+										{exclude
+											{state
+												{state inactive}
+											}
+											{state
+												{state dead}
+											}
+										}
 									}
 								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-								}
+								{waypoint "attack_support_entry_b"}
+								{approach "safe teleport & rotate"}
 							}
 						}
-						{waypoint "6666"}
-						{approach "safe teleport & rotate"}
+						{"default"
+							{"actor_to_waypoint"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{zone
+												{zone "gamezone"}
+											}
+										}
+										{include
+											{state
+												{state user_control}
+											}
+										}
+										{exclude
+											{state
+												{state inactive}
+											}
+											{state
+												{state dead}
+											}
+										}
+									}
+								}
+								{waypoint "attack_support_entry_a"}
+								{approach "safe teleport & rotate"}
+							}
+						}
 					}
 				}
 			}

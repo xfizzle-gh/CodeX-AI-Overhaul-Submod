@@ -6,9 +6,8 @@ StrategyTemplates = {
 		-- enableHumanWaveTactic = 1,
 		StrategyName = "Human Wave Strategy",
 		StrategyUnitTypes = {
-			"Wave",
-			"Flamer",
-			"Super_Wave",
+			"Infantry",
+			"Team",
 		},
 		BotInfantry = 1.0,
 		BotTeamInfantry = 1.0,
@@ -86,8 +85,8 @@ StrategyTemplates = {
 		-- enableArtyTactic = 1,
 		StrategyName = "Artillery Strategy",
 		StrategyUnitTypes = {
-			"Rocket_Arty",
-            "Artillery",
+			"Artillery",
+			"Cannon",
 		},
 		BotInfantry = 1.0,
 		BotTeamInfantry = 1.0,
@@ -165,10 +164,8 @@ StrategyTemplates = {
 		-- enableAirborneTactic = 1,
 		StrategyName = "Airborne Strategy",
 		StrategyUnitTypes = {
-			"Paratrooper",
-			"Fighter",
-			"Bomber",
-			"Group_Air"
+			"Sortie",
+			"Aircraft",
 		},
 		StrategyExcludeUnitTypes = {
 			"ReconPlane"
@@ -248,17 +245,14 @@ StrategyTemplates = {
 	{-- Index 4
 		StrategyName = "Heavy Armor Strategy",
 		StrategyUnitTypes = {
-            "Heavy",
-			"ReconPlane",
-			"Engineer",
 			"Tank",
-            "Mechanized_Infantry",
+			"Class1",
+			"Class3",
 		},
 		StrategyExcludeUnitTypes = {
-			"Armored",
-			"Vehicle",
+			"Artillery",
 			"Cannon",
-			"Aircraft",
+			"Sortie",
 		},
 		forceUnitCount = {
 			min = 7,
@@ -336,16 +330,13 @@ StrategyTemplates = {
 		-- enableTankTactic = 1,
 		StrategyName = "Armor Strategy",
 		StrategyUnitTypes = {
-            "Tank",
-			"Engineer",
-			"AA",
+			"Tank",
+			"Ifv",
 		},
 		StrategyExcludeUnitTypes = {
-			"Armored",
-			"Vehicle",
+			"Artillery",
 			"Cannon",
-			"AT",
-			"Aircraft",
+			"Sortie",
 		},
 		BotInfantry = 0.9,
 		BotTeamInfantry = 1.0,
@@ -422,15 +413,13 @@ StrategyTemplates = {
 	{-- Index 6
 		StrategyName = "Infantry Strategy",
 		StrategyUnitTypes = {
-			"Squad",
-			"Support",
-			"Big_gun",
-			"Elite",
+			"Infantry",
+			"Team",
 			"AT",
 		},
 		StrategyExcludeUnitTypes = {
 			"Tank",
-			"Vehicle",
+			"Sortie",
 		},
 		BotInfantry = 1.25,
 		BotTeamInfantry = 1.1,

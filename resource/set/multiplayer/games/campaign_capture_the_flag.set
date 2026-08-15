@@ -19,7 +19,7 @@
 	{settings
 		{difficulty				multiplayer}
 		{scoreFinal				900}
-		{preparationTime		480}	; seconds (8 min). Official prep phase when player defends (v1.064+)
+		{preparationTime		1200}	; seconds (20 min). Official prep phase when player defends (v1.064+)
 		{pauseDuringPreparation	false}	; simulation runs during prep
 		{impregnableTimeout		5}	; seconds
 		{floraRespawn			0}

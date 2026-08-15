@@ -201,35 +201,87 @@ function KillAiSpawnMoveTimer()
   end
 end
 
+aiSpawnStrategy = 0
+sceneVariableSquad = nil
+
 function SelectAiSpawnStrategy()
   print("in SelectAiSpawnStrategy function")
-  Context.AiSpawnMoveTimer = BotApi.Events:SetQuantTimer(
-    function()
-      math.randomseed(os.time())
-      local changeSpawnStrategyChance = 0.45
-
-      if math.random() < changeSpawnStrategyChance then
-        local aiSpawnStrategy = 0
-        if enableRearAttackMechanics == 1 then
-          aiSpawnStrategy = math.random(0, 6)
-        else 
-          aiSpawnStrategy = math.random(0, 5)
+  KillAiSpawnMoveTimer()
+  local delay = checkAiSpawnMoveDelay or (3 * 60 * 1000)
+  local function loop(callback)
+    Context.AiSpawnMoveTimer = BotApi.Events:SetQuantTimer(
+      function()
+        Context.AiSpawnMoveTimer = nil
+        if math.random() < 0.5 then
+          local prev = aiSpawnStrategy
+          if enableRearAttackMechanics == 1 then
+            aiSpawnStrategy = math.random(0, 3)
+          else
+            aiSpawnStrategy = math.random(0, 2)
+          end
+          print("Ai spawn strategy = ", aiSpawnStrategy)
+          if aiSpawnStrategy == 3 then
+            followWaypointGraphs = false
+            BotApi.Scene:SetVar("enable_ai_waypoint_graphs", 0)
+          else
+            followWaypointGraphs = true
+            BotApi.Scene:SetVar("enable_ai_waypoint_graphs", 1)
+          end
+          if prev == 3 or aiSpawnStrategy == 3 then
+            BotApi.Scene:SetVar("change_ai_spawns", 1)
+          end
+          BotApi.Scene:SetVar("ai_spawn_strategy", aiSpawnStrategy)
         end
+        callback(callback)
+      end, delay)
+  end
+  loop(loop)
+end
 
-        print("Ai spawn strategy = ", aiSpawnStrategy)
-        if aiSpawnStrategy == 5 or aiSpawnStrategy == 6 then 
-          followWaypointGraphs = false
-          BotApi.Scene:SetVar("enable_ai_waypoint_graphs", 0)  
-        else 
-          followWaypointGraphs = true
-          BotApi.Scene:SetVar("enable_ai_waypoint_graphs", 1)
-        end
-        print("followWaypointGraphs = ", followWaypointGraphs, " and ai_spawn_strategy = ", aiSpawnStrategy)
+function setAiSpawnIndex(SpawnPointIndex)
+  if aiSpawnStrategy == 1 then
+    if SpawnPointIndex == 0 then
+      return 3
+    end
+    return 0
+  elseif aiSpawnStrategy == 2 then
+    if SpawnPointIndex == 1 then
+      return 2
+    end
+    return 1
+  end
+  return SpawnPointIndex + 1
+end
 
-        BotApi.Scene:SetVar("change_ai_spawns", 1)
-        BotApi.Scene:SetVar("ai_spawn_strategy", aiSpawnStrategy)
-      end
-    end, checkAiSpawnMoveDelay)
+sceneVarRequested = false
+
+function SpawnSceneVariable()
+  sceneVarRequested = false
+end
+
+function StartSceneCheckTimer()
+  if not sceneVariableSquad then return end
+  BotApi.Events:SetQuantTimer(function()
+    if BotApi.Scene:IsSquadTagged(sceneVariableSquad, "_ce_map_scripts_running") then
+      followWaypointGraphs = true
+      BotApi.Scene:SetVar("enable_ai_waypoint_graphs", 1)
+    else
+      followWaypointGraphs = false
+      BotApi.Scene:SetVar("enable_ai_waypoint_graphs", 0)
+    end
+    print("CUSTOM WAYPOINTS = ", followWaypointGraphs)
+  end, 1000)
+end
+
+function CheckSceneVariable(squad)
+  if not squad then return end
+  if followWaypointGraphs then
+    if BotApi.Scene:IsSquadTagged(squad, "_lua_waypoint_graph_disabled") then
+      followWaypointGraphs = false
+    end
+  elseif BotApi.Scene:IsSquadTagged(squad, "_lua_waypoint_graph_enabled") then
+    followWaypointGraphs = true
+  end
 end
 
 function SetFirstWaveOffset(flagCount)

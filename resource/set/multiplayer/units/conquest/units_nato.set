@@ -1314,3 +1314,13 @@ c1(usmc_teamlead:2) c2(usmc_mg:1) c3(usmc_rifleman:3) c4(usmc_m2hb_crew:1) c5(us
 	("vehicle"  period(2022s) min_stage(8) max_stage(99) side(nato) t(helicopter) g(heli) crew(nato_pilot:2) cw(0) cp(6))
 	{cost 550}{not_for_player_sale 1}
 }
+
+{"c130_para_ai"
+	("squad_vehicle_ai8" period(2022s) min_stage(1) max_stage(99) side(nato) vehicle(c130_para) crew1(nato_pilot:3) crew2(82nd_squadlead:1) crew3(82nd_mg:2) crew4(82nd_grenadier:2) crew5(82nd_rifleman:4) crew6(82nd_antitank:2) crew7(82nd_medic:1) crew8(82nd_teamlead:1) cw(0) cp(0))
+	{cost 0}{not_for_player_sale 1}
+}
+
+{"c130_lav25_ai"
+	("squad_vehicle_ai8" period(2022s) min_stage(1) max_stage(99) side(nato) vehicle(c130_lav25) crew1(nato_pilot:3) crew2(usmc_vehicleman:3) crew3(82nd_squadlead:1) crew4(82nd_mg:1) crew5(82nd_rifleman:1) crew6(82nd_grenadier:1) crew7(82nd_antitank:1) crew8(82nd_medic:1) cw(0) cp(0))
+	{cost 0}{not_for_player_sale 1}
+}

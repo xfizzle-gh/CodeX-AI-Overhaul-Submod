@@ -355,6 +355,10 @@ function OnGameStartUtility(purchasesModuleSuffix)
 
     Context.Purchase = PIter:new(purchases)
 
+    if SelectAiStrategyTemplate then
+        strategyTable = SelectAiStrategyTemplate(botDefender)
+    end
+
     -- Update and set cooldown. unit selection now happens when the bot is ready to spawn
     Context.SpawnInfo = nil
     SetSpawnCooldownTimer()
@@ -437,6 +441,13 @@ function TrySpawnUnit()
 		if printDebug then 
 			print("Print: player#".. BotApi.Instance.playerId .." tried to purchase: ".. unit .." Not enough MP, DP, CP, or the unit timer is not unlocked")
 			print("Print: player#".. BotApi.Instance.playerId .." will wait a maximum of ".. (currentUnitSpawnWaitTime / 1000 + 1) .."s for resources or unit timer before it attempts a new unit purchase")
+		end
+		if EndWaveOnPurchaseFail then
+			EndWaveOnPurchaseFail()
+			Context.SpawnInfo = nil
+			KillSpawnWaitTimer()
+			SetSpawnCooldownTimer()
+			return
 		end
 		Context.SpawnWait.WaitTimer = BotApi.Events:SetQuantTimer(
 			function()

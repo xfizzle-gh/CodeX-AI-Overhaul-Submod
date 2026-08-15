@@ -21,6 +21,8 @@
 (include "/map/multi/HF-dcg_dynamic_weather.inc")
 (include "/map/multi/dcg_functions.mi")
 (include "/map/multi/dcg_ai_smoke.inc")
+(include "/map/multi/dcg_arty_prep.inc")
+(include "/map/multi/dcg_para.inc")
 (include "/map/multi/codex_ai_combat.inc") ; combat AI: recrew/bail, pursue, TNT, flag smoke, arty counterfire
 
 ; Full CE AI stack + map setup (defender balance, patrol, repair, lua bridge, spawns)

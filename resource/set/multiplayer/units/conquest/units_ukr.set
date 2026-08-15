@@ -1422,3 +1422,13 @@ min_stage(8) max_stage(99) name(21th_inf_razv_m107)
 )
 {not_for_player_sale 1}
 }
+
+{"c130_para_ai"
+	("squad_vehicle8" period(2022s) min_stage(1) max_stage(99) side(ukr) vehicle(c130_para) crew1(ukr_pilot:3) crew2(ukr13_squadlead:2) crew3(ukr13_rifleman:3) crew4(ukr13_lmg:3) crew5(ukr13_assault:2) crew6(ukr13_antitank:2) cw(0) cp(0))
+	{cost 0}{not_for_player_sale 1}
+}
+
+{"c130_lav25_ai"
+	("squad_vehicle8" period(2022s) min_stage(1) max_stage(99) side(ukr) vehicle(c130_lav25) crew1(ukr_pilot:3) crew2(ukr13_squadlead:2) crew3(ukr13_rifleman:3) crew4(ukr13_lmg:2) crew5(ukr13_assault:2) crew6(ukr13_antitank:2) cw(0) cp(0))
+	{cost 0}{not_for_player_sale 1}
+}

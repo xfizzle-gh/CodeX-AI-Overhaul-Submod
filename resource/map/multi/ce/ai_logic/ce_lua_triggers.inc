@@ -58,9 +58,9 @@
 							}
 						}
 						{"4.cmp_i"
-							{var "ai_attack_started$"}
+							{var "dcg_on$"}
 							{op ">"}
-							{value 0}
+							{value 2}
 						}
 					}
 				}

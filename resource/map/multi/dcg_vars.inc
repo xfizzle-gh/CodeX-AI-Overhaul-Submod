@@ -16,6 +16,22 @@
 			{"music_rnd"}
 			{"player_spawn_name"}
 			{"prep_inform"}
+			{"arty_prep_open"}
+			{"arty_prep_wave"}
+			{"arty_smoke"}
+			{"arty_wave_slot"}
+			{"arty_f1"}
+			{"arty_f2"}
+			{"arty_f3"}
+			{"arty_f4"}
+			{"arty_f5"}
+			{"arty_counter_cd"}
+			{"arty_ambient"}
+			{"codex_para"}
+			{"codex_para_lz"}
+			{"codex_para_kind"}
+			{"ai_attack_started"}
+			{"wave_number"}
 			{"user_is_defender"}
 			{"user_nation"}
 			{"user_nation_hint"}

@@ -33,6 +33,9 @@
 			{"max_ai_defender_emplacement_count_level_2"}
 			{"max_ai_defender_emplacement_count_level_3"}
 			{"ai_attack_started"}
+			{"wave_number"}
+			{"arty_prep_open"}
+			{"arty_prep_wave"}
 			{"max_ai_defender_at_flag"}
 			{"ai_strategy_selection"}
 			{"ai_grid_system_active"}

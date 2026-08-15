@@ -536,3 +536,13 @@
 	("vehicle" 	side(prc) period(2022s) min_stage(1) max_stage(99) crew(tankman:0) cw(0) cp(0))
 	{cost 0} {not_for_player_sale 1}
 }
+
+{"il-76td_para_ai"
+	("squad_vehicle_ai8" period(2022s) min_stage(1) max_stage(99) side(prc) vehicle(il-76td_para) crew1(pla_crew:3) crew2(pla_squadlead:1) crew3(pla_rifleman:4) crew4(pla_mg:2) crew5(pla_grenadier:2) crew6(pla_antitank_pf98:2) crew7(pla_medic:1) crew8(pla_senior:1) cw(0) cp(0))
+	{cost 0}{not_for_player_sale 1}
+}
+
+{"il-76td_bmd2_ai"
+	("squad_vehicle_ai8" period(2022s) min_stage(1) max_stage(99) side(prc) vehicle(il-76td_bmd2) crew1(pla_crew:3) crew2(pla_squadlead:1) crew3(pla_rifleman:4) crew4(pla_mg:2) crew5(pla_grenadier:2) crew6(pla_antitank_pf98:2) crew7(pla_medic:1) crew8(pla_senior:1) cw(0) cp(0))
+	{cost 0}{not_for_player_sale 1}
+}

@@ -263,19 +263,19 @@
 {targetSelector "human"}
 
 {brain "human"
-	{const "bomb/detect_explosives"	10}		;// detect explosives inside 10 meter radius
-	{const "bomb/detect_grenades"	10}		;// detect grenades inside 10 meter radius
+	{const "bomb/detect_explosives"	7}		;// detect explosives inside 7 meter radius
+	{const "bomb/detect_grenades"	5}		;// detect grenades inside 5 meter radius
 	{const "bomb/danger_zone"		7}		;// hide if danger is more than "x" meters away, otherwise run away
 	{const "bomb/danger_zone_run" 	3}	
 	{const "bomb/danger_zone_jump" 	4}	
 	{const "bomb/danger_zone_hide" 	6}
-	{const "fight/distance"			4} 		;// close-in assault distance
-	{const "weapon/change_time"		3}		;// disable ai weapon switch for 3 seconds
+	{const "fight/distance"			1.5} 		;// was at 1.5
+	{const "weapon/change_time"		20}		;// disable ai weapon switch for 20 seconds
 
 
 	{Properties
-		{advance_ratio 0.85}
-		{retreat_ratio 3.5}
+		{advance_ratio 0.5}
+		{retreat_ratio 4}
 	}
 }
 
