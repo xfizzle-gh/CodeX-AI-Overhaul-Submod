@@ -5,8 +5,8 @@
 --
 -- Unit delivery is MI: attack_support_waves.inc (real-breed pool, MOVE in).
 -- Lua Spawn is not viable on this slot (IsUnitAvailable always false; utility load crashes).
--- Mission participation is gated in MI by support_mission_enabled$. This controller only
--- publishes the real allied AI owner for human-attack missions and issues squad orders.
+-- Mission participation is gated in MI by support_mission_enabled$. This controller publishes
+-- its own routed Team A playerId as the attack-support owner and issues squad orders.
 --
 -- This slot also carries the ENGINE-STATE MIRROR. Every MIRROR_QUANTS quants it writes
 -- one game.log line per wave engine - attack_support, enemy_defense (plus its garrison
@@ -131,13 +131,14 @@ local function publishIdentity(id, isRetry)
 		if not isRetry then log("identity_publish_skipped", "Scene.SetVar_missing") end
 		return false
 	end
-	-- The controller slot is not the real lobby teammate. Never fall back to
-	-- controller playerId: if the real Conquest allied AI has not settled yet,
-	-- leave support unarmed and retry from Quant until DefenderBotId is available.
-	local ownerId = positiveId(id.defenderBotId, 0)
+	-- bot.main.lua routes this module only onto the non-human Team A attack-support
+	-- controller and explicitly excludes DefenderBotId. Therefore this controller's
+	-- own playerId is the authoritative same-side owner. DefenderBotId is a defender-
+	-- side identity in human-attack missions and must never own friendly support.
+	local ownerId = positiveId(id.playerId, 0)
 	if ownerId <= 0 then
 		if not isRetry or state.quant % 50 == 0 then
-			log("identity_publish_skipped", "allied_owner_unresolved",
+			log("identity_publish_skipped", "support_controller_owner_unresolved",
 				"controller_playerId", id.playerId,
 				"defenderBotId", id.defenderBotId,
 				"team", id.team,
