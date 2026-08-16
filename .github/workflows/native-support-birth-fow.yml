@@ -1,0 +1,33 @@
+name: Native Support Birth FoW Probe
+
+on:
+  pull_request:
+    paths:
+      - "resource/script/multiplayer/modes/attack_support.lua"
+      - "resource/script/multiplayer/modes/native_support_birth_probe.lua"
+      - "resource/set/multiplayer/units/conquest/native_support_rusa.set"
+      - "resource/set/multiplayer/games/campaign_capture_the_flag.set"
+      - "tests/test_native_support_birth_fow.py"
+      - ".github/workflows/native-support-birth-fow.yml"
+  push:
+    branches:
+      - research/native-spawner-auto-handoff-fow
+    paths:
+      - "resource/script/multiplayer/modes/attack_support.lua"
+      - "resource/script/multiplayer/modes/native_support_birth_probe.lua"
+      - "resource/set/multiplayer/units/conquest/native_support_rusa.set"
+      - "resource/set/multiplayer/games/campaign_capture_the_flag.set"
+      - "tests/test_native_support_birth_fow.py"
+      - ".github/workflows/native-support-birth-fow.yml"
+  workflow_dispatch:
+
+jobs:
+  source-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run native support birth/FoW regression
+        run: python tests/test_native_support_birth_fow.py
