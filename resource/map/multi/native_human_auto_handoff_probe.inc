@@ -7,10 +7,16 @@
 ; This probe changes only the transfer mechanism:
 ;   genuine native human actor -> MI automatic owner handoff -> Mate -> 3s settle -> move
 ;
-; One native human infantry actor is claimed only after attack_support.lua has published
-; the real Mate id. The existing {tag player} + {type human} selector is the same canonical
-; player-actor selector already used by shipped support announcements. Parked support pools
-; are excluded by provenance because they do not carry the player tag.
+; The first #110 native run proved the normal Mate controller was live and published
+; attack_support_ready=1 / id_attack_support=1, while 34 genuine campaign actors moved
+; Player 0 -> human Player 3. Yet the handoff never left stage 0. The old selector relied
+; on a custom {tag player} that those Dynamic Conquest actors do not receive in this path.
+;
+; Select the source by the engine state that actually distinguishes the human's native
+; campaign infantry at runtime: human + operatable + user_control, excluding inactive and
+; linked actors. This is the same MI selector vocabulary used by working Conquest AI scripts
+; to distinguish player-controlled actors from AI-controlled actors. No map-authored tag is
+; required.
 
 			(define "native_handoff_set_mate_owner"
 				{"switch"
@@ -43,10 +49,19 @@
 						{"3.cmp_i" {var "native_handoff_probe_stage$"} {op "=="} {value 0}}
 						{"4.entities"
 							{selector
+								{source advanced}
 								{ignore_captured_by_user 0}
-								{tag player}
-								{type human}
-								{state "not dead"}
+								{group
+									{include
+										{prop {prop human}}
+										{state {state operatable}}
+										{state {state user_control}}
+									}
+									{exclude
+										{state {state inactive}}
+										{state {state linked}}
+									}
+								}
 							}
 						}
 					}
@@ -55,11 +70,20 @@
 					{"set_i" {var "native_handoff_probe_stage$"} {op "="} {value 1}}
 					{"entity_state"
 						{selector
+							{source advanced}
 							{ignore_captured_by_user 0}
+							{group
+								{include
+									{prop {prop human}}
+									{state {state operatable}}
+									{state {state user_control}}
+								}
+								{exclude
+									{state {state inactive}}
+									{state {state linked}}
+								}
+							}
 							{amount 1}
-							{tag player}
-							{type human}
-							{state "not dead"}
 						}
 						{tag_add codex_native_handoff_probe}
 					}
