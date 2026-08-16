@@ -60,12 +60,21 @@ class ConquestRuntimeSourceTests(unittest.TestCase):
         self.assertIn("ActiveDifficultySettings.waveScale", roll)
         self.assertIn("math.max(1, math.floor(raw * scale + 0.5))", roll)
 
-    def test_wave_transition_advances_before_recalculation(self) -> None:
-        transition = self.source.index("waveNumber = waveNumber + 1")
-        recalculation = self.source.index("calculateWaveUnitTotal()", transition)
-        self.assertLess(transition, recalculation)
+    def test_wave_transition_recalculates_once_and_advances_once(self) -> None:
+        start = self.source.index("function WaveAttack()")
+        end = self.source.index("function WaveUnitCounter()", start)
+        wave = self.source[start:end]
+        self.assertIn("if waveUnitCount >= waveUnitTotal then", wave)
+        self.assertEqual(wave.count("waveUnitTotal = rollWaveSize()"), 2)
+        completed_wave = wave.index("if waveUnitCount >= waveUnitTotal then")
+        recalculation = wave.index("waveUnitTotal = rollWaveSize()", completed_wave)
+        transition = wave.index("waveNumber = waveNumber + 1", completed_wave)
+        publish = wave.index('BotApi.Scene:SetVar("wave_number", waveNumber)', transition)
+        self.assertLess(recalculation, transition)
+        self.assertLess(transition, publish)
+        self.assertEqual(wave.count("waveNumber = waveNumber + 1"), 1)
         self.assertNotIn("if not botDefender or botDefender then", self.source)
-        self.assertIn("waveSpawnPossible = true", self.source)
+        self.assertIn("waveSpawnPossible = true", wave)
 
     def test_only_mission_authority_writes_perspective_vars(self) -> None:
         authority_guard = self.source.index(
