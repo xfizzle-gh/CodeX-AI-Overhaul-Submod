@@ -3,12 +3,15 @@ name: Allied Support FoW and Mission Gate guard
 on:
   pull_request:
     paths:
+      - "resource/script/multiplayer/bot.main.lua"
       - "resource/script/multiplayer/modes/attack_support.lua"
+      - "resource/script/multiplayer/modes/human_native_spawn_probe.lua"
       - "resource/map/multi/attack_support_waves.inc"
       - "resource/map/multi/defense_support_waves.inc"
       - "resource/map/multi/enemy_defense_support.inc"
       - "resource/map/multi/enemy_attack_support.inc"
       - "tests/test_allied_support_shared_fow.py"
+      - "tests/test_human_native_spawn_context.py"
       - ".github/workflows/allied-support-fow-guard.yml"
   push:
     branches:
@@ -40,3 +43,6 @@ jobs:
 
       - name: Run Allied Support FoW and Gate regression tests
         run: python -m unittest tests/test_allied_support_shared_fow.py
+
+      - name: Run human native spawn context regression
+        run: python tests/test_human_native_spawn_context.py
