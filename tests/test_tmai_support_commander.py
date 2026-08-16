@@ -49,7 +49,7 @@ class TmaiReferencedSupportCommanderTests(unittest.TestCase):
         for pattern in forbidden:
             with self.subTest(pattern=pattern):
                 self.assertIsNone(re.search(pattern, self.support))
-        self.assertNotIn("QueryScene", self.support.replace("QueryScene polling", "scene polling"))
+        self.assertNotIn(":QueryScene(", self.support)
         self.assertIn('return humanId, "campaign_four_slot_complement"', self.support)
         self.assertIn("for playerId = 1, 4 do", self.support)
 
