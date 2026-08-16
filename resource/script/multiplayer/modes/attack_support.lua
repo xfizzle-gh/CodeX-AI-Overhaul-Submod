@@ -5,6 +5,11 @@
 -- SpawnAt/Spawn request for an existing RUSA Conquest unit ID and records the
 -- GameSpawn event. This answers whether a unit born directly on the Mate through
 -- the native spawn API participates in the human team's terrain-FoW mask.
+--
+-- IMPORTANT: native SpawnAt/Spawn is unsafe on this special Mate when the unit
+-- is not registered in its unitset. A native run proved IsUnitAvailable=false
+-- followed immediately by EXCEPTION_ACCESS_VIOLATION inside the quant callback.
+-- Therefore availability is now a hard fail-closed gate before any native call.
 
 local PREFIX = "CODEX_MATE_NATIVE_SPAWN"
 local START_DELAY_MS = 3000
@@ -128,16 +133,31 @@ local function attemptSpawn(generation)
         "gameSpawn_event", tostring(events() and events().GameSpawn ~= nil)
     )
 
+    local availableCount = 0
     for _, unit in ipairs(RUSA_CANDIDATES) do
-        unitAvailability(cmd, unit)
-        emit("spawn_request", "unit", unit, "native_mate", true)
-        if tryNativeSpawn(unit) then
-            emit("spawn_request_accepted", "unit", unit)
-            return
+        local available = unitAvailability(cmd, unit)
+        if available == true then
+            availableCount = availableCount + 1
+            emit("spawn_request", "unit", unit, "native_mate", true, "availability_gate", "passed")
+            if tryNativeSpawn(unit) then
+                emit("spawn_request_accepted", "unit", unit)
+                return
+            end
+        else
+            emit(
+                "spawn_skip",
+                "unit", unit,
+                "reason", available == false and "unit_unavailable" or "availability_unknown",
+                "native_call", "suppressed"
+            )
         end
     end
 
-    emit("spawn_failed", "all_candidates_rejected")
+    if availableCount == 0 then
+        emit("spawn_failed", "no_available_candidates", "native_call", "suppressed")
+    else
+        emit("spawn_failed", "all_available_candidates_rejected")
+    end
 end
 
 local function issuePostSpawnOrder(generation, squad)
@@ -213,7 +233,8 @@ local function onGameStart()
         "mode", "native_mate_spawn",
         "parked_templates", "disabled",
         "mi_support_waves", "disabled",
-        "ownership_transfer", "disabled"
+        "ownership_transfer", "disabled",
+        "availability_fail_closed", true
     )
 
     local ev = events()
