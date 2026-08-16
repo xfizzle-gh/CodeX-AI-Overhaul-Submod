@@ -118,8 +118,14 @@ class TmaiHumanOriginHandoffTests(unittest.TestCase):
         self.assertIn('handoffLog("completed"', self.support)
         self.assertIn('"order_transport", "MI_action_move"', self.support)
 
-    def test_human_detection_fails_closed_on_ambiguous_nonbot_owners(self) -> None:
-        self.assertIn('return 0, "ambiguous_candidates="', self.support)
+    def test_human_resolution_uses_proven_four_slot_complement_and_fails_closed(self) -> None:
+        resolver = self.support[self.support.index("local function resolveHumanId") : self.support.index("local function logWait")]
+        self.assertIn("for playerId = 1, 4 do", resolver)
+        self.assertIn('return humanId, "campaign_four_slot_complement"', resolver)
+        self.assertIn('return 0, "four_slot_" .. item.name .. "_out_of_range="', resolver)
+        self.assertIn('return 0, "four_slot_duplicate_id="', resolver)
+        self.assertIn('return 0, "four_slot_no_candidate"', resolver)
+        self.assertNotIn(":QueryScene(", self.support)
         self.assertIn('logWait("human_id_unresolved:"', self.support)
         self.assertIn('if humanId <= 0 then', self.support)
         self.assertIn('if humanId == mateId then', self.support)
