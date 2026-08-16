@@ -60,6 +60,17 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertNotIn("DefenderBotId", self.handoff)
         self.assertNotIn('sc:SetVar("id_attack_support", id.playerId)', self.handoff)
 
+    def test_handoff_bootstraps_immediately_when_loaded_during_gamestart(self) -> None:
+        armed = self.handoff.index('emit("armed")')
+        bootstrap = self.handoff.index("publish(false)", armed)
+        fallback = self.handoff.index('emit("not_armed"', armed)
+        self.assertLess(armed, bootstrap)
+        self.assertLess(bootstrap, fallback)
+        self.assertIn(
+            "Subscribers added mid-dispatch are not guaranteed to receive that",
+            self.handoff,
+        )
+
     def test_handoff_retries_late_conquest_identity(self) -> None:
         self.assertIn("published = false", self.handoff)
         self.assertIn("applicable = nil", self.handoff)
