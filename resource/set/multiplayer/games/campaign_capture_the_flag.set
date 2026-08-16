@@ -1,6 +1,10 @@
+; RESEARCH ONLY (#104): provision bot slots from the normal 2022s skirmish
+; unitset so the extra Team-A Mate has a real engine unit catalog. The human
+; common state remains conquest. This temporarily changes the opposing bot's
+; unitset too, so it is not a production configuration.
 (define "bot_state"
 	{unitset
-		{value "conquest"}
+		{value "2022s"}
 		{available "all infantry sniper armor light medium heavy artillery airborne mechanized"}
 	}
 	(include "presets/global_parameters/unitlimits_gos_ai.inc")
