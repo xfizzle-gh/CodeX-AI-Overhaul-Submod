@@ -132,6 +132,10 @@ local function mirrorMotor()
 		"e2_fail", readVar("support_e2_fail"),
 		"e2_lz", readVar("support_e2_lz"),
 		"e2_flag", readVar("support_e2_flag"))
+	emit("handoff_probe",
+		"stage", readVar("native_handoff_probe_stage"),
+		"ready", readVar("attack_support_ready"),
+		"mate", readVar("id_attack_support"))
 end
 
 local state = {
