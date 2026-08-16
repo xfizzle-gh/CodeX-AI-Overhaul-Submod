@@ -2,10 +2,6 @@ name: Allied Support Terrain FoW patch validation
 
 on:
   pull_request:
-    paths:
-      - "resource/map/multi/attack_support_waves.inc"
-      - "tests/test_allied_support_shared_fow.py"
-      - ".github/workflows/allied-support-fow-guard.yml"
 
 permissions:
   contents: write
@@ -17,7 +13,7 @@ jobs:
       - name: Check out PR head
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: fix/allied-support-terrain-fow
           fetch-depth: 0
 
       - name: Set up Python
@@ -25,84 +21,18 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Apply terrain FoW handoff and regression test
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          runtime = Path("resource/map/multi/attack_support_waves.inc")
-          text = runtime.read_text(encoding="utf-8-sig")
-          start = text.find('(define "am_finish_deploy"')
-          end = text.find('(define "am_deploy_next_hmmwv"', start)
-          if start < 0 or end <= start:
-              raise SystemExit("could not isolate am_finish_deploy")
-          finish = text[start:end]
-          if '{"autoassign"' in finish:
-              raise SystemExit("am_finish_deploy already contains autoassign")
-
-          cleanup_tag = finish.rfind('{tag_remove attack_support_deploy}')
-          cleanup_entity = finish.rfind('{"entity_state"', 0, cleanup_tag)
-          if cleanup_tag < 0 or cleanup_entity < 0:
-              raise SystemExit("final deploy cleanup not found")
-
-          actor_pos = finish.find('{"actor_state"')
-          ables_pos = finish.find('{"ables"', actor_pos)
-          if not (0 <= actor_pos < ables_pos < cleanup_entity):
-              raise SystemExit("actor_state/ables/cleanup ordering is not canonical")
-          if '{control AI}' not in finish[actor_pos:ables_pos]:
-              raise SystemExit("AI control marker missing before handoff")
-          if '{remove select}' not in finish[ables_pos:cleanup_entity]:
-              raise SystemExit("selection lock marker missing before handoff")
-
-          tab = chr(9)
-          handoff = (
-              tab * 4 + '; Final player handoff for terrain FoW. Keep AI control and selection disabled above.\n'
-              + tab * 4 + '{"autoassign"\n'
-              + tab * 5 + '{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}\n'
-              + tab * 4 + '}\n'
-          )
-          finish = finish[:cleanup_entity] + handoff + finish[cleanup_entity:]
-          runtime.write_text(text[:start] + finish + text[end:], encoding="utf-8", newline="")
-
-          tests = Path("tests/test_allied_support_shared_fow.py")
-          t = tests.read_text(encoding="utf-8")
-          marker = '    def test_all_four_support_quadrants_have_correct_ai_ownership(self) -> None:\n'
-          if marker not in t:
-              raise SystemExit("test insertion marker missing")
-          if 'test_attack_support_autoassigns_after_ai_and_selection_lock' in t:
-              raise SystemExit("terrain FoW test already exists")
-          addition = '''    def test_attack_support_autoassigns_after_ai_and_selection_lock(self) -> None:
-              finish_start = self.attack_waves_inc.find('(define "am_finish_deploy"')
-              finish_end = self.attack_waves_inc.find('(define "am_deploy_next_hmmwv"', finish_start)
-              self.assertGreater(finish_start, 0)
-              self.assertGreater(finish_end, finish_start)
-              finish = self.attack_waves_inc[finish_start:finish_end]
-              actor_pos = finish.find('{"actor_state"')
-              ables_pos = finish.find('{"ables"', actor_pos)
-              autoassign_pos = finish.find('{"autoassign"', ables_pos)
-              cleanup_pos = finish.find('{tag_remove attack_support_deploy}', autoassign_pos)
-              self.assertGreater(actor_pos, 0)
-              self.assertGreater(ables_pos, actor_pos)
-              self.assertGreater(autoassign_pos, ables_pos)
-              self.assertGreater(cleanup_pos, autoassign_pos)
-              self.assertIn('{control AI}', finish[actor_pos:ables_pos])
-              self.assertIn('{remove select}', finish[ables_pos:autoassign_pos])
-              self.assertIn('{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}', finish[autoassign_pos:cleanup_pos])
-              self.assertEqual(finish.count('{"autoassign"'), 1)
-
-'''.replace('              ', '        ')
-          tests.write_text(t.replace(marker, addition + marker, 1), encoding="utf-8", newline="")
-          PY
+      - name: Apply terrain FoW patch
+        run: python tools/patch_allied_support_terrain_fow.py
 
       - name: Run focused FoW regression suite
         run: python -m unittest tests/test_allied_support_shared_fow.py
 
-      - name: Restore normal guard and commit validated source changes
+      - name: Commit validated source changes
         run: |
-          set -euo pipefail
           git show origin/main:.github/workflows/allied-support-fow-guard.yml > .github/workflows/allied-support-fow-guard.yml
+          rm tools/patch_allied_support_terrain_fow.py
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add resource/map/multi/attack_support_waves.inc tests/test_allied_support_shared_fow.py .github/workflows/allied-support-fow-guard.yml
+          git add -A
           git commit -m "Test player terrain FoW handoff for allied support"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          git push origin HEAD:fix/allied-support-terrain-fow
