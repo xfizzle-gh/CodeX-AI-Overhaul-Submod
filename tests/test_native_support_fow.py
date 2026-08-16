@@ -67,6 +67,12 @@ class NativeSupportFowDiagnosticTests(unittest.TestCase):
         self.assertIn("if not state.attempted and state.applicable ~= false then", quant)
         self.assertEqual(quant.count("attemptNativeSpawn"), 1)
 
+    def test_unresolved_gate_logs_state_changes_instead_of_quant_spam(self) -> None:
+        self.assertIn("lastGateWaitReason = nil", self.native)
+        self.assertIn("if state.lastGateWaitReason ~= reason then", self.native)
+        self.assertIn("state.lastGateWaitReason = reason", self.native)
+        self.assertNotIn("% 50", self.native)
+
     def test_diagnostic_uses_real_botapi_spawn_lifecycle_and_logs_game_spawn(self) -> None:
         required = (
             "CODEX_NATIVE_SUPPORT_TEST",
@@ -86,6 +92,10 @@ class NativeSupportFowDiagnosticTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.assertIn(marker, self.native)
 
+    def test_unproven_canspawn_signature_is_observed_but_never_called(self) -> None:
+        self.assertIn('"not_called_unproven_signature"', self.native)
+        self.assertNotIn("c:CanSpawn(TEST_UNIT)", self.native)
+
     def test_diagnostic_does_not_require_utility_on_special_support_slot(self) -> None:
         self.assertNotIn("require([[/script/multiplayer/modes/utility]])", self.native)
         self.assertNotIn('require("resource/script/multiplayer/modes/utility")', self.native)
@@ -100,6 +110,8 @@ class NativeSupportFowDiagnosticTests(unittest.TestCase):
         self.assertEqual(self.unit.count("crew2("), 1)
         self.assertEqual(self.unit.count("crew3("), 1)
         self.assertEqual(self.unit.count("crew4("), 1)
+        self.assertEqual(self.unit.count("{"), self.unit.count("}"))
+        self.assertEqual(self.unit.count("("), self.unit.count(")"))
         for breed in (
             "rus90_squadlead",
             "rus90_seniorrifleman",
