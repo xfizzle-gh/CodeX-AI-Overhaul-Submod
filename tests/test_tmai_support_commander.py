@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUPPORT = ROOT / "resource/script/multiplayer/modes/attack_support.lua"
+HANDOFF = ROOT / "resource/map/multi/attack_support_tmai_handoff.inc"
 BOT_MAIN = ROOT / "resource/script/multiplayer/bot.main.lua"
 NATIVE_FOW = ROOT / "resource/script/multiplayer/modes/native_support_fow_test.lua"
 
@@ -14,70 +15,25 @@ class TmaiReferencedSupportCommanderTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.support = SUPPORT.read_text(encoding="utf-8")
+        cls.handoff = HANDOFF.read_text(encoding="utf-8")
         cls.bot_main = BOT_MAIN.read_text(encoding="utf-8")
         cls.native_fow = NATIVE_FOW.read_text(encoding="utf-8")
 
-    def test_tmai_reference_is_explicit_and_observable(self) -> None:
+    def test_tmai_handoff_is_explicit_and_observable(self) -> None:
         self.assertIn("TMAI v0.17", self.support)
-        self.assertIn('local COMMANDER_PREFIX = "CODEX_TMAI_SUPPORT"', self.support)
-        self.assertIn('"reference", "TMAI_v0.17"', self.support)
+        self.assertIn('local HANDOFF_PREFIX = "CODEX_TMAI_HANDOFF"', self.support)
+        self.assertIn('"flow", "human_origin_to_mate_to_MI_action_move"', self.support)
+        self.assertIn('"order_transport", "MI_action_move"', self.support)
 
-    def test_three_second_settle_uses_engine_quant_timer(self) -> None:
-        self.assertIn("local TMAI_SETTLE_MS = 3000", self.support)
-        self.assertIn("ev:SetQuantTimer(function() settleManaged(entry.key, generation) end, TMAI_SETTLE_MS)", self.support)
-        self.assertIn('commanderLog("settled", key, "after_ms", TMAI_SETTLE_MS)', self.support)
+    def test_controller_uses_identity_bus_not_botapi_combat_orders(self) -> None:
+        self.assertIn('setVar("id_attack_support_human", humanId)', self.support)
+        self.assertIn('setVar("id_attack_support_mate", mateId)', self.support)
+        self.assertIn('setVar("tmai_handoff_enabled", 1)', self.support)
+        self.assertNotIn("CaptureFlag", self.support)
+        self.assertNotIn("SeekAndDestroy", self.support)
+        self.assertNotIn("BotApi.Commands", self.support)
 
-    def test_commander_replaces_random_and_periodic_order_spam(self) -> None:
-        self.assertNotIn("local function pickFlagName()", self.support)
-        self.assertNotIn("math.random(#names)", self.support)
-        self.assertNotIn("state.ordered", self.support)
-        self.assertNotIn("state.quant % 400 == 0", self.support)
-        self.assertIn("entry.lastRole == role and entry.lastTarget == flagName", self.support)
-        self.assertIn("state.planDirty", self.support)
-
-    def test_managed_groups_settle_and_prune_against_live_scene_squads(self) -> None:
-        self.assertIn("managed = {}", self.support)
-        self.assertIn("local function discoverAndPruneSquads()", self.support)
-        self.assertIn("state.managed[key] = entry", self.support)
-        self.assertIn("state.managed[key] = nil", self.support)
-        self.assertIn('commanderLog("pruned", key, "not_in_scene_squads")', self.support)
-        self.assertIn("entry.settled = true", self.support)
-
-    def test_objectives_are_distinct_before_reinforcement(self) -> None:
-        plan = self.support[self.support.index("local function buildPlan") : self.support.index("local function applyCommanderPlan")]
-        unique_pass = plan.index("for _, flag in ipairs(attackFlags) do")
-        reinforcement = plan.index('assignDesired(desired, entries[nextEntry], "reinforce", best.name)')
-        self.assertLess(unique_pass, reinforcement)
-        self.assertIn('state.recentlyLost[flag.name] and "counterattack" or "attack"', plan)
-        self.assertIn("reinforceLoads", plan)
-
-    def test_recently_lost_friendly_flag_becomes_counterattack_priority(self) -> None:
-        self.assertIn('previous == "friendly" and relation ~= "friendly"', self.support)
-        self.assertIn("state.recentlyLost[name] = true", self.support)
-        self.assertIn("if al ~= bl then return al end", self.support)
-        self.assertIn('commanderLog("flag_lost", name, "to", relation)', self.support)
-        self.assertIn('"counterattack"', self.support)
-
-    def test_newly_captured_ground_gets_bounded_hold_groups(self) -> None:
-        self.assertIn("local MAX_CAPTURE_HOLD_GROUPS = 4", self.support)
-        self.assertIn('previous ~= "friendly" and relation == "friendly"', self.support)
-        self.assertIn("state.newlyCaptured[name] = true", self.support)
-        self.assertIn('assignDesired(desired, entries[nextEntry], "hold", flag.name)', self.support)
-        self.assertIn("holdCount < MAX_CAPTURE_HOLD_GROUPS", self.support)
-
-    def test_commander_keeps_a_small_reserve(self) -> None:
-        self.assertIn("local MAX_RESERVE_GROUPS = 1", self.support)
-        self.assertIn('assignDesired(desired, entries[nextEntry], "reserve", nil)', self.support)
-        self.assertIn('entry.lastRole = "reserve"', self.support)
-        self.assertIn('commanderLog("reserve", entry.key, "hold_current_position")', self.support)
-
-    def test_transport_remains_proven_captureflag_with_seek_fallback(self) -> None:
-        self.assertIn("c:CaptureFlag(entry.squad, flagName)", self.support)
-        self.assertIn("c:SeekAndDestroy(entry.squad)", self.support)
-        self.assertIn('"SeekAndDestroy_fallback"', self.support)
-        self.assertNotIn("action move", self.support)
-
-    def test_fragile_support_slot_still_never_loads_utility(self) -> None:
+    def test_fragile_mate_slot_still_never_loads_utility(self) -> None:
         forbidden = (
             r"require\(\[\[/script/multiplayer/modes/utility\]\]\)",
             r'require\(["\']resource/script/multiplayer/modes/utility["\']\)',
@@ -86,22 +42,92 @@ class TmaiReferencedSupportCommanderTests(unittest.TestCase):
         for pattern in forbidden:
             with self.subTest(pattern=pattern):
                 self.assertIsNone(re.search(pattern, self.support))
+        self.assertIn('sc:QueryScene({"soldier"}, 5)', self.support)
 
-    def test_commander_only_runs_for_routed_human_attack_support_slot(self) -> None:
+    def test_human_origin_is_established_before_attack_support_ready(self) -> None:
+        arm = self.support[self.support.index("local function armHumanOriginHandoff") : self.support.index("local function mirrorState")]
+        human = arm.index('setVar("id_attack_support_human", humanId)')
+        first_owner = arm.index('setVar("id_attack_support", humanId)')
+        prepare = arm.index('setVar("tmai_handoff_prepare", 1)')
+        prepared_gate = arm.index('readVarNumber("tmai_handoff_prepared") ~= 1')
+        ready = arm.index('setVar("attack_support_ready", 1)')
+        self.assertLess(human, first_owner)
+        self.assertLess(first_owner, prepare)
+        self.assertLess(prepare, prepared_gate)
+        self.assertLess(prepared_gate, ready)
+
+    def test_bridge_mimics_manual_transfer_lifecycle_in_order(self) -> None:
+        human_seed = self.handoff.index('("tmai_set_human_owner" args attack_support_tpl)')
+        control_user = self.handoff.index("{control user}", human_seed)
+        first_dwell = self.handoff.index('{"delay" {time 3}}', control_user)
+        mate = self.handoff.index('("tmai_set_mate_owner" args tmai_handoff_pending)', first_dwell)
+        control_ai = self.handoff.index("{control AI}", mate)
+        settle = self.handoff.index('{"delay" {time 3}}', control_ai)
+        first_move = self.handoff.index("{action move}", settle)
+        self.assertLess(human_seed, control_user)
+        self.assertLess(control_user, first_dwell)
+        self.assertLess(first_dwell, mate)
+        self.assertLess(mate, control_ai)
+        self.assertLess(control_ai, settle)
+        self.assertLess(settle, first_move)
+
+    def test_handoff_only_processes_newly_deployed_support_once(self) -> None:
+        self.assertIn('{select {tag {tag attack_support_src}}}', self.handoff)
+        self.assertIn('{exclude {tag {tag tmai_handoff_done}}}', self.handoff)
+        self.assertIn('{exclude {tag {tag tmai_handoff_pending}}}', self.handoff)
+        self.assertIn('{tag_add tmai_handoff_pending}', self.handoff)
+        self.assertIn('{tag_add tmai_handoff_done}', self.handoff)
+        self.assertIn('{tag_remove tmai_handoff_pending}', self.handoff)
+        self.assertIn('{var "tmai_handoff_seq$"} {op "+"} {value 1}', self.handoff)
+
+    def test_tmai_small_infantry_groups_exclude_linked_vehicle_crews(self) -> None:
+        self.assertIn('{include {prop {prop human}}}', self.handoff)
+        self.assertIn('{exclude {state {state linked}}}', self.handoff)
+        self.assertIn('{amount 4}', self.handoff)
+        self.assertIn('{tag_add tmai_move_g1}', self.handoff)
+        self.assertIn('{tag_add tmai_move_g2}', self.handoff)
+        self.assertIn('{tag tmai_move_g1}', self.handoff)
+        self.assertIn('{tag tmai_move_g2}', self.handoff)
+
+    def test_each_production_humvee_is_tasked_individually(self) -> None:
+        for index in range(1, 5):
+            marker = f'{{tag attack_support_hmmwv{index}}} {{type vehicle}}'
+            with self.subTest(index=index):
+                self.assertIn(marker, self.handoff)
+        self.assertNotIn("include {type", self.handoff)
+
+    def test_mi_action_move_spreads_groups_across_distinct_objectives(self) -> None:
+        for flag in ("tmai_support_flag1", "tmai_support_flag2", "tmai_support_flag3"):
+            self.assertIn(flag, self.handoff)
+        self.assertGreaterEqual(self.handoff.count("{action move}"), 6)
+        self.assertIn('{target {ignore_captured_by_user 0} {tag tmai_support_flag1}}', self.handoff)
+        self.assertIn('{target {ignore_captured_by_user 0} {tag tmai_support_flag2}}', self.handoff)
+        self.assertIn('{target {ignore_captured_by_user 0} {tag tmai_support_flag3}}', self.handoff)
+        self.assertNotIn("{action advance}", self.handoff)
+
+    def test_human_and_mate_switches_cover_all_runtime_player_ids(self) -> None:
+        for player_id in range(1, 17):
+            human = f'{{var "id_attack_support_human$"}} {{op "=="}} {{value {player_id}}}'
+            mate = f'{{var "id_attack_support_mate$"}} {{op "=="}} {{value {player_id}}}'
+            with self.subTest(player_id=player_id):
+                self.assertIn(human, self.handoff)
+                self.assertIn(mate, self.handoff)
+
+    def test_commander_only_runs_for_routed_human_attack_mate_slot(self) -> None:
         self.assertIn('if identity.team ~= "a" then return false end', self.bot_main)
         self.assertIn("if identity.isHuman then return false end", self.bot_main)
         self.assertIn("identity.playerId == identity.defenderBotId", self.bot_main)
         self.assertIn('safeRequire("resource/script/multiplayer/modes/attack_support")', self.bot_main)
-        self.assertIn("if state.attackMission == true", self.support)
         self.assertIn("if id.attacking == false then", self.support)
 
-    def test_pr99_native_fow_diagnostic_remains_separate(self) -> None:
+    def test_pr99_native_fow_probe_remains_separate(self) -> None:
         attack_route = self.bot_main.index("if isAttackSupportCandidate(identity) then")
         attack_return = self.bot_main.index("return", attack_route)
         native_require = self.bot_main.index("native_support_fow_test")
         self.assertLess(attack_return, native_require)
         self.assertIn("CODEX_NATIVE_SUPPORT_TEST", self.native_fow)
         self.assertNotIn("CODEX_NATIVE_SUPPORT_TEST", self.support)
+        self.assertNotIn("CODEX_NATIVE_SUPPORT_TEST", self.handoff)
 
 
 if __name__ == "__main__":
