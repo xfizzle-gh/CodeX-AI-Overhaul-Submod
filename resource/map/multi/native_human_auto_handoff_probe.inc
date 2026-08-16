@@ -10,7 +10,7 @@
 ; The first #110 native run proved the normal Mate controller was live and published
 ; attack_support_ready=1 / id_attack_support=1, while 34 genuine campaign actors moved
 ; Player 0 -> human Player 3. Yet the handoff never left stage 0. The old selector relied
-; on a custom {tag player} that those Dynamic Conquest actors do not receive in this path.
+; on a custom player tag that those Dynamic Conquest actors do not receive in this path.
 ;
 ; Select the source by the engine state that actually distinguishes the human's native
 ; campaign infantry at runtime: human + operatable + user_control, excluding inactive and
