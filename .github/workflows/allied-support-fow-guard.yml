@@ -1,38 +1,42 @@
-name: Allied Support Terrain FoW formatting validation
+name: Allied Support FoW and Mission Gate guard
 
 on:
   pull_request:
+    paths:
+      - "resource/script/multiplayer/modes/attack_support.lua"
+      - "resource/map/multi/attack_support_waves.inc"
+      - "resource/map/multi/defense_support_waves.inc"
+      - "resource/map/multi/enemy_defense_support.inc"
+      - "resource/map/multi/enemy_attack_support.inc"
+      - "tests/test_allied_support_shared_fow.py"
+      - ".github/workflows/allied-support-fow-guard.yml"
+  push:
+    branches:
+      - main
+      - test/support-shared-fow-100pct
+    paths:
+      - "resource/script/multiplayer/modes/attack_support.lua"
+      - "resource/map/multi/attack_support_waves.inc"
+      - "resource/map/multi/defense_support_waves.inc"
+      - "resource/map/multi/enemy_defense_support.inc"
+      - "resource/map/multi/enemy_attack_support.inc"
+      - "tests/test_allied_support_shared_fow.py"
+      - ".github/workflows/allied-support-fow-guard.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  repair-once:
+  source-guard:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out PR head
+      - name: Check out repository
         uses: actions/checkout@v6
-        with:
-          ref: fix/allied-support-terrain-fow
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
-      - name: Repair generated block
-        run: python tools/repair_terrain_fow_block.py
-
-      - name: Run focused FoW regression suite
+      - name: Run Allied Support FoW and Gate regression tests
         run: python -m unittest tests/test_allied_support_shared_fow.py
-
-      - name: Commit canonical source changes
-        run: |
-          git show origin/main:.github/workflows/allied-support-fow-guard.yml > .github/workflows/allied-support-fow-guard.yml
-          rm tools/repair_terrain_fow_block.py
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Fix terrain FoW handoff formatting"
-          git push origin HEAD:fix/allied-support-terrain-fow

@@ -112,6 +112,8 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
             finish[autoassign_pos:cleanup_pos],
         )
         self.assertEqual(finish.count('{"autoassign"'), 1)
+        self.assertIn('\n\t\t\t\t{"autoassign"', finish)
+        self.assertIn('\n\t\t\t\t{"entity_state"', finish[autoassign_pos:cleanup_pos])
 
     def test_all_four_support_quadrants_have_correct_ai_ownership(self) -> None:
         self.assertIn('{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 1}}', self.attack_waves_inc)

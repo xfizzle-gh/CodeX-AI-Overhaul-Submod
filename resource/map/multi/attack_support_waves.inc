@@ -742,11 +742,11 @@
 					{target {ignore_captured_by_user 0} {tag attack_support_flag3}}
 				}
 				{"delay" {time 0.2}}
-								; Final player handoff for terrain FoW. Keep AI control and selection disabled above.
+				; Final player handoff for terrain FoW. Keep AI control and selection disabled above.
 				{"autoassign"
 					{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
 				}
-{"entity_state"
+				{"entity_state"
 					{selector
 						{source advanced}
 						{group {select {tag {tag attack_support_deploy}}}}
