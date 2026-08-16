@@ -21,8 +21,13 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         cls.enemy_attack_inc = ENEMY_ATTACK_SUPPORT_INC.read_text(encoding="utf-8")
 
     def test_attack_support_assigns_real_allied_ai_owner_not_controller(self) -> None:
-        # 1. Must resolve ownerId from defenderBotId (with fallback to controller playerId)
+        # Must resolve strictly from DefenderBotId. The phantom controller is not a
+        # valid ownership fallback because it is outside the human's native FoW graph.
         self.assertIn(
+            "local ownerId = positiveId(id.defenderBotId, 0)",
+            self.attack_support_lua,
+        )
+        self.assertNotIn(
             "local ownerId = positiveId(id.defenderBotId, id.playerId)",
             self.attack_support_lua,
         )
@@ -31,7 +36,7 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
             self.attack_support_lua,
         )
 
-        # 2. Must NEVER assign phantom controller playerId or human player directly
+        # Must NEVER assign phantom controller playerId or human player directly.
         self.assertNotIn(
             'sc:SetVar("id_attack_support", id.playerId)',
             self.attack_support_lua,
@@ -41,8 +46,7 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
             self.attack_support_lua,
         )
 
-        # 3. publishIdentity must preserve readiness and MI wave flags
-        publish_start = self.attack_support_lua.find("local function publishIdentity(id)")
+        publish_start = self.attack_support_lua.find("local function publishIdentity(id, isRetry)")
         publish_end = self.attack_support_lua.find("\nend\n", publish_start)
         self.assertGreater(publish_start, 0)
         self.assertGreater(publish_end, publish_start)
@@ -52,6 +56,20 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertIn('sc:SetVar("attack_support_use_mi", 1)', publish_body)
         self.assertNotIn("id.firstPlayerId", publish_body)
         self.assertIn("if ownerId <= 0 then", publish_body)
+        self.assertIn("return false", publish_body)
+        self.assertIn("state.identityPublished = true", publish_body)
+
+    def test_attack_support_retries_late_defender_bot_identity(self) -> None:
+        # Conquest identities can settle after GameStart. A fail-closed owner must
+        # therefore retry rather than permanently suppressing friendly attack support.
+        self.assertIn("identityPublished = false", self.attack_support_lua)
+        quant_start = self.attack_support_lua.find("local function onQuant()")
+        quant_end = self.attack_support_lua.find("\nend\n", quant_start)
+        self.assertGreater(quant_start, 0)
+        self.assertGreater(quant_end, quant_start)
+        quant_body = self.attack_support_lua[quant_start:quant_end]
+        self.assertIn("if not state.identityPublished then", quant_body)
+        self.assertIn("publishIdentity(identity(), true)", quant_body)
 
     def test_all_four_support_quadrants_have_correct_ai_ownership(self) -> None:
         # Quadrant 1: Friendly Attack Support -> id_attack_support$
@@ -70,7 +88,7 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertIn('{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 1}}', self.enemy_attack_inc)
         self.assertIn('{var "id_1st_enemy$"}', self.enemy_attack_inc)
 
-        # No support quadrant transfers units to the human player
+        # No support quadrant transfers units to the human player.
         for name, text in (
             ("attack_waves", self.attack_waves_inc),
             ("defense_waves", self.defense_waves_inc),
@@ -82,23 +100,18 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
                 self.assertNotIn('control user', text)
 
     def test_canonical_mission_support_gate_is_100_percent(self) -> None:
-        # Find support_mission/roll block
         roll_start = self.attack_waves_inc.find('{"support_mission/roll"')
         self.assertGreater(roll_start, 0)
         roll_end = self.attack_waves_inc.find('{"attack_support/init"', roll_start)
         self.assertGreater(roll_end, roll_start)
         roll_block = self.attack_waves_inc[roll_start:roll_end]
 
-        # Must roll once per mission
         self.assertIn('{var "support_mission_roll_done$"} {op "=="} {value 0}', roll_block)
         self.assertIn('{var "support_mission_roll_done$"} {op "="} {value 1}', roll_block)
-
-        # Must use 1.0 (100% chance) for testing
         self.assertIn('{condition {type rand} {value 1.0}}', roll_block)
         self.assertIn('{var "support_mission_enabled$"} {op "="} {value 1}', roll_block)
 
     def test_both_appropriate_support_systems_arm_on_human_attack(self) -> None:
-        # Friendly Attack Support arms when user_is_defender$ == 0 and support_mission_enabled$ == 1
         attack_init_start = self.attack_waves_inc.find('{"attack_support/init"')
         self.assertGreater(attack_init_start, 0)
         attack_init_end = self.attack_waves_inc.find('{"attack_support/clock"', attack_init_start)
@@ -110,7 +123,6 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertIn('{var "id_attack_support$"} {op ">"} {value 0}', attack_init)
         self.assertIn('{var "attack_support_armed$"} {op "="} {value 1}', attack_init)
 
-        # Enemy Defense Support arms when user_is_defender$ == 0 and support_mission_enabled$ == 1
         enemy_def_init_start = self.enemy_defense_inc.find('{"enemy_defense/init"')
         self.assertGreater(enemy_def_init_start, 0)
         enemy_def_init_end = self.enemy_defense_inc.find('{"enemy_defense/trickle"', enemy_def_init_start)
@@ -123,7 +135,6 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertIn('{var "enemy_defense_armed$"} {op "="} {value 1}', enemy_def_init)
 
     def test_both_appropriate_support_systems_arm_on_human_defense(self) -> None:
-        # Friendly Defense Support arms when user_is_defender$ == 1 and support_mission_enabled$ == 1
         def_init_start = self.defense_waves_inc.find('{"defense_support/init"')
         self.assertGreater(def_init_start, 0)
         def_init_end = self.defense_waves_inc.find('{"defense_support/clock"', def_init_start)
@@ -135,7 +146,6 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertIn('{var "id_defenderbot$"} {op ">"} {value 0}', def_init)
         self.assertIn('{var "defense_support_armed$"} {op "="} {value 1}', def_init)
 
-        # Enemy Attack Support arms when user_is_defender$ == 1 and support_mission_enabled$ == 1
         enemy_att_init_start = self.enemy_attack_inc.find('{"enemy_attack/init"')
         self.assertGreater(enemy_att_init_start, 0)
         enemy_att_init_end = self.enemy_attack_inc.find('{"enemy_attack/clock"', enemy_att_init_start)
