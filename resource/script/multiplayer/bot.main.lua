@@ -121,6 +121,14 @@ local function initializeBotAI()
         return
     end
 
+    -- Diagnostic #97: only normal Conquest bot processes load this module. The
+    -- custom Team-A attack-support process has already returned above, so this
+    -- cannot resurrect the unsafe utility.lua path on that slot. The module then
+    -- self-gates to the actual DefenderBot on human-defense RUSA missions.
+    if identity.gameMode == "campaign_capture_the_flag" then
+        safeRequire("resource/script/multiplayer/modes/native_support_fow_test")
+    end
+
     -- Load Battle Zones-specific reliability and purchasing overrides only after
     -- the base mode has registered its shared functions and event handlers.
     if identity.gameMode == "battle_zones" or identity.gameMode == "ammunition" then
