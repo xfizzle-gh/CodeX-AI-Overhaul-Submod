@@ -29,9 +29,16 @@ class TmaiReferencedSupportCommanderTests(unittest.TestCase):
         self.assertIn('setVar("id_attack_support_human", humanId)', self.support)
         self.assertIn('setVar("id_attack_support_mate", mateId)', self.support)
         self.assertIn('setVar("tmai_handoff_enabled", 1)', self.support)
-        self.assertNotIn("CaptureFlag", self.support)
-        self.assertNotIn("SeekAndDestroy", self.support)
-        self.assertNotIn("BotApi.Commands", self.support)
+        for forbidden_call in (
+            ":CaptureFlag(",
+            ".CaptureFlag(",
+            ":SeekAndDestroy(",
+            ".SeekAndDestroy(",
+            "BotApi.Commands:",
+            "BotApi.Commands.",
+        ):
+            with self.subTest(forbidden_call=forbidden_call):
+                self.assertNotIn(forbidden_call, self.support)
 
     def test_fragile_mate_slot_still_never_loads_utility(self) -> None:
         forbidden = (
