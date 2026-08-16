@@ -53,5 +53,14 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Run support, ownership, DefenderBot, and mission regression tests
-        run: python -m unittest discover -s tests -p "test_*.py"
+      - name: Run allied-support ownership and mission-gate regression
+        run: python tests/test_allied_support_shared_fow.py
+
+      - name: Run native support FoW diagnostic regression
+        run: python tests/test_native_support_fow.py
+
+      - name: Run DefenderBot Conquest regression
+        run: python tests/test_conquest_defender_bot.py
+
+      - name: Run CWA mission-integrity regression
+        run: python tests/test_woodland_support_probe.py
