@@ -21,7 +21,7 @@
 local PREFIX = "CODEX_ATTACK_SUPPORT"
 local HANDOFF_PREFIX = "CODEX_TMAI_HANDOFF"
 local DEBUG_LOG = true
-local HUMAN_DISCOVERY_QUANTS = 10
+local ARM_RETRY_QUANTS = 10
 local MIRROR_QUANTS = 200
 
 local function emitWithPrefix(prefix, ...)
@@ -111,75 +111,49 @@ local state = {
 	lastSeq = -1,
 }
 
-local function excludedHumanCandidate(playerId, id)
-	if playerId <= 0 then return true end
-	if playerId == id.playerId then return true end
-	if id.firstEnemyId > 0 and playerId == id.firstEnemyId then return true end
-	if id.defenderBotId > 0 and playerId == id.defenderBotId then return true end
-	return false
-end
-
--- The extra Team-A Mate can occupy Conquest.FirstPlayerId, so FirstPlayerId by itself
--- is not a safe human identity while {aiTeamPlayers 1} exists. We use the same
--- BotApi.Scene:QueryScene primitive already used by shipped utility.lua, but directly
--- and narrowly: locate live player IDs with soldiers, then exclude every known bot ID.
--- In normal single-player Dynamic Conquest this leaves exactly the human commander.
-local function queryHumanCandidates(id)
-	local sc = scene()
-	if not sc or not sc.QueryScene then
-		return {}, "QueryScene_missing"
-	end
-	local ok, result = pcall(function()
-		return sc:QueryScene({"soldier"}, 5)
-	end)
-	if not ok or type(result) ~= "table" then
-		return {}, ok and "QueryScene_bad_result" or ("QueryScene_error:" .. tostring(result))
-	end
-
-	local candidates = {}
-	for rawPlayerId, bucket in pairs(result) do
-		local playerId = tonumber(rawPlayerId or 0) or 0
-		local counts = type(bucket) == "table" and bucket[2] or nil
-		local soldiers = type(counts) == "table" and (tonumber(counts[1] or 0) or 0) or 0
-		if soldiers > 0 and not excludedHumanCandidate(playerId, id) then
-			candidates[#candidates + 1] = { id = playerId, soldiers = soldiers }
-		end
-	end
-	table.sort(candidates, function(a, b)
-		if a.soldiers ~= b.soldiers then return a.soldiers > b.soldiers end
-		return a.id < b.id
-	end)
-	return candidates, "ok"
-end
-
+-- Native crash report 2026-08-16 disproved the QueryScene polling approach:
+-- the Mate was player 1 / FirstPlayerId 1, QueryScene returned no human candidate,
+-- and repeated native QueryScene calls every ~0.2s were the only #101-specific native
+-- operation still executing before the process terminated without a Lua exception.
+--
+-- We already have direct live topology proof in bot.main.lua and game.log that this
+-- single-player Conquest layout uses four combat player slots:
+--   Mate = 1, enemy = 2, human = 3, DefenderBot = 4.
+-- Rather than hard-code player 3, resolve the human as the ONE missing ID from 1..4
+-- after accounting for the Mate, enemy, and DefenderBot. This tolerates permutations
+-- of those three engine-owned IDs, avoids native scene probing entirely, and fails
+-- closed if the runtime topology is not exactly the proven four-slot shape.
 local function resolveHumanId(id)
-	local candidates, reason = queryHumanCandidates(id)
-	if #candidates == 0 then return 0, reason end
+	local known = {
+		{ name = "mate", value = tonumber(id.playerId or 0) or 0 },
+		{ name = "enemy", value = tonumber(id.firstEnemyId or 0) or 0 },
+		{ name = "defender", value = tonumber(id.defenderBotId or 0) or 0 },
+	}
+	local occupied = {}
+	for _, item in ipairs(known) do
+		local playerId = item.value
+		if playerId < 1 or playerId > 4 then
+			return 0, "four_slot_" .. item.name .. "_out_of_range=" .. tostring(playerId)
+		end
+		if occupied[playerId] then
+			return 0, "four_slot_duplicate_id=" .. tostring(playerId)
+		end
+		occupied[playerId] = true
+	end
 
-	-- Prefer a candidate corroborated by the engine's FirstPlayerId when that field
-	-- is actually human in this topology.
-	for _, candidate in ipairs(candidates) do
-		if id.firstPlayerId > 0 and candidate.id == id.firstPlayerId then
-			return candidate.id, "query+FirstPlayerId"
+	local humanId = 0
+	for playerId = 1, 4 do
+		if not occupied[playerId] then
+			if humanId ~= 0 then
+				return 0, "four_slot_multiple_candidates"
+			end
+			humanId = playerId
 		end
 	end
-
-	-- hostId is only used as corroboration, never as a blind ownership fallback.
-	for _, candidate in ipairs(candidates) do
-		if id.hostId > 0 and candidate.id == id.hostId then
-			return candidate.id, "query+hostId"
-		end
+	if humanId <= 0 then
+		return 0, "four_slot_no_candidate"
 	end
-
-	if #candidates == 1 then
-		return candidates[1].id, "single_nonbot_soldier_owner"
-	end
-
-	local parts = {}
-	for _, candidate in ipairs(candidates) do
-		parts[#parts + 1] = tostring(candidate.id) .. ":" .. tostring(candidate.soldiers)
-	end
-	return 0, "ambiguous_candidates=" .. table.concat(parts, ",")
+	return humanId, "campaign_four_slot_complement"
 end
 
 local function logWait(reason, id)
@@ -304,7 +278,7 @@ end
 
 local function onQuant()
 	state.quant = state.quant + 1
-	if state.attackMission ~= false and not state.armed and state.quant % HUMAN_DISCOVERY_QUANTS == 0 then
+	if state.attackMission ~= false and not state.armed and state.quant % ARM_RETRY_QUANTS == 0 then
 		armHumanOriginHandoff(identity())
 	end
 	if state.armed then observeHandoffs() end
