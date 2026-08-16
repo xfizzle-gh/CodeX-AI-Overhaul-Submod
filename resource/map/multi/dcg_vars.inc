@@ -136,3 +136,4 @@
 			{"support_templates_culled"}
 			{"support_templates_ally"}
 			{"support_templates_enemy"}
+			{"native_handoff_probe_stage"}
