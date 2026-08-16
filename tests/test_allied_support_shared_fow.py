@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+BOT_MAIN_LUA = ROOT / "resource/script/multiplayer/bot.main.lua"
 ATTACK_SUPPORT_LUA = ROOT / "resource/script/multiplayer/modes/attack_support.lua"
 ATTACK_SUPPORT_WAVES_INC = ROOT / "resource/map/multi/attack_support_waves.inc"
 DEFENSE_SUPPORT_WAVES_INC = ROOT / "resource/map/multi/defense_support_waves.inc"
@@ -14,14 +15,33 @@ ENEMY_ATTACK_SUPPORT_INC = ROOT / "resource/map/multi/enemy_attack_support.inc"
 class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        cls.bot_main_lua = BOT_MAIN_LUA.read_text(encoding="utf-8")
         cls.attack_support_lua = ATTACK_SUPPORT_LUA.read_text(encoding="utf-8")
         cls.attack_waves_inc = ATTACK_SUPPORT_WAVES_INC.read_text(encoding="utf-8")
         cls.defense_waves_inc = DEFENSE_SUPPORT_WAVES_INC.read_text(encoding="utf-8")
         cls.enemy_defense_inc = ENEMY_DEFENSE_SUPPORT_INC.read_text(encoding="utf-8")
         cls.enemy_attack_inc = ENEMY_ATTACK_SUPPORT_INC.read_text(encoding="utf-8")
 
-    def test_attack_support_assigns_real_allied_ai_owner_not_controller(self) -> None:
+    def test_attack_support_uses_routed_team_a_controller_owner(self) -> None:
+        # bot.main.lua is the authority for which BotApi process may load attack_support.lua.
+        # Native evidence showed DefenderBotId is defender-side on a human attack, so it
+        # must never be used as the friendly attack-support owner.
+        self.assertIn('if identity.team ~= "a" then return false end', self.bot_main_lua)
+        self.assertIn("if identity.isHuman then return false end", self.bot_main_lua)
         self.assertIn(
+            "if identity.defenderBotId > 0 and identity.playerId == identity.defenderBotId then",
+            self.bot_main_lua,
+        )
+        self.assertIn(
+            'safeRequire("resource/script/multiplayer/modes/attack_support")',
+            self.bot_main_lua,
+        )
+
+        self.assertIn(
+            "local ownerId = positiveId(id.playerId, 0)",
+            self.attack_support_lua,
+        )
+        self.assertNotIn(
             "local ownerId = positiveId(id.defenderBotId, 0)",
             self.attack_support_lua,
         )
@@ -34,7 +54,7 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
             self.attack_support_lua,
         )
         self.assertNotIn(
-            'sc:SetVar("id_attack_support", id.playerId)',
+            'sc:SetVar("id_attack_support", id.defenderBotId)',
             self.attack_support_lua,
         )
         self.assertNotIn(
@@ -55,7 +75,7 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertIn("return false", publish_body)
         self.assertIn("state.identityPublished = true", publish_body)
 
-    def test_attack_support_retries_late_defender_bot_identity_only_when_needed(self) -> None:
+    def test_attack_support_retries_late_controller_identity_only_when_needed(self) -> None:
         self.assertIn("identityPublished = false", self.attack_support_lua)
         self.assertIn("attackMission = nil", self.attack_support_lua)
 
@@ -65,6 +85,7 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertIn("if id.attacking == false then", publish_body)
         self.assertIn("state.attackMission = false", publish_body)
         self.assertIn("state.attackMission = true", publish_body)
+        self.assertIn("support_controller_owner_unresolved", publish_body)
 
         quant_start = self.attack_support_lua.find("local function onQuant()")
         quant_end = self.attack_support_lua.find("\nend\n", quant_start)
