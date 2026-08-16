@@ -20,11 +20,14 @@ class NativeHumanAutoHandoffProbeTests(unittest.TestCase):
         self.assertIn('(include "/map/multi/native_human_auto_handoff_probe.inc")', self.inert)
         self.assertIn('{"native_handoff_probe_stage"}', self.vars)
 
-    def test_source_is_one_real_player_infantry_actor(self):
+    def test_source_is_one_native_user_controlled_infantry_actor(self):
         self.assertIn('{amount 1}', self.probe)
-        self.assertIn('{tag player}', self.probe)
-        self.assertIn('{type human}', self.probe)
-        self.assertIn('{state "not dead"}', self.probe)
+        self.assertNotIn('{tag player}', self.probe)
+        self.assertIn('{prop {prop human}}', self.probe)
+        self.assertIn('{state {state operatable}}', self.probe)
+        self.assertIn('{state {state user_control}}', self.probe)
+        self.assertIn('{state {state inactive}}', self.probe)
+        self.assertIn('{state {state linked}}', self.probe)
         self.assertNotIn('{tag attack_support_tpl}', self.probe)
         self.assertNotIn('{tag attack_support_src}', self.probe)
 
@@ -62,6 +65,12 @@ class NativeHumanAutoHandoffProbeTests(unittest.TestCase):
         self.assertIn('sc:SetVar("id_attack_support", ownerId)', self.attack)
         self.assertIn('sc:SetVar("attack_support_ready", 1)', self.attack)
         self.assertNotIn('setVar("attack_support_ready", 0)', self.attack)
+
+    def test_runtime_mirror_exposes_handoff_gate_state(self):
+        self.assertIn('"handoff_probe"', self.attack)
+        self.assertIn('readVar("native_handoff_probe_stage")', self.attack)
+        self.assertIn('readVar("attack_support_ready")', self.attack)
+        self.assertIn('readVar("id_attack_support")', self.attack)
 
     def test_braces_are_balanced(self):
         self.assertEqual(self.probe.count('{'), self.probe.count('}'))
