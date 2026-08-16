@@ -1,0 +1,22 @@
+name: Mate Unitset Provision FoW Probe
+
+on:
+  pull_request:
+    paths:
+      - "resource/set/multiplayer/games/campaign_capture_the_flag.set"
+      - "resource/script/multiplayer/modes/attack_support.lua"
+      - "tests/test_mate_unitset_provision_fow.py"
+      - "tests/test_allied_support_shared_fow.py"
+      - ".github/workflows/mate-unitset-provision-fow.yml"
+  workflow_dispatch:
+
+jobs:
+  source-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run Mate unitset provisioning regression
+        run: python tests/test_mate_unitset_provision_fow.py
