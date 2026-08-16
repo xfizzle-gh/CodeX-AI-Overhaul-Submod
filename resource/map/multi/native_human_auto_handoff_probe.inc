@@ -53,9 +53,6 @@
 				}
 				{actions
 					{"set_i" {var "native_handoff_probe_stage$"} {op "="} {value 1}}
-
-					; Claim exactly one genuine player infantry actor. No support-template tags
-					; participate in this selector.
 					{"entity_state"
 						{selector
 							{ignore_captured_by_user 0}
@@ -67,8 +64,6 @@
 						{tag_add codex_native_handoff_probe}
 					}
 					{"delay" {time 0.2}}
-
-					; Explicitly begin from the same human/user-controlled state as #102.
 					{"actor_state"
 						{selector {ignore_captured_by_user 0} {tag codex_native_handoff_probe}}
 						{drop orders}
@@ -76,8 +71,6 @@
 						{ai_move {mode disable}}
 					}
 					{"delay" {time 1}}
-
-					; Automatic equivalent of the manual TMAI ownership handoff.
 					("native_handoff_set_mate_owner")
 					{"actor_state"
 						{selector {ignore_captured_by_user 0} {tag codex_native_handoff_probe}}
@@ -86,12 +79,7 @@
 						{remove select}
 					}
 					{"set_i" {var "native_handoff_probe_stage$"} {op "="} {value 2}}
-
-					; Match TMAI's observed post-transfer settle before issuing movement.
 					{"delay" {time 3}}
-
-					; Pick one active objective so the transferred native actor leaves the human
-					; cluster and produces a clean terrain-FoW observation.
 					{"entity_state"
 						{selector
 							{source advanced}
