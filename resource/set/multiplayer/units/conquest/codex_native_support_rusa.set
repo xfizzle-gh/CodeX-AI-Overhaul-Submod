@@ -1,0 +1,25 @@
+; Issue #97 native-birth probe for the extra Team-A Mate.
+; This definition stays inside the existing Conquest unitset. It is not added to any
+; bot purchase table and is hidden from human sale. research_stage/min_stage 0 is
+; deliberate: the synthetic Mate has previously reported ordinary stage-1+ Conquest
+; units unavailable, and calling SpawnAt on an unavailable unit can hard-crash native code.
+;
+; The runtime controller MUST still prove IsUnitAvailable == true before SpawnAt.
+
+{"codex_native_support_stage0(rusa)"
+	("squad_vehicle4"
+		side(rusa)
+		period(2022s)
+		min_stage(0)
+		max_stage(99)
+		vehicle()
+		cw(0)
+		cp(0)
+		crew1(rus90_squadlead:1)
+		crew2(rus90_seniorrifleman:1)
+		crew3(rus90_mg:1)
+		crew4(rus90_rifleman:1)
+	)
+	{cost 0}
+	{not_for_player_sale 1}
+}
