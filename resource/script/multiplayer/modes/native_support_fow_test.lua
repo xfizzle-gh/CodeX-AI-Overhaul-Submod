@@ -86,11 +86,11 @@ local function identity()
 end
 
 local state = {
-	quant = 0,
 	attempted = false,
 	awaitingSpawnEvent = false,
 	spawned = false,
 	applicable = nil,
+	lastGateWaitReason = nil,
 	unit = nil,
 	squadId = nil,
 }
@@ -164,18 +164,17 @@ local function unitAvailable()
 	return value == true
 end
 
-local function logCanSpawn()
+local function logCanSpawnCapability()
 	local c = commands()
 	if not c or type(c.CanSpawn) ~= "function" then
 		emit("CanSpawn", "requested_unit", TEST_UNIT, "result", "api_missing")
 		return
 	end
-	local ok, value = pcall(function() return c:CanSpawn(TEST_UNIT) end)
-	if ok then
-		emit("CanSpawn", "requested_unit", TEST_UNIT, "result", tostring(value))
-	else
-		emit("CanSpawn", "requested_unit", TEST_UNIT, "result", "error", tostring(value))
-	end
+	-- No current vanilla Conquest call establishes the argument contract for this
+	-- API. Log that it exists, but do not risk an unproven native call in a FoW
+	-- experiment whose only required spawn operations are known SpawnAt/Spawn.
+	emit("CanSpawn", "requested_unit", TEST_UNIT,
+		"result", "not_called_unproven_signature", "api_present", true)
 end
 
 local function attemptNativeSpawn(trigger)
@@ -184,12 +183,14 @@ local function attemptNativeSpawn(trigger)
 	local id = identity()
 	local allowed, reason = missionGate(id)
 	if allowed == nil then
-		if state.quant == 0 or state.quant % 50 == 0 then
+		if state.lastGateWaitReason ~= reason then
+			state.lastGateWaitReason = reason
 			emit("gate_wait", "trigger", trigger, "reason", reason,
 				"controller_playerId", id.playerId, "DefenderBotId", id.defenderBotId)
 		end
 		return false
 	end
+	state.lastGateWaitReason = nil
 	if allowed == false then
 		emit("gate_skip", "trigger", trigger, "reason", reason,
 			"controller_playerId", id.playerId, "DefenderBotId", id.defenderBotId,
@@ -209,7 +210,7 @@ local function attemptNativeSpawn(trigger)
 		emit("spawn_failed", "reason", "unit_unavailable", "requested_unit", TEST_UNIT)
 		return false
 	end
-	logCanSpawn()
+	logCanSpawnCapability()
 
 	local c = commands()
 	if not c then
@@ -252,11 +253,11 @@ local function attemptNativeSpawn(trigger)
 end
 
 local function onGameStart()
-	state.quant = 0
 	state.attempted = false
 	state.awaitingSpawnEvent = false
 	state.spawned = false
 	state.applicable = nil
+	state.lastGateWaitReason = nil
 	state.unit = nil
 	state.squadId = nil
 	local id = identity()
@@ -265,7 +266,6 @@ local function onGameStart()
 end
 
 local function onQuant()
-	state.quant = state.quant + 1
 	if not state.attempted and state.applicable ~= false then
 		attemptNativeSpawn("Quant")
 	end
