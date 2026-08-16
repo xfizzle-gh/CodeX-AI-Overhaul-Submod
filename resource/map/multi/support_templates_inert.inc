@@ -196,3 +196,7 @@
 					}
 				}
 			}
+
+; Focused native-human -> automatic Mate ownership probe. Loaded here so all
+; campaign maps pick it up without touching map files or the support-wave engine.
+(include "/map/multi/native_human_auto_handoff_probe.inc")

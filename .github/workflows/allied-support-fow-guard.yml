@@ -8,8 +8,12 @@ on:
       - "resource/map/multi/defense_support_waves.inc"
       - "resource/map/multi/enemy_defense_support.inc"
       - "resource/map/multi/enemy_attack_support.inc"
+      - "resource/map/multi/native_human_auto_handoff_probe.inc"
+      - "resource/map/multi/support_templates_inert.inc"
+      - "resource/map/multi/dcg_vars.inc"
       - "tests/test_allied_support_shared_fow.py"
       - "tests/test_attack_support_ifv_transport_policy.py"
+      - "tests/test_native_human_auto_handoff.py"
       - ".github/workflows/allied-support-fow-guard.yml"
   push:
     branches:
@@ -21,8 +25,12 @@ on:
       - "resource/map/multi/defense_support_waves.inc"
       - "resource/map/multi/enemy_defense_support.inc"
       - "resource/map/multi/enemy_attack_support.inc"
+      - "resource/map/multi/native_human_auto_handoff_probe.inc"
+      - "resource/map/multi/support_templates_inert.inc"
+      - "resource/map/multi/dcg_vars.inc"
       - "tests/test_allied_support_shared_fow.py"
       - "tests/test_attack_support_ifv_transport_policy.py"
+      - "tests/test_native_human_auto_handoff.py"
       - ".github/workflows/allied-support-fow-guard.yml"
 
 permissions:
@@ -44,3 +52,4 @@ jobs:
         run: |
           python -m unittest tests/test_allied_support_shared_fow.py
           python -m unittest tests/test_attack_support_ifv_transport_policy.py
+          python -m unittest tests/test_native_human_auto_handoff.py
