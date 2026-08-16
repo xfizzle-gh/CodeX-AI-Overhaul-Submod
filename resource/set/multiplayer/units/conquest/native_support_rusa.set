@@ -1,0 +1,17 @@
+; Native allied-support RUSA diagnostic squad.
+;
+; The extra Team-A Mate runs in Dynamic Conquest but does not have the campaign
+; stage/catalog state of a real campaign participant. Existing conquest squads
+; begin at min_stage(1)+ and are therefore unavailable on that synthetic slot.
+;
+; This one diagnostic entry is intentionally min_stage(0). It stays inside the
+; normal Conquest unitset and uses only existing Code:X breeds, so no global
+; unitset replacement is required and the opposing Conquest bot keeps its normal
+; catalog/context. It is never added to bot purchase data or player research.
+;
+; Runtime use is restricted to native_support_birth_probe.lua on the extra Team-A
+; Mate. If IsUnitAvailable is not positively true, the probe never calls SpawnAt.
+
+("squad_with5types_conquest" side(rusa) period(2022s)
+ min_stage(0) max_stage(99) name(codex_native_support_rifle)
+ c1(lud_squadlead:1) c2(lud_lmg:1) c3(lud_rifleman:2) c4(lud_marksman:1) c5(lud_antitank:1))
