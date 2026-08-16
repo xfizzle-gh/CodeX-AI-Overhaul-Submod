@@ -8,8 +8,9 @@
 ;      first made Player-0 actors human-owned only at the final delivery step.
 ;   3. Existing wave delivery activates/moves a selected batch. id_attack_support$
 ;      deliberately points at the HUMAN for this first ownership pass.
-;   4. The deployed batch gets a short human/user-control dwell, then is transferred
-;      automatically to the Mate AI.
+;   4. After the existing wave finalizer removes attack_support_deploy, the batch
+;      gets a short human/user-control dwell, then is transferred automatically
+;      to the Mate AI.
 ;   5. After the TMAI-style 3s post-transfer settle, MI action move orders take over:
 ;      small infantry groups and individual vehicles are spread across distinct flags.
 ;
@@ -74,8 +75,9 @@
 				}
 			}
 
-			; Once enabled, repeatedly pick up only newly deployed attack_support_src actors.
-			; Prior waves retain tmai_handoff_done and are never processed twice.
+			; Once enabled, repeatedly pick up only newly deployed support after the
+			; existing wave finalizer has removed attack_support_deploy. That prevents
+			; legacy finalization from overwriting the human-control dwell.
 			{"attack_support/tmai_handoff"
 				{condition
 					{expression "1 & 2"}
@@ -91,6 +93,7 @@
 							{source advanced}
 							{group
 								{select {tag {tag attack_support_src}}}
+								{exclude {tag {tag attack_support_deploy}}}
 								{exclude {tag {tag tmai_handoff_done}}}
 								{exclude {tag {tag tmai_handoff_pending}}}
 							}
