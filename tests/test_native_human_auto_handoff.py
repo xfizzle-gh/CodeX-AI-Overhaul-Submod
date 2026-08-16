@@ -5,6 +5,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PROBE = ROOT / "resource/map/multi/native_human_auto_handoff_probe.inc"
 VARS = ROOT / "resource/map/multi/dcg_vars.inc"
 INERT = ROOT / "resource/map/multi/support_templates_inert.inc"
+ATTACK = ROOT / "resource/script/multiplayer/modes/attack_support.lua"
 
 
 class NativeHumanAutoHandoffProbeTests(unittest.TestCase):
@@ -13,6 +14,7 @@ class NativeHumanAutoHandoffProbeTests(unittest.TestCase):
         cls.probe = PROBE.read_text(encoding="utf-8")
         cls.vars = VARS.read_text(encoding="utf-8")
         cls.inert = INERT.read_text(encoding="utf-8")
+        cls.attack = ATTACK.read_text(encoding="utf-8")
 
     def test_probe_is_loaded_by_common_campaign_include(self):
         self.assertIn('(include "/map/multi/native_human_auto_handoff_probe.inc")', self.inert)
@@ -54,6 +56,12 @@ class NativeHumanAutoHandoffProbeTests(unittest.TestCase):
         self.assertIn('{var "native_handoff_probe_stage$"} {op "="} {value 1}', self.probe)
         self.assertIn('{var "native_handoff_probe_stage$"} {op "="} {value 2}', self.probe)
         self.assertIn('{var "native_handoff_probe_stage$"} {op "="} {value 3}', self.probe)
+
+    def test_pr110_restores_normal_ready_controller_not_stage0_probe(self):
+        self.assertNotIn('CODEX_NATIVE_STAGE0', self.attack)
+        self.assertIn('sc:SetVar("id_attack_support", ownerId)', self.attack)
+        self.assertIn('sc:SetVar("attack_support_ready", 1)', self.attack)
+        self.assertNotIn('setVar("attack_support_ready", 0)', self.attack)
 
     def test_braces_are_balanced(self):
         self.assertEqual(self.probe.count('{'), self.probe.count('}'))
