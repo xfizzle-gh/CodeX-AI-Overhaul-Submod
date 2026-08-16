@@ -96,10 +96,21 @@ local function initializeBotAI()
         "defenderBotId", identity.defenderBotId
     )
 
-    -- Never run bot controllers on the human client slot. Doing so can null-deref
-    -- engine BotApi fields (spawnPointName / Events) and hard-crash the process.
+    -- #106 research only: the normal production router exits on human slots.
+    -- For one RUSA human-attack probe, load a read-only module that inspects the
+    -- human slot's native catalog/spawn metadata. It deliberately makes no Spawn,
+    -- SpawnAt, Events, Scene, ownership, or mission-variable calls. Every other
+    -- human mission retains the canonical immediate skip.
     if identity.isHuman then
-        routerLog("route_skip", "human_player", "playerId", identity.playerId)
+        if identity.gameMode == "campaign_capture_the_flag"
+            and identity.team == "a"
+            and identity.army == "rusa"
+            and identity.attacking == true then
+            routerLog("route", "human_native_spawn_probe", "playerId", identity.playerId)
+            safeRequire("resource/script/multiplayer/modes/human_native_spawn_probe")
+        else
+            routerLog("route_skip", "human_player", "playerId", identity.playerId)
+        end
         return
     end
 
