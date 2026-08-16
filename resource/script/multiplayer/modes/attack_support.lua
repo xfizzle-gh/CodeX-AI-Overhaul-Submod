@@ -1,3 +1,4 @@
+-- PR #110 requires the normal #107 attack-support controller. Do not deploy this probe on top of the stale #108 native-stage0 attack_support.lua, because that controller continuously forces attack_support_ready=0 and prevents the automatic handoff trigger from ever arming.
 -- Attack support controller (human ATTACK missions).
 -- Identity + orders only. Do NOT require utility.lua / logic/main.lua here:
 -- that path AVs on the attack support slot (no spawn deck) even with spawnPoint nil-guard
@@ -76,16 +77,9 @@ local function setVar(name, value)
 end
 
 local function enforceIfvOnlyTransport()
-	-- These are attack-support-only gates. Keep enemy transports and unrelated
-	-- vehicle support untouched. Reassert every Quant because stale/live MI overlays
-	-- may initialize legacy state after Lua GameStart.
 	setVar("attack_support_motor_left", 0)
 	setVar("attack_support_hmmwv_left", 0)
 	setVar("attack_support_motor_test", 0)
-	-- Separate from command 19: attack_support_waves.inc also has a four-faction
-	-- normal_transport_* patrol that claims the same truck packages whenever this
-	-- one-shot gate is 0. Native 2026-08-16 evidence proved that path can deploy a
-	-- RUSA Ural while motor_left and wave_cmd both read 0.
 	setVar("transport_as_done", 1)
 end
 
@@ -97,7 +91,6 @@ local function positiveId(primary, fallback)
 	return 0
 end
 
--- NEVER touch spawnPointName / PlayerSpawnPoint / require(utility) on this slot.
 local function identity()
 	local i = instance()
 	local c = conquestApi()
@@ -160,10 +153,6 @@ local function publishIdentity(id, isRetry)
 		if not isRetry then log("identity_publish_skipped", "Scene.SetVar_missing") end
 		return false
 	end
-	-- bot.main.lua routes this module only onto the non-human Team A attack-support
-	-- controller and explicitly excludes DefenderBotId. Therefore this controller's
-	-- own playerId is the authoritative same-side owner. DefenderBotId is a defender-
-	-- side identity in human-attack missions and must never own friendly support.
 	local ownerId = positiveId(id.playerId, 0)
 	if ownerId <= 0 then
 		if not isRetry or state.quant % 50 == 0 then
