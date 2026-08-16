@@ -3,7 +3,10 @@ name: Allied Support FoW and Mission Gate guard
 on:
   pull_request:
     paths:
+      - "resource/script/multiplayer/bot.main.lua"
       - "resource/script/multiplayer/modes/attack_support.lua"
+      - "resource/script/multiplayer/modes/attack_support_handoff.lua"
+      - "resource/set/multiplayer/games/campaign_capture_the_flag.set"
       - "resource/map/multi/attack_support_waves.inc"
       - "resource/map/multi/defense_support_waves.inc"
       - "resource/map/multi/enemy_defense_support.inc"
@@ -14,8 +17,12 @@ on:
     branches:
       - main
       - test/support-shared-fow-100pct
+      - test/attack-support-human-owner-fow
     paths:
+      - "resource/script/multiplayer/bot.main.lua"
       - "resource/script/multiplayer/modes/attack_support.lua"
+      - "resource/script/multiplayer/modes/attack_support_handoff.lua"
+      - "resource/set/multiplayer/games/campaign_capture_the_flag.set"
       - "resource/map/multi/attack_support_waves.inc"
       - "resource/map/multi/defense_support_waves.inc"
       - "resource/map/multi/enemy_defense_support.inc"
