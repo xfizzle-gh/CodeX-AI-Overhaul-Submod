@@ -131,36 +131,42 @@ end
 local state = {
 	quant = 0,
 	ordered = {},
+	identityPublished = false,
 }
 
-local function publishIdentity(id)
-	if id.attacking ~= true then return end
+local function publishIdentity(id, isRetry)
+	if id.attacking ~= true then return false end
 	local sc = scene()
 	if not sc or not sc.SetVar then
-		log("identity_publish_skipped", "Scene.SetVar_missing")
-		return
+		if not isRetry then log("identity_publish_skipped", "Scene.SetVar_missing") end
+		return false
 	end
-	-- The controller slot is not the real lobby teammate. Runtime logs show the
-	-- controller as player 1 while the actual allied AI is DefenderBotId/player 4.
-	-- Ownership must stay AI-controlled, but use the real team member so the
-	-- engine's normal allied fog-of-war/LOS sharing can include these units.
-	local ownerId = positiveId(id.defenderBotId, id.playerId)
+	-- The controller slot is not the real lobby teammate. Never fall back to
+	-- controller playerId: if the real Conquest allied AI has not settled yet,
+	-- leave support unarmed and retry from Quant until DefenderBotId is available.
+	local ownerId = positiveId(id.defenderBotId, 0)
 	if ownerId <= 0 then
-		log("identity_publish_skipped", "allied_owner_unresolved",
-			"controller_playerId", id.playerId,
-			"defenderBotId", id.defenderBotId,
-			"team", id.team)
-		return
+		if not isRetry or state.quant % 50 == 0 then
+			log("identity_publish_skipped", "allied_owner_unresolved",
+				"controller_playerId", id.playerId,
+				"defenderBotId", id.defenderBotId,
+				"team", id.team,
+				"retry", tostring(isRetry == true))
+		end
+		return false
 	end
 	sc:SetVar("id_attack_support", ownerId)
 	sc:SetVar("attack_support_ready", 1)
 	-- MI waves are the working delivery path for attack support units.
 	sc:SetVar("attack_support_use_mi", 1)
+	state.identityPublished = true
 	log("identity_published", "id_attack_support", ownerId,
 		"controller_playerId", id.playerId,
 		"defenderBotId", id.defenderBotId,
 		"team", id.team,
+		"retry", tostring(isRetry == true),
 		"mi_waves", 1)
+	return true
 end
 
 local function pickFlagName()
@@ -239,7 +245,8 @@ end
 local function onGameStart()
 	local id = identity()
 	log("game_start", "playerId", id.playerId, "attacking", tostring(id.attacking), "army", id.army)
-	publishIdentity(id)
+	state.identityPublished = false
+	publishIdentity(id, false)
 	state.ordered = {}
 	if id.attacking == true then
 		log("mode", "mi_wave_delivery", "lua_spawn", "disabled_av_safe")
@@ -250,6 +257,9 @@ end
 
 local function onQuant()
 	state.quant = state.quant + 1
+	if not state.identityPublished then
+		publishIdentity(identity(), true)
+	end
 	orderNewSquads()
 	if state.quant > 0 and state.quant % 400 == 0 then
 		local sc = scene()
