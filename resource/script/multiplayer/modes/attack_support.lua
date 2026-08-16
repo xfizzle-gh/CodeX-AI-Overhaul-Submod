@@ -140,11 +140,27 @@ local function publishIdentity(id)
 		log("identity_publish_skipped", "Scene.SetVar_missing")
 		return
 	end
-	sc:SetVar("id_attack_support", id.playerId)
+	-- The controller slot is not the real lobby teammate. Runtime logs show the
+	-- controller as player 1 while the actual allied AI is DefenderBotId/player 4.
+	-- Ownership must stay AI-controlled, but use the real team member so the
+	-- engine's normal allied fog-of-war/LOS sharing can include these units.
+	local ownerId = positiveId(id.defenderBotId, id.playerId)
+	if ownerId <= 0 then
+		log("identity_publish_skipped", "allied_owner_unresolved",
+			"controller_playerId", id.playerId,
+			"defenderBotId", id.defenderBotId,
+			"team", id.team)
+		return
+	end
+	sc:SetVar("id_attack_support", ownerId)
 	sc:SetVar("attack_support_ready", 1)
 	-- MI waves are the working delivery path for attack support units.
 	sc:SetVar("attack_support_use_mi", 1)
-	log("identity_published", "id_attack_support", id.playerId, "mi_waves", 1)
+	log("identity_published", "id_attack_support", ownerId,
+		"controller_playerId", id.playerId,
+		"defenderBotId", id.defenderBotId,
+		"team", id.team,
+		"mi_waves", 1)
 end
 
 local function pickFlagName()

@@ -1312,7 +1312,8 @@
 				}
 			)
 
-			; Once per mission: 50% chance support waves arm on either side (friendly + enemy).
+			; Once per mission: 100% chance support waves arm on either side (friendly + enemy) for test build.
+			; (Default production value: 50% roll / 0.5).
 			; Lives in attack_support_waves.inc because maps include this file first.
 			{"support_mission/roll"
 				{condition
@@ -1325,12 +1326,12 @@
 					{"set_i" {var "support_mission_roll_done$"} {op "="} {value 1}}
 					{"switch"
 						{"case"
-							{condition {type rand} {value 0.5}}
+							{condition {type rand} {value 1.0}}
 							{"set_i" {var "support_mission_enabled$"} {op "="} {value 1}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 8} {title "SUPPORT MISSION ON (50% roll)"}}
+									{"timer" {time 8} {title "SUPPORT MISSION ON (100% roll)"}}
 								}
 								{"default"}
 							}
@@ -1340,7 +1341,7 @@
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 8} {title "SUPPORT MISSION OFF (50% roll)"}}
+									{"timer" {time 8} {title "SUPPORT MISSION OFF (100% roll)"}}
 								}
 								{"default"}
 							}
