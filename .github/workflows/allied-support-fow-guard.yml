@@ -4,24 +4,21 @@ on:
   pull_request:
     paths:
       - "resource/script/multiplayer/modes/attack_support.lua"
+      - "resource/set/multiplayer/units/conquest/codex_native_support_rusa.set"
       - "resource/map/multi/attack_support_waves.inc"
-      - "resource/map/multi/defense_support_waves.inc"
-      - "resource/map/multi/enemy_defense_support.inc"
-      - "resource/map/multi/enemy_attack_support.inc"
-      - "tests/test_allied_support_shared_fow.py"
+      - "tests/test_native_stage0_support_fow.py"
       - "tests/test_attack_support_ifv_transport_policy.py"
       - ".github/workflows/allied-support-fow-guard.yml"
   push:
     branches:
       - main
       - test/support-shared-fow-100pct
+      - research/mate-stage0-native-support-fow
     paths:
       - "resource/script/multiplayer/modes/attack_support.lua"
+      - "resource/set/multiplayer/units/conquest/codex_native_support_rusa.set"
       - "resource/map/multi/attack_support_waves.inc"
-      - "resource/map/multi/defense_support_waves.inc"
-      - "resource/map/multi/enemy_defense_support.inc"
-      - "resource/map/multi/enemy_attack_support.inc"
-      - "tests/test_allied_support_shared_fow.py"
+      - "tests/test_native_stage0_support_fow.py"
       - "tests/test_attack_support_ifv_transport_policy.py"
       - ".github/workflows/allied-support-fow-guard.yml"
 
@@ -40,7 +37,7 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Run Allied Support FoW and Gate regression tests
+      - name: Run native stage-zero FoW regression
         run: |
-          python -m unittest tests/test_allied_support_shared_fow.py
+          python -m unittest tests/test_native_stage0_support_fow.py
           python -m unittest tests/test_attack_support_ifv_transport_policy.py
