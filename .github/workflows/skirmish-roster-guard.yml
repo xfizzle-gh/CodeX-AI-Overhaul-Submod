@@ -94,4 +94,4 @@ jobs:
 
       - name: Skirmish validation not applicable
         if: github.event_name == 'pull_request' && steps.scope.outputs.run_validator != 'true'
-        run: echo "No skirmish roster inputs changed; Conquest-only issue #97 diagnostic is out of scope."
+        run: echo "No skirmish roster inputs changed; Conquest-only issue 97 diagnostic is out of scope."
