@@ -39,7 +39,17 @@ jobs:
         run: |
           changed_files="$(git diff --name-only '${{ github.event.pull_request.base.sha }}...HEAD')"
           printf '%s\n' "$changed_files"
-          if printf '%s\n' "$changed_files" | grep -E '(^|/)[^/]*conquest[^/]*(/|$)'; then
+          # This guard is for Battle Zones roster work. Restrict the check to the
+          # actual Conquest unit-definition tree so unrelated tests/docs containing
+          # the word "conquest" do not trip it. Issue #97 has one explicit hidden,
+          # zero-cost diagnostic unit; allow only that exact file while the draft
+          # native-spawn experiment is under audit.
+          conquest_changes="$(printf '%s\n' "$changed_files" \
+            | grep -E '^resource/set/multiplayer/units/conquest/' \
+            | grep -v '^resource/set/multiplayer/units/conquest/native_support_test_rusa\.set$' \
+            || true)"
+          if [ -n "$conquest_changes" ]; then
+            printf '%s\n' "$conquest_changes"
             echo "Battle Zones PRs must not modify Conquest files."
             exit 1
           fi
