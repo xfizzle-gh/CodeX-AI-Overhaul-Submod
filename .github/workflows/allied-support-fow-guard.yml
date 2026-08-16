@@ -3,24 +3,39 @@ name: Allied Support FoW and Mission Gate guard
 on:
   pull_request:
     paths:
+      - "resource/script/multiplayer/bot.main.lua"
       - "resource/script/multiplayer/modes/attack_support.lua"
+      - "resource/script/multiplayer/modes/native_support_fow_test.lua"
+      - "resource/set/multiplayer/units/conquest/native_support_test_rusa.set"
       - "resource/map/multi/attack_support_waves.inc"
       - "resource/map/multi/defense_support_waves.inc"
       - "resource/map/multi/enemy_defense_support.inc"
       - "resource/map/multi/enemy_attack_support.inc"
       - "tests/test_allied_support_shared_fow.py"
+      - "tests/test_native_support_fow.py"
+      - "tests/test_conquest_defender_bot.py"
+      - "tests/test_woodland_support_probe.py"
+      - "docs/research/native-support-fow-test.md"
       - ".github/workflows/allied-support-fow-guard.yml"
   push:
     branches:
       - main
       - test/support-shared-fow-100pct
+      - research/tmai-native-support-fow
     paths:
+      - "resource/script/multiplayer/bot.main.lua"
       - "resource/script/multiplayer/modes/attack_support.lua"
+      - "resource/script/multiplayer/modes/native_support_fow_test.lua"
+      - "resource/set/multiplayer/units/conquest/native_support_test_rusa.set"
       - "resource/map/multi/attack_support_waves.inc"
       - "resource/map/multi/defense_support_waves.inc"
       - "resource/map/multi/enemy_defense_support.inc"
       - "resource/map/multi/enemy_attack_support.inc"
       - "tests/test_allied_support_shared_fow.py"
+      - "tests/test_native_support_fow.py"
+      - "tests/test_conquest_defender_bot.py"
+      - "tests/test_woodland_support_probe.py"
+      - "docs/research/native-support-fow-test.md"
       - ".github/workflows/allied-support-fow-guard.yml"
 
 permissions:
@@ -38,5 +53,5 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Run Allied Support FoW and Gate regression tests
-        run: python -m unittest tests/test_allied_support_shared_fow.py
+      - name: Run support, ownership, DefenderBot, and mission regression tests
+        run: python -m unittest discover -s tests -p "test_*.py"
