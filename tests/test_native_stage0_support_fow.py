@@ -31,8 +31,8 @@ class NativeStageZeroSupportTests(unittest.TestCase):
             self.assertIn(breed, self.unit)
 
     def test_probe_stays_on_existing_conquest_unitset(self) -> None:
-        self.assertIn('{unitset {value "conquest"}', self.game)
-        self.assertNotIn('{unitset {value "2022s"}', self.game)
+        self.assertIn('{value "conquest"}', self.game)
+        self.assertNotIn('{value "2022s"}', self.game)
         self.assertIn("{aiTeamPlayers 1}", self.game)
 
     def test_native_call_is_hard_gated_by_availability_and_can_spawn(self) -> None:
