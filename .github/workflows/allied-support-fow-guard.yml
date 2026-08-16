@@ -7,17 +7,23 @@ on:
       - "resource/script/multiplayer/modes/attack_support.lua"
       - "resource/script/multiplayer/modes/native_support_fow_test.lua"
       - "resource/set/multiplayer/units/conquest/native_support_test_rusa.set"
+      - "resource/map/multi/attack_support_templates.inc"
       - "resource/map/multi/attack_support_waves.inc"
+      - "resource/map/multi/attack_support_tmai_handoff.inc"
+      - "resource/map/multi/support_templates_inert.inc"
+      - "resource/map/multi/dcg_vars.inc"
       - "resource/map/multi/defense_support_waves.inc"
       - "resource/map/multi/enemy_defense_support.inc"
       - "resource/map/multi/enemy_attack_support.inc"
       - "tests/test_allied_support_shared_fow.py"
       - "tests/test_native_support_fow.py"
       - "tests/test_tmai_support_commander.py"
+      - "tests/test_tmai_human_origin_handoff.py"
       - "tests/test_conquest_defender_bot.py"
       - "tests/test_woodland_support_probe.py"
       - "docs/research/native-support-fow-test.md"
       - "docs/research/tmai-allied-support-commander.md"
+      - "docs/research/tmai-human-origin-handoff.md"
       - ".github/workflows/allied-support-fow-guard.yml"
   push:
     branches:
@@ -25,22 +31,29 @@ on:
       - test/support-shared-fow-100pct
       - research/tmai-native-support-fow
       - research/tmai-allied-support-commander
+      - research/tmai-human-origin-handoff
     paths:
       - "resource/script/multiplayer/bot.main.lua"
       - "resource/script/multiplayer/modes/attack_support.lua"
       - "resource/script/multiplayer/modes/native_support_fow_test.lua"
       - "resource/set/multiplayer/units/conquest/native_support_test_rusa.set"
+      - "resource/map/multi/attack_support_templates.inc"
       - "resource/map/multi/attack_support_waves.inc"
+      - "resource/map/multi/attack_support_tmai_handoff.inc"
+      - "resource/map/multi/support_templates_inert.inc"
+      - "resource/map/multi/dcg_vars.inc"
       - "resource/map/multi/defense_support_waves.inc"
       - "resource/map/multi/enemy_defense_support.inc"
       - "resource/map/multi/enemy_attack_support.inc"
       - "tests/test_allied_support_shared_fow.py"
       - "tests/test_native_support_fow.py"
       - "tests/test_tmai_support_commander.py"
+      - "tests/test_tmai_human_origin_handoff.py"
       - "tests/test_conquest_defender_bot.py"
       - "tests/test_woodland_support_probe.py"
       - "docs/research/native-support-fow-test.md"
       - "docs/research/tmai-allied-support-commander.md"
+      - "docs/research/tmai-human-origin-handoff.md"
       - ".github/workflows/allied-support-fow-guard.yml"
 
 permissions:
@@ -64,8 +77,11 @@ jobs:
       - name: Run native support FoW diagnostic regression
         run: python tests/test_native_support_fow.py
 
-      - name: Run TMAI-referenced support commander regression
+      - name: Run TMAI MI commander regression
         run: python tests/test_tmai_support_commander.py
+
+      - name: Run TMAI human-origin handoff regression
+        run: python tests/test_tmai_human_origin_handoff.py
 
       - name: Run DefenderBot Conquest regression
         run: python tests/test_conquest_defender_bot.py
