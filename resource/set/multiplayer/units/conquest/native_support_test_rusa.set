@@ -1,0 +1,22 @@
+; Diagnostic-only native-spawn infantry definition for issue #97.
+; It is intentionally not added to any AI purchase table and is hidden from
+; normal human purchasing. The one-shot native_support_fow_test.lua module is
+; the only repo path that requests this unit by name.
+
+{"codex_native_support_test(rusa)"
+	("squad_vehicle4"
+		side(rusa)
+		period(2022s)
+		min_stage(1)
+		max_stage(99)
+		vehicle()
+		cw(0)
+		cp(0)
+		crew1(rus90_squadlead:1)
+		crew2(rus90_seniorrifleman:1)
+		crew3(rus90_mg:1)
+		crew4(rus90_rifleman:1)
+	)
+	{cost 0}
+	{not_for_player_sale 1}
+}
