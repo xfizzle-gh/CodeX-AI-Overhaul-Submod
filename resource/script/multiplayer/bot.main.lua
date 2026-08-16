@@ -1,6 +1,7 @@
 -- Function to require and initialize the appropriate game mode .lua file.
--- Campaign CTF additionally routes the extra Team A bot into the attack support
--- diagnostic controller without replacing the existing DefenderBot.
+-- Campaign CTF uses the normal engine-managed conquest bots only. Attack-support
+-- ownership is published by attack_support_handoff.lua from the normal enemy
+-- mission-authority bot; there is no extra Team-A AI player.
 
 local ROUTER_PREFIX = "CODEX_ATTACK_SUPPORT_ROUTER"
 
@@ -37,31 +38,6 @@ local function campaignIdentity()
         attacking = conquest.Attacking,
         isHuman = instance.isHuman == true or tostring(instance.isHuman or "") == "true",
     }
-end
-
-local function isAttackSupportCandidate(identity)
-    if identity.gameMode ~= "campaign_capture_the_flag" then return false end
-    if identity.team ~= "a" then return false end
-    if identity.isHuman then return false end
-    -- Live proof (2026-07-29 log: human was playerId 3, attack support bot playerId 1 ==
-    -- engine FirstPlayerId) showed FirstPlayerId can point at the Team A AI
-    -- process, not the human commander. Never use FirstPlayerId to exclude a
-    -- bot from this route; the isHuman guard protects the human client slot.
-
-    -- Never intercept the engine-owned DefenderBot. That bot continues to use
-    -- the normal Code:X conquest controller on defense missions.
-    if identity.defenderBotId > 0 and identity.playerId == identity.defenderBotId then
-        return false
-    end
-
-    -- On a human attack, the extra Team A bot reports Attacking=true.
-    if identity.attacking == true then return true end
-
-    -- The extra slot can still be instantiated on defense. When the engine
-    -- exposes a distinct DefenderBot ID, route that extra slot to the attack support
-    -- controller as a disabled/read-only instance rather than allowing it to
-    -- purchase an unintended second defense army.
-    return identity.defenderBotId > 0 and identity.playerId ~= identity.defenderBotId
 end
 
 local function safeRequire(path)
@@ -103,12 +79,6 @@ local function initializeBotAI()
         return
     end
 
-    if isAttackSupportCandidate(identity) then
-        routerLog("route", "attack_support", "playerId", identity.playerId)
-        safeRequire("resource/script/multiplayer/modes/attack_support")
-        return
-    end
-
     local mode = gameModeMap[identity.gameMode]
     if not mode then
         routerLog("route_failed", "unknown_game_mode", identity.gameMode, "playerId", identity.playerId)
@@ -119,6 +89,13 @@ local function initializeBotAI()
     routerLog("route", mode, "playerId", identity.playerId)
     if not safeRequire(gameModeScriptPath) then
         return
+    end
+
+    -- On campaign CTF, the normal mission-authority conquest bot also publishes the
+    -- human player's FirstPlayerId as the owner for MI-delivered attack support.
+    -- The handoff module self-gates to human-attack missions and FirstEnemyId only.
+    if identity.gameMode == "campaign_capture_the_flag" then
+        safeRequire("resource/script/multiplayer/modes/attack_support_handoff")
     end
 
     -- Load Battle Zones-specific reliability and purchasing overrides only after
