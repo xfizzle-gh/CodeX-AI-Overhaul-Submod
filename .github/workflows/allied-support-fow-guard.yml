@@ -13,15 +13,18 @@ on:
       - "resource/map/multi/enemy_attack_support.inc"
       - "tests/test_allied_support_shared_fow.py"
       - "tests/test_native_support_fow.py"
+      - "tests/test_tmai_support_commander.py"
       - "tests/test_conquest_defender_bot.py"
       - "tests/test_woodland_support_probe.py"
       - "docs/research/native-support-fow-test.md"
+      - "docs/research/tmai-allied-support-commander.md"
       - ".github/workflows/allied-support-fow-guard.yml"
   push:
     branches:
       - main
       - test/support-shared-fow-100pct
       - research/tmai-native-support-fow
+      - research/tmai-allied-support-commander
     paths:
       - "resource/script/multiplayer/bot.main.lua"
       - "resource/script/multiplayer/modes/attack_support.lua"
@@ -33,9 +36,11 @@ on:
       - "resource/map/multi/enemy_attack_support.inc"
       - "tests/test_allied_support_shared_fow.py"
       - "tests/test_native_support_fow.py"
+      - "tests/test_tmai_support_commander.py"
       - "tests/test_conquest_defender_bot.py"
       - "tests/test_woodland_support_probe.py"
       - "docs/research/native-support-fow-test.md"
+      - "docs/research/tmai-allied-support-commander.md"
       - ".github/workflows/allied-support-fow-guard.yml"
 
 permissions:
@@ -58,6 +63,9 @@ jobs:
 
       - name: Run native support FoW diagnostic regression
         run: python tests/test_native_support_fow.py
+
+      - name: Run TMAI-referenced support commander regression
+        run: python tests/test_tmai_support_commander.py
 
       - name: Run DefenderBot Conquest regression
         run: python tests/test_conquest_defender_bot.py
