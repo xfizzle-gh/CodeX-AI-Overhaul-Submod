@@ -9,8 +9,10 @@
 -- its own routed Team A playerId as the attack-support owner and issues squad orders.
 --
 -- TRANSPORT POLICY: player-side allied support is IFV-only for troop transport. The MI
--- package still contains legacy motor-truck/Humvee branches for historical experiments,
--- so this controller hard-disables their allowance/test vars for the whole attack mission.
+-- package contains two independent legacy truck paths: command-19 motorized waves and the
+-- later normal_transport_* patrol block gated by transport_as_done$. It also contains old
+-- Humvee compositions. This controller hard-disables all three truck/Humvee paths for the
+-- whole attack mission while leaving attack_support_ifv_left$ untouched.
 -- Do not remove this guard unless those branches are physically removed from the MI source.
 --
 -- This slot also carries the ENGINE-STATE MIRROR. Every MIRROR_QUANTS quants it writes
@@ -74,12 +76,17 @@ local function setVar(name, value)
 end
 
 local function enforceIfvOnlyTransport()
-	-- These are attack-support-only counters. Keep enemy transports and unrelated
+	-- These are attack-support-only gates. Keep enemy transports and unrelated
 	-- vehicle support untouched. Reassert every Quant because stale/live MI overlays
-	-- may initialize the legacy counters after Lua GameStart.
+	-- may initialize legacy state after Lua GameStart.
 	setVar("attack_support_motor_left", 0)
 	setVar("attack_support_hmmwv_left", 0)
 	setVar("attack_support_motor_test", 0)
+	-- Separate from command 19: attack_support_waves.inc also has a four-faction
+	-- normal_transport_* patrol that claims the same truck packages whenever this
+	-- one-shot gate is 0. Native 2026-08-16 evidence proved that path can deploy a
+	-- RUSA Ural while motor_left and wave_cmd both read 0.
+	setVar("transport_as_done", 1)
 end
 
 local function positiveId(primary, fallback)
@@ -111,7 +118,8 @@ local function mirrorMotor()
 	emit("motor_left", readVar("attack_support_motor_left"),
 		"wave_cmd", readVar("attack_support_wave_cmd"),
 		"test", readVar("attack_support_motor_test"),
-		"test_done", readVar("attack_support_motor_test_done"))
+		"test_done", readVar("attack_support_motor_test_done"),
+		"normal_transport_done", readVar("transport_as_done"))
 	emit("place_defense", readVar("defense_support_place"),
 		"pad", readVar("defense_support_entry_rr"),
 		"stage", readVar("defense_support_stage"))
