@@ -196,3 +196,7 @@
 					}
 				}
 			}
+
+; Load the dedicated TMAI human-origin -> Mate transfer/order bridge in the same
+; trigger scope used by all fourteen campaign maps.
+(include "/map/multi/attack_support_tmai_handoff.inc")
