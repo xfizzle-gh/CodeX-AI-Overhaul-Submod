@@ -21,8 +21,6 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         cls.enemy_attack_inc = ENEMY_ATTACK_SUPPORT_INC.read_text(encoding="utf-8")
 
     def test_attack_support_assigns_real_allied_ai_owner_not_controller(self) -> None:
-        # Must resolve strictly from DefenderBotId. The phantom controller is not a
-        # valid ownership fallback because it is outside the human's native FoW graph.
         self.assertIn(
             "local ownerId = positiveId(id.defenderBotId, 0)",
             self.attack_support_lua,
@@ -35,8 +33,6 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
             'sc:SetVar("id_attack_support", ownerId)',
             self.attack_support_lua,
         )
-
-        # Must NEVER assign phantom controller playerId or human player directly.
         self.assertNotIn(
             'sc:SetVar("id_attack_support", id.playerId)',
             self.attack_support_lua,
@@ -59,36 +55,53 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertIn("return false", publish_body)
         self.assertIn("state.identityPublished = true", publish_body)
 
-    def test_attack_support_retries_late_defender_bot_identity(self) -> None:
-        # Conquest identities can settle after GameStart. A fail-closed owner must
-        # therefore retry rather than permanently suppressing friendly attack support.
+    def test_attack_support_retries_late_defender_bot_identity_only_when_needed(self) -> None:
         self.assertIn("identityPublished = false", self.attack_support_lua)
+        self.assertIn("attackMission = nil", self.attack_support_lua)
+
+        publish_start = self.attack_support_lua.find("local function publishIdentity(id, isRetry)")
+        publish_end = self.attack_support_lua.find("\nend\n", publish_start)
+        publish_body = self.attack_support_lua[publish_start:publish_end]
+        self.assertIn("if id.attacking == false then", publish_body)
+        self.assertIn("state.attackMission = false", publish_body)
+        self.assertIn("state.attackMission = true", publish_body)
+
         quant_start = self.attack_support_lua.find("local function onQuant()")
         quant_end = self.attack_support_lua.find("\nend\n", quant_start)
         self.assertGreater(quant_start, 0)
         self.assertGreater(quant_end, quant_start)
         quant_body = self.attack_support_lua[quant_start:quant_end]
-        self.assertIn("if not state.identityPublished then", quant_body)
+        self.assertIn(
+            "if not state.identityPublished and state.attackMission ~= false then",
+            quant_body,
+        )
         self.assertIn("publishIdentity(identity(), true)", quant_body)
 
+    def test_game_start_resets_retry_state(self) -> None:
+        start = self.attack_support_lua.find("local function onGameStart()")
+        end = self.attack_support_lua.find("\nend\n", start)
+        self.assertGreater(start, 0)
+        self.assertGreater(end, start)
+        body = self.attack_support_lua[start:end]
+        self.assertIn("state.quant = 0", body)
+        self.assertIn("state.ordered = {}", body)
+        self.assertIn("state.identityPublished = false", body)
+        self.assertIn("state.attackMission = nil", body)
+        self.assertIn("publishIdentity(id, false)", body)
+
     def test_all_four_support_quadrants_have_correct_ai_ownership(self) -> None:
-        # Quadrant 1: Friendly Attack Support -> id_attack_support$
         self.assertIn('{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 1}}', self.attack_waves_inc)
         self.assertIn('{var "id_attack_support$"}', self.attack_waves_inc)
 
-        # Quadrant 2: Friendly Defense Support -> id_defenderbot$ (real allied defender bot)
         self.assertIn('{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 1}}', self.defense_waves_inc)
         self.assertIn('{var "id_defenderbot$"}', self.defense_waves_inc)
 
-        # Quadrant 3: Enemy Defense Support -> id_1st_enemy$ (real enemy bot)
         self.assertIn('{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 1}}', self.enemy_defense_inc)
         self.assertIn('{var "id_1st_enemy$"}', self.enemy_defense_inc)
 
-        # Quadrant 4: Enemy Attack Support -> id_1st_enemy$ (real enemy bot)
         self.assertIn('{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 1}}', self.enemy_attack_inc)
         self.assertIn('{var "id_1st_enemy$"}', self.enemy_attack_inc)
 
-        # No support quadrant transfers units to the human player.
         for name, text in (
             ("attack_waves", self.attack_waves_inc),
             ("defense_waves", self.defense_waves_inc),
