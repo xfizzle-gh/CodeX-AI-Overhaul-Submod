@@ -40,7 +40,7 @@ class TmaiReferencedSupportCommanderTests(unittest.TestCase):
             with self.subTest(forbidden_call=forbidden_call):
                 self.assertNotIn(forbidden_call, self.support)
 
-    def test_fragile_mate_slot_still_never_loads_utility(self) -> None:
+    def test_fragile_mate_slot_uses_no_utility_or_native_scene_polling(self) -> None:
         forbidden = (
             r"require\(\[\[/script/multiplayer/modes/utility\]\]\)",
             r'require\(["\']resource/script/multiplayer/modes/utility["\']\)',
@@ -49,7 +49,9 @@ class TmaiReferencedSupportCommanderTests(unittest.TestCase):
         for pattern in forbidden:
             with self.subTest(pattern=pattern):
                 self.assertIsNone(re.search(pattern, self.support))
-        self.assertIn('sc:QueryScene({"soldier"}, 5)', self.support)
+        self.assertNotIn("QueryScene", self.support.replace("QueryScene polling", "scene polling"))
+        self.assertIn('return humanId, "campaign_four_slot_complement"', self.support)
+        self.assertIn("for playerId = 1, 4 do", self.support)
 
     def test_human_origin_is_established_before_attack_support_ready(self) -> None:
         arm = self.support[self.support.index("local function armHumanOriginHandoff") : self.support.index("local function mirrorState")]
