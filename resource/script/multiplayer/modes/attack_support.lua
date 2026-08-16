@@ -1,18 +1,18 @@
--- Mate unitset provisioning / native FoW experiment (#104).
+-- Mate unitset provisioning probe (#104).
 --
 -- Research-only branch from main. The campaign preset temporarily provisions BOT
 -- slots from the normal 2022s skirmish unitset while the human remains on the
--- conquest unitset. This lets us test whether the extra Team-A Mate gains a real
--- native unit catalog and can safely create one support squad through BotApi.
+-- conquest unitset. This probe asks one question only: does that give the extra
+-- Team-A Mate a real engine unit catalog?
 --
--- Critical safety rule from #103 native crash:
--- NEVER call SpawnAt/Spawn when IsUnitAvailable is false or unknown on this Mate.
--- The engine produced EXCEPTION_ACCESS_VIOLATION immediately after such a call.
+-- ZERO NATIVE SPAWN CALLS BY DESIGN. PR #103 proved that calling SpawnAt/Spawn on
+-- this special Mate with an invalid context can hard-crash the engine outside Lua
+-- error handling. #104 therefore records availability and raw spawn-point fields
+-- only. A later experiment may spawn only after both catalog and spawn context are
+-- understood.
 
 local PREFIX = "CODEX_MATE_UNITSET_PROBE"
 local START_DELAY_MS = 3000
-local ORDER_DELAY_MS = 3000
-local MAX_SQUAD_SIZE = 7
 
 local RUSA_CANDIDATES = {
     "rus90_inf_rifle(rusa)",
@@ -46,10 +46,7 @@ end
 local state = {
     generation = 0,
     armed = false,
-    attempted = false,
-    awaitingSpawn = false,
-    requestedUnit = nil,
-    spawnedSquad = nil,
+    checked = false,
 }
 
 local function safeCall(label, fn)
@@ -74,145 +71,65 @@ local function unitAvailability(cmd, unit)
     return value == true
 end
 
-local function tryNativeSpawn(unit)
-    local cmd = commands()
-    if not cmd then
-        emit("spawn_failed", unit, "Commands_missing")
-        return false
-    end
-
-    state.awaitingSpawn = true
-    state.requestedUnit = unit
-
-    if cmd.SpawnAt then
-        local ok, result = safeCall("SpawnAt_error", function()
-            return cmd:SpawnAt(unit, MAX_SQUAD_SIZE, 0)
-        end)
-        emit("SpawnAt", "unit", unit, "ok", tostring(ok), "result", tostring(result))
-        if ok and result == true then return true end
-    else
-        emit("SpawnAt", "unit", unit, "api_missing")
-    end
-
-    if cmd.Spawn then
-        local ok, result = safeCall("Spawn_error", function()
-            return cmd:Spawn(unit, MAX_SQUAD_SIZE)
-        end)
-        emit("Spawn", "unit", unit, "ok", tostring(ok), "result", tostring(result))
-        if ok and result == true then return true end
-    else
-        emit("Spawn", "unit", unit, "api_missing")
-    end
-
-    state.awaitingSpawn = false
-    state.requestedUnit = nil
-    return false
-end
-
-local function attemptSpawn(generation)
-    if generation ~= state.generation or not state.armed or state.attempted then return end
-    state.attempted = true
+local function inspectProvisioning(generation)
+    if generation ~= state.generation or not state.armed or state.checked then return end
+    state.checked = true
 
     local i = instance()
+    local c = conquest()
+    local cmd = commands()
+
     if tostring(i.army or "") ~= "rusa" then
         emit("gate_skip", "rusa_only", "army", tostring(i.army))
         return
     end
 
-    local cmd = commands()
     emit(
-        "spawn_context",
+        "context",
         "playerId", tostring(i.playerId),
         "team", tostring(i.team),
         "army", tostring(i.army),
         "expected_bot_unitset", "2022s",
-        "spawnAt", tostring(cmd and cmd.SpawnAt ~= nil),
-        "spawn", tostring(cmd and cmd.Spawn ~= nil),
-        "gameSpawn_event", tostring(events() and events().GameSpawn ~= nil)
+        "spawnPointName", tostring(i.spawnPointName),
+        "PlayerSpawnPoint", tostring(c.PlayerSpawnPoint),
+        "SpawnAt_api", tostring(cmd and cmd.SpawnAt ~= nil),
+        "Spawn_api", tostring(cmd and cmd.Spawn ~= nil),
+        "native_spawn_calls", "disabled"
     )
 
     local availableCount = 0
+    local unknownCount = 0
     for _, unit in ipairs(RUSA_CANDIDATES) do
         local available = unitAvailability(cmd, unit)
         if available == true then
             availableCount = availableCount + 1
-            emit("availability_gate", "passed", "unit", unit)
-            emit("spawn_request", "unit", unit, "native_mate", true)
-            if tryNativeSpawn(unit) then
-                emit("spawn_request_accepted", "unit", unit)
-                return
-            end
-        else
-            emit(
-                "spawn_skip",
-                "unit", unit,
-                "reason", available == false and "unit_unavailable" or "availability_unknown",
-                "native_call", "suppressed"
-            )
+        elseif available == nil then
+            unknownCount = unknownCount + 1
         end
     end
 
-    if availableCount == 0 then
-        emit("provision_result", "FAILED", "reason", "mate_still_has_no_available_units")
-        emit("spawn_failed", "no_available_candidates", "native_call", "suppressed")
+    if availableCount > 0 then
+        emit(
+            "provision_result", "PASSED",
+            "available_count", availableCount,
+            "unknown_count", unknownCount,
+            "next_step", "validate_spawn_context_before_native_call"
+        )
     else
-        emit("spawn_failed", "all_available_candidates_rejected")
-    end
-end
-
-local function issuePostSpawnOrder(generation, squad)
-    if generation ~= state.generation or squad ~= state.spawnedSquad then return end
-    local cmd = commands()
-    if cmd and cmd.SeekAndDestroy then
-        local ok = safeCall("order_error", function()
-            cmd:SeekAndDestroy(squad)
-            return true
-        end)
-        emit("order", "SeekAndDestroy", "squadId", tostring(squad), "ok", tostring(ok))
-    else
-        emit("order", "SeekAndDestroy", "api_missing")
-    end
-end
-
-local function onGameSpawn(args)
-    if not state.armed or not state.awaitingSpawn or state.spawnedSquad then return end
-    if not args or not args.squadId then
-        emit("GameSpawn", "missing_squadId")
-        return
-    end
-
-    local squad = args.squadId
-    state.spawnedSquad = squad
-    state.awaitingSpawn = false
-    emit(
-        "provision_result", "PASSED",
-        "requestedUnit", tostring(state.requestedUnit),
-        "squadId", tostring(squad),
-        "native_birth_confirmed", true
-    )
-    emit(
-        "GameSpawn",
-        "requestedUnit", tostring(state.requestedUnit),
-        "squadId", tostring(squad),
-        "native_birth_confirmed", true
-    )
-
-    local ev = events()
-    local generation = state.generation
-    if ev and ev.SetQuantTimer then
-        ev:SetQuantTimer(function() issuePostSpawnOrder(generation, squad) end, ORDER_DELAY_MS)
-    else
-        issuePostSpawnOrder(generation, squad)
+        emit(
+            "provision_result", "FAILED",
+            "available_count", 0,
+            "unknown_count", unknownCount,
+            "reason", "mate_still_has_no_available_units",
+            "native_spawn_calls", "suppressed"
+        )
     end
 end
 
 local function onGameStart()
     state.generation = state.generation + 1
     state.armed = false
-    state.attempted = false
-    state.awaitingSpawn = false
-    state.requestedUnit = nil
-    state.spawnedSquad = nil
+    state.checked = false
 
     local i = instance()
     local c = conquest()
@@ -243,25 +160,20 @@ local function onGameStart()
         "parked_templates", "disabled",
         "mi_support_waves", "disabled",
         "ownership_transfer", "disabled",
-        "availability_fail_closed", true
+        "native_spawn_calls", "disabled"
     )
 
     local ev = events()
     local generation = state.generation
     if ev and ev.SetQuantTimer then
-        ev:SetQuantTimer(function() attemptSpawn(generation) end, START_DELAY_MS)
+        ev:SetQuantTimer(function() inspectProvisioning(generation) end, START_DELAY_MS)
     else
-        attemptSpawn(generation)
+        inspectProvisioning(generation)
     end
 end
 
 local function onGameEnd()
-    emit(
-        "GameEnd",
-        "attempted", tostring(state.attempted),
-        "requestedUnit", tostring(state.requestedUnit),
-        "spawnedSquad", tostring(state.spawnedSquad)
-    )
+    emit("GameEnd", "checked", tostring(state.checked))
 end
 
 local function safeEvent(name, fn)
@@ -276,7 +188,6 @@ emit("module_loaded", "playerId", tostring(i.playerId), "team", tostring(i.team)
 local ev = events()
 if ev and ev.Subscribe then
     ev:Subscribe(ev.GameStart, safeEvent("GameStart", onGameStart))
-    ev:Subscribe(ev.GameSpawn, safeEvent("GameSpawn", onGameSpawn))
     ev:Subscribe(ev.GameEnd, safeEvent("GameEnd", onGameEnd))
     emit("subscribed")
 else
