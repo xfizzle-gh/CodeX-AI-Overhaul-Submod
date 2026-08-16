@@ -21,11 +21,20 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         cls.defense_waves_inc = DEFENSE_SUPPORT_WAVES_INC.read_text(encoding="utf-8")
         cls.enemy_defense_inc = ENEMY_DEFENSE_SUPPORT_INC.read_text(encoding="utf-8")
         cls.enemy_attack_inc = ENEMY_ATTACK_SUPPORT_INC.read_text(encoding="utf-8")
+        cls.manual_research_mode = 'PREFIX = "CODEX_TMAI_MANUAL"' in cls.attack_support_lua
+        cls.native_spawn_research_mode = 'PREFIX = "CODEX_MATE_NATIVE_SPAWN"' in cls.attack_support_lua
+        cls.research_mode = cls.manual_research_mode or cls.native_spawn_research_mode
+
+    def assert_research_mode_fails_closed(self) -> None:
+        self.assertTrue(self.research_mode)
+        self.assertNotIn('sc:SetVar("id_attack_support"', self.attack_support_lua)
+        self.assertNotIn('sc:SetVar("attack_support_ready"', self.attack_support_lua)
+        self.assertNotIn('sc:SetVar("attack_support_use_mi"', self.attack_support_lua)
+        self.assertNotIn(':QueryScene(', self.attack_support_lua)
 
     def test_attack_support_uses_routed_team_a_controller_owner(self) -> None:
-        # bot.main.lua is the authority for which BotApi process may load attack_support.lua.
-        # Native evidence showed DefenderBotId is defender-side on a human attack, so it
-        # must never be used as the friendly attack-support owner.
+        # bot.main.lua remains the authority for which non-human Team-A process may
+        # load attack_support.lua in both production and isolated research modes.
         self.assertIn('if identity.team ~= "a" then return false end', self.bot_main_lua)
         self.assertIn("if identity.isHuman then return false end", self.bot_main_lua)
         self.assertIn(
@@ -36,6 +45,13 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
             'safeRequire("resource/script/multiplayer/modes/attack_support")',
             self.bot_main_lua,
         )
+
+        # Research PRs intentionally replace the production publisher. Their safety
+        # property is the opposite: automatic support must fail closed so the test
+        # can observe only the manual/native actor under study.
+        if self.research_mode:
+            self.assert_research_mode_fails_closed()
+            return
 
         self.assertIn(
             "local ownerId = positiveId(id.playerId, 0)",
@@ -76,6 +92,11 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertIn("state.identityPublished = true", publish_body)
 
     def test_attack_support_retries_late_controller_identity_only_when_needed(self) -> None:
+        if self.research_mode:
+            self.assert_research_mode_fails_closed()
+            self.assertNotIn("publishIdentity(", self.attack_support_lua)
+            return
+
         self.assertIn("identityPublished = false", self.attack_support_lua)
         self.assertIn("attackMission = nil", self.attack_support_lua)
 
@@ -104,6 +125,13 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertGreater(start, 0)
         self.assertGreater(end, start)
         body = self.attack_support_lua[start:end]
+        self.assertIn("state.quant = 0", body) if self.manual_research_mode else None
+
+        if self.research_mode:
+            self.assert_research_mode_fails_closed()
+            self.assertIn("state.generation = state.generation + 1", body)
+            return
+
         self.assertIn("state.quant = 0", body)
         self.assertIn("state.ordered = {}", body)
         self.assertIn("state.identityPublished = false", body)
