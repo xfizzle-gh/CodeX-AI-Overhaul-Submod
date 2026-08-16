@@ -133,6 +133,11 @@ if ev and ev.Subscribe then
 	ev:Subscribe(ev.GameStart, safeEvent("GameStart", onGameStart))
 	ev:Subscribe(ev.Quant, safeEvent("Quant", onQuant))
 	emit("armed")
+	-- bot.main.lua can require this module while the engine is already dispatching
+	-- GameStart. Subscribers added mid-dispatch are not guaranteed to receive that
+	-- same event, so bootstrap immediately from the already-populated Conquest IDs.
+	-- If identity is not settled yet, onQuant keeps retrying as before.
+	publish(false)
 else
 	emit("not_armed", "BotApi.Events_missing")
 end
