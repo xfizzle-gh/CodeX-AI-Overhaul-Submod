@@ -52,14 +52,20 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertNotIn('setVar("id_attack_support", mateId)', self.attack_support_lua)
         self.assertNotIn('setVar("id_attack_support", id.defenderBotId)', self.attack_support_lua)
 
-    def test_human_identity_is_discovered_and_bot_ids_are_excluded(self) -> None:
-        self.assertIn('sc:QueryScene({"soldier"}, 5)', self.attack_support_lua)
-        self.assertIn("if playerId == id.playerId then return true end", self.attack_support_lua)
-        self.assertIn("playerId == id.firstEnemyId", self.attack_support_lua)
-        self.assertIn("playerId == id.defenderBotId", self.attack_support_lua)
-        self.assertIn('return 0, "ambiguous_candidates="', self.attack_support_lua)
-        self.assertIn('return candidates[1].id, "single_nonbot_soldier_owner"', self.attack_support_lua)
+    def test_human_identity_uses_crash_safe_four_slot_complement(self) -> None:
+        resolver_start = self.attack_support_lua.index("local function resolveHumanId")
+        resolver_end = self.attack_support_lua.index("local function logWait", resolver_start)
+        resolver = self.attack_support_lua[resolver_start:resolver_end]
+        self.assertNotIn(":QueryScene(", self.attack_support_lua)
+        self.assertIn("for playerId = 1, 4 do", resolver)
+        self.assertIn('{ name = "mate", value = tonumber(id.playerId or 0) or 0 }', resolver)
+        self.assertIn('{ name = "enemy", value = tonumber(id.firstEnemyId or 0) or 0 }', resolver)
+        self.assertIn('{ name = "defender", value = tonumber(id.defenderBotId or 0) or 0 }', resolver)
+        self.assertIn('return humanId, "campaign_four_slot_complement"', resolver)
+        self.assertIn('return 0, "four_slot_duplicate_id="', resolver)
+        self.assertIn('"_out_of_range="', resolver)
         self.assertNotIn("humanId = id.firstPlayerId", self.attack_support_lua)
+        self.assertNotIn("humanId = id.hostId", self.attack_support_lua)
 
     def test_handoff_bridge_performs_human_then_mate_ownership(self) -> None:
         self.assertIn('(define "tmai_set_human_owner"', self.handoff_inc)
