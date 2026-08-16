@@ -126,8 +126,6 @@
 					{"entity_state" {selector {tag tmai_support_flag3}} {tag_remove tmai_support_flag3}}
 					{"entity_state" {selector {tag tmai_move_g1}} {tag_remove tmai_move_g1}}
 					{"entity_state" {selector {tag tmai_move_g2}} {tag_remove tmai_move_g2}}
-					{"entity_state" {selector {tag tmai_move_v1}} {tag_remove tmai_move_v1}}
-					{"entity_state" {selector {tag tmai_move_v2}} {tag_remove tmai_move_v2}}
 
 					; Three distinct active objectives, same target primitive the shipped wave engine uses.
 					{"entity_state"
@@ -171,7 +169,7 @@
 					}
 
 					; TMAI-style small infantry groups. Linked vehicle crews are excluded from
-					; the infantry selectors and travel with their hulls.
+					; infantry selection and stay linked to their hulls.
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -196,24 +194,11 @@
 						}
 						{tag_add tmai_move_g2}
 					}
-					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag tmai_handoff_pending} {type vehicle} {amount 1}}
-						{tag_add tmai_move_v1}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select {tag {tag tmai_handoff_pending}}}
-								{include {type {type vehicle}}}
-								{exclude {tag {tag tmai_move_v1}}}
-							}
-							{amount 1}
-						}
-						{tag_add tmai_move_v2}
-					}
 
-					; Use TMAI's MI movement style rather than BotApi CaptureFlag/SeekAndDestroy.
+					; TMAI-style MI movement. Infantry moves in small groups. Each of the four
+					; production humvee instances keeps its persistent instance tag, so task
+					; each hull separately with the already-attested direct {type vehicle}
+					; selector instead of inventing an advanced type-filter syntax.
 					{"action"
 						{selector {ignore_captured_by_user 0} {tag tmai_move_g1}}
 						{drop orders}
@@ -227,16 +212,28 @@
 						{target {ignore_captured_by_user 0} {tag tmai_support_flag2}}
 					}
 					{"action"
-						{selector {ignore_captured_by_user 0} {tag tmai_move_v1}}
+						{selector {ignore_captured_by_user 0} {tag tmai_handoff_pending} {tag attack_support_hmmwv1} {type vehicle}}
 						{drop orders}
 						{action move}
 						{target {ignore_captured_by_user 0} {tag tmai_support_flag2}}
 					}
 					{"action"
-						{selector {ignore_captured_by_user 0} {tag tmai_move_v2}}
+						{selector {ignore_captured_by_user 0} {tag tmai_handoff_pending} {tag attack_support_hmmwv2} {type vehicle}}
 						{drop orders}
 						{action move}
 						{target {ignore_captured_by_user 0} {tag tmai_support_flag3}}
+					}
+					{"action"
+						{selector {ignore_captured_by_user 0} {tag tmai_handoff_pending} {tag attack_support_hmmwv3} {type vehicle}}
+						{drop orders}
+						{action move}
+						{target {ignore_captured_by_user 0} {tag tmai_support_flag1}}
+					}
+					{"action"
+						{selector {ignore_captured_by_user 0} {tag tmai_handoff_pending} {tag attack_support_hmmwv4} {type vehicle}}
+						{drop orders}
+						{action move}
+						{target {ignore_captured_by_user 0} {tag tmai_support_flag2}}
 					}
 
 					{"entity_state"
