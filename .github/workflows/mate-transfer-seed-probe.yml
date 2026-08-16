@@ -1,0 +1,21 @@
+name: Mate Transfer Seed Probe
+
+on:
+  pull_request:
+    paths:
+      - "resource/script/multiplayer/modes/attack_support.lua"
+      - "tests/test_mate_transfer_seed_probe.py"
+      - "tests/test_allied_support_shared_fow.py"
+      - ".github/workflows/mate-transfer-seed-probe.yml"
+  workflow_dispatch:
+
+jobs:
+  source-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run Mate transfer seed regression
+        run: python tests/test_mate_transfer_seed_probe.py
