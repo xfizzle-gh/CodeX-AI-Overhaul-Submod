@@ -78,6 +78,13 @@ class TmaiHumanOriginHandoffTests(unittest.TestCase):
         self.assertLess(gate, enabled)
         self.assertLess(enabled, ready)
 
+    def test_handoff_waits_until_legacy_wave_finalizer_releases_deploy_tag(self) -> None:
+        selection_start = self.handoff.index('{select {tag {tag attack_support_src}}}')
+        pending = self.handoff.index('{tag_add tmai_handoff_pending}', selection_start)
+        selection = self.handoff[selection_start:pending]
+        self.assertIn('{exclude {tag {tag attack_support_deploy}}}', selection)
+        self.assertIn('{tag_remove attack_support_deploy}', self.waves)
+
     def test_deployed_units_get_manual_transfer_equivalent_state_sequence(self) -> None:
         pending = self.handoff.index('{tag_add tmai_handoff_pending}')
         user = self.handoff.index('{control user}', pending)
@@ -92,6 +99,10 @@ class TmaiHumanOriginHandoffTests(unittest.TestCase):
         self.assertLess(mate, ai)
         self.assertLess(ai, second_three)
         self.assertLess(second_three, move)
+
+    def test_handoff_source_is_structurally_balanced(self) -> None:
+        self.assertEqual(self.handoff.count("{"), self.handoff.count("}"))
+        self.assertEqual(self.handoff.count("("), self.handoff.count(")"))
 
     def test_handoff_does_not_modify_enemy_support_ownership(self) -> None:
         self.assertNotIn("id_1st_enemy", self.handoff)
