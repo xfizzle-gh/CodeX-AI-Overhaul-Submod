@@ -23,11 +23,12 @@ class NativeSupportFowDiagnosticTests(unittest.TestCase):
         cls.unit = TEST_UNIT.read_text(encoding="utf-8")
         cls.game_set = GAME_SET.read_text(encoding="utf-8")
 
-    def test_pr96_attack_support_owner_contract_is_untouched(self) -> None:
-        self.assertIn("local ownerId = positiveId(id.playerId, 0)", self.attack_support)
-        self.assertNotIn("local ownerId = positiveId(id.defenderBotId, 0)", self.attack_support)
-        self.assertNotIn('sc:SetVar("id_attack_support", id.defenderBotId)', self.attack_support)
-        self.assertNotIn('sc:SetVar("id_attack_support", id.firstPlayerId)', self.attack_support)
+    def test_pr101_attack_handoff_does_not_reuse_defenderbot_or_native_probe(self) -> None:
+        self.assertIn('setVar("id_attack_support_human", humanId)', self.attack_support)
+        self.assertIn('setVar("id_attack_support_mate", mateId)', self.attack_support)
+        self.assertIn('setVar("id_attack_support", humanId)', self.attack_support)
+        self.assertNotIn('setVar("id_attack_support", id.defenderBotId)', self.attack_support)
+        self.assertNotIn("CODEX_NATIVE_SUPPORT_TEST", self.attack_support)
 
     def test_custom_attack_support_bot_never_loads_native_diagnostic(self) -> None:
         attack_route = self.bot_main.index("if isAttackSupportCandidate(identity) then")
