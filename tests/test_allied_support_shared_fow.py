@@ -89,6 +89,30 @@ class AlliedSupportSharedFowAndGateTests(unittest.TestCase):
         self.assertIn("state.attackMission = nil", body)
         self.assertIn("publishIdentity(id, false)", body)
 
+    def test_attack_support_autoassigns_after_ai_and_selection_lock(self) -> None:
+        finish_start = self.attack_waves_inc.find('(define "am_finish_deploy"')
+        finish_end = self.attack_waves_inc.find('(define "am_deploy_next_hmmwv"', finish_start)
+        self.assertGreater(finish_start, 0)
+        self.assertGreater(finish_end, finish_start)
+        finish = self.attack_waves_inc[finish_start:finish_end]
+
+        actor_pos = finish.find('{"actor_state"')
+        ables_pos = finish.find('{"ables"', actor_pos)
+        autoassign_pos = finish.find('{"autoassign"', ables_pos)
+        cleanup_pos = finish.find('{tag_remove attack_support_deploy}', autoassign_pos)
+
+        self.assertGreater(actor_pos, 0)
+        self.assertGreater(ables_pos, actor_pos)
+        self.assertGreater(autoassign_pos, ables_pos)
+        self.assertGreater(cleanup_pos, autoassign_pos)
+        self.assertIn('{control AI}', finish[actor_pos:ables_pos])
+        self.assertIn('{remove select}', finish[ables_pos:autoassign_pos])
+        self.assertIn(
+            '{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}',
+            finish[autoassign_pos:cleanup_pos],
+        )
+        self.assertEqual(finish.count('{"autoassign"'), 1)
+
     def test_all_four_support_quadrants_have_correct_ai_ownership(self) -> None:
         self.assertIn('{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 1}}', self.attack_waves_inc)
         self.assertIn('{var "id_attack_support$"}', self.attack_waves_inc)
