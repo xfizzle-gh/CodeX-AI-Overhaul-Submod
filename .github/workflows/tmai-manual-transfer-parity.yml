@@ -1,0 +1,20 @@
+name: TMAI Manual Transfer Parity
+
+on:
+  pull_request:
+    paths:
+      - "resource/script/multiplayer/modes/attack_support.lua"
+      - "tests/test_tmai_manual_transfer.py"
+      - ".github/workflows/tmai-manual-transfer-parity.yml"
+  workflow_dispatch:
+
+jobs:
+  source-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run manual TMAI transfer parity regression
+        run: python tests/test_tmai_manual_transfer.py
