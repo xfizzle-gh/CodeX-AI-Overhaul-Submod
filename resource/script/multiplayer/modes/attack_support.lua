@@ -5,8 +5,8 @@
 --
 -- Unit delivery is MI: attack_support_waves.inc (real-breed pool, MOVE in).
 -- Lua Spawn is not viable on this slot (IsUnitAvailable always false; utility load crashes).
--- No enable var gates this: attack support is on by default on every human attack
--- mission, and publishing the identity below is what arms the MI wave engine.
+-- Mission participation is gated in MI by support_mission_enabled$. This controller only
+-- publishes the real allied AI owner for human-attack missions and issues squad orders.
 --
 -- This slot also carries the ENGINE-STATE MIRROR. Every MIRROR_QUANTS quants it writes
 -- one game.log line per wave engine - attack_support, enemy_defense (plus its garrison
@@ -19,9 +19,6 @@ local PREFIX = "CODEX_ATTACK_SUPPORT"
 
 local DEBUG_LOG = true
 
--- Two writers: emit always writes, log is the DEBUG_LOG-gated chatter. The engine-state
--- mirror below goes through the ungated one because it is the only remaining way to read
--- the four wave engines on a shipped build - their timers are gated on support_debug$.
 local function emit(...)
 	local out = { PREFIX .. ":" }
 	for n = 1, select("#", ...) do
@@ -55,13 +52,6 @@ local function cmds()
 	return (BotApi and BotApi.Commands) or nil
 end
 
--- GetVar is not proven on this BotApi surface, and this slot is the one that AVs when
--- a native getter is touched wrong. So every read is pcall-guarded and degrades to a
--- printable placeholder rather than taking the report path - or the process - down:
---   "na"  no Scene at all
---   "err" the guarded GetVar raised
---   "nil" the var read back as nil (undeclared, or never written)
--- This is the probe-era pattern verbatim; it is the only var read ever proven here.
 local function readVar(name)
 	local sc = scene()
 	if not sc then return "na" end
@@ -96,17 +86,11 @@ local function identity()
 	}
 end
 
-
--- Motorized insert budget (cmd 19). MI-owned; mirrored for log diagnostics.
 local function mirrorMotor()
-	-- Both sides: the friendly vars stay 0 on defence missions and vice versa, so a
-	-- one-sided mirror is blind on half the campaign. Report both plus the test gates.
 	emit("motor_left", readVar("attack_support_motor_left"),
 		"wave_cmd", readVar("attack_support_wave_cmd"),
 		"test", readVar("attack_support_motor_test"),
 		"test_done", readVar("attack_support_motor_test_done"))
-	-- WHERE a batch went, not just that a wave fired. place$: 0 = map-edge entry pad,
-	-- 1/2/3 = active flag (garrison). entry_rr$ names the pad used for edge batches.
 	emit("place_defense", readVar("defense_support_place"),
 		"pad", readVar("defense_support_entry_rr"),
 		"stage", readVar("defense_support_stage"))
@@ -132,10 +116,16 @@ local state = {
 	quant = 0,
 	ordered = {},
 	identityPublished = false,
+	attackMission = nil,
 }
 
 local function publishIdentity(id, isRetry)
+	if id.attacking == false then
+		state.attackMission = false
+		return false
+	end
 	if id.attacking ~= true then return false end
+	state.attackMission = true
 	local sc = scene()
 	if not sc or not sc.SetVar then
 		if not isRetry then log("identity_publish_skipped", "Scene.SetVar_missing") end
@@ -157,7 +147,6 @@ local function publishIdentity(id, isRetry)
 	end
 	sc:SetVar("id_attack_support", ownerId)
 	sc:SetVar("attack_support_ready", 1)
-	-- MI waves are the working delivery path for attack support units.
 	sc:SetVar("attack_support_use_mi", 1)
 	state.identityPublished = true
 	log("identity_published", "id_attack_support", ownerId,
@@ -211,12 +200,6 @@ local function orderNewSquads()
 	end
 end
 
--- ENGINE-STATE MIRROR. One line per wave engine into game.log every MIRROR_QUANTS
--- quants, always on. The on-screen diagnostics are gated behind support_debug$ so a
--- player sees nothing, which leaves the log as the only place a run can be read back:
--- whether each engine armed, how far into its budget it is, and which faction pool the
--- friendly waves are drawing from. This slot is loaded on every campaign_capture_the_flag
--- mission, attack or defence, so all four quadrants report from the same place.
 local MIRROR_QUANTS = 200
 
 local function mirrorEngineState()
@@ -243,21 +226,25 @@ local function mirrorEngineState()
 end
 
 local function onGameStart()
+	state.quant = 0
+	state.ordered = {}
+	state.identityPublished = false
+	state.attackMission = nil
 	local id = identity()
 	log("game_start", "playerId", id.playerId, "attacking", tostring(id.attacking), "army", id.army)
-	state.identityPublished = false
 	publishIdentity(id, false)
-	state.ordered = {}
 	if id.attacking == true then
 		log("mode", "mi_wave_delivery", "lua_spawn", "disabled_av_safe")
-	else
+	elseif id.attacking == false then
 		log("mode", "idle_not_attacking")
+	else
+		log("mode", "role_unresolved_retry_pending")
 	end
 end
 
 local function onQuant()
 	state.quant = state.quant + 1
-	if not state.identityPublished then
+	if not state.identityPublished and state.attackMission ~= false then
 		publishIdentity(identity(), true)
 	end
 	orderNewSquads()
