@@ -39,18 +39,25 @@ class MateUnitsetProvisionFowTests(unittest.TestCase):
         self.assertIn('"rus90_inf_rifle(rusa)"', self.script)
         self.assertIn('"lud_22_1(rusa)"', self.script)
 
-    def test_availability_is_hard_gate_before_spawn(self):
+    def test_availability_is_observed(self):
         self.assertIn('local available = unitAvailability(cmd, unit)', self.script)
-        self.assertIn('if available == true then', self.script)
-        self.assertIn('"native_call", "suppressed"', self.script)
-        gate = self.script.index('if available == true then')
-        request = self.script.index('if tryNativeSpawn(unit) then')
-        self.assertLess(gate, request)
-
-    def test_native_birth_still_requires_game_spawn(self):
-        self.assertIn('ev:Subscribe(ev.GameSpawn', self.script)
-        self.assertIn('"native_birth_confirmed", true', self.script)
+        self.assertIn('availableCount = availableCount + 1', self.script)
         self.assertIn('"provision_result", "PASSED"', self.script)
+        self.assertIn('"provision_result", "FAILED"', self.script)
+
+    def test_probe_logs_raw_spawn_context_without_using_it(self):
+        self.assertIn('"spawnPointName", tostring(i.spawnPointName)', self.script)
+        self.assertIn('"PlayerSpawnPoint", tostring(c.PlayerSpawnPoint)', self.script)
+        self.assertIn('"SpawnAt_api", tostring(cmd and cmd.SpawnAt ~= nil)', self.script)
+        self.assertIn('"Spawn_api", tostring(cmd and cmd.Spawn ~= nil)', self.script)
+        self.assertIn('"native_spawn_calls", "disabled"', self.script)
+
+    def test_no_native_spawn_or_game_spawn_path(self):
+        self.assertNotIn(':SpawnAt(', self.script)
+        self.assertNotIn(':Spawn(', self.script)
+        self.assertNotIn('ev.GameSpawn', self.script)
+        self.assertNotIn('native_birth_confirmed', self.script)
+        self.assertNotIn('SeekAndDestroy', self.script)
 
     def test_no_parked_or_transfer_support_path(self):
         self.assertNotIn('SetVar("attack_support_ready"', self.script)
