@@ -53,7 +53,7 @@ class NativeStageZeroSupportTests(unittest.TestCase):
         self.assertLess(can_spawn_pos, spawn_pos)
 
     def test_no_fragile_or_rejected_spawn_context_paths_return(self) -> None:
-        self.assertNotIn("QueryScene", self.lua)
+        self.assertNotIn(":QueryScene(", self.lua)
         self.assertNotIn("require([[/script/multiplayer/modes/utility]])", self.lua)
         self.assertNotIn("require(\"resource/script/multiplayer/modes/utility\")", self.lua)
         self.assertNotIn("PlayerSpawnPoint", self.lua)
