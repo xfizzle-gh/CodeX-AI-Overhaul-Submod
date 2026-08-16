@@ -1,195 +1,293 @@
--- Mate unitset provisioning probe (#104).
+-- Attack support controller (human ATTACK missions).
+-- Identity + orders only. Do NOT require utility.lua / logic/main.lua here:
+-- that path AVs on the attack support slot (no spawn deck) even with spawnPoint nil-guard
+-- (proven 2026-07-29 log: crash in lua.event.notify2 right after Loading utility.lua).
 --
--- Research-only branch from main. The campaign preset temporarily provisions BOT
--- slots from the normal 2022s skirmish unitset while the human remains on the
--- conquest unitset. This probe asks one question only: does that give the extra
--- Team-A Mate a real engine unit catalog?
+-- Unit delivery is MI: attack_support_waves.inc (real-breed pool, MOVE in).
+-- Lua Spawn is not viable on this slot (IsUnitAvailable always false; utility load crashes).
+-- Mission participation is gated in MI by support_mission_enabled$. This controller publishes
+-- its own routed Team A playerId as the attack-support owner and issues squad orders.
 --
--- ZERO NATIVE SPAWN CALLS BY DESIGN. PR #103 proved that calling SpawnAt/Spawn on
--- this special Mate with an invalid context can hard-crash the engine outside Lua
--- error handling. #104 therefore records availability and raw spawn-point fields
--- only. A later experiment may spawn only after both catalog and spawn context are
--- understood.
+-- This slot also carries the ENGINE-STATE MIRROR. Every MIRROR_QUANTS quants it writes
+-- one game.log line per wave engine - attack_support, enemy_defense (plus its garrison
+-- anchors), defense_support, enemy_attack - and the resolved faction_support_army$.
+-- Always on and log-only, because the on-screen diagnostics in those engines are gated
+-- behind support_debug$ and default to off, so the log is all a shipped run leaves
+-- behind. Reads go through readVar, which pcall-guards GetVar.
 
-local PREFIX = "CODEX_MATE_UNITSET_PROBE"
-local START_DELAY_MS = 3000
+local PREFIX = "CODEX_ATTACK_SUPPORT"
 
-local RUSA_CANDIDATES = {
-    "rus90_inf_rifle(rusa)",
-    "lud_22_1(rusa)",
-}
+local DEBUG_LOG = true
 
 local function emit(...)
-    local out = { PREFIX .. ":" }
-    for n = 1, select("#", ...) do
-        out[#out + 1] = tostring(select(n, ...))
-    end
-    print(table.concat(out, " "))
+	local out = { PREFIX .. ":" }
+	for n = 1, select("#", ...) do
+		out[#out + 1] = tostring(select(n, ...))
+	end
+	print(table.concat(out, " "))
+end
+
+local function log(...)
+	if not DEBUG_LOG then return end
+	emit(...)
 end
 
 local function instance()
-    return (BotApi and BotApi.Instance) or {}
+	return (BotApi and BotApi.Instance) or {}
 end
 
-local function conquest()
-    return (BotApi and BotApi.Conquest) or {}
+local function conquestApi()
+	return (BotApi and BotApi.Conquest) or {}
+end
+
+local function scene()
+	return (BotApi and BotApi.Scene) or nil
 end
 
 local function events()
-    return (BotApi and BotApi.Events) or nil
+	return (BotApi and BotApi.Events) or nil
 end
 
-local function commands()
-    return (BotApi and BotApi.Commands) or nil
+local function cmds()
+	return (BotApi and BotApi.Commands) or nil
+end
+
+local function readVar(name)
+	local sc = scene()
+	if not sc then return "na" end
+	local ok, v = pcall(function() return sc:GetVar(name) end)
+	if not ok then return "err" end
+	if v == nil then return "nil" end
+	return tostring(v)
+end
+
+local function positiveId(primary, fallback)
+	primary = tonumber(primary or 0) or 0
+	fallback = tonumber(fallback or 0) or 0
+	if primary > 0 then return primary end
+	if fallback > 0 then return fallback end
+	return 0
+end
+
+-- NEVER touch spawnPointName / PlayerSpawnPoint / require(utility) on this slot.
+local function identity()
+	local i = instance()
+	local c = conquestApi()
+	return {
+		playerId = tonumber(i.playerId or 0) or 0,
+		team = tostring(i.team or ""),
+		army = tostring(i.army or ""),
+		difficulty = tostring(i.difficulty or ""),
+		gameMode = tostring(i.gameMode or ""),
+		attacking = c.Attacking,
+		firstPlayerId = positiveId(c.FirstPlayerId, i.CampaignFirstPlayerId),
+		firstEnemyId = positiveId(c.FirstEnemyId, i.CampaignFirstEnemyId),
+		defenderBotId = positiveId(c.DefenderBotId, i.CampaignDefenderBotId),
+	}
+end
+
+local function mirrorMotor()
+	emit("motor_left", readVar("attack_support_motor_left"),
+		"wave_cmd", readVar("attack_support_wave_cmd"),
+		"test", readVar("attack_support_motor_test"),
+		"test_done", readVar("attack_support_motor_test_done"))
+	emit("place_defense", readVar("defense_support_place"),
+		"pad", readVar("defense_support_entry_rr"),
+		"stage", readVar("defense_support_stage"))
+	emit("place_enemy_defense", readVar("enemy_defense_place"),
+		"pad", readVar("enemy_defense_entry_rr"),
+		"stage", readVar("enemy_defense_stage"))
+	emit("place_attack", "pad", readVar("attack_support_entry_rr"),
+		"stage", readVar("attack_support_stage"))
+	emit("place_enemy_attack", "pad", readVar("enemy_attack_entry_rr"),
+		"stage", readVar("enemy_attack_stage"))
+	emit("motor_enemy_left", readVar("enemy_attack_motor_left"),
+		"wave_cmd", readVar("enemy_attack_wave_cmd"),
+		"test", readVar("enemy_attack_motor_test"),
+		"test_done", readVar("enemy_attack_motor_test_done"))
+	emit("e2", "e2_test", readVar("support_e2_test"),
+		"e2_stage", readVar("support_e2_stage"),
+		"e2_fail", readVar("support_e2_fail"),
+		"e2_lz", readVar("support_e2_lz"),
+		"e2_flag", readVar("support_e2_flag"))
 end
 
 local state = {
-    generation = 0,
-    armed = false,
-    checked = false,
+	quant = 0,
+	ordered = {},
+	identityPublished = false,
+	attackMission = nil,
 }
 
-local function safeCall(label, fn)
-    local ok, result = pcall(fn)
-    if not ok then
-        emit(label, "lua_error", tostring(result))
-        return false, nil
-    end
-    return true, result
+local function publishIdentity(id, isRetry)
+	if id.attacking == false then
+		state.attackMission = false
+		return false
+	end
+	if id.attacking ~= true then return false end
+	state.attackMission = true
+	local sc = scene()
+	if not sc or not sc.SetVar then
+		if not isRetry then log("identity_publish_skipped", "Scene.SetVar_missing") end
+		return false
+	end
+	-- bot.main.lua routes this module only onto the non-human Team A attack-support
+	-- controller and explicitly excludes DefenderBotId. Therefore this controller's
+	-- own playerId is the authoritative same-side owner. DefenderBotId is a defender-
+	-- side identity in human-attack missions and must never own friendly support.
+	local ownerId = positiveId(id.playerId, 0)
+	if ownerId <= 0 then
+		if not isRetry or state.quant % 50 == 0 then
+			log("identity_publish_skipped", "support_controller_owner_unresolved",
+				"controller_playerId", id.playerId,
+				"defenderBotId", id.defenderBotId,
+				"team", id.team,
+				"retry", tostring(isRetry == true))
+		end
+		return false
+	end
+	sc:SetVar("id_attack_support", ownerId)
+	sc:SetVar("attack_support_ready", 1)
+	sc:SetVar("attack_support_use_mi", 1)
+	state.identityPublished = true
+	log("identity_published", "id_attack_support", ownerId,
+		"controller_playerId", id.playerId,
+		"defenderBotId", id.defenderBotId,
+		"team", id.team,
+		"retry", tostring(isRetry == true),
+		"mi_waves", 1)
+	return true
 end
 
-local function unitAvailability(cmd, unit)
-    if not cmd or not cmd.IsUnitAvailable then
-        emit("unit_check", unit, "IsUnitAvailable", "api_missing")
-        return nil
-    end
-    local ok, value = safeCall("unit_check_error", function()
-        return cmd:IsUnitAvailable(unit)
-    end)
-    if not ok then return nil end
-    emit("unit_check", unit, "IsUnitAvailable", tostring(value))
-    return value == true
+local function pickFlagName()
+	local sc = scene()
+	if not sc or type(sc.Flags) ~= "table" then return nil end
+	local names = {}
+	for _, flag in pairs(sc.Flags) do
+		if flag and flag.name then
+			names[#names + 1] = tostring(flag.name)
+		end
+	end
+	if #names == 0 then return nil end
+	return names[math.random(#names)]
 end
 
-local function inspectProvisioning(generation)
-    if generation ~= state.generation or not state.armed or state.checked then return end
-    state.checked = true
+local function orderSquad(squad)
+	local c = cmds()
+	if not c then return end
+	local flagName = pickFlagName()
+	if flagName and c.CaptureFlag then
+		local ok = pcall(function() c:CaptureFlag(squad, flagName) end)
+		if ok then
+			log("order_capture", tostring(squad), flagName)
+			return
+		end
+	end
+	if c.SeekAndDestroy then
+		pcall(function() c:SeekAndDestroy(squad) end)
+		log("order_seek", tostring(squad))
+	end
+end
 
-    local i = instance()
-    local c = conquest()
-    local cmd = commands()
+local function orderNewSquads()
+	local sc = scene()
+	if not sc or type(sc.Squads) ~= "table" then return end
+	for _, squad in pairs(sc.Squads) do
+		local key = tostring(squad)
+		if not state.ordered[key] then
+			state.ordered[key] = true
+			orderSquad(squad)
+		end
+	end
+end
 
-    if tostring(i.army or "") ~= "rusa" then
-        emit("gate_skip", "rusa_only", "army", tostring(i.army))
-        return
-    end
+local MIRROR_QUANTS = 200
 
-    emit(
-        "context",
-        "playerId", tostring(i.playerId),
-        "team", tostring(i.team),
-        "army", tostring(i.army),
-        "expected_bot_unitset", "2022s",
-        "spawnPointName", tostring(i.spawnPointName),
-        "PlayerSpawnPoint", tostring(c.PlayerSpawnPoint),
-        "SpawnAt_api", tostring(cmd and cmd.SpawnAt ~= nil),
-        "Spawn_api", tostring(cmd and cmd.Spawn ~= nil),
-        "native_spawn_calls", "disabled"
-    )
-
-    local availableCount = 0
-    local unknownCount = 0
-    for _, unit in ipairs(RUSA_CANDIDATES) do
-        local available = unitAvailability(cmd, unit)
-        if available == true then
-            availableCount = availableCount + 1
-        elseif available == nil then
-            unknownCount = unknownCount + 1
-        end
-    end
-
-    if availableCount > 0 then
-        emit(
-            "provision_result", "PASSED",
-            "available_count", availableCount,
-            "unknown_count", unknownCount,
-            "next_step", "validate_spawn_context_before_native_call"
-        )
-    else
-        emit(
-            "provision_result", "FAILED",
-            "available_count", 0,
-            "unknown_count", unknownCount,
-            "reason", "mate_still_has_no_available_units",
-            "native_spawn_calls", "suppressed"
-        )
-    end
+local function mirrorEngineState()
+	emit("mirror", "q", state.quant,
+		"faction_support_army", readVar("faction_support_army"))
+	emit("mirror", "attack_support",
+		"armed", readVar("attack_support_armed"),
+		"wave_num", readVar("attack_support_wave_num"),
+		"waves_left", readVar("attack_support_waves_left"))
+	emit("mirror", "enemy_defense",
+		"armed", readVar("enemy_defense_armed"),
+		"wave_num", readVar("enemy_defense_wave_num"),
+		"waves_left", readVar("enemy_defense_waves_left"),
+		"garrison_place", readVar("enemy_defense_place"),
+		"garrison_group", readVar("enemy_defense_group"))
+	emit("mirror", "defense_support",
+		"armed", readVar("defense_support_armed"),
+		"wave_num", readVar("defense_support_wave_num"),
+		"waves_left", readVar("defense_support_waves_left"))
+	emit("mirror", "enemy_attack",
+		"armed", readVar("enemy_attack_armed"),
+		"wave_num", readVar("enemy_attack_wave_num"),
+		"waves_left", readVar("enemy_attack_waves_left"))
 end
 
 local function onGameStart()
-    state.generation = state.generation + 1
-    state.armed = false
-    state.checked = false
+	state.quant = 0
+	state.ordered = {}
+	state.identityPublished = false
+	state.attackMission = nil
+	local id = identity()
+	log("game_start", "playerId", id.playerId, "attacking", tostring(id.attacking), "army", id.army)
+	publishIdentity(id, false)
+	if id.attacking == true then
+		log("mode", "mi_wave_delivery", "lua_spawn", "disabled_av_safe")
+	elseif id.attacking == false then
+		log("mode", "idle_not_attacking")
+	else
+		log("mode", "role_unresolved_retry_pending")
+	end
+end
 
-    local i = instance()
-    local c = conquest()
-    emit(
-        "GameStart",
-        "playerId", tostring(i.playerId),
-        "team", tostring(i.team),
-        "army", tostring(i.army),
-        "attacking", tostring(c.Attacking)
-    )
-
-    if c.Attacking ~= true then
-        emit("gate_skip", "not_human_attack")
-        return
-    end
-    if tostring(i.team or "") ~= "a" then
-        emit("gate_skip", "not_team_a")
-        return
-    end
-
-    state.armed = true
-    emit(
-        "armed",
-        "mode", "mate_unitset_provision_2022s",
-        "research_only", true,
-        "human_unitset", "conquest",
-        "bot_unitset", "2022s",
-        "parked_templates", "disabled",
-        "mi_support_waves", "disabled",
-        "ownership_transfer", "disabled",
-        "native_spawn_calls", "disabled"
-    )
-
-    local ev = events()
-    local generation = state.generation
-    if ev and ev.SetQuantTimer then
-        ev:SetQuantTimer(function() inspectProvisioning(generation) end, START_DELAY_MS)
-    else
-        inspectProvisioning(generation)
-    end
+local function onQuant()
+	state.quant = state.quant + 1
+	if not state.identityPublished and state.attackMission ~= false then
+		publishIdentity(identity(), true)
+	end
+	orderNewSquads()
+	if state.quant > 0 and state.quant % 400 == 0 then
+		local sc = scene()
+		if sc and type(sc.Squads) == "table" then
+			for _, squad in pairs(sc.Squads) do
+				orderSquad(squad)
+			end
+		end
+	end
+	if DEBUG_LOG and state.quant % 200 == 0 then
+		log("heartbeat", "q", state.quant)
+	end
+	if state.quant % MIRROR_QUANTS == 0 then
+		mirrorMotor()
+		mirrorEngineState()
+	end
 end
 
 local function onGameEnd()
-    emit("GameEnd", "checked", tostring(state.checked))
+	log("game_end", "q", state.quant)
 end
 
 local function safeEvent(name, fn)
-    return function(...)
-        local ok, err = pcall(fn, ...)
-        if not ok then emit("event_error", name, tostring(err)) end
-    end
+	return function(...)
+		local ok, err = pcall(fn, ...)
+		if not ok then
+			log("event_error", name, tostring(err))
+		end
+	end
 end
 
-local i = instance()
-emit("module_loaded", "playerId", tostring(i.playerId), "team", tostring(i.team), "army", tostring(i.army))
+local id0 = identity()
+log("module_loaded", "playerId", id0.playerId, "team", id0.team, "attacking", tostring(id0.attacking))
+
 local ev = events()
 if ev and ev.Subscribe then
-    ev:Subscribe(ev.GameStart, safeEvent("GameStart", onGameStart))
-    ev:Subscribe(ev.GameEnd, safeEvent("GameEnd", onGameEnd))
-    emit("subscribed")
+	ev:Subscribe(ev.GameStart, safeEvent("GameStart", onGameStart))
+	ev:Subscribe(ev.Quant, safeEvent("Quant", onQuant))
+	ev:Subscribe(ev.GameEnd, safeEvent("GameEnd", onGameEnd))
+	log("armed", "identity_orders_mi_waves")
 else
-    emit("not_armed", "BotApi.Events_missing")
+	log("not_armed", "BotApi.Events_missing")
 end
