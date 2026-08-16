@@ -1,3 +1,12 @@
+-- RESEARCH SWITCH: isolate native Conquest actor birth before changing production support.
+-- This branch keeps the production controller below intact for static regression coverage,
+-- but runtime execution returns after loading the native-birth probe.
+local NATIVE_SUPPORT_BIRTH_RESEARCH = true
+if NATIVE_SUPPORT_BIRTH_RESEARCH then
+	require("resource/script/multiplayer/modes/native_support_birth_probe")
+	return
+end
+
 -- Attack support controller (human ATTACK missions).
 -- Identity + orders only. Do NOT require utility.lua / logic/main.lua here:
 -- that path AVs on the attack support slot (no spawn deck) even with spawnPoint nil-guard
