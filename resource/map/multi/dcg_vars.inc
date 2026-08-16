@@ -74,6 +74,13 @@
 			{"attack_support_use_mi"}
 			{"enemy_spawnside"}
 			{"id_attack_support"}
+			{"id_attack_support_human"}
+			{"id_attack_support_mate"}
+			{"tmai_handoff_prepare"}
+			{"tmai_handoff_prepared"}
+			{"tmai_handoff_enabled"}
+			{"tmai_handoff_busy"}
+			{"tmai_handoff_seq"}
 			{"attack_support_ready"}
 			{"enemy_defense_armed"}
 			{"enemy_defense_army"}
