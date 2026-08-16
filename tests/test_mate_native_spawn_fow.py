@@ -36,10 +36,18 @@ class MateNativeSpawnFowTests(unittest.TestCase):
         self.assertIn('args.squadId', self.src)
         self.assertIn('"native_birth_confirmed", true', self.src)
 
-    def test_logs_availability_without_gating_on_it(self):
-        self.assertIn('cmd:IsUnitAvailable(unit)', self.src)
-        self.assertIn('unitAvailability(cmd, unit)', self.src)
-        self.assertIn('if tryNativeSpawn(unit) then', self.src)
+    def test_unavailable_units_fail_closed_before_native_spawn(self):
+        self.assertIn('local available = unitAvailability(cmd, unit)', self.src)
+        self.assertIn('if available == true then', self.src)
+        self.assertIn('"native_call", "suppressed"', self.src)
+        availability_gate = self.src.index('if available == true then')
+        spawn_call = self.src.index('if tryNativeSpawn(unit) then')
+        self.assertLess(availability_gate, spawn_call)
+
+    def test_zero_available_candidates_never_call_native_spawn(self):
+        self.assertIn('local availableCount = 0', self.src)
+        self.assertIn('availableCount = availableCount + 1', self.src)
+        self.assertIn('"no_available_candidates", "native_call", "suppressed"', self.src)
 
     def test_no_old_support_architecture(self):
         self.assertNotIn('SetVar("attack_support_ready"', self.src)
