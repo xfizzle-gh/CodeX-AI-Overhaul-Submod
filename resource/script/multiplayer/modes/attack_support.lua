@@ -153,7 +153,12 @@ local function publishIdentity(id)
 	sc:SetVar("attack_support_ready", 1)
 	-- MI waves are the working delivery path for attack support units.
 	sc:SetVar("attack_support_use_mi", 1)
-	log("identity_published", "id_attack_support", id.playerId, "mi_waves", 1)
+	-- The MI handoff needs this slot's own player id as a literal it can switch on.
+	-- Never hardcode it: lobby slot assignment varies between runs, and a hardcoded
+	-- value silently disabled this route whenever the human did not hold slot one.
+	sc:SetVar("allied_support_cmd_mate_id", id.playerId)
+	log("identity_published", "id_attack_support", id.playerId, "mi_waves", 1,
+		"mate_id", id.playerId)
 end
 
 local function pickFlagName()

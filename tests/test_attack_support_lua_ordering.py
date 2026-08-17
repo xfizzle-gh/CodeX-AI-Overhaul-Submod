@@ -10,6 +10,18 @@ def _lua(mod_root):
     return path.read_text(encoding="utf-8", errors="replace")
 
 
+def _lua_code(mod_root):
+    """Source with '--' comment lines dropped.
+
+    The file documents the forbidden BotApi fields by name in a warning comment;
+    a check for those names must inspect code, not prose.
+    """
+    return "\n".join(
+        line for line in _lua(mod_root).splitlines()
+        if not line.lstrip().startswith("--")
+    )
+
+
 def test_ordering_is_gated_by_a_single_named_switch(mod_root):
     text = _lua(mod_root)
     assert re.search(r"^local ORDERING_ENABLED = false", text, re.M), \
@@ -55,3 +67,27 @@ def test_no_banned_strings_added(mod_root):
     text = _lua(mod_root).lower()
     for banned in ("tmai", "p013"):
         assert banned not in text
+
+
+def test_mate_id_is_published_from_the_slots_own_player_id(mod_root):
+    text = _lua(mod_root)
+    assert "allied_support_cmd_mate_id" in text, "mate id must be published for the MI handoff"
+    assert re.search(r'SetVar\(\s*"allied_support_cmd_mate_id"', text), \
+        "expected a SetVar publication of the mate id"
+
+
+def test_mate_id_is_never_hardcoded(mod_root):
+    """Lobby slot assignment varies; a literal 1 made earlier proofs contradictory."""
+    text = _lua(mod_root)
+    block_start = text.index("allied_support_cmd_mate_id")
+    block = text[max(0, block_start - 300):block_start + 300]
+    assert not re.search(r'allied_support_cmd_mate_id"\s*,\s*1\s*\)', block), \
+        "mate id must come from identity, never the literal 1"
+    assert "id.playerId" in block or "identity.playerId" in block
+
+
+def test_mate_id_publication_does_not_read_forbidden_fields(mod_root):
+    """These fields null-deref natively on the extra Team A slot; pcall cannot catch it."""
+    code = _lua_code(mod_root)
+    assert "spawnPointName" not in code
+    assert "PlayerSpawnPoint" not in code
