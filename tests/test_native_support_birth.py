@@ -7,6 +7,7 @@ BIRTH = ROOT / "resource/map/multi/native_support_birth.inc"
 INERT = ROOT / "resource/map/multi/support_templates_inert.inc"
 VARS = ROOT / "resource/map/multi/dcg_vars.inc"
 WAVES = ROOT / "resource/map/multi/attack_support_waves.inc"
+TEMPLATES = ROOT / "resource/map/multi/attack_support_templates.inc"
 
 
 class NativeSupportBirthTests(unittest.TestCase):
@@ -17,6 +18,7 @@ class NativeSupportBirthTests(unittest.TestCase):
         cls.inert = INERT.read_text(encoding="utf-8")
         cls.vars = VARS.read_text(encoding="utf-8")
         cls.waves = WAVES.read_text(encoding="utf-8")
+        cls.templates = TEMPLATES.read_text(encoding="utf-8")
 
     def test_uses_proven_human_then_mate_identity(self):
         self.assertIn('local function resolveHumanId', self.attack)
@@ -42,6 +44,36 @@ class NativeSupportBirthTests(unittest.TestCase):
         )
         for token in forbidden:
             self.assertNotIn(token, self.birth)
+
+    def test_clone_detection_does_not_depend_on_inherited_source_tag(self):
+        # Production already documents why it moves originals instead of trying
+        # to find a clone by inherited provenance. #111 v1 ignored that warning
+        # and native testing produced a false stage-3 success with no actor.
+        self.assertIn("a cloned entity's\n; provenance is invisible", self.templates)
+        start = self.birth.index('(define "native_support_mark_runtime_clone"')
+        end = self.birth.index('\n\t\t\t)', start) + len('\n\t\t\t)')
+        body = self.birth[start:end]
+        self.assertIn('{zone {zone "gamezone"}}', body)
+        self.assertIn('{state {state operatable}}', body)
+        self.assertIn('{state {state user_control}}', body)
+        self.assertIn('{prop {prop human}}', body)
+        self.assertIn('{amount 5}', body)
+        self.assertIn('{tag_add native_support_new}', body)
+        self.assertNotIn('{tag {tag native_support_source}}', body)
+
+    def test_diagnostic_stage_exposes_claim_clone_and_detection_boundaries(self):
+        self.assertIn('{"set_i" {var "native_support_stage$"} {op "="} {value 10}}', self.birth)
+        self.assertIn('{"set_i" {var "native_support_stage$"} {op "="} {value 11}}', self.birth)
+        self.assertIn('{"set_i" {var "native_support_stage$"} {op "="} {value 12}}', self.birth)
+        finish = self.birth.index('(define "native_support_finish_clone"')
+        self.assertLess(
+            self.birth.index('{"set_i" {var "native_support_stage$"} {op "="} {value 11}}'),
+            self.birth.index('("native_support_clone_to_entry")'),
+        )
+        self.assertLess(
+            self.birth.index('("native_support_clone_to_entry")'),
+            self.birth.index('("native_support_mark_runtime_clone")', finish),
+        )
 
     def test_source_prototype_is_restored_not_consumed(self):
         self.assertIn('{player "0"}', self.birth)
