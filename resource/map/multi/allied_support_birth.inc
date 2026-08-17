@@ -24,9 +24,23 @@
 ; selection, level budget and live-unit cap would give a failure five explanations instead
 ; of one. Wave integration belongs to the commander work, after birth is proven.
 
+; INIT IS EVENT-FREE ON PURPOSE. This uses the self-latching {expression "1"} + done-flag
+; form that support_mission/roll and attack_support/init already use in this codebase,
+; NOT an {"1.event" {id "init"}} hook. Event ids are not raised uniformly across the
+; fourteen CWA maps - the reason other mods hook both "init" and "init2" - and a Dynamic
+; Conquest campaign picks the map for you, so an event-dependent init would make birth
+; silently never happen on some maps with no error to show for it.
+
 			{"allied_support_cmd/birth_init"
-				{condition {terms {"1.event" {id "init"}}}}
+				{condition
+					{expression "1"}
+					{terms
+						{"1.cmp_i" {var "allied_support_cmd_init_done$"} {op "=="} {value 0}}
+					}
+				}
 				{actions
+					{"set_i" {var "allied_support_cmd_init_done$"} {op "="} {value 1}}
+					{"set_i" {var "allied_support_cmd_spawn_probe$"} {op "="} {value 0}}
 					{"set_i" {var "allied_support_cmd_stage$"} {op "="} {value 0}}
 					{"set_i" {var "allied_support_cmd_fail$"} {op "="} {value 0}}
 					{"set_i" {var "allied_support_cmd_fow_continue$"} {op "="} {value 0}}

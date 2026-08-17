@@ -1,6 +1,7 @@
 import re
 
 REQUIRED_VARS = [
+    "allied_support_cmd_init_done",
     "allied_support_cmd_enable",
     "allied_support_cmd_spawn_probe",
     "allied_support_cmd_stage",
@@ -126,6 +127,34 @@ def test_birth_has_no_banned_strings(mod_root):
     text = _read(mod_root, BIRTH_INC).lower()
     for banned in BANNED_SUBSTRINGS:
         assert banned not in text, f"banned substring {banned}"
+
+
+def test_init_does_not_depend_on_an_event_id(mod_root):
+    """A Dynamic Conquest campaign picks the map, so init must work on all fourteen.
+
+    Event ids are not raised uniformly across the CWA maps - other mods hook both
+    "init" and "init2" for exactly this reason. An event-dependent init would make
+    birth silently never happen on some maps. The proven form here is a self-latching
+    {expression "1"} plus a done-flag, as used by support_mission/roll.
+    """
+    code = _strip_comments(_read(mod_root, BIRTH_INC))
+    init = code[code.index('{"allied_support_cmd/birth_init"'):]
+    init = init[:init.index('{"allied_support_cmd/birth_dispatch"')]
+    assert '{"1.event"' not in init, "init must not depend on an event id"
+    assert '{id "init"}' not in init, "init must not depend on an event id"
+    assert '{expression "1"}' in init, "expected the self-latching expression form"
+    assert 'allied_support_cmd_init_done$' in init, "expected a done-flag latch"
+
+
+def test_init_latch_is_set_before_anything_else(mod_root):
+    """Without setting the flag first the trigger would re-fire forever."""
+    code = _strip_comments(_read(mod_root, BIRTH_INC))
+    init = code[code.index('{"allied_support_cmd/birth_init"'):]
+    init = init[:init.index('{"allied_support_cmd/birth_dispatch"')]
+    actions = init[init.index('{actions'):]
+    latch = actions.index('{"set_i" {var "allied_support_cmd_init_done$"} {op "="} {value 1}}')
+    stage = actions.index('{"set_i" {var "allied_support_cmd_stage$"}')
+    assert latch < stage, "the done-flag must be set before the rest of the init body"
 
 
 def test_no_run_only_arming_is_committed(mod_root):

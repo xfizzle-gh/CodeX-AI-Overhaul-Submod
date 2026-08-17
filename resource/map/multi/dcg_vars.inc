@@ -133,6 +133,7 @@
 			{"support_e2_lz"}
 			{"support_e2_flag"}
 ; ALLIED SUPPORT COMMAND VARS
+			{"allied_support_cmd_init_done"}
 			{"allied_support_cmd_enable"}
 			{"allied_support_cmd_spawn_probe"}
 			{"allied_support_cmd_stage"}
