@@ -70,7 +70,9 @@ class NativeSupportBirthTests(unittest.TestCase):
         self.assertIn('{action move}', finish)
 
     def test_diagnostic_order_is_claim_prepare_clone_activate_handoff(self):
-        issue = self._define_body("native_support_issue_line", "native_support/init")
+        start = self.birth.index('(define "native_support_issue_line"')
+        end = self.birth.index('{"native_support/init"', start)
+        issue = self.birth[start:end]
         self.assertLess(issue.index('("native_support_claim_current_line")'),
                         issue.index('("native_support_prepare_source")'))
         self.assertLess(issue.index('("native_support_prepare_source")'),
