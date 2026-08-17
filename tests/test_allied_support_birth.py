@@ -7,6 +7,7 @@ REQUIRED_VARS = [
     "allied_support_cmd_fail",
     "allied_support_cmd_fow_continue",
     "allied_support_cmd_gate_auto",
+    "allied_support_cmd_gate_ticks",
     "allied_support_cmd_mate_id",
 ]
 
