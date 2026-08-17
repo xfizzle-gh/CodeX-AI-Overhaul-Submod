@@ -4,7 +4,7 @@
 	{portrait "cmdu"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular aio_cmd_primary"}
+	{tags "soldier aio_morale_trained aio_cmd_senior aio_discipline"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_a_1}

@@ -55,7 +55,7 @@ Do not copy faction-wide aura, player-control seizure, or surrender-delete. Keep
 - Recovery effect bodies are not local.
 - Discipline encouragement radius is 25 m.
 - Fanatical is not break-immune locally.
-- Native `suppressed` is not used in either FE folder.
+- Native `suppressed` was rechecked 2026-08-17 on the exact local trees `3702483522` and `3669912659`, plus West 81 `2897299509` map scripts: **zero** `suppressed` hits. Local FE only has **outgoing** `suppression_fire` (shooter order / `.mod`), not victim native-suppressed inspection. #115's earlier "source scripts can inspect engine-native `suppressed`" is **not reproducible in these installed folders**. The shaken/panic applicator is still missing locally. PR C may use native `suppressed` as an engine input, but that is not copied from these FE files.
 - Projectile/shell impact suppression zones are **not present locally**. Phase H remains research.
 - FE Broken immediately 50/50 retreat vs surrender. Our locked design rejects that: surrender is last.
 
@@ -69,7 +69,8 @@ Not required for PR A. Code:X soldier breeds are complete files, not West 81 inc
 - No existing infantry morale/surrender engine.
 - Recurring movement writers: `conquest.lua` CaptureFlag, four support-wave engines, `ce_lua_triggers.inc`, patrol/hold/zone setup, spawn waypoint graphs.
 - Existing ownership channel: `_lua_mi` / `repairing`.
-- Existing AIO breed overrides on `main`: 79 visual/equipment files. All 79 differ from current Code:X. PR A preserved those files and only added tags.
+- Existing AIO breed overrides on `main`: exactly **79** `.set` files listed in `docs/morale_legacy_visual_allowlist.txt`. Directory prefixes are not an exemption. New files under `mp/usam/` or `mp/nato/新建文件夹/` must still be tags-only vs Code:X.
+- **Proof split:** GitHub CI = repo-local tag invariants only (Code:X freshness test skips). Local unittest against `3261086933` = stale-upstream and path-set equality proof.
 
 ## Marker lock
 

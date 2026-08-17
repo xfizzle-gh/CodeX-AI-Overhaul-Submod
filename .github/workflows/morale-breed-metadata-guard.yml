@@ -6,6 +6,8 @@ on:
       - "resource/set/breed/**"
       - "docs/morale_command_classification.md"
       - "docs/morale_command_classification.tsv"
+      - "docs/morale_command_phase0_audit.md"
+      - "docs/morale_legacy_visual_allowlist.txt"
       - "tests/test_morale_breed_metadata.py"
       - ".github/workflows/morale-breed-metadata-guard.yml"
   push:
@@ -15,6 +17,8 @@ on:
       - "resource/set/breed/**"
       - "docs/morale_command_classification.md"
       - "docs/morale_command_classification.tsv"
+      - "docs/morale_command_phase0_audit.md"
+      - "docs/morale_legacy_visual_allowlist.txt"
       - "tests/test_morale_breed_metadata.py"
       - ".github/workflows/morale-breed-metadata-guard.yml"
 
@@ -33,5 +37,5 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Run morale breed metadata guard
+      - name: Run repo-local morale metadata guard
         run: python -m unittest tests/test_morale_breed_metadata.py

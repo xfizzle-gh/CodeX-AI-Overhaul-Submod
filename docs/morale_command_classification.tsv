@@ -769,7 +769,7 @@ mp/rusa/2022s/rus90_squadlead.set	rusa	2022s	aio_morale_regular	aio_cmd_primary	
 mp/rusa/2022s/rus90_vehicleman.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
 mp/rusa/2022s/rus_antitank.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
 mp/rusa/2022s/rus_atassist.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
-mp/rusa/2022s/rus_cmd.set	rusa	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	cmd_primary_not_senior
+mp/rusa/2022s/rus_cmd.set	rusa	2022s	aio_morale_trained	aio_cmd_senior	0	1	0	0	3		0	officer_unit_table
 mp/rusa/2022s/rus_eng.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
 mp/rusa/2022s/rus_eng_ap.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
 mp/rusa/2022s/rus_eng_at.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
@@ -1153,7 +1153,7 @@ mp/rusa/era2022/rus90_vehicleman.set	rusa	era2022	aio_morale_regular		0	0	0	0	2	
 mp/rusa/era2022/rus90_wepcrew_9m113.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
 mp/rusa/era2022/rus_antitank.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
 mp/rusa/era2022/rus_atassist.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
-mp/rusa/era2022/rus_cmd.set	rusa	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	cmd_primary_not_senior
+mp/rusa/era2022/rus_cmd.set	rusa	era2022	aio_morale_trained	aio_cmd_senior	0	1	0	0	3		0	officer_unit_table
 mp/rusa/era2022/rus_eng.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
 mp/rusa/era2022/rus_eng_ap.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
 mp/rusa/era2022/rus_eng_at.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
@@ -1688,7 +1688,7 @@ mp/ukr/2022s/ukr_antitank.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0
 mp/ukr/2022s/ukr_antitank_vr.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
 mp/ukr/2022s/ukr_atassist.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
 mp/ukr/2022s/ukr_atassist_vr.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
-mp/ukr/2022s/ukr_cmd.set	ukr	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	2		0	cmd_primary_not_senior
+mp/ukr/2022s/ukr_cmd.set	ukr	2022s	aio_morale_trained	aio_cmd_senior	0	1	0	0	2		0	officer_unit_table
 mp/ukr/2022s/ukr_crew.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
 mp/ukr/2022s/ukr_eng.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
 mp/ukr/2022s/ukr_eng_ap.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
@@ -2003,7 +2003,7 @@ mp/ukr/era2022/ukr_antitank.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0
 mp/ukr/era2022/ukr_antitank_vr.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
 mp/ukr/era2022/ukr_atassist.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
 mp/ukr/era2022/ukr_atassist_vr.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
-mp/ukr/era2022/ukr_cmd.set	ukr	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	2		0	cmd_primary_not_senior
+mp/ukr/era2022/ukr_cmd.set	ukr	era2022	aio_morale_trained	aio_cmd_senior	0	1	0	0	2		0	officer_unit_table
 mp/ukr/era2022/ukr_crew.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
 mp/ukr/era2022/ukr_eng.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
 mp/ukr/era2022/ukr_eng_ap.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	

@@ -10,6 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 BREED_ROOT = ROOT / "resource/set/breed"
 REPORT = ROOT / "docs/morale_command_classification.md"
 TSV = ROOT / "docs/morale_command_classification.tsv"
+PHASE0 = ROOT / "docs/morale_command_phase0_audit.md"
+ALLOWLIST = ROOT / "docs/morale_legacy_visual_allowlist.txt"
 DEFAULT_CODEX = Path(r"E:\Steam\steamapps\workshop\content\400750\3261086933\resource\set\breed")
 
 MORALE = {
@@ -41,19 +43,10 @@ RUNTIME_FORBIDDEN = {
 TAGS_RE = re.compile(r'(\{tags\s+")([^"]*)("\})')
 AIO_RE = re.compile(r"^aio_")
 
-LEGACY_VISUAL = {
-    "mp/nato/2022s/lrs_javelin.set",
-    "mp/nato/2022s/lrs_marksman.set",
-    "mp/nato/2022s/lrs_mg.set",
-    "mp/nato/2022s/lrs_rifleman.set",
-    "mp/nato/2022s/lrs_squadlead.set",
-    "mp/nato/2022s/rsta_antitank.set",
-    "mp/nato/2022s/rsta_autorifle.set",
-    "mp/nato/2022s/rsta_rifleman.set",
-    "mp/nato/2022s/rsta_scout.set",
-    "mp/nato/2022s/rsta_squadlead.set",
-    "mp/nato/2022s/rsta_teamlead.set",
-}
+
+def load_legacy_allowlist() -> set[str]:
+    lines = ALLOWLIST.read_text(encoding="utf-8").splitlines()
+    return {line.strip() for line in lines if line.strip() and not line.startswith("#")}
 
 
 def aio_tokens(text: str) -> list[str]:
@@ -86,15 +79,25 @@ class MoraleBreedMetadataTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.sets = sorted(BREED_ROOT.rglob("*.set"))
         cls.rel = {path.relative_to(BREED_ROOT).as_posix(): path for path in cls.sets}
+        cls.legacy = load_legacy_allowlist()
 
     def test_report_and_tsv_exist(self) -> None:
         self.assertTrue(REPORT.is_file())
         self.assertTrue(TSV.is_file())
+        self.assertTrue(PHASE0.is_file())
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("aio_morale_low", text)
         self.assertIn("Static identity only", text)
         self.assertIn("3604287428", text)
         self.assertIn("3702483522", text)
+        self.assertIn("GitHub CI does not prove Code:X freshness", text)
+        self.assertIn("Accepted safe-defaults", text)
+
+    def test_legacy_allowlist_is_exact_not_directory_prefix(self) -> None:
+        self.assertEqual(len(self.legacy), 79)
+        missing = sorted(path for path in self.legacy if path not in self.rel)
+        self.assertEqual(missing, [])
+        self.assertTrue(all("/" in path and path.endswith(".set") for path in self.legacy))
 
     def test_every_overlay_has_exactly_one_morale_profile(self) -> None:
         self.assertEqual(len(self.sets), 2091)
@@ -121,22 +124,23 @@ class MoraleBreedMetadataTests(unittest.TestCase):
             self.assertNotIn(token, blob)
 
     def test_stale_upstream_against_local_codex_when_present(self) -> None:
+        """Local-only Code:X freshness proof. GitHub CI is expected to skip this."""
         codex = Path(os.environ.get("CODEX_BREED_ROOT", DEFAULT_CODEX))
         if not codex.is_dir():
-            self.skipTest("local Code:X breed tree not present")
+            self.skipTest(
+                "GitHub CI / runners without local Code:X: skipped. "
+                "This test is the stale-upstream proof and must be run locally "
+                "against the live Workshop Code:X tree."
+            )
+        source = {path.relative_to(codex).as_posix() for path in codex.rglob("*.set")}
+        self.assertEqual(source, set(self.rel))
         unexpected = []
-        missing = []
         for rel, path in self.rel.items():
-            src = codex / Path(*rel.split("/"))
-            if not src.is_file():
-                missing.append(rel)
-                continue
             aio = path.read_text(encoding="utf-8", errors="replace")
             stripped = strip_aio_tags(aio)
-            upstream = src.read_text(encoding="utf-8", errors="replace")
-            if stripped != upstream and rel not in LEGACY_VISUAL and not rel.startswith("mp/nato/新建文件夹/") and not rel.startswith("mp/usam/"):
+            upstream = (codex / Path(*rel.split("/"))).read_text(encoding="utf-8", errors="replace")
+            if stripped != upstream and rel not in self.legacy:
                 unexpected.append(rel)
-        self.assertEqual(missing, [])
         self.assertEqual(unexpected, [])
 
 

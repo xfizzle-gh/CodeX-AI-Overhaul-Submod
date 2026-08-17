@@ -2,7 +2,9 @@
 
 Static identity only. No Shaken / Panic / Broken / retreat / surrender runtime.
 
-Companion files: `docs/morale_command_phase0_audit.md`, `docs/morale_command_classification.tsv`.
+Companion files: `docs/morale_command_phase0_audit.md`, `docs/morale_command_classification.tsv`, `docs/morale_legacy_visual_allowlist.txt`.
+
+**GitHub CI does not prove Code:X freshness.** The hosted runner skips `test_stale_upstream_against_local_codex_when_present` because Workshop Code:X is not present. CI only proves repo-local tag invariants. Stale-upstream proof is the local run of that test against `3261086933`.
 
 ## Baselines
 
@@ -68,17 +70,17 @@ Stored as breed `{tags}` tokens. Dynamic Shaken/Panic/Broken/link states are **n
 ### Morale
 
 - aio_morale_low: 168
-- aio_morale_regular: 930
-- aio_morale_trained: 799
+- aio_morale_regular: 926
+- aio_morale_trained: 803
 - aio_morale_elite: 194
 
 ### Command
 
 - junior: 98
-- primary: 168
-- senior: 1
+- primary: 164
+- senior: 5
 - independent: 263
-- discipline: 1
+- discipline: 5
 - steadfast: 52
 
 ## Classification rules
@@ -91,23 +93,51 @@ Filename regex was only a candidate filter, not the authority.
 - TRAINED: airborne, marines, guards, assault brigades, professional recon, PMC/assault cadres
 - ELITE: actual SOF evidence (`seals`/`sas`/`specialforces`/`fsb`/`spetsnaz`/`hurmo`, SSO, SAS, MARSOC, Kraken, HUR, 45 VDV)
 - junior: team leaders, assistant SL, `seniorrifleman`, Soviet/PLA `*_senior` deputies
-- primary: squad/section leaders and infantry `*_cmd` with binoculars
-- senior: only the explicit `reg_officer`
+- primary: squad/section leaders
+- senior: explicit `reg_officer` plus infantry `rus_cmd` / `ukr_cmd` (Code:X unit tables tag those breeds `rusa_officer` / `ukr_officer` with `cp -25`)
 - independent: SOF / selected recon-specialist profiles
-- discipline: only `reg_officer`
+- discipline: the same five senior infantry command breeds only
 - steadfast: SAS / SEAL / FSB / 45 VDV only
-- vehicle/tank/crew `*_cmd` get **no** infantry command beacon
+- vehicle/tank/crew `*_cmd` get **no** infantry command beacon, even when the purchase table reuses an officer cost category
+
+## Accepted safe-defaults
+
+These flagged groups stay as classified unless a later owner override names specific paths:
+
+- `seniorrifleman` and Soviet/PLA `*_senior` remain **junior**, not primary/senior
+- `nato_cmd` remains **no infantry command** (crewman / tech icon; `nato_cmd` purchase define is not `nato_officer`)
+- `usmc_officer` is referenced by `inf_nato.set` but **no breed file exists**; not invented
+- vehicle `*_cmd` / `tank_commander` remain non-beacons
+- Storm-Z / Demon / TDF / reservist / `basic` remain LOW
+- Rangers (`rng_`) remain TRAINED + independent, not elite
+- Wagner / Akhmat / Rusich remain TRAINED, not elite
+- FR / MAR remain ELITE from `seals` / formation evidence
+- rus90 2022s vet-5 line remains REGULAR (era2022 copies are vet 0)
+- no MP / commissar / political-officer breeds were found
+- later runtime must not assume Senior/Discipline exist on every map; they exist on 5 breed paths only
+
+## Senior / Discipline lock
+
+| Path | Decision | Evidence |
+|---|---|---|
+| `mp/sov/era1960/reg_officer.set` | senior + discipline | explicit officer breed |
+| `mp/rusa/2022s/rus_cmd.set` | senior + discipline | `("rusa_officer")`, tags include `officer`, `cp -25`, solo HQ squad, cost 2500 |
+| `mp/rusa/era2022/rus_cmd.set` | senior + discipline | same identity, parallel path |
+| `mp/ukr/2022s/ukr_cmd.set` | senior + discipline | `("ukr_officer")`, tags include `officer`, `cp -25` |
+| `mp/ukr/era2022/ukr_cmd.set` | senior + discipline | same identity, parallel path |
+
+NATO 2022 play still has **no** Senior/Discipline breed because `usmc_officer` is a dangling unit-table name. Do not invent it.
 
 ## Ambiguous owner decisions
 
-Flagged rows: **334**
+Historical flagged rows: **334**. The four infantry `rus_cmd` / `ukr_cmd` rows below were **resolved** to senior+discipline from Code:X officer unit-table evidence. Remaining groups are accepted safe-defaults unless overridden.
 
-### cmd_primary_not_senior (4)
+### resolved_infantry_cmd_to_senior (4)
 
-- `mp/rusa/2022s/rus_cmd.set` — aio_morale_regular cmd=aio_cmd_primary ind=False vet=0 skill=3 sf=None
-- `mp/rusa/era2022/rus_cmd.set` — aio_morale_regular cmd=aio_cmd_primary ind=False vet=0 skill=3 sf=None
-- `mp/ukr/2022s/ukr_cmd.set` — aio_morale_regular cmd=aio_cmd_primary ind=False vet=0 skill=2 sf=None
-- `mp/ukr/era2022/ukr_cmd.set` — aio_morale_regular cmd=aio_cmd_primary ind=False vet=0 skill=2 sf=None
+- `mp/rusa/2022s/rus_cmd.set` — aio_morale_trained cmd=aio_cmd_senior discipline=1
+- `mp/rusa/era2022/rus_cmd.set` — aio_morale_trained cmd=aio_cmd_senior discipline=1
+- `mp/ukr/2022s/ukr_cmd.set` — aio_morale_trained cmd=aio_cmd_senior discipline=1
+- `mp/ukr/era2022/ukr_cmd.set` — aio_morale_trained cmd=aio_cmd_senior discipline=1
 
 ### elite_looking_low_vet (8)
 
@@ -125,9 +155,9 @@ Flagged rows: **334**
 - `mp/ukr/era1960/ukr_wepcrew.set` — aio_morale_regular cmd=None ind=False vet=None skill=None sf=None
 - `mp/ukr/era1960/ukr_wepcrew_m2.set` — aio_morale_regular cmd=None ind=False vet=None skill=None sf=None
 
-### officer (1)
+### officer (1 remaining explicit filename)
 
-- `mp/sov/era1960/reg_officer.set` — aio_morale_trained cmd=aio_cmd_senior ind=False vet=5 skill=2 sf=None
+- `mp/sov/era1960/reg_officer.set` — aio_morale_trained cmd=aio_cmd_senior discipline=1 vet=5 skill=2
 
 ### owner_review_formation_demon (28)
 
