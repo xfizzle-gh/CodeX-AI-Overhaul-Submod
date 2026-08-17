@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "rus803"}
+	{portrait "rus80"}
+	{icon "bazooka"}
+	{icon_priority 0}
+	{tags "soldier_bazooka aio_morale_regular"}
+	{nationality rus}
+	{armors
+		{head rus_wagner_helmet_4}
+                {body "kirasa_bron_2"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("at_rank_4")
+				("80dv")
+		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "rshg_2 weapon" 3 filled}
+	
+		{item "rdg2 grenade" 2}
+		{item "ak12_m1" filling "ammo 5x39" 30}
+		{item "ammo 5x39" 180}
+
+		{item "rgd5 grenade" 2}
+		{item "rus_fsb_abody_13"}
+		{item "bandage_rus" 3}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

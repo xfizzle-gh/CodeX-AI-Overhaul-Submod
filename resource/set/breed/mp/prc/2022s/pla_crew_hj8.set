@@ -1,0 +1,30 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "pla21_new_hm"}
+	{portrait "placrew"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality chi}
+	{armors
+		{head pla21_helmet_4_hm}
+		{body pla21_vest_3_hm}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("gaoyuan")
+		("crewman")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "qbz_191" filling "58ammo_basic ammo" 30}
+		{item "58ammo_basic ammo" 210}
+		{item "bandage_chn" 4.5 0.5}
+		{item "gunbag_hj8"}			
+		{in_hands 0} {item "pla21_glass"}
+	}
+}

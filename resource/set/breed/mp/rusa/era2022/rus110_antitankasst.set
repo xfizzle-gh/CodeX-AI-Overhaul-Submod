@@ -1,0 +1,40 @@
+{breed
+	{behaviour soldier}
+	{skin "rus110"}
+	{portrait "rus110"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality rus}
+	{armors
+		{head rus_helmet_tor1}
+                {body "rus_fsb_abody_3_5"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("at_rank_4")
+		("110dv")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+
+		{item "ak74m" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rus_fsb_abody_13"}
+		{item "rpg7l vr" 5}
+ 
+		{item "rus_fsb_abody_12_1"}
+		{item "rgd5 grenade" 2}
+				{item "rdg2 grenade" 2}		
+		{item "RPG26 weapon weapon" filled}
+		{item "RShG_2 weapon" filled}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

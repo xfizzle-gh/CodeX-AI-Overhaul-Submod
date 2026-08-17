@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_priv_ca_09"}
+	{portrait "25asb"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained aio_cmd_primary"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_c_mg2}
+		{head ukr_rdk_opscore_04_blue}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")	 
+		("assault")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 3.5 0.5}
+		{item "m4a1_block_ii_v3" filled}
+		{item "m16a2 ammo" 210}
+		{item "ukr_backpack_01"}
+        {item "shovel_csa"}
+		{item "fort600" filled}
+		{item "benelli_m4" filling "ammo shotgun" 7}
+		{item "ammo shotgun" 21}		
+		{item "40mm_grenade ammo" 18}
+		{in_hands 3}
+	}
+}

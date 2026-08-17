@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "nato"}
+	{portrait nrf}
+	{icon autorifle}
+	{icon_priority 2}
+	{tags "soldier aio_morale_regular aio_cmd_primary"}
+	{nationality nato}
+	{armors
+		{head nato_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+("ildu")
+		("binocular_vision")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+                {item "g36ka4_hg" filled}
+		{item "g36_ammo ammo" 240}
+		{item "gl06" filled}
+		{item "40mm_grenade he ammo" 8}
+		{item "at4cs_v1 weapon" filled}
+		{item "m26 grenade" 1.25 0.5}
+		{item "anm8_smoke grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "ukr_backpack_01"}
+		{item "ukr_ua_body_b_1"}
+                {item "shovel_csa"}
+		{in_hands 0}
+	}
+}

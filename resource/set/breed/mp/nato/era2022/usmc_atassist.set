@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier_at aio_morale_trained"}
+	{behaviour soldier}
+	{skin "usmc_woodland_1"}
+	{portrait "usmc"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality usa}
+	{armors
+		{head usmc_woodland_helmet_2}
+		{body usmc_desert_armor_2}
+    }
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_usmce")
+		("at_rank_3")
+		("marine")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m27_iar_ag" filled}
+		{item "m16a2 ammo" 220}
+		{item "shovel_csa"}
+
+		{item "smaw cm ammo" 3}
+		{item "smaw fg ammo"}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+
+		{item "bandage_usa" 4.5 0.5}
+		{item "usmc_woodland_backpack_1"}
+		{item "usmc_desert_belt_3"}	
+		
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "vostok1"}
+	{portrait "vostok"}
+	{icon "bazooka"}
+	{icon_priority 0}
+	{tags "soldier_bazooka aio_morale_low"}
+	{nationality rus}
+	{armors
+		{head helmet_sh68}
+                {body "ww3_rus_armor_13"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("at_rank_2")
+		("vostok")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "rpg7 weapon" filled}
+		{item "rpg7 ammo" 5}
+
+
+		{item "akms" filling "ammo ak47 steel" 30}
+		{item "ammo ak47 steel" 90}
+
+		{item "rgd5 grenade" 1}
+
+		{item "bandage_rus" 3}
+		{item "knife_rus"}
+
+		{in_hands 0}
+	}
+}

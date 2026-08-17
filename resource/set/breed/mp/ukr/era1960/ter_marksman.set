@@ -1,0 +1,33 @@
+{breed
+    {tags "soldier aio_morale_low"}
+	{behaviour soldier}
+	{skin "ukr_povyaz_tro_1"}
+	{portrait "vsu_svo_6"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality ukr}
+	{armors
+		{head ukr_ua_helmet_a_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("sniper_vision")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "svd" filling "ammo svd" 10}
+		{item "ammo svd" 60}
+		{item "ukr_bron_4"}
+		{item "rgd5 grenade" 0.15 0.5}
+		{item "rgd5 grenade" 1.4 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 2.5 0.5}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

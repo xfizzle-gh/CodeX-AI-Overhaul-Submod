@@ -1,0 +1,38 @@
+{breed
+	{tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "ukr_army_priv_ca_1"}
+	{portrait "vsu_svo_1"}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_a_1}
+		{head ukr_helmet_03}
+	}
+	{perks
+		(include "ability.inc")
+		;("skill_rank_1")
+		("skilled_manpad_operator")
+		("guncrew")
+		("binocular_vision")
+		("recon")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "stinger weapon" filling "fim-92a_ammo ammo" 1}
+		{item "fim-92a_ammo ammo" 4}		
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+
+		{item "bandage_usa" 3.5 0.5}
+
+		
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "rus_Serbian_gr_07_2"}
+	{portrait "serb"}
+	{icon "mg"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head serb_opscore_helmet_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_mg")
+		("mg_rank_3")
+		("paratrooper")
+		("health_rank_3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "cali_w_pecheneg_1" filling "pk_box ammo" 100}
+		{item "pk_box ammo" 400}
+		{item "rus_6b45_body_03"}
+		{item "rus_wagner_glasses_2"}
+		{item "rgd5 grenade" 4}
+		{item "rdg2 grenade" 2}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

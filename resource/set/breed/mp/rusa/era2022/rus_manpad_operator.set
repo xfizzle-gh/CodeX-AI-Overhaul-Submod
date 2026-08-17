@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_s_vkpo_new_c_povyaz_01"}
+	{portrait fr_svo_2}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality rus}
+	{armors
+		{body rus_6b45_body_02}
+		{head rus_fsb_helmet_2}
+	}
+	{perks
+		(include "ability.inc")
+		;("skill_rank_3")
+		("skilled_manpad_operator")
+		("recon")
+		("skilled_gun")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+
+		{item "igla weapon" filling "igla_S ammo" 1}
+		{item "igla_S ammo" 3}
+
+		{item "rgd5 grenade" 1.4 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

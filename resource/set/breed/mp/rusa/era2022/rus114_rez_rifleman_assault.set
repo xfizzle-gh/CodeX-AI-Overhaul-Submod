@@ -1,0 +1,33 @@
+{breed
+	{behaviour soldier}
+	{skin "vostok3"}
+	{portrait "vostok_assault"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{tags "soldier aio_morale_low"}
+	{nationality rus}
+	{armors
+		{head sh68_1}
+                {body "6b_23_rus"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("vostok")
+		("assault")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "ak74u" filled}
+		{item "ammo 5x39" 120}
+		{item "sidr_shturm_01"}
+		{item "rgd5 grenade" 1}
+{item "rus_fsb_abody_12"}
+		{item "bandage_rus" 3.5 0.5}
+
+		{in_hands 0}
+	}
+}

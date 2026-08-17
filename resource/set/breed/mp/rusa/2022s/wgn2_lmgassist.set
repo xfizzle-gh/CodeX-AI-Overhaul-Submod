@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_wagner_pmc_1"}
+	{portrait sov_wgn4}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality rus}
+	{armors
+		{head rus_wagner_helmet_6}
+	}
+	{perks
+		(include "ability.inc")
+		("health_rank_4")
+		("skill_rank_sf_4")
+		("guards")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_3")
+	}
+	{inventory
+		{item "ak12_m1_holo" filling "ammo 5x39" 30}
+		{item "5x39 ammo" 240}
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdg2 grenade"}
+		{item "bandage_rus" 3}
+		{item "rus_wagner_body_2"}
+		{item "pk_box ammo" 200}
+		{item "rus_fsb_abody_13"}
+                {item "shovel_rus"}
+		{item "drone_recon_ammo" 1}
+		{item "drone_fpv_ammo" filled}		
+		{in_hands 0}
+	}
+}

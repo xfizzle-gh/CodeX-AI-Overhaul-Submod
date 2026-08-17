@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_vdv_gr_vor"}
+	{portrait vdv83}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality rus}
+	{armors
+		{head tor_helmet_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("guards")
+		("health_rank_4")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+
+		{item "am17" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rgd5 grenade"}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdg2 grenade"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "rus_sso_body_4"}
+		{item "shmel weapon" 1 filled}
+		{item "rus_fsb_abody_13"}
+        {item "shovel_rus"}
+		{item "rus_wagner_mask_2"}	
+		{in_hands 0}
+	}
+}

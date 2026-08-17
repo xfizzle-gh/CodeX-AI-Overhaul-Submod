@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "army"}
+	{portrait "vsu_svo_2"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_a_2}
+		{head vsu_helmet_ach_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("at_rank_2")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak74" filling "ammo 5x39" 30}
+		{item "ammo 5x39" 150}
+		{item "m72_law" 2 filled}
+		{item "rpg7l vr ammo" 3}
+		{item "ukr_backpack_01"}
+		{in_hands 4}
+	}
+}

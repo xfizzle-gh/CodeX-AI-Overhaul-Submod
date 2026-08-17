@@ -1,0 +1,32 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_s_vkpo_vdv"}
+	{portrait vdv_crew}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality rus}
+	{armors
+		{head rus_helmet_v05}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("crewman")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 150}
+
+		{item "rdg2 grenade" 0.25 0.5}
+
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{in_hands 0}
+	}
+}

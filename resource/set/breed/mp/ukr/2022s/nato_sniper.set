@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_povyaz_6"}
+	{portrait vsu_svo_1}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier aio_morale_regular"}
+	{nationality usa}
+	{armors
+		{head ukr_helmet_03}
+		{body "ukr_ua_body_a_2"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("sniper_vision")
+		("stealth")
+		("ildu")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "svd" filled}
+		{item "svd ammo" 55}
+        {item "shovel_csa"}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 3.5 0.5}
+ 
+                {item "ukr_backpack_01"}
+
+		{in_hands 0}
+	}
+}

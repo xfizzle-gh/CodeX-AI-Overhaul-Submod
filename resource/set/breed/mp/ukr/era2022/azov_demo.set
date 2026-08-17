@@ -1,0 +1,35 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "ukr_povyaz_6"}
+	{portrait "vsu_svo_7"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality ukr}
+	{armors
+		{head ukr_helmet_08}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("azov")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "uar15_v1" filled}
+		{item "m16a2 ammo" 210}
+		{item "ukr_ua_body_b_1" 1}
+		{item "m32_mgl_v1" filled}
+		{item "40mm_grenade ammo" 18}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+        {item "shovel_csa"}
+		{item "bandage_rus" 2}
+
+		{in_hands 0}
+	}
+}

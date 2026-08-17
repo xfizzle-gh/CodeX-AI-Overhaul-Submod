@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "usa_ocp6"}
+	{portrait "82ab"}
+	{icon "mg"}
+	{icon_priority 0}
+	{nationality usa_paratrooper}
+	{armors
+		{head wendy_ex_3}
+		
+		{body "jpc_1"}				
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_mg")
+		("mg_rank_4")
+		("paratrooper")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m250" filled}
+		{item "m250_ammo ammo" 300}
+		{item "us_backpack_2"}		
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+
+		{in_hands 0}
+	}
+}

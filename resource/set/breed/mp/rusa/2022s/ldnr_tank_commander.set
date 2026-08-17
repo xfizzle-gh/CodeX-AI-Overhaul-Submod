@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "dnr_regular_gr_02"}
+	{portrait "ussr_tankman"}
+	{field_icon "rus_tankman"}
+	{icon "tech"}
+	{icon_priority 0}
+	{tags "crew aio_morale_low"}
+	{nationality rus}
+	{armors
+		{head helmet_6b48}
+                {body rus_fsb_abody_1_1}
+	}
+	{perks
+		(include "ability.inc")
+		("tankman")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "aks74u" filling "ammo 545 ak74_mag 30mag" 30}
+		{item "ammo 545 ak74_mag 30mag_v2" 60}
+
+		{item "pm" filling "ammo 918 pm_ammo mag8" 8}
+		{item "ammo 918 pm_ammo mag8" 16}
+
+		{item "first_aid_kit_army" 2.5 0.5}
+		{item "binocular_bpos_10x42"}
+
+		{in_hands 0}
+	}
+}

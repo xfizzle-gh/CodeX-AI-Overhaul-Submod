@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier_at aio_morale_trained aio_cmd_independent"}
+	{behaviour soldier}
+	{skin "ranger6"}
+	{portrait "rng_a"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality usa}
+	{armors
+		{head ranger_helmet_2}
+		{body ranger_vest_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("at_rank_4")
+		("skilled_manpad_operator")		
+		("ranger")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "urgi_m4" filled}
+		{item "m16a2 ammo" 210}
+		{item "shovel_csa"}
+		{item "javelin" filled}
+		{item "jav_rock ammo" 3}
+		{item "dm51 grenade" 2}
+		{item "m18 grenade" 2}
+		 	
+		{item "bandage_usa" 4.5 0.5}
+ 		{item "fast_backpack"}	 
+		
+		{in_hands 0}
+	}
+}

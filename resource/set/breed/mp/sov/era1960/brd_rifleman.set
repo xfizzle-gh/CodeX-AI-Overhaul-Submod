@@ -1,0 +1,30 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_longsleeve_mvd"}
+	{portrait "sov_border"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality rus_unique}
+	{armors
+		{head rus_afg_sh68}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("border")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "sks" filled}
+		{item "sks ammo" 100}
+
+		{item "bandage_rus" 2.5 0.5}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

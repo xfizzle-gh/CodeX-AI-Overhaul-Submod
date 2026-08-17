@@ -1,0 +1,33 @@
+{breed
+	{tags "aio_morale_trained"}
+	{behaviour soldier}
+	{skin "kor3"}
+	{portrait "kor_med"}
+	{icon autorifle}
+	{icon_priority 2}
+	{nationality kor}
+	{armors
+		{body rus_6b45_body_05}
+		{head rus_helmet_6b47_5}
+	}
+	{perks
+		(include "ability.inc")
+		 	("skill_rank_kor")
+		("medic")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak12_m1" filled}
+		{item "rdg2 grenade" 4}
+		{item "bandage_rus" 20}
+		{item "shovel_rus"}
+		{item "rus_fsb_abody_12"}
+
+		{item "5x39 ammo" 240}
+		{in_hands 0}
+	}
+}

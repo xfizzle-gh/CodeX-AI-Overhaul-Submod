@@ -1,0 +1,31 @@
+{breed
+    {tags "soldier aio_morale_low"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_shortsleeve"}
+	{portrait "sov_basic"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality rus_guards}
+	{armors
+		{head rus_afg_sh68}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak47" filling "ak47 ammo" 30}
+		{item "ak47 ammo" 150}
+
+		{item "molotov_cocktail grenade" 0.15 0.5}
+
+		{item "bandage_rus" 2.5 0.5}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

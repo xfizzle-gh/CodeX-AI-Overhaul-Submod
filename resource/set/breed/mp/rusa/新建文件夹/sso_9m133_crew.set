@@ -1,0 +1,26 @@
+{breed
+    {tags "soldier aio_morale_elite"}
+	{behaviour soldier}
+	{skin "2123"}
+	{portrait "vdv83_ammo"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("guards")
+		("guncrew")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "as_val_v1" filling "9x39 ammo" 20}
+		{item "9x39 ammo" 140}
+		{in_hands 0}
+	}
+}

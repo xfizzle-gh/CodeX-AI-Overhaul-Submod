@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_longsleeve"}
+	{portrait "sov_guards"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus_guards}
+	{armors
+		{head rus_afg_sh68}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("at_rank_4")
+		("redbanner")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_4")
+	}
+	{inventory
+		{item "aks74" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		
+		{item "pg-29v rpg29 ammo" 3}
+		{item "tbg-29 rpg29 ammo" 3}
+		
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdgm_smoke grenade" 1.25 0.5}
+		{item "shovel_rus"}
+		{item "bandage_rus" 4.5 0.5}
+		{item "6b2" 0.75 0.5}
+
+		{in_hands 0}
+	}
+}

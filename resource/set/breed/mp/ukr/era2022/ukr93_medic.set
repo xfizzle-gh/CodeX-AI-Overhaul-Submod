@@ -1,0 +1,33 @@
+{breed
+	{behaviour soldier}
+	{skin "3rd3"}
+	{portrait "med_ukr"}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality ukr}
+	{armors
+		{body ukr_bron_1}
+		{head rus_fsb_hat_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("93th")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "rdg2 grenade" 4}
+		{item "bandage_rus" 10}
+		{item "tent_kit" 2}
+		{item "ak74u" filled}
+		{item "5x39 ammo" 210}
+        {item "shovel_csa"}
+		{item "pais_bron_vsu"}
+		{in_hands 3}
+	}
+}

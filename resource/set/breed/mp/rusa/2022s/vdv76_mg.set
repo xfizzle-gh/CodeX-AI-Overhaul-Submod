@@ -1,0 +1,34 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "rus_vdv_gr_vor_20_scorp"}
+	{portrait "fr_svo_3"}
+	{icon "mg"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_wagner_capn_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_mg")
+		("mg_rank_3")
+		("paratroopere")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rpl_20" filling "rpk16_ammo ammo" 100}
+		{item "rpk16_ammo ammo" 400}
+		{item "kirasa_bron_6"}
+		{item "rgd5 grenade" 2.25 0.5}
+		{item "rdg2 grenade" 2.25 0.5}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

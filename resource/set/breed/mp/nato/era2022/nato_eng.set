@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "nato"}
+	{portrait nrf}
+	{icon tech}
+	{icon_priority 2}
+	{tags "soldier aio_morale_regular"}
+	{nationality nato}
+	{armors
+		{head nato_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+        ("ildu")
+                ("engineer")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+        {item "m4a1_h" filled}
+		{item "m16a2 ammo" 240}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 3.5 0.5}
+		 
+                {item "ukr_backpack_01"}
+		{item "ukr_ua_body_a_2"}
+                {item "pickaxe"}
+                {item "wirecutters"}
+                {item "mine_detector"}
+                {item "shovel_csa"}
+		{in_hands 0}
+	}
+}

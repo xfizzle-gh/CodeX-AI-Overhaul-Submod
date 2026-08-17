@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "ukr_army_3th_4"}
+	{portrait "azov3_h"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality ukr}
+	{armors
+		{head vsu_helmet_ach_4}
+		{body ukr_ua_body_au_03}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("stealth")
+		 
+		("skilled_manpad_operator")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "huskyak74zv2" filling "5X39 ammo" 30}
+		{item "5X39 ammo" 210}
+		{item "m32_mgl_v1" filled}
+		{item "40mm_grenade ammo" 18}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+        {item "shovel_csa"}
+		{item "bandage_rus" 2}
+		{item "zarya" 2}	
+		{in_hands 0}
+	}
+}

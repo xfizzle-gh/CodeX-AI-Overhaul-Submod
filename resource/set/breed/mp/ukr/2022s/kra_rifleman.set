@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_sbu_1"}
+	{portrait "kra_ammo"}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier aio_morale_elite aio_cmd_independent"}
+	{nationality ukr}
+	{armors
+        {body ukr_ua_body_kra_02}
+		{head ukr_ua_opscore_01}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("specialforces")	 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "hk433" filled}
+		{item "ammo m16a2" 240}
+         {item "m72a7law weapon" 2 filled}	
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+ 
+		{item "backpack_eagleaiii"}
+		{item "pais_bron_vsu"}
+                {item "shovel_csa"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,39 @@
+{breed
+	{tags "aio_morale_regular"}
+	{behaviour soldier}
+	{skin "rus_s_vkpo_new_c_povyaz_01"}
+	{portrait fr_svo_2}
+	{icon bazooka}
+	{icon_priority 2}
+	{nationality rus}
+	{armors
+		{head rus_helmet_v4}
+		{body "6b43_body_armor"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+                ("engineer")
+         ("at_rank_3")	
+		("assault")				 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+	
+		{item "ak12_m1" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rgd5 grenade" 6}
+		{item "rdg2 grenade" 3}
+		{item "bandage_rus" 3}
+        {item "pickaxe"}
+		{item "zarya" 2}
+        {item "wirecutters"}
+        {item "mine_detector"}
+		{item "shmel weapon" 2 filled}			
+		{item "shovel_rus"}
+		{in_hands 0}
+	}
+}

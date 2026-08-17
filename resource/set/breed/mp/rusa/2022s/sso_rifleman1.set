@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier aio_morale_elite aio_cmd_independent"}
+	{behaviour soldier}
+	{skin "rus_vdv_gr_vor_20_scorp"}
+	{portrait "vdv83"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{body rus_nazgul_03}		
+		{head tor_helmet_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("spetsnaz_sso")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "amb_17_1p87" filling "9x39 ammo" 20}
+		{item "9x39 ammo" 140}
+		{item "gm94" filled}	
+		{item "43mm he ammo" 12}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "RPG26 weapon weapon" filled}
+		{item "RShG_2 weapon" filled}
+		{item "bandage_rus" 3.5 0.5}
+
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

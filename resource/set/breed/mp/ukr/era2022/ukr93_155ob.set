@@ -1,0 +1,32 @@
+{breed
+	{behaviour soldier}
+	{skin "3rd3"}
+	{portrait "rec_ukr"}
+	{icon sniper}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_b_1}
+		{head ukr_cah95}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak74" filled}
+		{item "5x39 ammo" 210}
+		{item "laser_designator" filling "flare_usa artillery_155" 1}
+		{item "flare_usa artillery_155"}	
+		{in_hands 4}
+	}
+}

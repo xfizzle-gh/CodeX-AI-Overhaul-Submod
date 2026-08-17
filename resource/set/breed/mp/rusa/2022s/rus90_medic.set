@@ -1,0 +1,32 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_s_vkpo_new_c_povyaz_02"}
+	{portrait med_rus}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality rus}
+	{armors
+		{body "rus_6b45_body_05"}
+		{head rus_helmet_6b47_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("medic")
+		("21th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "rdg2 grenade" 4}
+		{item "bandage_rus" 10}
+		{item "tent_kit" 2}
+		{item "ak74" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+                {item "shovel_rus"}
+		{in_hands 3}
+	}
+}

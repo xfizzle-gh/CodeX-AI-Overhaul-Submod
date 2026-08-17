@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "usa_ocp5"}
+	{portrait "1ad"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ach_1}
+		{body "msv_2"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("cavalry")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m4a1_v3b" filled}
+		{item "m16a2 ammo" 180}
+		{item "m320gl" filled}
+		{item "40mm_grenade he ammo" 10}
+		{item "40mm_grenade heat ammo" 2}
+		{item "us_backpack_1"}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		
+
+		{in_hands 0}
+	}
+}

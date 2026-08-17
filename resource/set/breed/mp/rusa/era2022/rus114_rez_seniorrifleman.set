@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "vostok2"}
+	{portrait "vostok"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{tags "soldier aio_morale_low aio_cmd_junior"}
+	{nationality rus}
+	{armors
+		{head rus_fsb_helmet_2}
+                {body "ww3_rus_armor_11"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("at_rank_2")		
+		("vostok")
+		("medic")		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "ak74" filling "ammo 5x39" 30}
+		{item "ammo 5x39" 120}
+
+		{item "rgd5 grenade" 1}
+		{item "aks74gp25" filling "vog25 he" 1}
+		{item "vog25 he ammo" 6}		
+		{item "bandage_rus" 3.5 0.5}
+		{item "rpg22" 2 filled }
+		{in_hands 0}
+	}
+}

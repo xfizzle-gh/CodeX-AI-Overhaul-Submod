@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "2rd1"}
+	{portrait rus150}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular aio_cmd_junior"}
+	{nationality rus}
+	{armors
+		{body "rus_nazgul_03"}
+		{head rus_helmet_v07}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_3")
+		("at_rank_2")		 
+		("150th")
+		("medic")			
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+			{item "ak12_m1_holo" filled}
+		{item "weapon rpg26 " 2 filled}		
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 3.5 0.5}
+
+		{item "5x39 ammo" 210}
+        {item "shovel_rus"}
+		{item "aks74gp25" filled}
+		{item "vog25 he ammo" 12}
+        {item "rus_fsb_abody_13"}	
+		{in_hands 0}
+	}
+}

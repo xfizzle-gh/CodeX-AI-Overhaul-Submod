@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "pzgd_1"}
+	{portrait "jager"}
+	{icon "mg"}
+	{icon_priority 2}
+	{nationality ger}
+	{armors
+		{head viper_p2_2}
+		{body ger_vest_4}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_mg")
+		("jager")
+        ("mg_rank_4")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "mg4" filling "mg4_ammo" 100}
+		{item "mg4_ammo" 400}
+		 		
+		{item "dm51 grenade" 2}
+		{item "m18 grenade" 2}
+
+		{item "bandage_usa" 4.5 0.5}
+		 
+		{item "backpack_90"}
+         {item "shovel_csa"}
+
+		{in_hands 0}
+	}
+}

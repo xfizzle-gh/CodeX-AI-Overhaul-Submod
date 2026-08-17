@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_s_vkpo_new_c_povyaz_01"}
+	{portrait fr_svo_7}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_low"}
+	{nationality rus}
+	{armors
+		{body "6b_23_rus_vog"}
+		{head rus_helmet_kolpak}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("at_rank_1")
+		("tdf")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "mosin" filled}
+		{item "rifle_rus clip ammo" 60 5}
+		{item "rpg7 ammo" 3}
+		{item "molotov grenade" 1.25 0.5}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "rpg22 weapon" 2 filled}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,34 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "pla21_new_hm"}
+	{portrait "pla139"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality chi}
+	{armors
+		{head pla21_helmet_2_hm}
+				{body "pla21_vest_5_hm"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("gaoyuan")
+		("sniper_vision")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "qbu10" filling "ammo qbu10_ammo" 5}
+		{item "ammo qbu10_ammo" 40}
+		{item "pla21_backpacks_hm"}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+
+{item "pla21_glass"}	
+		{item "t86 grenade" 2}			
+		{in_hands 0} 
+	}
+}

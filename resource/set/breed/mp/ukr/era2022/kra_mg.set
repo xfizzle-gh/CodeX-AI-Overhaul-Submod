@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_sbu_1"}
+	{portrait vsu_svo_5}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier aio_morale_elite aio_cmd_independent"}
+	{nationality ukr}
+	{armors
+		{head rus_fsb_hat_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("specialforces")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+ 		{item "drone_fpv_ammo" filled}
+		{item "m249_saw_h" filling "m249_ammo" 100}
+		{item "m249_ammo ammo" 400}
+		{item "ukr_ua_body_kra_03"}
+		{item "pais_bron_vsu"}
+                {item "shovel_csa"}
+		{in_hands 4}
+	}
+}

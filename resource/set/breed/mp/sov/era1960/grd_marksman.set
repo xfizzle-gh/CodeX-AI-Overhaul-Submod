@@ -1,0 +1,35 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_berezka"}
+	{portrait "sov_guards"}
+	{icon "sniper"}
+	{icon_priority 0}
+	{nationality rus_guards}
+	{armors
+		{head rus_afg_hat}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("sniper_vision")
+		("guards")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_3")
+	}
+	{inventory
+		{item "svd" filling "svd ammo" 10}
+		{item "svd ammo" 110}
+
+		{item "rgd5 grenade" 2}
+		{item "rdgm_smoke grenade" 0.25 0.5}
+
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "rus_afg_sh68" 1}
+		{item "6b2" 0.75 0.5}
+		{in_hands 0}
+	}
+}

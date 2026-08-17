@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "vostok2"}
+	{portrait "vostok"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality rus}
+	{armors
+		{head sh68_1}
+                {body "ww3_rus_armor_12"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2_mg")
+        ("mg_rank_2")		
+		("vostok")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filled}
+		{item "ammo 5x39" 120}
+		{item "sidr_shturm_01"}
+		{item "rgd5 grenade" 1.25 0.5}
+
+		{item "pk_box ammo" 400}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "dnr_sparta_mg"}
+	{portrait "spd"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality rus}
+	{armors
+		{head rus_fsb_helmet_2}
+        {body rusf_vs_smerch_body_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2_mg")
+        ("mg_rank_2")	
+("spd")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "sks" filled}
+		{item "sks ammo" 100}
+		{item "rus_fsb_abody_13"}
+		{item "rgd5 grenade" 1.25 0.5}
+
+		{item "pk_box ammo" 400}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

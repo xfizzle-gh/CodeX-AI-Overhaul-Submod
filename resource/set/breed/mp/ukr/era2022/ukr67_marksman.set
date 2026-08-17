@@ -1,0 +1,33 @@
+{breed
+	{behaviour soldier}
+	{skin "53th"}
+	{portrait "53th"}
+	{icon sniper}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality ukr}
+	{armors
+		{body cpc_ua_vest}
+		{head vsu_capn}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("53th")
+		("sniper_vision")
+		("stealth")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "svdk_v2" filled}
+		{item "svd ammo" 100}
+		{in_hands 4}
+	}
+}

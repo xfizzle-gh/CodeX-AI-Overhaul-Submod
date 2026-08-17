@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_s_vkpo_new_c_povyaz_01"}
+	{portrait fr_svo_2}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular aio_cmd_primary"}
+	{nationality rus}
+	{armors
+		{body "rus_6b45_body_02"}
+		{head rus_fsb_helmet_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 3.5 0.5}
+		{item "ak74m_pso" filled}
+		{item "5x39 ammo" 210}
+                {item "shovel_rus"}
+		{item "aks74gp25" filled}
+		{item "vog25 he ammo" 12}
+		{item "bekas-12m_v1" filled}
+		{item "ammo shotguns" 18}		
+		{in_hands 3}
+	}
+}

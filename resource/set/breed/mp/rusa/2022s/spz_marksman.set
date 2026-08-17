@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_sso_gru_1"}
+	{portrait sov_spz}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier aio_morale_elite aio_cmd_independent"}
+	{nationality rus}
+	{armors
+		{head rus_opscore_helmet_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("spetsnaz_sso")
+		("sniper_vision")
+		("stealth")
+                 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "asvk-m" filled}
+		{item "ammo asvk-m_ammo" 20}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "sso_bacpack"}
+		{item "rus_sso_body_1"}
+		{item "shovel_rus"}	
+		{in_hands 0}
+	}
+}

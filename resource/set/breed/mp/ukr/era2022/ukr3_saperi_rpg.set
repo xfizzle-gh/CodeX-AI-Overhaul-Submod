@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "25TH1"}
+	{portrait "3RD"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality ukr}
+	{armors		
+		{body ukr_ua_body_st_04}
+		{head ukr_ua_helmet_a_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("72th")
+				("engineer")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak74" filled}
+		{item "5x39 ammo" 210}
+                {item "pickaxe"}
+                {item "wirecutters"}
+                {item "mine_detector"}
+		{item "backpack_90"}
+		{item "rpg7vs weapon" filled}
+		{item "rpg7l ammo" 5}		
+		{in_hands 4}
+	}
+}

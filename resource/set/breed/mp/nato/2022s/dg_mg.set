@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "gb_rmc"}
+	{portrait "dg"}
+	{icon "mg"}
+	{icon_priority 2}
+	{nationality eng_para}
+	{armors
+		{head rmc_helmet_2}
+		{body gb_vest_4}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_mg")	
+		("cavalry")
+        ("mg_rank_4")			
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "fn_mag_v1" filling "m240_box" 50}
+		{item "m240_box ammo" 400}
+        {item "gb_backpack_1"}		
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+
+		{item "bandage_usa" 4.5 0.5}
+		 
+                {item "shovel_csa"}
+
+		{in_hands 0}
+	}
+}

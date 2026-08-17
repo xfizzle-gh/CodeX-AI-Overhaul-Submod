@@ -1,0 +1,34 @@
+{breed
+    {tags "soldier aio_morale_elite aio_cmd_independent"}
+	{behaviour soldier}
+	{skin "rus_rusich_gr_2_4"}
+	{portrait "ruisch"}
+	{icon "mg"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_wagner_helmet_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5_mg")
+		("mg_rank_4")
+		("spetsnaz")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "cali_w_pecheneg_2" filling "pk_box ammo" 100}
+		{item "pk_box ammo" 400}
+		{item "rus_fsb_abody_6"}
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "drone_fpv_ammo" filled}	
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "zarya" 2}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_s_vkpo_new_c_povyaz_01"}
+	{portrait fr_svo_2}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality rus}
+	{armors
+		{body rus_6b45_body_04}
+		{head rus_helmet_v07}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+                ("engineer")
+		("health_rank_2")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak74m_t" filled}
+		{item "5x39 ammo" 210}
+                {item "pickaxe"}
+                {item "wirecutters"}
+                {item "mine_detector"}
+		{item "tmd_b mine" 8.5 0.5}
+		{in_hands 4}
+	}
+}

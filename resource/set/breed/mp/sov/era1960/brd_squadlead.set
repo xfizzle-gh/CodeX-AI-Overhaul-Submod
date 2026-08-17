@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier aio_morale_regular aio_cmd_primary"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_longsleeve_mvd"}
+	{portrait "sov_border_nco"}
+	{icon "autorifle"}
+	{icon_priority 3}
+	{nationality rus_unique}
+	{armors
+		{head rus_afg_ushanka}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("border")
+		("binocular_vision")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak47" filling "ak47 ammo" 30}
+		{item "ak47 ammo" 180}
+
+		{item "rgd5 grenade" 0.50 0.5}
+		{item "rdgm_smoke grenade" 1.15 0.5}
+		{item "rkg3 grenade" 0.15 0.5}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "rus_afg_sh68" 1}
+		{item "binocular"}
+
+		{in_hands 0}
+	}
+}

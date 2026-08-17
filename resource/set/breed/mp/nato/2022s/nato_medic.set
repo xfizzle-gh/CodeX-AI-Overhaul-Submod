@@ -1,0 +1,33 @@
+{breed
+	{behaviour soldier}
+	{skin "nrf_1"}
+	{portrait nrf_med}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier aio_morale_regular"}
+	{nationality nato}
+	{armors
+		{head us_highcut_2}
+		{body "nrf_vest_1"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("ildu")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "mars_l" filled}	
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 20}
+		{item "m16a2 ammo" 240}
+		{item "tent_kit" 2}
+        {item "shovel_csa"}
+		{in_hands 0}
+	}
+}

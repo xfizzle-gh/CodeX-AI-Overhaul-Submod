@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier"}
+    {tags "soldier aio_morale_trained aio_cmd_independent"}
 	{behaviour soldier}
 	{skin "usa_ocp4"}
 	{portrait "acav"}

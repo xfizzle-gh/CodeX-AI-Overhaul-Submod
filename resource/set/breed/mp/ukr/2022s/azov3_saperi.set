@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier_at aio_morale_trained"}
+	{behaviour soldier}
+	{skin "ukr_army_3th_2"}
+	{portrait "azov3"}
+	{icon "bazooka"}
+	{icon_priority 2}
+	{nationality ukr}
+	{armors
+		{head "ukr_helmet_mw_02"}
+                {body ukr_ua_body_c_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_4")
+		("azov3")
+                ("engineer")		
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "uar15_v1" filling "m16a2 ammo" 30}
+		{item "m16a2 ammo" 210}
+		{item "rdg2 grenade" 2}
+		{item "rgd5 grenade" 2 0.5}
+		{item "bandage_rus" 2}
+        {item "shovel_csa"}			
+		{item "pais_bron_vsu" 1}
+                {item "pickaxe"}
+                {item "wirecutters"}
+                {item "mine_detector"}	
+                {item "c4pn" 2}						
+		{in_hands 0}
+	}
+}

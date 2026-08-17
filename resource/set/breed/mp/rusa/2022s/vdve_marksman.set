@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_vdv_gr_vor_12"}
+	{portrait fr_svo_3}
+	{icon sniper}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality rus}
+	{armors
+		{head rus_helmet_6b47_4}
+                {body rus_fsb_abody_14}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("sniper_vision")
+		("stealth")
+		("paratroopere")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "svdk_v2" filled}
+		{item "svd ammo" 110}
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+                {item "napashnik"}
+		{item "rus_wagner_mask_1"}
+		{item "rus_fsb_abody_12_1"}
+		{item "drone_recon_ammo" 1}
+		{in_hands 0}
+	}
+}

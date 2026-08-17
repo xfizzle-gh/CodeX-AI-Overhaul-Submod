@@ -1,0 +1,36 @@
+{breed
+	{tags "aio_morale_elite aio_cmd_independent aio_steadfast"}
+	{behaviour soldier}
+	{skin "45th1"}
+	{portrait sov_fsb}
+	{icon mg}
+	{icon_priority 2}
+	{nationality rus}
+	{armors
+		{body rus_fsb_abody_12_1}
+		{head rus_fsb_helmet_13}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("fsb")
+                ("mg_rank_4")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "rus_fsb_abody_1"}
+		{item "pkp_a" filling "pk_box ammo" 400}
+		{item "pk_box ammo" 400}
+		{item "zarya" 2}
+		{item "weapon rpg26" 2 filled}		
+		{in_hands 5}
+	}
+}

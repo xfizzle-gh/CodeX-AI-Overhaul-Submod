@@ -1,0 +1,33 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "ukr_army_3th_1"}
+	{portrait "azov3"}
+	{icon "mg"}
+	{icon_priority 2}
+	{nationality ukr}
+	{armors
+		{head "vsu_helmet_ach_2"}
+                {body ukr_ua_body_c_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_4")
+		("azov3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "mg3_drum" filled}
+		{item "mgun_ger ammo" 400}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+                {item "shovel_csa"}
+		{item "zarya" 2}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "dnr_sparta_antitank"}
+	{portrait "spd"}
+	{icon "bazooka"}
+	{icon_priority 0}
+	{tags "soldier_bazooka aio_morale_trained"}
+	{nationality rus}
+	{armors
+		{head helmet_sh68}
+                {body "6b13_01"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("at_rank_2")
+		("spd")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rpg7 weapon" filled}
+		{item "rpg7 ammo" 5}
+
+
+		{item "akms" filling "ammo ak47 steel" 30}
+		{item "ammo ak47 steel" 90}
+
+		{item "rgd5 grenade" 1}
+
+		{item "bandage_rus" 3}
+		{item "knife_rus"}
+
+		{in_hands 0}
+	}
+}

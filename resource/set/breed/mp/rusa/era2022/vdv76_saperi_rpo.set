@@ -1,0 +1,41 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_vdv_gr_vor_21_gusev"}
+	{portrait fr_svo_3}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality rus}
+	{armors
+		{body rus_6b45_body_04}
+		{head rus_helmet_6b47_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("paratroopere")
+         ("at_rank_3")
+		("engineer")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "am17" filled}
+		{item "5x39 ammo" 210}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 4.5 0.5}
+                {item "shovel_rus"}
+		{item "rus_fsb_abody_13"}
+                {item "napashnik"}
+		{item "rus_wagner_glasses_1"}
+		                {item "pickaxe"}
+                {item "wirecutters"}
+                {item "mine_detector"} 
+		{item "shmel weapon" 2 filled}			
+		{in_hands 0}
+	}
+}

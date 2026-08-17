@@ -1,0 +1,33 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_6b3_longsleeve"}
+	{portrait "sov_regular"}
+	{icon "mg"}
+	{icon_priority 0}
+	{nationality rus_unique}
+	{armors
+		{head rus_afg_sh68}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("mg_rank_2")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "pk" filling "pk_box ammo" 100}
+		{item "pk_box ammo" 400}
+
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdgm_smoke grenade" 0.25 0.5}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "6b2" 0.25 0.5}
+		{in_hands 0}
+	}
+}

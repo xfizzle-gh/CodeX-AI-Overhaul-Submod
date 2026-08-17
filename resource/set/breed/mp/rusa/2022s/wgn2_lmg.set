@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "rus_wagner_pmc_2"}
+	{portrait "wgn2"}
+	{icon "mg"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_helmet_tor1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_4")
+		("health_rank_4")
+		("mg_rank_4")
+		("guards")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_3")
+	}
+	{inventory
+		{item "cali_w_pecheneg_2" filling "pk_box ammo" 100}
+		{item "rus_wagner_glasses_1"}	
+		{item "pk_box ammo" 400}
+		{item "rus_ibt6049_body3"}
+		{item "rus_fsb_abody_12_1"}
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "drone_recon_ammo" 1}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "drone_fpv_ammo" filled}	
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier_at aio_morale_regular"}
+	{behaviour soldier}
+	{skin "usa_ocp4"}
+	{portrait "1ad"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ach_1}	
+		{body iotv_6}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")		
+		("at_rank_4")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m4a1_v3b" filled}
+		{item "m16a2 ammo" 180}
+		
+		{item "m3_maaws weapon" filling "84mmgustaf fg ammo" 1}
+		{item "84mmgustaf cm ammo" 4}
+		{item "84mmgustaf fg ammo" 4}
+		{item "us_backpack_4"}		
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		
+		{in_hands 0}
+	}
+}

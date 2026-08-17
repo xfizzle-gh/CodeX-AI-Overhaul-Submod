@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "skin_vsu_azov"}
+	{portrait "vsu_svo_7"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality ukr}
+	{armors
+		{head ops_core_azov}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("sniper_vision")
+		("stealth")
+		("azov")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "svd" filling "svd ammo" 10}
+		{item "svd ammo" 110}
+
+		{item "rus_afg_sh68"}
+		
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+
+		{item "bandage_rus" 4.5 0.5}
+ 
+                {item "ukr_ua_body_b_1" 1}
+                {item "shovel_csa"}
+		{in_hands 0}
+	}
+}

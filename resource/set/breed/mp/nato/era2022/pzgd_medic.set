@@ -1,0 +1,36 @@
+{breed
+	{tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "ger6"}
+	{portrait "med_pzg"}
+	{icon "tech"}
+	{icon_priority 2}
+	{nationality ger}
+	{armors
+		{head ger_helmet_3}
+		{body ger_vest_4}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("medic")
+		("pzgrene")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "g36ka4_hg" filling "g36_ammo" 30}
+		{item "g36_ammo ammo" 240}
+		{item "m18 grenade" 2}
+		 
+		{item "bandage_rus" 10}
+		{item "tent_kit" 2}
+		{item "backpack_90"}
+                {item "shovel_csa"}
+		
+
+		{in_hands 0}
+	}
+}

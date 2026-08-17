@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "25th1"}
+	{portrait "72th_ammo"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained aio_cmd_junior"}
+	{nationality ukr}
+	{armors		
+		{body backpack_eagleaiii}
+		{head ukr_47}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("72th")
+		("medic")	
+		("at_rank_2")			
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak74" filled}
+		{item "ammo 5x39" 210}
+ 		{item "m72_law" 2 filled}	
+		{item "ukr_ua_body_a_1"}
+		{in_hands 4}
+	}
+}

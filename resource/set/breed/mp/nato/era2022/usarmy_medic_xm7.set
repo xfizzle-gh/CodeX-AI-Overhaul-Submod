@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "ng1"}
+	{portrait "usmc_med"}
+	{icon "tech"}
+	{icon_priority 3}
+	{nationality usa}
+	{armors
+		{head ng_hel3}
+		{body backpack_eagleaiii}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("cavalry_e")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "xm7" filled}
+		{item "xm7_ammo ammo" 120}
+
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 4}
+		{item "bandage_usa" 20}
+		{item "shovel_csa"}
+		{item "ng_backpack"}		
+		{item "ng_vest4"}
+		{item "tent_kit" 2}		
+		{in_hands 0}
+	}
+}

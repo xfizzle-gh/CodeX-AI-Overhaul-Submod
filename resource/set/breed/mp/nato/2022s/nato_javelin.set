@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "nrf_1"}
+	{portrait nrf_jav}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier aio_morale_regular"}
+	{nationality nato}
+	{armors
+		{head nrf_helmet_2}
+		{body "nrf_vest_1"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("skilled_manpad_operator")
+		("ildu")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+        {item "mars_l" filled}
+		{item "m16a2 ammo" 200}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+
+        {item "shovel_csa"}
+		{item "javelin weapon" filling "jav_rock ammo" 1}
+		{item "jav_rock ammo" 2}
+		{in_hands 0}
+	}
+}

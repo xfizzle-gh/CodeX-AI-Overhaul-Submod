@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier aio_morale_regular aio_cmd_primary"}
+	{behaviour soldier}
+	{skin "usa_ocp4"}
+	{portrait "inf2"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ihps_new_2}
+		{body "msv_2"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("cavalry")		
+		("medic")				 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "m4a1_v4b" filled}
+		{item "m16a2 ammo" 180}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "us_backpack_3"}				
+		{item "benelli_m4" filling "ammo shotgun" 7}
+		{item "ammo shotgun" 21}			
+		
+		{in_hands 0}
+	}
+}

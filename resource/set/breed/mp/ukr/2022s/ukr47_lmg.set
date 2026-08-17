@@ -1,0 +1,33 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr47_2"}
+	{portrait "47th"}
+	{icon mg}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_c_mg}
+		{head vsu_helmet_ach_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_mg")
+		("47th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "m249_saw_h" filled}
+		{item "m249_ammo ammo" 400}
+		{item "ukr_backpack_01"}
+                {item "shovel_csa"}
+                {item "pais_bron_vsu"}
+		{in_hands 3}
+	}
+}

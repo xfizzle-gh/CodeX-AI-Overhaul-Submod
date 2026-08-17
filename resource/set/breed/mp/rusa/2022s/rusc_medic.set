@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier aio_morale_elite aio_cmd_independent"}
+	{behaviour soldier}
+	{skin "rus_rusich_gr_2_1"}
+	{portrait med_rus}
+	{icon "tech"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_fsb_hat_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("medic")
+		("spetsnaz")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rus_fsb_abody_1_1" }
+
+		{item "RPG26 weapon weapon" filled}
+		
+		{item "rdg2 grenade" 2.25 0.5}
+		{item "drone_fpv_ammo" filled}	
+		{item "bandage_rus" 3.5 0.5}
+		{item "tent_kit" 2}
+		{item "zarya" 2}
+
+		{in_hands 0}
+	}
+}

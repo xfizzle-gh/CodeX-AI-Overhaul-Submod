@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_95DSHV_03"}
+	{portrait "82nd"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained aio_cmd_primary"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_c_4}
+		{head vsu_helmet_ach_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("82th")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 3.5 0.5}
+		{item "aks74" filled}
+		{item "ammo 5x39" 180}
+		{item "ukr_backpack_01"}
+                {item "shovel_csa"}
+		{item "fort600" filled}
+		{item "40mm_grenade ammo" 18}
+		{item "benelli_m4" filling "ammo shotgun" 7}
+		{item "ammo shotgun" 21}
+		{item "zarya" 2}
+		{in_hands 3}
+	}
+}

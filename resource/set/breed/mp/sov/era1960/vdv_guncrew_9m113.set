@@ -1,0 +1,33 @@
+{breed
+    {tags "crew aio_morale_trained"}
+	{behaviour soldier}
+	{skin "rus_afg_vdv_6b2_shortsleeve"}
+	{portrait "sov_vdv"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus_elite}
+	{armors
+		{head rus_afg_vdvberet}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("paratrooper")
+		("guncrew_2")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_4")
+	}
+	{inventory
+		{item "aks74" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}	
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "rus_afg_sh68" 1}
+		
+		{item "gunbag_sov_9m113"}
+		{item "6b2" 1}
+		{in_hands 0}
+	}
+}

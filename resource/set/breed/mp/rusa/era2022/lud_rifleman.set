@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "dnr_regular_gr_02"}
+	{portrait lud_ammo}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_low"}
+	{nationality rus}
+	{armors
+		
+		{head rus_helmet_kolpak}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("rifle_rank_2")
+		("tdf")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak47_akm" filled}
+		{item "ammo ak47 akm" 180}
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "molotov grenade" 1.25 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "6b_23_rus_vog"}
+		{in_hands 0}
+	}
+}

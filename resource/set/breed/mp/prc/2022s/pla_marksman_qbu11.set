@@ -1,0 +1,33 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "pla21_new"}
+	{portrait "pla112"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality chi}
+	{armors
+		{head pla21_helmet_4}
+		{body "pla21_vest_5"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("guards")
+		("sniper_vision")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "qlu11" filling "qlu12_ammo ammo" 5}
+		{item "qlu12_ammo ammo" 30}
+		{item "pla21_backpacks"}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+
+		{item "t86 grenade" 2}				
+		{in_hands 0} {item "pla21_glass"}
+	}
+}

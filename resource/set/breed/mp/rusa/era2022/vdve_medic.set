@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_s_vkpo_vdv_2"}
+	{portrait med_rus}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality rus}
+	{armors
+		{head rus_helmet_6b47_1}
+                {body kirasa_bron_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("medic")
+		("paratroopere")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "aks74" filled}
+		{item "5x39 ammo" 210}
+		{item "rdg2 grenade" 2.25 0.5}
+		{item "bandage_rus" 8}
+		{item "tent_kit" 2}
+		{item "rus_wagner_glasses_2"}
+                {item "napashnik"}
+		{item "rus_fsb_abody_12_1"}
+                {item "shovel_rus"}
+		{in_hands 0}
+	}
+}

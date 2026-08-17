@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "rus111"}
+	{portrait "rus110"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular aio_cmd_primary"}
+	{nationality rus}
+	{armors
+		{head rus_fsb_helmet_3}
+        {body "rus_nazgul_02"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("110dv")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "ak74m_pso" filled}
+		{item "ammo 5x39" 180}
+		{item "rdg2 grenade" 2}
+		{item "rgd5 grenade" 2}
+		{item "shovel_rus"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "laser_designator" filling "flare_usa artillery_203" 1}
+		{item "flare_usa artillery_203"}
+		{item "bekas-12m_v1" filled}
+		{item "ammo shotguns" 18}		
+		{in_hands 0}
+	}
+}

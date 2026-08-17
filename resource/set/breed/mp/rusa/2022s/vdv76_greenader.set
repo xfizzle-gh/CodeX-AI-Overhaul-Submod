@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_vdv_gr_vor_19_shaltai"}
+	{portrait fr_svo_3}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality rus}
+	{armors
+		{head rus_wagner_helmet_5}
+        {body kirasa_bron_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("paratroopere")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74m_q" filled}
+		{item "5x39 ammo" 210}
+		{item "aks74gp25" filled}
+		{item "vog25 he ammo" 12}	
+		{item "rgd5 grenade" 3}
+
+		{item "rdg2 grenade"}
+		{item "bandage_rus" 3.5 0.5}
+
+                {item "shovel_rus"}
+		{in_hands 0}
+	}
+}

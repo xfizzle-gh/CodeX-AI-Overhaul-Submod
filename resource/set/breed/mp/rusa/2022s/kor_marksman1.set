@@ -1,0 +1,37 @@
+{breed
+	{tags "aio_morale_trained"}
+	{behaviour soldier}
+	{skin "kor7"}
+	{portrait "kor"}
+	{icon autorifle}
+	{icon_priority 2}
+	{nationality kor}
+	{armors
+		{body vest_6b45_smerch_1}
+		{head rus_helmet_6b47_4}
+	}
+	{perks
+		(include "ability.inc")
+		  ("skill_rank_kor")
+		("kor")
+		("sniper_vision")
+		("stealth")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "asvk-m" filling "ammo asvk-m_ammo" 5}
+		{item "ammo asvk-m_ammo" 30}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "rus_bandan"}
+		{item "shovel_rus"}
+		{item "rus_fsb_abody_12"}
+
+		{item "5x39 ammo" 240}
+		{in_hands 0}
+	}
+}

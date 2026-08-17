@@ -1,0 +1,35 @@
+{breed
+	{tags "aio_morale_trained"}
+	{behaviour soldier}
+	{skin "106th3"}
+	{portrait "106ammo"}
+	{icon autorifle}
+	{icon_priority 2}
+	{nationality rus}
+	{armors
+		{body rus_6b45_body_03}
+		{head rus_helmet_v07}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("106dv")
+		("health_rank_2")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak12k" filled}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "rus_fsb_abody_12"}
+		{item "aks74gp25" filled}
+		{item "vog25 he ammo" 12}
+		{item "5x39 ammo" 240}
+		{in_hands 0}
+	}
+}

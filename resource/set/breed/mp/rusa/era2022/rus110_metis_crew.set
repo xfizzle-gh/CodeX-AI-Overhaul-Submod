@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "rus112"}
+	{portrait "rus110"}
+	{icon "bazooka"}
+	{icon_priority 0}
+	{tags "soldier_bazooka aio_morale_regular"}
+	{nationality rus}
+	{armors
+		{head rus_fsb_helmet_3}
+                {body "rus_fsb_abody_3_4"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("110dv")
+			("crewman")	
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+
+		{item "ak74m_pso" filling "5x93 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rus_fsb_abody_12_1"}
+		{item "rdg2 grenade" 2}		
+		{item "shovel_rus"}
+
+		{item "gunbag_metis"}
+		{item "bandage_rus" 3}
+
+		{in_hands 0}
+	}
+}

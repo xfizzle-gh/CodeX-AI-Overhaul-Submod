@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "nrf_4"}
+	{portrait nrf_rec}
+	{icon autorifle}
+	{icon_priority 2}
+	{tags "soldier aio_morale_regular"}
+	{nationality nato}
+	{armors
+		{head nrf_helmet_2}
+		{body "nrf_vest_3"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("ildu")
+		("binocular_vision")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+         {item "mars_l_elcan" filled}
+		{item "m16a2 ammo" 240}
+                {item "shovel_csa"}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "binocular"}
+		{item "drone_recon_ammo" 1}		
+		{item "drone_fpv_ammo" 3}			
+
+		{in_hands 0}
+	}
+}

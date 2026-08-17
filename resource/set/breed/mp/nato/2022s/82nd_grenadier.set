@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "usa_ocp2"}
+	{portrait "82ab"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality usa_paratrooper}
+	{armors
+		{head ihps_new_1}
+		{body "msv_3"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("paratrooper")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m7_spear_holo" filled}
+		{item "ammo xm7_ammo" 180}
+		{item "m320gl" filled}
+		{item "40mm_grenade he ammo" 10}
+		{item "40mm_grenade heat ammo" 2}
+		{item "us_backpack_1"}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		
+
+		{in_hands 0}
+	}
+}

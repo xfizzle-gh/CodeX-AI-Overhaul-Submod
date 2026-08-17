@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "25th"}
+	{portrait "3rd"}
+	{icon bazooka}
+	{icon_priority 0}
+	{tags "soldier_at aio_morale_trained"}
+	{nationality ukr}
+	{armors
+		{head azov_b2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("at_rank_3")
+		("72th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3}
+		{item "ak74u" filled}
+		{item "5x39 ammo" 210}
+		{item "rpg7vs weapon" filling "rpg7l vr ammo" 1}
+		 
+		 
+		{item "rpg7l vr ammo" 5}
+		{item "ukr_ua_body_a_2"}
+		{item "ukr_backpack_01"}
+                {item "shovel_csa"}
+		{in_hands 3}
+	}
+}

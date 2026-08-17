@@ -1,0 +1,35 @@
+{breed
+    {tags "soldier aio_morale_low"}
+	{behaviour soldier}
+	{skin "demon1"}
+	{portrait "demon"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality ukr}
+	{armors
+		{head ukr_ua_helmet_a_1}
+		{body "ukr_bron_4"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("at_rank_2")
+		("tdf")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74" filling "ammo 5x39" 30}
+		{item "ammo 5x39" 150}
+
+		{item "rpg7vs weapon" filled}
+		{item "rpg7l ammo" 3}
+		{item "bandage_rus" 2.5 0.5}
+		{item "shovel_rus"}
+		{item "rgd5 grenade" 1.4 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{in_hands 0}
+	}
+}

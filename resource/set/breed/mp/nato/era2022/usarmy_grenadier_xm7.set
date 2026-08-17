@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "ng2"}
+	{portrait "acav_ng"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ng_hel3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("cavalry_e")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "xm7" filled}
+		{item "xm7_ammo ammo" 120}
+		{item "m320gl" filled}
+		{item "40mm_grenade he ammo" 24}
+		{item "40mm_grenade heat ammo" 2}
+
+		{item "at4cs_v1 weapon" filled}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "ng_backpack"}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		
+		{item "ng_vest4"}
+		{in_hands 0}
+	}
+}

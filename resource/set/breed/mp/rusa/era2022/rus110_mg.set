@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "rus110"}
+	{portrait "rus110"}
+	{icon "mg"}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality rus}
+	{armors
+		{head rus_helmet_v2}
+                {body "rus_6b45_body_01"}
+	}
+	{perks
+		(include "ability.inc")
+		("mg_rank_4")
+		("skill_rank_3_mg")
+		("110dv")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "cali_w_pecheneg_1" filling "pk_box ammo" 100}
+		{item "pk_box ammo" 400}
+		{item "rdg2 grenade" 2}		
+		{item "shovel_rus"}
+		{item "rus_fsb_abody_12_1"}
+		{item "bandage_rus" 2}
+		{item "shovel_rus"}
+		{item "rus_fsb_abody_12_1"}
+		{in_hands 0}
+	}
+}

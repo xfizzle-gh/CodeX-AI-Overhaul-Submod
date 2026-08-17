@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_sso_gru_2"}
+	{portrait sov_spz}
+	{icon autorifle}
+	{icon_priority 2}
+	{tags "soldier aio_morale_elite aio_cmd_primary aio_cmd_independent"}
+	{nationality rus}
+	{armors
+		{head rus_helmet_6b47_4}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("spetsnaz_sso")
+		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+        }
+	{inventory
+		{item "shak12a1d" filled}
+		{item "ash_ammo ammo" 120}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+ 		{item "drone_fpv_ammo" filled}	
+		{item "rus_nazgul_04"}
+		{item "sso_bacpack"}
+		{item "shovel_rus"}
+		{item "RPG26 weapon weapon" 2 filled}
+		{item "zarya" 2}
+		{item "bekas-12m_v1" filled}
+		{item "ammo shotguns" 18}		
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "155th1"}
+	{portrait "155th"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained aio_cmd_junior"}
+	{nationality rus}
+	{armors
+		{body "rus_fsb_abody_2_0"}
+		{head rus_fsb_helmet_13}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_3")
+		("medic")
+		("47th")
+		("at_rank_2")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 3.5 0.5}
+		{item "ak12_m1" filled}
+		{item "5x39 ammo" 210}
+		{item "rus_fsb_abody_12_1"}
+                {item "shovel_rus"}
+		{item "aks74gp25" filled}
+		{item "vog25 he ammo" 12}
+		{item "RPG26 weapon weapon" 2 filled}			
+		{in_hands 3}
+	}
+}

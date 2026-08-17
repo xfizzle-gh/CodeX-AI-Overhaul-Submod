@@ -1,0 +1,35 @@
+{breed
+    {tags "soldier aio_morale_trained aio_cmd_junior"}
+	{behaviour soldier}
+	{skin "fj"}
+	{portrait "fj"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality ger}
+	{armors
+		{head pzgd_opscore_1}
+		{body fj_vest_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("paratrooper")
+		("at_rank_4")			 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "g95k_holo" filling "m16a2 ammo" 30}
+		{item "m16a2 ammo" 240}
+		{item "rgw90_as" filled}
+		{item "backpack_90"}
+		{item "dm51 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+        {item "shovel_csa"}
+		{item "c4pn" 1}				 
+		{in_hands 0}
+	}
+}

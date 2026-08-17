@@ -1,0 +1,30 @@
+{breed
+	{behaviour soldier}
+	{skin "rusf_vs_tankerpilot_m_1"}
+	{portrait als3}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality rus}
+	{armors
+		{head helmet_6b48}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("tankman")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filled}
+		{item "5x39 ammo" 150}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

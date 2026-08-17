@@ -1,0 +1,39 @@
+{breed
+	{behaviour soldier}
+	{skin "3rd3"}
+	{portrait "vsu_svo_5"}
+	{icon autorifle}
+	{icon_priority 2}
+	{tags "soldier aio_morale_elite aio_cmd_primary aio_cmd_independent"}
+	{nationality ukr}
+	{armors
+		{head ukr_ua_opscore_02}
+		{body "ukr_ua_body_kra_01"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("specialforces")
+		("binocular_vision")
+		("at_rank_3")		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m26 grenade" 1.25 0.5}
+		{item "anm8_smoke grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "hk433" filled}
+		{item "ammo m16a2" 240}
+
+		{item "benelli_m4" filling "ammo shotgun" 7}
+		{item "ammo shotgun" 21}		
+		{item "ukr_backpack_01"}
+		{item "pais_bron_vsu"}
+                {item "m72a7law weapon" 2 filled}		
+		{in_hands 4}
+	}
+}

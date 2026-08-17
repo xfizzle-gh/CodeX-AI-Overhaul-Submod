@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "45th1"}
+	{portrait fr_svo_3}
+	{icon sniper}
+	{icon_priority 0}
+	{tags "soldier aio_morale_elite aio_cmd_independent aio_steadfast"}
+	{nationality rus}
+	{armors
+		{head rus_opscore_helmet_1}
+                {body "rus_fsb_abody_3_3"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("sniper_vision")
+		("stealth")
+		("fsb")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "svdk_v2" filled}
+		{item "svd ammo" 110}
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+                {item "napashnik"}
+		{item "weapon rpg26" 2 filled}	
+		{in_hands 0}
+	}
+}

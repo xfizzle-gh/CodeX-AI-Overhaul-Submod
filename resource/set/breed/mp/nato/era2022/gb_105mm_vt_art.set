@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "gb04"}
+	{portrait "usa_radio"}
+	{icon "autorifle"}
+	{icon_priority 99}
+	{nationality eng}
+	{armors
+		{head gb_helmet_5}
+		{body backpack_eagleaiii}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_br")
+		("british")
+	    ("health_rank_2")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "l85a2" filling "m16a2 ammo" 30}
+		{item "m16a2 ammo" 240}
+		{item "laser_designator" filling "flare_usa artillery_105" 3}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+
+		{item "bandage_usa" 4.5 0.5}
+		 
+                {item "shovel_csa"}
+		{item "gb_vest_3"}
+
+		{in_hands 0}
+	}
+}

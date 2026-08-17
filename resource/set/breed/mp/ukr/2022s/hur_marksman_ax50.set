@@ -1,0 +1,35 @@
+{breed
+    {tags "soldier aio_morale_elite aio_cmd_independent"}
+	{behaviour soldier}
+	{skin "ukr_army_sbu"}
+	{portrait "hur"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality nato}
+	{armors
+		{head rus_fsb_hat_4}
+		{body "ukr_ua_body_hur_03"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_3")
+		("hurmo")
+				("sniper_vision")
+		 		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m107a1" filling "m107a1_ammo ammo" 5}   
+		{item "m107a1_ammo ammo" 30}
+
+		{item "rgd5 grenade" 2}
+		{item "rgd5 grenade" 1}		
+        {item "shovel_csa"}
+		{item "bandage_rus" 2}
+
+		{in_hands 0}
+	}
+}

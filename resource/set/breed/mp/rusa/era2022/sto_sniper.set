@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier aio_morale_low"}
+	{behaviour soldier}
+	{skin "rus_s_vkpo_shtormz_2"}
+	{portrait "fr_svo_4"}
+	{icon "sniper"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_wagner_capn_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("sniper_vision")		
+		("stoz")
+	        {"stealth"}		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "sv98" filling "sv98_ammo ammo" 5}
+		{item "sv98_ammo ammo" 20}
+		{item "rus_fsb_abody_1_1"}
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		
+
+		{in_hands 0}
+	}
+}

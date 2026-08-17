@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "nato"}
+	{portrait nrf}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier aio_morale_regular"}
+	{nationality nato}
+	{armors
+		{head nato_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("mg_rank_2")
+				("ildu")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "hk21" filled}
+		{item "hk21_ammo ammo" 250}
+                {item "shovel_csa"}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+		 
+		{item "ukr_backpack_01"}
+		{item "ukr_ua_body_a_2"}
+		{in_hands 0}
+	}
+}

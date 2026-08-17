@@ -1,0 +1,27 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_priv_ca_09"}
+	{portrait "25asb"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_c_mg}
+		{head vsu_capn}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("tankman")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "aks74u" filled}
+		{item "5x39 ammo" 210}
+		{in_hands 3}
+	}
+}

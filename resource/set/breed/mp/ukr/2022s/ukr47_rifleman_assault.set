@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr47_2"}
+	{portrait "47th_ammo"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality ukr}
+	{armors		
+		{body ukr_ua_body_st_06}
+		{head ukr_helmet_mw_02}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("assault")
+        ("rifle_rank_4")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "cz_bren_2_m68" filling "ammo m16a2" 30}
+		{item "ammo m16a2" 180}	
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+
+        {item "pais_bron_vsu"}
+		{item "backpack_eagleaiii"}
+		{in_hands 0}
+	}
+}

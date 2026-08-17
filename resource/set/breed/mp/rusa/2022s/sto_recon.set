@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier aio_morale_low"}
+	{behaviour soldier}
+	{skin "rus_s_vkpo_shtormz_4"}
+	{portrait rec_rus}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{body rus_6b45_body_02}		
+		{head rus_helmet_kolpak}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("stoz")
+		("binocular_vision")
+	    {"stealth"} 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak47_akm" filling "ak47 akm ammo" 30}
+		{item "ak47 akm  ammo" 210}
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+
+		{item "bandage_rus" 3.5 0.5}
+
+		{item "shovel_rus"}
+		{item "drone_recon_ammo" 1}
+		{in_hands 0}
+	}
+}

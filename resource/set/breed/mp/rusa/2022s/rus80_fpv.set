@@ -1,0 +1,32 @@
+{breed
+	{behaviour soldier}
+	{skin "rus801"}
+	{portrait "rec_rus"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality rus}
+	{armors
+		{head rus_helmet_tor1}
+        {body rus_fsb_abody_15}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+				("80dv")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "ak12_m1_holo" filling "ammo 5x39" 30}
+		{item "ammo 5x39" 180}
+		{item "rgd5 grenade" 2}
+		{item "drone_fpv_ammo" 3}
+		{item "bandage_rus" 3.5 0.5}
+{item "shovel_rus"}
+		{item "rdg2 grenade" 2}
+		{in_hands 0}
+	}
+}

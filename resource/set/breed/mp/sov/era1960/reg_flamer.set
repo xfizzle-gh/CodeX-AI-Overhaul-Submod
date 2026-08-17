@@ -1,0 +1,33 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "rus_afg_tanker"}
+	{portrait "sov_regular"}
+	{icon "flamer"}
+	{icon_priority 0}
+	{nationality rus_unique}
+	{armors
+		{head rus_afg_sh68}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filled}
+		{item "5x39 ammo" 150}
+
+		{item "shmel weapon" 2 filling "shmel_ammo ammo" 1}
+
+		{item "rdgm_smoke grenade" 0.25 0.5}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "6b2" 0.25 0.5}
+		{in_hands 0}
+	}
+}

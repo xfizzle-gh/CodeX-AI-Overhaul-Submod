@@ -1,0 +1,33 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "usa_ocp4"}
+	{portrait "inf2_ammo"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ihps_new_2}	
+		{body "msv_2"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("cavalry")		
+		("sniper_vision")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "m107a1" filled}
+		{item "m107_ammo ammo" 50}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+
+		{in_hands 0}
+	}
+}

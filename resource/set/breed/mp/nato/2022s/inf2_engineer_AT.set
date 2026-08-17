@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "usa_ocp2"}
+	{portrait "inf2"}
+	{icon "tech"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ihps_new_1}
+		{body "msv_2"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("cavalry")		
+		("engineer")
+		("at_rank_3")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "m4a1_v3b" filled}
+		{item "m16a2 ammo" 180}
+		
+		{item "m136" 2 filled}
+		
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "us_backpack_3"}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "c4pn" 1}			
+
+		{in_hands 0}
+	}
+}

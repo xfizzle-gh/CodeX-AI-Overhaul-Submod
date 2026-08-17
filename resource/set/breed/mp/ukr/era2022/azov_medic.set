@@ -1,0 +1,36 @@
+{breed
+	{tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "ukr_povyaz_6"}
+	{portrait "med_ukr"}
+	{icon "tech"}
+	{icon_priority 2}
+	{nationality ukr}
+	{armors
+		{head ukr_helmet_01}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("azov")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "uar15_v2" filled}
+		{item "m16a2 ammo" 210}
+		{item "rdg2 grenade" 4}
+
+		{item "bandage_rus" 10}
+		{item "tent_kit" 2}
+		{item "ukr_bron_1_azov" 1}
+		{item "ukr_backpack_01"}
+                {item "shovel_csa"}
+		
+
+		{in_hands 0}
+	}
+}

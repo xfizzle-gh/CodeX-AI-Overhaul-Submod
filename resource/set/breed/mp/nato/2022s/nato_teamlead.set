@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "nrf_3"}
+	{portrait nrf}
+	{icon autorifle}
+	{icon_priority 2}
+	{tags "soldier aio_morale_regular aio_cmd_junior"}
+	{nationality nato}
+	{armors
+		{head us_highcut_2}
+		
+		{body "nrf_vest_1"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+        ("ildu")
+		("at_rank_3")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+         {item "mars_l_elcan" filled}
+		{item "m16a2 ammo" 240}
+		{item "at4cs_v1 weapon" filled}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+         {item "shovel_csa"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,34 @@
+{breed
+	{tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "gb_rmc2"}
+	{portrait "med_gbr"}
+	{icon "tech"}
+	{icon_priority 2}
+	{nationality eng_para}
+	{armors
+		{head virtus_mk8_1}
+		{body gb_vest_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")	
+		("cavalry")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "l119a1_aim" filling "m16a2 ammo" 30}
+		{item "m16a2 ammo" 240}
+		{item "m18 grenade" 2}
+        {item "gb_backpack_1"}
+		{item "bandage_rus" 10}
+		{item "tent_kit" 2}
+        {item "shovel_csa"}
+
+		{in_hands 0}
+	}
+}

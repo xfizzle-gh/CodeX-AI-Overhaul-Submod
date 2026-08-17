@@ -1,0 +1,43 @@
+{breed
+    {tags "soldier aio_morale_elite aio_cmd_primary aio_cmd_independent"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_6b3_winter_vmf"}
+	{portrait "sov_marine_cb"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality rus}
+	{armors
+		{head rus_afg_vmfberet}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("spetsnaz")
+		("marines")
+		("binocular_vision")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_4")
+	}
+	{inventory
+		{item "abakan_s" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+
+		{item "ak74u" filled}
+		{item "5x39 ammo" 150}
+		{item "rgd5 grenade" 3}
+		{item "rkg3t grenade" 1.25 0.5}
+		{item "rdgm_smoke grenade" 2}
+		{item "metis_hand"}
+		{item "bandage_rus" 4.5 0.5}
+		{item "knife_rus" 1.5 0.5}
+		{item "binocular"}
+		{item "shovel_rus"}
+		{item "rus_afg_sh68" 1}
+
+		{in_hands 0}
+	}
+
+}

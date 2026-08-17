@@ -1,0 +1,33 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr47_1"}
+	{portrait "med_ukr"}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier aio_morale_trained"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_au_02}
+		{head ukr_21}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("medic")
+		("47th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "rdg2 grenade" 4}
+		{item "bandage_rus" 10}
+		{item "tent_kit" 2}
+		{item "ak74" filling "ammo 5x39" 30}
+		{item "ammo 5x39" 180}
+                {item "shovel_csa"}
+                {item "pais_bron_vsu"}
+		{in_hands 3}
+	}
+}

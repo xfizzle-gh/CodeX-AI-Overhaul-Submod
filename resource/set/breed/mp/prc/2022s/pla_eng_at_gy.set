@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "pla21_new_hm"}
+	{portrait "pla139"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality chi}
+	{armors
+		{head pla21_helmet_2_hm}
+				{body "pla21_vest_3_hm"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("gaoyuan")
+		("engineer")
+("at_rank_3")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "qcq_171" filling "vityaz-sn_ammo ammo" 30}
+		{item "vityaz-sn_ammo ammo" 210}
+		{item "pla21_backpacks_hm"}
+		{item "bandage_chn" 4.5 0.5}
+		{item "shovel_rus"}
+
+		{item "dsf161 grenade" 2}			
+		{item "t86 grenade" 2}		
+                {item "pickaxe"}
+                {item "wirecutters"}
+                {item "mine_detector"}	
+		{item "wpf89_1 weapon" filled}			
+		{in_hands 0} {item "pla21_glass"}
+	}
+}

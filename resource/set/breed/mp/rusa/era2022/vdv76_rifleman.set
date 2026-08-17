@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "rus_vdv_gr_vor_17_lite"}
+	{portrait "fr_svo_3"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		
+		{head rus_helmet_6b47_inviz}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("paratroopere")
+		("rifle_rank_4")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak12_m1_holo" filled}
+		{item "ak47 akm ammo" 210}
+
+
+		{item "rgd5 grenade" 4}
+		{item "rdg2 grenade" 2}
+		{item "RPG26 weapon weapon" filled}
+		{item "RShG_2 weapon" filled}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "rus_nazgul_02"}
+		{item "rus_wagner_glasses_2"}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

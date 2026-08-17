@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "dnr_regular_gr_02"}
+	{portrait fr_svo_7}
+	{icon bazooka}
+	{icon_priority 0}
+	{tags "soldier_at aio_morale_low"}
+	{nationality rus}
+	{armors
+		{body "6b_23_rus_vog"}
+		{head rus_helmet_kolpak}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("at_rank_1")
+		("tdf")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ppsh41_stick" filled}
+		{item "ppsh_stick ammo" 210}
+		{item "rgd5 grenade" 0.25 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3}
+		{item "molotov grenade" 1.25 0.5}
+		{item "rpg7 weapon" filled}
+		{item "rpg7 ammo" 3}
+		{item "shovel_rus"}
+		{in_hands 0}
+	}
+}

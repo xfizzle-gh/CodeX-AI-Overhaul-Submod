@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier aio_morale_regular"}
+	{behaviour soldier}
+	{skin "usa_ocp3"}
+	{portrait "usmc_med"}
+	{icon "tech"}
+	{icon_priority 3}
+	{nationality usa}
+	{armors
+		{head ihps_new_1}
+		{body "iotv_gen4_3"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("cavalry")		
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "m4a1_v3b" filled}
+		{item "m16a2 ammo" 180}
+		{item "us_backpack_4"}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 4}
+		{item "bandage_usa" 20}
+		{item "shovel_csa"}
+		{item "tent_kit" 2}		
+
+		
+		{in_hands 0}
+	}
+}

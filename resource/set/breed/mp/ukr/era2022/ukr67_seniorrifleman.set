@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "53th"}
+	{portrait "53th_ammo"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular aio_cmd_junior"}
+	{nationality ukr}
+	{armors		
+		{body msa_korzar3_smerch}
+		{head rus_fsb_hat_4}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("53th")
+		("at_rank_2")	
+		("medic")			
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "aks74_h" filled}
+		{item "5x39 ammo" 210}
+		{item "pais_bron_vsu"}
+		{item "aks74gp25" filled}
+		{item "ammo vog25 he" 8}		
+		{item "ukr_ua_body_a_1"}
+ 		{item "rshg_2" 2 filled}			
+		{in_hands 4}
+	}
+}

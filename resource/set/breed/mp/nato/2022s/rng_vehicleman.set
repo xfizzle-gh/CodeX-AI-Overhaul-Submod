@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "usa_t4_sq"}
+	{portrait "med_rng"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality usa}
+	{armors
+		{head fast_helmet1}
+		{body fast_plate_carrier2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("ranger")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "fn_scar_epr_v1b" filled}
+		{item "scar ammo" 220}
+		{item "shovel_csa"}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		 	
+		{item "bandage_usa" 4.5 0.5}
+ 
+		
+		
+		{in_hands 0}
+	}
+}

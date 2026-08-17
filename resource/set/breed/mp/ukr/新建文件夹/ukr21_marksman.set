@@ -1,0 +1,31 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_21th_2"}
+	{portrait "21th"}
+	{icon sniper}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_b_1}
+		{head ukr_helmet_08}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("21th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "svd" filling "svd ammo" 10}
+		{item "svd ammo" 110}
+		{in_hands 4}
+	}
+}

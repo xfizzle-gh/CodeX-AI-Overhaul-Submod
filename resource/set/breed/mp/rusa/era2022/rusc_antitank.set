@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier_at aio_morale_elite aio_cmd_independent"}
+	{behaviour soldier}
+	{skin "rus_wagner_gr_2_1"}
+	{portrait "ruisch"}
+	{icon "bazooka"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_fsb_helmet_14}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("at_rank_4")
+		("spetsnaz")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak105_v1" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rus_sso_body_1"}		
+		{item "rpg_29" filled}
+		{item "rpg29_ammo" 3}
+		{item "zarya" 2}
+		{item "rgd5 grenade" 3}
+		{item "rdg2 grenade" 1}
+		{item "drone_fpv_ammo" filled}	
+		{item "bandage_rus" 2}
+
+		{in_hands 0}
+	}
+}

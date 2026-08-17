@@ -1,0 +1,39 @@
+{breed
+	{behaviour soldier}
+	{skin "rus902"}
+	{portrait rus90}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality rus}
+	{armors
+		{body "rus_fsb_abody_3_5"}
+		{head rus_helmet_6b47_5}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("engineer")
+		("assault")		
+		 ("at_rank_2")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak12_m1_syq" filled}
+		{item "5x39 ammo" 210}
+		{item "shmel weapon" 2 filled}	
+                {item "shovel_rus"}
+		{item "rus_backpack_02"}
+		                {item "pickaxe"}
+                {item "wirecutters"}
+                {item "mine_detector"}
+		{in_hands 4}
+	}
+}

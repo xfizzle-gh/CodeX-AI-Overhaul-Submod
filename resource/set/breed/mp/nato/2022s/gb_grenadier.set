@@ -1,0 +1,34 @@
+{breed
+    {tags "soldier_at aio_morale_regular"}
+	{behaviour soldier}
+	{skin "gb_rmc4"}
+	{portrait "gb"}
+	{icon "bazooka"}
+	{icon_priority 2}
+	{nationality eng}
+	{armors
+		{head virtus_mk8_3}
+		{body gb_vest_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("british")
+	     		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "l85a2" filling "m16a2 ammo" 30}
+		{item "m16a2 ammo" 240}
+		{item "l85a3_scope_ag36gp" filled}
+		{item "40mm_grenade ammo" 12}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+        {item "shovel_csa"}			
+        {item "gb_backpack_1"}
+		{in_hands 0}
+	}
+}

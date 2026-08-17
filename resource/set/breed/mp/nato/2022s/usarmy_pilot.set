@@ -1,0 +1,29 @@
+{breed
+    {tags "crew aio_morale_regular"}
+	{behaviour soldier}
+	{skin "usa_ocp1"}
+	{portrait "usarmy"}
+	{icon "tech"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head pilot_helmet}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("crewman_2")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m4a1_v3b" filled}
+		{item "m16a2 ammo" 180}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "itov_1"}	
+		{in_hands 0}
+	}
+}

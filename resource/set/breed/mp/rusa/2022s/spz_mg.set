@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_sso_gru_2"}
+	{portrait sov_spz}
+	{icon mg}
+	{icon_priority 2}
+	{tags "soldier aio_morale_elite aio_cmd_independent"}
+	{nationality rus}
+	{armors
+		{head tor_helmet_com}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("spetsnaz_sso")
+                
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "cali_w_pecheneg_1" filling "pk_box" 100}
+		{item "pk_box ammo" 400}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "zarya" 2}
+		{item "shovel_rus"}
+		{item "sso_bacpack"}
+		{item "rus_nazgul_04"}
+		{in_hands 0}
+	}
+}

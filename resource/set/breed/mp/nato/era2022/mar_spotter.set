@@ -1,0 +1,41 @@
+{breed
+    {tags "soldier aio_morale_elite aio_cmd_independent aio_steadfast"}
+	{behaviour soldier}
+	{skin "marsoc_1"}
+	{portrait "marsoc"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality usa}
+	{armors
+		{head mw19_usmc_helmet2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("seals")
+		("binocular_vision")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m4a1_block_ii_v3" filled}
+		{item "ammo m16a2" 240}
+		
+		{item "m1911a1" filled}
+		{item "m1911a1 ammo" 32}
+
+		{item "m26 grenade" 1.25 0.5}
+		{item "anm8_smoke grenade" 0.25 0.5}
+
+		{item "bandage_usa" 3.5 0.5}
+		{item "binocular"}
+		
+		{item "shovel_csa"}
+		{item "mw19_usmc_vest"}
+		
+		{in_hands 0}
+	}
+}

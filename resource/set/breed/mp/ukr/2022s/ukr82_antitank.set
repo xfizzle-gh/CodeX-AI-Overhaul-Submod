@@ -1,0 +1,39 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_95DSHV_03"}
+	{portrait "ukr_jav"}
+	{icon bazooka}
+	{icon_priority 0}
+	{tags "soldier_at aio_morale_trained"}
+	{nationality ukr}
+	{armors
+		{head ops_core_azov}
+		{body "ukr_ua_body_c_2"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("82th")
+		("at_rank_4")
+		("skilled_manpad_operator")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3}
+		{item "ak74" filled}
+		{item "ammo 5x39" 180}
+		{item "javelin weapon" filling "jav_rock ammo" 1}
+		{item "jav_rock ammo" 3}
+
+		{item "pais_bron_vsu"}
+		{item "ukr_backpack_01"}
+                {item "shovel_csa"}
+		{item "zarya" 2}
+		{in_hands 3}
+	}
+}

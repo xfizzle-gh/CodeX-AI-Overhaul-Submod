@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr47_1"}
+	{portrait "ukr_jav"}
+	{icon bazooka}
+	{icon_priority 0}
+	{tags "soldier_at aio_morale_trained"}
+	{nationality ukr}
+	{armors
+		{head ukr_47}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("at_rank_4")
+		("skilled_manpad_operator")
+		("47th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3}
+		{item "uar15_v2" filled}
+		{item "m16a2 ammo" 210}
+		{item "javelin weapon" filling "jav_rock ammo" 1}
+		{item "jav_rock ammo" 2}
+		{item "ukr_ua_body_c_3"}
+		{item "ukr_backpack_01"}
+                {item "shovel_csa"}
+                {item "pais_bron_vsu"}
+		{in_hands 3}
+	}
+}

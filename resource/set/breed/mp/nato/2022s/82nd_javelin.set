@@ -1,0 +1,39 @@
+{breed
+	{tags "soldier_at aio_morale_trained"}
+	{behaviour soldier}
+	{skin "usa_ocp3"}
+	{portrait "82ab"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa_paratrooper}
+	{armors
+		{head wendy_ex_3}
+		{body "msv_1"}			
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("paratrooper")
+		("skilled_manpad_operator")
+		("guncrew")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m7_spear_holo" filled}
+		{item "ammo xm7_ammo" 180}
+		{item "javelin weapon" filling "jav_rock ammo" 1}
+		{item "us_backpack_3"}
+		{item "jav_rock ammo" 2}
+
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+	
+
+
+		
+		{in_hands 0}
+	}
+}

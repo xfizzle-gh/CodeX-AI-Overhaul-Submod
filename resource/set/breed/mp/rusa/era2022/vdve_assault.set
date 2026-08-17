@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_vdv_gr_vor_3"}
+	{portrait fr_svo_3}
+	{icon bazooka}
+	{icon_priority 0}
+	{tags "soldier_at aio_morale_trained"}
+	{nationality rus}
+	{armors
+		{head rus_wagner_helmet_5}
+                {body kirasa_bron_5}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("paratroopere")
+                ("at_rank_4")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak12_m1_holo" filled}
+		{item "5x39 ammo" 210}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "RShG_2 weapon" 2 filled}
+        {item "shovel_rus"}
+		{item "rus_fsb_abody_12_1"}
+        {item "napashnik"}
+		{in_hands 0}
+	}
+}

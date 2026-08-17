@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier_at aio_morale_trained"}
+	{behaviour soldier}
+	{skin "rus_Serbian_gr_07_1"}
+	{portrait "serb"}
+	{icon "bazooka"}
+	{icon_priority 0}
+	{nationality yug}
+	{armors
+		{head rus_wagner_helmet_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("at_rank_3")
+		("paratrooper")
+		("health_rank_3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak105_v1" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rus_serb_abody_3_1"}		
+		{item "rpg7 weapon" filled}
+		{item "rpg7 ammo" 5}
+
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 1}
+
+		{item "bandage_rus" 2}
+		{item "shovel_rus"}
+
+		{in_hands 0}
+	}
+}

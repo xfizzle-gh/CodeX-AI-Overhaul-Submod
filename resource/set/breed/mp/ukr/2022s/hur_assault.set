@@ -1,0 +1,35 @@
+{breed
+    {tags "soldier_at aio_morale_elite aio_cmd_independent"}
+	{behaviour soldier}
+	{skin "ukr_army_sbu_1"}
+	{portrait "hur"}
+	{icon "bazooka"}
+	{icon_priority 2}
+	{nationality nato}
+	{armors
+		{head vsu_helmet_ach_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_3")
+		("at_rank_3")
+		("hurmo")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "hk416d5_v1" filling "m16a2 ammo" 30}
+		{item "m16a2 ammo" 180}
+		{item "ukr_ua_body_hur_01" 1}
+		{item "rpg7vs weapon" filling "rpg7l he ammo" 1}
+		{item "rpg7l he ammo" 10}
+		{item "m18 grenade" 2}
+		{item "bandage_rus" 2}
+        {item "shovel_csa"}			
+
+		{in_hands 0}
+	}
+}

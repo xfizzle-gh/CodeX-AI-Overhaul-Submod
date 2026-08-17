@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "53th"}
+	{portrait "53th"}
+	{icon bazooka}
+	{icon_priority 0}
+	{tags "soldier_at aio_morale_regular"}
+	{nationality ukr}
+	{armors
+		{head vsu_helmet_ach_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("53th")
+		("at_rank_4")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3}
+		{item "m4a1_h" filled}
+		{item "m16a2 ammo" 210}
+		{item "rpg7vs weapon" filling "rpg7l ammo" 1}
+		{item "rpg7l ammo" 6}
+		{item "ukr_ua_body_c_3"}
+		{item "ukr_backpack_01"}
+                {item "shovel_csa"}
+		{in_hands 3}
+	}
+}

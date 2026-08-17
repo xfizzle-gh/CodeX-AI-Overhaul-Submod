@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier aio_morale_trained aio_cmd_primary"}
+	{behaviour soldier}
+	{skin "usa_ocp2"}
+	{portrait "82ab"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality usa_paratrooper}
+	{armors
+		{head ihps_new_1}
+		{body "jpc_2"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("paratrooper")
+		("medic")			 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m7_spear_xm157" filled}
+		{item "ammo xm7_ammo" 180}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "us_backpack_3"}				
+		{item "benelli_m4" filling "ammo shotgun" 7}
+		{item "ammo shotgun" 21}		
+		
+		{in_hands 0}
+	}
+}

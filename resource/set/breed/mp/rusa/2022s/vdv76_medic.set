@@ -1,0 +1,35 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "rus_vdv_gr_vor_17_lite"}
+	{portrait med_rus}
+	{icon "tech"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_fsb_hat_4}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("medic")
+
+		("paratroopere")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "am17" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rus_nazgul_04" }		
+		{item "rdg2 grenade" 2.25 0.5}
+		{item "shovel_rus"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "tent_kit" 2}
+
+
+		{in_hands 0}
+	}
+}

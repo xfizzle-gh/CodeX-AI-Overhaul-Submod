@@ -1,0 +1,37 @@
+name: Morale breed metadata guard
+
+on:
+  pull_request:
+    paths:
+      - "resource/set/breed/**"
+      - "docs/morale_command_classification.md"
+      - "docs/morale_command_classification.tsv"
+      - "tests/test_morale_breed_metadata.py"
+      - ".github/workflows/morale-breed-metadata-guard.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "resource/set/breed/**"
+      - "docs/morale_command_classification.md"
+      - "docs/morale_command_classification.tsv"
+      - "tests/test_morale_breed_metadata.py"
+      - ".github/workflows/morale-breed-metadata-guard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Run morale breed metadata guard
+        run: python -m unittest tests/test_morale_breed_metadata.py

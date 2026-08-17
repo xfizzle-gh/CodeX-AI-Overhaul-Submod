@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier aio_morale_elite aio_cmd_independent"}
+	{behaviour soldier}
+	{skin "ukr_sso_2"}
+	{portrait "azov3_sso"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality ukr}
+	{armors
+		{head "ukr_helmet_08"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("sniper_vision")
+		("azov3")
+				("stealth")		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "mk17_ssr" filling "scar ammo" 20}
+		{item "scar ammo" 120}
+
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 1}
+
+		{item "bandage_rus" 2}
+        {item "shovel_csa"}
+		{item "pais_bron_vsu" 1}
+		{item "ukr_bron_4_azov"}
+
+		{in_hands 0}
+	}
+}

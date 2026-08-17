@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "ukr_army_3th_4"}
+	{portrait azov3}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality ukr}
+	{armors
+		{head ukr_helmet_01}
+                {body ukr_ua_body_c_4}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_4")
+		("recon")
+		("azov3")
+		("binocular_vision")
+		 
+		("skilled_manpad_operator")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "binocular"}
+		{item "shovel_rus"}
+		{item "ukr_ua_body_c_3"}
+		{item "at4cs_v1" 1 filled}	
+        {item "shovel_csa"}
+		{in_hands 0}
+	}
+	{texmod "kamysh_chechen"}
+}

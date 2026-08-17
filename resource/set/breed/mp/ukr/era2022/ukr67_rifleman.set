@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "53th"}
+	{portrait "53th_ammo"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier aio_morale_regular"}
+	{nationality ukr}
+	{armors		
+		{body backpack_eagleaiii}
+		{head ukr_cah90_2_green}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("53th")
+        ("rifle_rank_4")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak74" filled}
+		{item "5x39 ammo" 210}
+		{item "pais_bron_vsu"}
+
+		{item "ukr_ua_body_a_1"}
+		{in_hands 4}
+	}
+}

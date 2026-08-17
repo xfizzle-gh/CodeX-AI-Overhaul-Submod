@@ -1,0 +1,35 @@
+{breed
+    {tags "soldier aio_morale_trained"}
+	{behaviour soldier}
+	{skin "rus_afg_vdv_longsleeve"}
+	{portrait "sov_vdv"}
+	{icon "mg"}
+	{icon_priority 0}
+	{nationality rus_elite}
+	{armors
+		{head rus_shlemofon}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("paratrooper")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_4")
+	}
+	{inventory
+		{item "rpk74" filling "rpk74_mag ammo" 45}
+		{item "rpk74_mag ammo" 360}
+
+
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdgm_smoke grenade" 0.25 0.5}
+
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+{item "rus_afg_sh68" 1}
+
+		{in_hands 0}
+	}
+}
