@@ -1,27 +1,19 @@
-; Native allied-support birth bridge, issue #97.
+; Native allied-support birth bridge, issue #97, v3.
 ;
-; #110 proved:
+; Proven downstream boundary (#110):
 ;   genuine human-native Conquest actor -> automatic human->Mate handoff
 ;   -> Mate AI control -> bright shared terrain FoW.
 ;
-; #111 v1 failed for a narrower reason. Its MI state reached stage 3 but game.log
-; contained no human->Mate transfer and the user saw no unit. The v1 code assumed a
-; runtime-added tag on the parked source survived {placement ... {clone}}. The existing
-; production support source explicitly warns that cloned provenance is not expressible
-; through its selectors, so this revision removes that assumption.
+; Native #111 v2 failed before actor creation because {placement ... {clone}}
+; requires the SOURCE to remain inactive. game.log:
+;   Can't clone entity ... because it's not inactive
 ;
-; Revision:
-;   parked current-faction line source -> temporary human owner/user control
-;   -> placement clone at the attack entry
-;   -> identify the clone by RUNTIME STATE, not inherited tag:
-;        inside gamezone + human + operatable + user_control + not inactive/linked
-;   -> tag exactly five as native_support_new
-;   -> restore parked source
-;   -> proven #110 human->Mate handoff -> 3 sec settle -> move to flag.
+; V3 keeps the parked source inactive through clone, then identifies exactly five
+; runtime humans inside gamezone, activates only those clones, restores the parked
+; source, and uses the already-proven #110 handoff sequence.
 ;
-; Diagnostic rule: do not deploy a player stage before this one-wave probe finishes.
-; At this early point the temporary source is outside gamezone, so a human/user-controlled
-; infantry actor inside gamezone is the clone candidate rather than the parked source.
+; Diagnostic rule: do not deploy a normal player stage before this one-wave probe
+; finishes. At that point there should be no normal player infantry in gamezone.
 
 			(define "native_support_set_human_owner"
 				{"switch"
@@ -43,7 +35,7 @@
 				}
 			)
 
-			(define "native_support_claim_line" ; %0 = rusa/ukr/prc/nato
+			(define "native_support_claim_line"
 				{"entity_state"
 					{selector
 						{source advanced}
@@ -52,6 +44,7 @@
 							{include
 								{prop {prop human}}
 								{tag {tag ally_sup_tpl}}
+								{state {state inactive}}
 							}
 							{exclude
 								{zone {zone "gamezone"}}
@@ -74,6 +67,7 @@
 			)
 
 			(define "native_support_prepare_source"
+				; CRITICAL: source MUST remain inactive for {clone}. Do not add inactive off here.
 				("native_support_set_human_owner")
 				{"entity_state"
 					{selector
@@ -83,21 +77,8 @@
 							{exclude {zone {zone "gamezone"}}}
 						}
 					}
-					{inactive off}
+					{inactive on}
 					{impregnability enabled}
-				}
-				{"actor_state"
-					{selector
-						{source advanced}
-						{group
-							{select {tag {tag native_support_source}}}
-							{include {prop {prop human}}}
-							{exclude {zone {zone "gamezone"}}}
-						}
-					}
-					{drop orders}
-					{control user}
-					{ai_move {mode disable}}
 				}
 			)
 
@@ -110,7 +91,10 @@
 								{source advanced}
 								{group
 									{select {tag {tag native_support_source}}}
-									{include {prop {prop human}}}
+									{include
+										{prop {prop human}}
+										{state {state inactive}}
+									}
 									{exclude {zone {zone "gamezone"}}}
 								}
 							}
@@ -124,7 +108,10 @@
 								{source advanced}
 								{group
 									{select {tag {tag native_support_source}}}
-									{include {prop {prop human}}}
+									{include
+										{prop {prop human}}
+										{state {state inactive}}
+									}
 									{exclude {zone {zone "gamezone"}}}
 								}
 							}
@@ -136,19 +123,18 @@
 			)
 
 			(define "native_support_mark_runtime_clone"
+				; The parked source is outside gamezone. Before the player deploys a stage,
+				; the five cloned humans are the only intended human candidates in gamezone.
+				; Do not depend on inherited source tags.
 				{"entity_state"
 					{selector
 						{source advanced}
 						{group
-							{select
-								{zone {zone "gamezone"}}
-								{state {state operatable}}
-								{state {state user_control}}
-							}
+							{select {zone {zone "gamezone"}}}
 							{include {prop {prop human}}}
 							{exclude
-								{state {state inactive}}
 								{state {state linked}}
+								{tag {tag native_support_live}}
 							}
 						}
 						{amount 5}
@@ -161,6 +147,12 @@
 					{inactive off}
 					{impregnability disabled}
 					{discovered on}
+				}
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag native_support_new}}
+					{drop orders}
+					{control user}
+					{ai_move {mode disable}}
 				}
 			)
 
@@ -192,19 +184,11 @@
 
 			(define "native_support_finish_clone"
 				{"delay" {time 0.25}}
-
-				; V2 FIX: do not search for an inherited source tag on the clone.
 				("native_support_mark_runtime_clone")
 				{"set_i" {var "native_support_stage$"} {op "="} {value 12}}
 				("native_support_restore_source")
 
-				; Match the accepted #110 handoff boundary.
-				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag native_support_new}}
-					{drop orders}
-					{control user}
-					{ai_move {mode disable}}
-				}
+				; Match accepted #110 automatic handoff.
 				{"delay" {time 1}}
 				("native_support_set_mate_owner")
 				{"actor_state"
