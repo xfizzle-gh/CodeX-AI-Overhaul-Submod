@@ -1,0 +1,25 @@
+name: Native Support Birth guard
+
+on:
+  pull_request:
+    paths:
+      - "resource/script/multiplayer/modes/attack_support.lua"
+      - "resource/map/multi/native_support_birth.inc"
+      - "resource/map/multi/support_templates_inert.inc"
+      - "resource/map/multi/dcg_vars.inc"
+      - "tests/test_native_support_birth.py"
+      - ".github/workflows/native-support-birth-guard.yml"
+  push:
+    branches:
+      - research/live-native-support-birth
+
+jobs:
+  source-guard:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Run native support birth regression
+        run: python -m unittest tests/test_native_support_birth.py
