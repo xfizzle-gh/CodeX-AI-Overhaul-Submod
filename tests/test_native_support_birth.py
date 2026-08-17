@@ -7,7 +7,6 @@ BIRTH = ROOT / "resource/map/multi/native_support_birth.inc"
 INERT = ROOT / "resource/map/multi/support_templates_inert.inc"
 VARS = ROOT / "resource/map/multi/dcg_vars.inc"
 WAVES = ROOT / "resource/map/multi/attack_support_waves.inc"
-TEMPLATES = ROOT / "resource/map/multi/attack_support_templates.inc"
 
 
 class NativeSupportBirthTests(unittest.TestCase):
@@ -18,7 +17,6 @@ class NativeSupportBirthTests(unittest.TestCase):
         cls.inert = INERT.read_text(encoding="utf-8")
         cls.vars = VARS.read_text(encoding="utf-8")
         cls.waves = WAVES.read_text(encoding="utf-8")
-        cls.templates = TEMPLATES.read_text(encoding="utf-8")
 
     def test_uses_proven_human_then_mate_identity(self):
         self.assertIn('local function resolveHumanId', self.attack)
@@ -26,18 +24,33 @@ class NativeSupportBirthTests(unittest.TestCase):
         self.assertIn('setVar("id_attack_support_mate", mateId)', self.attack)
         self.assertIn('setVar("id_attack_support", mateId)', self.attack)
 
-    def test_legacy_parked_wave_engine_is_not_armed(self):
+    def test_legacy_wave_engine_is_not_armed(self):
         self.assertIn('setVar("attack_support_native_birth", 1)', self.attack)
         self.assertIn('setVar("attack_support_use_mi", 0)', self.attack)
         self.assertNotIn('setVar("attack_support_use_mi", 1)', self.attack)
         self.assertIn('{"attack_support/init"', self.waves)
 
-    def test_runtime_birth_is_human_owned_clone_not_bot_spawn(self):
+    def test_source_stays_inactive_through_clone(self):
+        start = self.birth.index('(define "native_support_prepare_source"')
+        end = self.birth.index('(define "native_support_clone_to_entry"', start)
+        prepare = self.birth[start:end]
+        self.assertIn('("native_support_set_human_owner")', prepare)
+        self.assertIn('{inactive on}', prepare)
+        self.assertNotIn('{inactive off}', prepare)
+
+        issue = self.birth.index('(define "native_support_issue_line"')
+        issue_end = self.birth.index('{"native_support/init"', issue)
+        issue_body = self.birth[issue:issue_end]
+        self.assertLess(
+            issue_body.index('("native_support_prepare_source")'),
+            issue_body.index('("native_support_clone_to_entry")'),
+        )
+        self.assertIn('("native_support_restore_source")', issue_body)
+
+    def test_clone_is_runtime_mi_not_bot_spawn(self):
         self.assertIn('{clone}', self.birth)
-        self.assertIn('("native_support_set_human_owner")', self.birth)
-        self.assertIn('{control user}', self.birth)
-        self.assertIn('{tag_add native_support_source}', self.birth)
-        self.assertIn('{zone {zone "gamezone"}}', self.birth)
+        self.assertIn('{target_waypoint "attack_support_entry_a1"}', self.birth)
+        self.assertIn('{target_waypoint "attack_support_entry_b1"}', self.birth)
         forbidden = (
             "SpawnAt", "BotApi.Commands:Spawn", "GameSpawn", "IsUnitAvailable",
             "QueryScene", "unitset", "research_stage",
@@ -45,33 +58,33 @@ class NativeSupportBirthTests(unittest.TestCase):
         for token in forbidden:
             self.assertNotIn(token, self.birth)
 
-    def test_clone_detection_does_not_depend_on_inherited_source_tag(self):
-        # Production already documents why it moves originals instead of trying
-        # to find a clone by inherited provenance. #111 v1 ignored that warning
-        # and native testing produced a false stage-3 success with no actor.
-        self.assertIn("a cloned entity's\n; provenance is invisible", self.templates)
+    def test_runtime_clone_claim_accepts_inactive_clone(self):
         start = self.birth.index('(define "native_support_mark_runtime_clone"')
-        end = self.birth.index('\n\t\t\t)', start) + len('\n\t\t\t)')
+        end = self.birth.index('(define "native_support_complete_handoff"', start)
         body = self.birth[start:end]
         self.assertIn('{zone {zone "gamezone"}}', body)
-        self.assertIn('{state {state operatable}}', body)
-        self.assertIn('{state {state user_control}}', body)
         self.assertIn('{prop {prop human}}', body)
         self.assertIn('{amount 5}', body)
         self.assertIn('{tag_add native_support_new}', body)
-        self.assertNotIn('{tag {tag native_support_source}}', body)
+        self.assertIn('{inactive off}', body)
+        self.assertNotIn('{state {state operatable}}', body)
+        self.assertNotIn('{state {state user_control}}', body)
+        self.assertNotIn('{exclude {state {state inactive}}}', body)
 
-    def test_diagnostic_stage_exposes_claim_clone_and_detection_boundaries(self):
-        self.assertIn('{"set_i" {var "native_support_stage$"} {op "="} {value 10}}', self.birth)
-        self.assertIn('{"set_i" {var "native_support_stage$"} {op "="} {value 11}}', self.birth)
-        self.assertIn('{"set_i" {var "native_support_stage$"} {op "="} {value 12}}', self.birth)
+    def test_completion_is_fail_closed_on_real_actor_existence(self):
+        self.assertIn('{"native_support/claim_clone"', self.birth)
+        start = self.birth.index('{"native_support/claim_clone"')
+        body = self.birth[start:]
+        self.assertIn('{var "native_support_stage$"} {op "=="} {value 11}', body)
+        self.assertIn('{"2.entities"', body)
+        self.assertIn('{zone {zone "gamezone"}}', body)
+        self.assertIn('("native_support_complete_handoff")', body)
+
         issue = self.birth.index('(define "native_support_issue_line"')
-        finish = self.birth.index('(define "native_support_finish_clone"')
-        stage11 = self.birth.index('{"set_i" {var "native_support_stage$"} {op "="} {value 11}}', issue)
-        clone_call = self.birth.index('("native_support_clone_to_entry")', issue)
-        mark_call = self.birth.index('("native_support_mark_runtime_clone")', finish)
-        self.assertLess(stage11, clone_call)
-        self.assertLess(finish, mark_call)
+        init = self.birth.index('{"native_support/init"', issue)
+        issue_body = self.birth[issue:init]
+        self.assertNotIn('{value 12}', issue_body)
+        self.assertNotIn('{value 3}', issue_body)
 
     def test_source_prototype_is_restored_not_consumed(self):
         self.assertIn('{player "0"}', self.birth)
@@ -81,18 +94,23 @@ class NativeSupportBirthTests(unittest.TestCase):
 
     def test_handoff_matches_accepted_110_boundary(self):
         self.assertIn('("native_support_set_mate_owner")', self.birth)
+        self.assertIn('{control user}', self.birth)
+        self.assertIn('{ai_move {mode disable}}', self.birth)
         self.assertIn('{control AI}', self.birth)
         self.assertIn('{ai_move {mode enable}}', self.birth)
         self.assertIn('{remove select}', self.birth)
         self.assertIn('{"delay" {time 3}}', self.birth)
         self.assertIn('{action move}', self.birth)
 
-    def test_initial_acceptance_is_safe_infantry_only(self):
+    def test_initial_acceptance_is_infantry_only(self):
         for faction in ("rusa", "ukr", "prc", "nato"):
             self.assertIn(f'("native_support_claim_line" args {faction})', self.birth)
         self.assertIn('{prop {prop human}}', self.birth)
         self.assertIn('{state {state linked}}', self.birth)
-        for vehicle_token in ("ally_sup_rusa_ifv", "ally_sup_ukr_ifv", "ally_sup_prc_ifv", "ally_sup_nato_ifv"):
+        for vehicle_token in (
+            "ally_sup_rusa_ifv", "ally_sup_ukr_ifv",
+            "ally_sup_prc_ifv", "ally_sup_nato_ifv",
+        ):
             self.assertNotIn(vehicle_token, self.birth)
 
     def test_bridge_is_loaded_and_vars_declared(self):
@@ -105,7 +123,7 @@ class NativeSupportBirthTests(unittest.TestCase):
         ):
             self.assertIn(f'{{"{name}"}}', self.vars)
 
-    def test_first_native_test_is_guaranteed_and_single_wave(self):
+    def test_first_test_is_guaranteed_single_wave(self):
         self.assertIn('{"set_i" {var "native_support_waves_left$"} {op "="} {value 1}}', self.birth)
         self.assertIn('{"delay" {time 5}}', self.birth)
         self.assertNotIn('support_mission_enabled$', self.birth)
