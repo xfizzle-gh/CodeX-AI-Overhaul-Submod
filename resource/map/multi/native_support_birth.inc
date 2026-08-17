@@ -1,72 +1,54 @@
-; Native allied-support birth bridge, based on the uploaded live Workshop build.
+; Native allied-support birth bridge, issue #97.
 ;
-; Goal under test:
-;   parked faction support prototype
-;   -> temporary REAL HUMAN owner + user control
-;   -> runtime MI {clone} into the battle
-;   -> restore parked source to Player 0/inactive
-;   -> proven #110 automatic human -> Mate handoff
-;   -> 3 second settle -> AI movement
+; #110 proved:
+;   genuine human-native Conquest actor -> automatic human->Mate handoff
+;   -> Mate AI control -> bright shared terrain FoW.
 ;
-; This is deliberately infantry-only for the first native provenance acceptance. Linked
-; vehicle/crew graphs are not cloned until the human-owned runtime clone itself is proven
-; to contribute bright terrain FoW. The legacy attack_support_waves.inc is left untouched
-; and is held unarmed by attack_support_use_mi=0 from attack_support.lua.
+; #111 v1 failed for a narrower reason. Its MI state reached stage 3 but game.log
+; contained no human->Mate transfer and the user saw no unit. The v1 code assumed a
+; runtime-added tag on the parked source survived {placement ... {clone}}. The existing
+; production support source explicitly warns that cloned provenance is not expressible
+; through its selectors, so this revision removes that assumption.
 ;
-; No bot spawn API, no unit catalog mutation, no campaign stage consumption, and
-; no persistent roster purchase are used here. The original support prototypes remain
-; parked after each runtime clone.
+; Revision:
+;   parked current-faction line source -> temporary human owner/user control
+;   -> placement clone at the attack entry
+;   -> identify the clone by RUNTIME STATE, not inherited tag:
+;        inside gamezone + human + operatable + user_control + not inactive/linked
+;   -> tag exactly five as native_support_new
+;   -> restore parked source
+;   -> proven #110 human->Mate handoff -> 3 sec settle -> move to flag.
+;
+; Diagnostic rule: do not deploy a player stage before this one-wave probe finishes.
+; At this early point the temporary source is outside gamezone, so a human/user-controlled
+; infantry actor inside gamezone is the clone candidate rather than the parked source.
+
 			(define "native_support_set_human_owner"
 				{"switch"
 					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 1}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "1"}}}
 					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 2}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "2"}}}
 					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 3}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "3"}}}
 					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 4}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "4"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 5}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "5"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 6}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "6"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 7}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "7"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 8}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "8"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 9}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "9"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 10}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "10"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 11}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "11"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 12}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "12"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 13}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "13"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 14}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "14"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 15}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "15"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 16}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "16"}}}
 					{"default"}
 				}
 			)
+
 			(define "native_support_set_mate_owner"
 				{"switch"
 					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 1}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "1"}}}
 					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 2}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "2"}}}
 					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 3}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "3"}}}
 					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 4}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "4"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 5}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "5"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 6}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "6"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 7}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "7"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 8}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "8"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 9}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "9"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 10}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "10"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 11}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "11"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 12}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "12"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 13}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "13"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 14}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "14"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 15}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "15"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "16"}}}
 					{"default"}
 				}
 			)
 
-			(define "native_support_claim_line" ; %0 = faction tag stem: rusa/ukr/prc/nato
+			(define "native_support_claim_line" ; %0 = rusa/ukr/prc/nato
 				{"entity_state"
 					{selector
 						{source advanced}
 						{group
-							{select
-								{tag {tag ally_sup_%0_line}}
-							}
+							{select {tag {tag ally_sup_%0_line}}}
 							{include
 								{prop {prop human}}
 								{tag {tag ally_sup_tpl}}
@@ -79,6 +61,15 @@
 						{amount 5}
 					}
 					{tag_add native_support_source}
+				}
+			)
+
+			(define "native_support_claim_current_line"
+				{"switch"
+					{"case" {condition {type cmp_i} {var "support_templates_ally$"} {op "=="} {value 1}} ("native_support_claim_line" args rusa)}
+					{"case" {condition {type cmp_i} {var "support_templates_ally$"} {op "=="} {value 2}} ("native_support_claim_line" args ukr)}
+					{"case" {condition {type cmp_i} {var "support_templates_ally$"} {op "=="} {value 4}} ("native_support_claim_line" args prc)}
+					{"default" ("native_support_claim_line" args nato)}
 				}
 			)
 
@@ -144,6 +135,35 @@
 				}
 			)
 
+			(define "native_support_mark_runtime_clone"
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group
+							{select
+								{zone {zone "gamezone"}}
+								{state {state operatable}}
+								{state {state user_control}}
+							}
+							{include {prop {prop human}}}
+							{exclude
+								{state {state inactive}}
+								{state {state linked}}
+							}
+						}
+						{amount 5}
+					}
+					{tag_add native_support_new}
+					{tag_add native_support_live}
+					{tag_remove native_support_source}
+					{tag_remove ally_sup_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+			)
+
 			(define "native_support_restore_source"
 				{"player"
 					{selector
@@ -171,34 +191,14 @@
 			)
 
 			(define "native_support_finish_clone"
-				{"delay" {time 0.2}}
+				{"delay" {time 0.25}}
 
-				; Placement clone inherits the temporary source tag. The original is parked
-				; outside gamezone, so the runtime clone is unambiguous here.
-				{"entity_state"
-					{selector
-						{source advanced}
-						{group
-							{select
-								{tag {tag native_support_source}}
-								{zone {zone "gamezone"}}
-							}
-							{include {prop {prop human}}}
-						}
-					}
-					{tag_add native_support_new}
-					{tag_add native_support_live}
-					{tag_remove native_support_source}
-					{tag_remove ally_sup_tpl}
-					{tag_remove hidden}
-					{inactive off}
-					{impregnability disabled}
-					{discovered on}
-				}
-
+				; V2 FIX: do not search for an inherited source tag on the clone.
+				("native_support_mark_runtime_clone")
+				{"set_i" {var "native_support_stage$"} {op "="} {value 12}}
 				("native_support_restore_source")
 
-				; Match the proven #110 lifecycle exactly at the handoff boundary.
+				; Match the accepted #110 handoff boundary.
 				{"actor_state"
 					{selector {ignore_captured_by_user 0} {tag native_support_new}}
 					{drop orders}
@@ -232,9 +232,7 @@
 					{selector {ignore_captured_by_user 0} {tag native_support_new}}
 					{drop orders}
 					{action move}
-					{target
-						{selector {ignore_captured_by_user 0} {tag native_support_target}}
-					}
+					{target {selector {ignore_captured_by_user 0} {tag native_support_target}}}
 				}
 				{"entity_state"
 					{selector {ignore_captured_by_user 0} {tag native_support_target}}
@@ -252,34 +250,17 @@
 
 			(define "native_support_issue_line"
 				{"set_i" {var "native_support_busy$"} {op "="} {value 1}}
-				{"set_i" {var "native_support_stage$"} {op "="} {value 1}}
-				{"switch"
-					{"case"
-						{condition {type cmp_i} {var "support_templates_ally$"} {op "=="} {value 1}}
-						("native_support_claim_line" args rusa)
-					}
-					{"case"
-						{condition {type cmp_i} {var "support_templates_ally$"} {op "=="} {value 2}}
-						("native_support_claim_line" args ukr)
-					}
-					{"case"
-						{condition {type cmp_i} {var "support_templates_ally$"} {op "=="} {value 4}}
-						("native_support_claim_line" args prc)
-					}
-					{"default"
-						("native_support_claim_line" args nato)
-					}
-				}
+				{"set_i" {var "native_support_stage$"} {op "="} {value 10}}
+				("native_support_claim_current_line")
 				{"delay" {time 0.1}}
 				("native_support_prepare_source")
+				{"set_i" {var "native_support_stage$"} {op "="} {value 11}}
 				{"delay" {time 0.1}}
 				("native_support_clone_to_entry")
 				("native_support_finish_clone")
 			)
 
-			; Guaranteed first-wave provenance test. We deliberately bypass the legacy
-			; 50% mission roll for this draft so a native test cannot silently do nothing.
-			; After runtime-clone FoW is accepted this becomes the production schedule/gate.
+			; Guaranteed one-wave provenance test. No support roll.
 			{"native_support/init"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7 & 8"}
@@ -300,8 +281,6 @@
 					{"set_i" {var "native_support_wave_num$"} {op "="} {value 0}}
 					{"set_i" {var "native_support_waves_left$"} {op "="} {value 1}}
 					{"set_i" {var "native_support_busy$"} {op "="} {value 0}}
-					; Mirror the already-resolved current player faction for diagnostics and
-					; compatibility with existing support telemetry.
 					{"switch"
 						{"case" {condition {type cmp_i} {var "support_templates_ally$"} {op "=="} {value 1}} {"set_i" {var "faction_support_army$"} {op "="} {value 1}}}
 						{"case" {condition {type cmp_i} {var "support_templates_ally$"} {op "=="} {value 2}} {"set_i" {var "faction_support_army$"} {op "="} {value 2}}}
