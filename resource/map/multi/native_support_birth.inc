@@ -1,19 +1,26 @@
-; Native allied-support birth bridge, issue #97, v3.
+; Native allied-support birth bridge, issue #97, v4 delta probe.
 ;
-; Proven downstream boundary (#110):
-;   genuine human-native Conquest actor -> automatic human->Mate handoff
-;   -> Mate AI control -> bright shared terrain FoW.
+; Native test history:
+;   #111 proved {placement ... {clone}} rejects a source that is active.
+;   #112 removed that engine error, but its post-clone selector was invalid:
+;   it treated any five humans already in gamezone as the cloned fireteam and
+;   advanced telemetry to stage 3 even when no support actor appeared.
 ;
-; Native #111 v2 failed before actor creation because {placement ... {clone}}
-; requires the SOURCE to remain inactive. game.log:
-;   Can't clone entity ... because it's not inactive
+; V4 is intentionally a ONE-ACTOR provenance probe. Before clone, every existing
+; human in gamezone is snapshotted with native_support_preexisting. The source is
+; kept inactive, temporarily owned by the real human, and cloned at attack entry.
+; Completion is fail-closed: stage 11 persists until a NEW, INACTIVE, unlinked
+; human appears in gamezone that was not present in the snapshot. Only that delta
+; candidate may be activated and handed to the proven #110 Mate path.
 ;
-; V3 keeps the parked source inactive through clone, then identifies exactly five
-; runtime humans inside gamezone, activates only those clones, restores the parked
-; source, and uses the already-proven #110 handoff sequence.
+; Stage meanings:
+;   10 = source claimed
+;   11 = clone requested, waiting for a proven new inactive human
+;   12 = delta candidate claimed/activated
+;    2 = handed to Mate
+;    3 = move issued / probe complete
 ;
-; Diagnostic rule: do not deploy a normal player stage before this one-wave probe
-; finishes. At that point there should be no normal player infantry in gamezone.
+; Do not deploy a normal player stage while this one-actor diagnostic is running.
 
 			(define "native_support_set_human_owner"
 				{"switch"
@@ -21,6 +28,18 @@
 					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 2}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "2"}}}
 					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 3}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "3"}}}
 					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 4}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 5}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 6}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 7}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 8}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 9}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 10}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 11}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 12}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 13}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 14}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 15}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_human$"} {op "=="} {value 16}} {"player" {selector {source advanced} {group {select {tag {tag native_support_source}}} {exclude {zone {zone "gamezone"}}}}} {operation set} {player "16"}}}
 					{"default"}
 				}
 			)
@@ -31,11 +50,23 @@
 					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 2}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "2"}}}
 					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 3}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "3"}}}
 					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 4}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 5}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 6}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 7}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 8}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 9}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 10}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 11}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 12}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 13}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 14}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 15}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support_mate$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag native_support_new}} {operation set} {player "16"}}}
 					{"default"}
 				}
 			)
 
-			(define "native_support_claim_line"
+			(define "native_support_claim_line" ; %0 = rusa/ukr/prc/nato
 				{"entity_state"
 					{selector
 						{source advanced}
@@ -51,7 +82,7 @@
 								{state {state linked}}
 							}
 						}
-						{amount 5}
+						{amount 1}
 					}
 					{tag_add native_support_source}
 				}
@@ -66,8 +97,20 @@
 				}
 			)
 
+			(define "native_support_mark_preexisting"
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group
+							{select {zone {zone "gamezone"}}}
+							{include {prop {prop human}}}
+						}
+					}
+					{tag_add native_support_preexisting}
+				}
+			)
+
 			(define "native_support_prepare_source"
-				; CRITICAL: source MUST remain inactive for {clone}. Do not add inactive off here.
 				("native_support_set_human_owner")
 				{"entity_state"
 					{selector
@@ -97,6 +140,7 @@
 									}
 									{exclude {zone {zone "gamezone"}}}
 								}
+								{amount 1}
 							}
 							{target_waypoint "attack_support_entry_a1"}
 							{clone}
@@ -114,45 +158,12 @@
 									}
 									{exclude {zone {zone "gamezone"}}}
 								}
+								{amount 1}
 							}
 							{target_waypoint "attack_support_entry_b1"}
 							{clone}
 						}
 					}
-				}
-			)
-
-			(define "native_support_mark_runtime_clone"
-				; The parked source is outside gamezone. Before the player deploys a stage,
-				; the five cloned humans are the only intended human candidates in gamezone.
-				; Do not depend on inherited source tags.
-				{"entity_state"
-					{selector
-						{source advanced}
-						{group
-							{select {zone {zone "gamezone"}}}
-							{include {prop {prop human}}}
-							{exclude
-								{state {state linked}}
-								{tag {tag native_support_live}}
-							}
-						}
-						{amount 5}
-					}
-					{tag_add native_support_new}
-					{tag_add native_support_live}
-					{tag_remove native_support_source}
-					{tag_remove ally_sup_tpl}
-					{tag_remove hidden}
-					{inactive off}
-					{impregnability disabled}
-					{discovered on}
-				}
-				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag native_support_new}}
-					{drop orders}
-					{control user}
-					{ai_move {mode disable}}
 				}
 			)
 
@@ -182,13 +193,51 @@
 				}
 			)
 
-			(define "native_support_finish_clone"
-				{"delay" {time 0.25}}
+			(define "native_support_mark_runtime_clone"
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group
+							{select {zone {zone "gamezone"}}}
+							{include
+								{prop {prop human}}
+								{state {state inactive}}
+							}
+							{exclude
+								{state {state linked}}
+								{tag {tag native_support_preexisting}}
+								{tag {tag native_support_live}}
+							}
+						}
+						{amount 1}
+					}
+					{tag_add native_support_new}
+					{tag_add native_support_live}
+					{tag_remove native_support_source}
+					{tag_remove ally_sup_tpl}
+					{tag_remove hidden}
+					{inactive off}
+					{impregnability disabled}
+					{discovered on}
+				}
+			)
+
+			(define "native_support_clear_snapshot"
+				{"entity_state"
+					{selector {ignore_captured_by_user 0} {tag native_support_preexisting}}
+					{tag_remove native_support_preexisting}
+				}
+			)
+
+			(define "native_support_complete_handoff"
 				("native_support_mark_runtime_clone")
 				{"set_i" {var "native_support_stage$"} {op "="} {value 12}}
-				("native_support_restore_source")
-
-				; Match accepted #110 automatic handoff.
+				{"actor_state"
+					{selector {ignore_captured_by_user 0} {tag native_support_new}}
+					{drop orders}
+					{control user}
+					{ai_move {mode disable}}
+				}
 				{"delay" {time 1}}
 				("native_support_set_mate_owner")
 				{"actor_state"
@@ -199,7 +248,6 @@
 				}
 				{"set_i" {var "native_support_stage$"} {op "="} {value 2}}
 				{"delay" {time 3}}
-
 				{"entity_state"
 					{selector
 						{source advanced}
@@ -226,6 +274,7 @@
 					{selector {ignore_captured_by_user 0} {tag native_support_new}}
 					{tag_remove native_support_new}
 				}
+				("native_support_clear_snapshot")
 				{"set_i" {var "native_support_stage$"} {op "="} {value 3}}
 				{"set_i" {var "native_support_wave_num$"} {op "+"} {value 1}}
 				{"set_i" {var "native_support_waves_left$"} {op "-"} {value 1}}
@@ -237,14 +286,16 @@
 				{"set_i" {var "native_support_stage$"} {op "="} {value 10}}
 				("native_support_claim_current_line")
 				{"delay" {time 0.1}}
+				("native_support_mark_preexisting")
 				("native_support_prepare_source")
 				{"set_i" {var "native_support_stage$"} {op "="} {value 11}}
 				{"delay" {time 0.1}}
 				("native_support_clone_to_entry")
-				("native_support_finish_clone")
+				{"delay" {time 0.25}}
+				("native_support_restore_source")
 			)
 
-			; Guaranteed one-wave provenance test. No support roll.
+			; Guaranteed one-wave diagnostic. The "wave" is one human actor in v4.
 			{"native_support/init"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7 & 8"}
@@ -265,12 +316,6 @@
 					{"set_i" {var "native_support_wave_num$"} {op "="} {value 0}}
 					{"set_i" {var "native_support_waves_left$"} {op "="} {value 1}}
 					{"set_i" {var "native_support_busy$"} {op "="} {value 0}}
-					{"switch"
-						{"case" {condition {type cmp_i} {var "support_templates_ally$"} {op "=="} {value 1}} {"set_i" {var "faction_support_army$"} {op "="} {value 1}}}
-						{"case" {condition {type cmp_i} {var "support_templates_ally$"} {op "=="} {value 2}} {"set_i" {var "faction_support_army$"} {op "="} {value 2}}}
-						{"case" {condition {type cmp_i} {var "support_templates_ally$"} {op "=="} {value 4}} {"set_i" {var "faction_support_army$"} {op "="} {value 4}}}
-						{"default" {"set_i" {var "faction_support_army$"} {op "="} {value 3}}}
-					}
 					{"delay" {time 5}}
 					{"trigger" {name "native_support/wave"}}
 				}
@@ -288,5 +333,35 @@
 				}
 				{actions
 					("native_support_issue_line")
+				}
+			}
+
+			{"native_support/claim_clone"
+				{condition
+					{expression "1 & 2"}
+					{terms
+						{"1.cmp_i" {var "native_support_stage$"} {op "=="} {value 11}}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select {zone {zone "gamezone"}}}
+									{include
+										{prop {prop human}}
+										{state {state inactive}}
+									}
+									{exclude
+										{state {state linked}}
+										{tag {tag native_support_preexisting}}
+										{tag {tag native_support_live}}
+									}
+								}
+								{amount 1}
+							}
+						}
+					}
+				}
+				{actions
+					("native_support_complete_handoff")
 				}
 			}
