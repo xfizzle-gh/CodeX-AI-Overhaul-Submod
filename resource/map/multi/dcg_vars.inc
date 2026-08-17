@@ -132,17 +132,16 @@
 			{"support_e2_fail"}
 			{"support_e2_lz"}
 			{"support_e2_flag"}
+; ALLIED SUPPORT COMMAND VARS
+			{"allied_support_cmd_enable"}
+			{"allied_support_cmd_spawn_probe"}
+			{"allied_support_cmd_stage"}
+			{"allied_support_cmd_fail"}
+			{"allied_support_cmd_fow_continue"}
+			{"allied_support_cmd_gate_auto"}
+			{"allied_support_cmd_mate_id"}
+; END ALLIED SUPPORT COMMAND VARS
 			{"support_templates_inert"}
 			{"support_templates_culled"}
 			{"support_templates_ally"}
 			{"support_templates_enemy"}
-; BEGIN NATIVE HUMAN-BIRTH SUPPORT VARS
-			{"id_attack_support_human"}
-			{"id_attack_support_mate"}
-			{"attack_support_native_birth"}
-			{"native_support_armed"}
-			{"native_support_stage"}
-			{"native_support_wave_num"}
-			{"native_support_waves_left"}
-			{"native_support_busy"}
-; END NATIVE HUMAN-BIRTH SUPPORT VARS
