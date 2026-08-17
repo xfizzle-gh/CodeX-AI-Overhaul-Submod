@@ -19,6 +19,18 @@ local PREFIX = "CODEX_ATTACK_SUPPORT"
 
 local DEBUG_LOG = true
 
+-- Direct Scene.Squads ordering is disabled while the allied support commander is under
+-- test, so exactly one component can issue orders. Identity publication, the engine-state
+-- mirror, and all logging are unaffected.
+--
+-- This path is believed inert today because MI-delivered units have not appeared in
+-- Scene.Squads. But the new birth pipeline exists specifically to change registration, so
+-- it could activate exactly when a second commander must not exist.
+local ORDERING_ENABLED = false
+
+-- Two writers: emit always writes, log is the DEBUG_LOG-gated chatter. The engine-state
+-- mirror below goes through the ungated one because it is the only remaining way to read
+-- the four wave engines on a shipped build - their timers are gated on support_debug$.
 local function emit(...)
 	local out = { PREFIX .. ":" }
 	for n = 1, select("#", ...) do
@@ -52,6 +64,13 @@ local function cmds()
 	return (BotApi and BotApi.Commands) or nil
 end
 
+-- GetVar is not proven on this BotApi surface, and this slot is the one that AVs when
+-- a native getter is touched wrong. So every read is pcall-guarded and degrades to a
+-- printable placeholder rather than taking the report path - or the process - down:
+--   "na"  no Scene at all
+--   "err" the guarded GetVar raised
+--   "nil" the var read back as nil (undeclared, or never written)
+-- This is the probe-era pattern verbatim; it is the only var read ever proven here.
 local function readVar(name)
 	local sc = scene()
 	if not sc then return "na" end
@@ -59,17 +78,6 @@ local function readVar(name)
 	if not ok then return "err" end
 	if v == nil then return "nil" end
 	return tostring(v)
-end
-
-local function setVar(name, value)
-	local sc = scene()
-	if not sc or not sc.SetVar then return false end
-	local ok, err = pcall(function() sc:SetVar(name, value) end)
-	if not ok then
-		log("setvar_failed", name, tostring(err))
-		return false
-	end
-	return true
 end
 
 local function positiveId(primary, fallback)
@@ -80,6 +88,7 @@ local function positiveId(primary, fallback)
 	return 0
 end
 
+-- NEVER touch spawnPointName / PlayerSpawnPoint / require(utility) on this slot.
 local function identity()
 	local i = instance()
 	local c = conquestApi()
@@ -96,33 +105,17 @@ local function identity()
 	}
 end
 
--- #110 proved the live single-player Conquest topology can be resolved without
--- QueryScene: Mate, enemy, and DefenderBot occupy three unique slots in 1..4;
--- the remaining slot is the human. Fail closed if that proven topology changes.
-local function resolveHumanId(id)
-	local occupied = {}
-	local known = {
-		tonumber(id.playerId or 0) or 0,
-		tonumber(id.firstEnemyId or 0) or 0,
-		tonumber(id.defenderBotId or 0) or 0,
-	}
-	for _, playerId in ipairs(known) do
-		if playerId < 1 or playerId > 4 or occupied[playerId] then
-			return 0
-		end
-		occupied[playerId] = true
-	end
-	for playerId = 1, 4 do
-		if not occupied[playerId] then return playerId end
-	end
-	return 0
-end
 
+-- Motorized insert budget (cmd 19). MI-owned; mirrored for log diagnostics.
 local function mirrorMotor()
+	-- Both sides: the friendly vars stay 0 on defence missions and vice versa, so a
+	-- one-sided mirror is blind on half the campaign. Report both plus the test gates.
 	emit("motor_left", readVar("attack_support_motor_left"),
 		"wave_cmd", readVar("attack_support_wave_cmd"),
 		"test", readVar("attack_support_motor_test"),
 		"test_done", readVar("attack_support_motor_test_done"))
+	-- WHERE a batch went, not just that a wave fired. place$: 0 = map-edge entry pad,
+	-- 1/2/3 = active flag (garrison). entry_rr$ names the pad used for edge batches.
 	emit("place_defense", readVar("defense_support_place"),
 		"pad", readVar("defense_support_entry_rr"),
 		"stage", readVar("defense_support_stage"))
@@ -147,50 +140,20 @@ end
 local state = {
 	quant = 0,
 	ordered = {},
-	humanId = 0,
-	mateId = 0,
-	identityPublished = false,
-	attackMission = nil,
 }
 
-local function publishIdentity(id, isRetry)
-	if id.attacking == false then
-		state.attackMission = false
-		return false
-	end
-	if id.attacking ~= true then return false end
-	state.attackMission = true
+local function publishIdentity(id)
+	if id.attacking ~= true then return end
 	local sc = scene()
 	if not sc or not sc.SetVar then
 		log("identity_publish_skipped", "Scene.SetVar_missing")
-		return false
+		return
 	end
-
-	local mateId = positiveId(id.playerId, 0)
-	local humanId = resolveHumanId(id)
-	if mateId <= 0 or humanId <= 0 or humanId == mateId then
-		log("identity_publish_skipped", "human_or_mate_unresolved",
-			"mate", mateId, "human", humanId,
-			"enemy", id.firstEnemyId, "defender", id.defenderBotId)
-		return false
-	end
-
-	state.mateId = mateId
-	state.humanId = humanId
-	state.identityPublished = true
-
-	setVar("id_attack_support", mateId)
-	setVar("id_attack_support_mate", mateId)
-	setVar("id_attack_support_human", humanId)
-	setVar("attack_support_native_birth", 1)
-	setVar("attack_support_use_mi", 0)
-	setVar("attack_support_ready", 1)
-
-	log("identity_published",
-		"mate", mateId, "human", humanId,
-		"native_birth", 1, "legacy_mi_waves", 0,
-		"retry", tostring(isRetry == true))
-	return true
+	sc:SetVar("id_attack_support", id.playerId)
+	sc:SetVar("attack_support_ready", 1)
+	-- MI waves are the working delivery path for attack support units.
+	sc:SetVar("attack_support_use_mi", 1)
+	log("identity_published", "id_attack_support", id.playerId, "mi_waves", 1)
 end
 
 local function pickFlagName()
@@ -207,6 +170,7 @@ local function pickFlagName()
 end
 
 local function orderSquad(squad)
+	if not ORDERING_ENABLED then return end
 	local c = cmds()
 	if not c then return end
 	local flagName = pickFlagName()
@@ -224,6 +188,7 @@ local function orderSquad(squad)
 end
 
 local function orderNewSquads()
+	if not ORDERING_ENABLED then return end
 	local sc = scene()
 	if not sc or type(sc.Squads) ~= "table" then return end
 	for _, squad in pairs(sc.Squads) do
@@ -235,6 +200,12 @@ local function orderNewSquads()
 	end
 end
 
+-- ENGINE-STATE MIRROR. One line per wave engine into game.log every MIRROR_QUANTS
+-- quants, always on. The on-screen diagnostics are gated behind support_debug$ so a
+-- player sees nothing, which leaves the log as the only place a run can be read back:
+-- whether each engine armed, how far into its budget it is, and which faction pool the
+-- friendly waves are drawing from. This slot is loaded on every campaign_capture_the_flag
+-- mission, attack or defence, so all four quadrants report from the same place.
 local MIRROR_QUANTS = 200
 
 local function mirrorEngineState()
@@ -244,14 +215,6 @@ local function mirrorEngineState()
 		"armed", readVar("attack_support_armed"),
 		"wave_num", readVar("attack_support_wave_num"),
 		"waves_left", readVar("attack_support_waves_left"))
-	emit("native_birth",
-		"enabled", readVar("attack_support_native_birth"),
-		"armed", readVar("native_support_armed"),
-		"stage", readVar("native_support_stage"),
-		"wave_num", readVar("native_support_wave_num"),
-		"waves_left", readVar("native_support_waves_left"),
-		"human", readVar("id_attack_support_human"),
-		"mate", readVar("id_attack_support_mate"))
 	emit("mirror", "enemy_defense",
 		"armed", readVar("enemy_defense_armed"),
 		"wave_num", readVar("enemy_defense_wave_num"),
@@ -269,28 +232,12 @@ local function mirrorEngineState()
 end
 
 local function onGameStart()
-	state.quant = 0
-	state.ordered = {}
-	state.humanId = 0
-	state.mateId = 0
-	state.identityPublished = false
-	state.attackMission = nil
-	setVar("attack_support_native_birth", 0)
-	setVar("attack_support_ready", 0)
-	setVar("attack_support_use_mi", 0)
-	setVar("id_attack_support_human", 0)
-	setVar("id_attack_support_mate", 0)
-	setVar("native_support_armed", 0)
-	setVar("native_support_stage", 0)
-	setVar("native_support_wave_num", 0)
-	setVar("native_support_waves_left", 0)
-	setVar("native_support_busy", 0)
-
 	local id = identity()
 	log("game_start", "playerId", id.playerId, "attacking", tostring(id.attacking), "army", id.army)
-	publishIdentity(id, false)
+	publishIdentity(id)
+	state.ordered = {}
 	if id.attacking == true then
-		log("mode", "runtime_clone_human_birth_to_mate", "lua_spawn", "disabled_av_safe")
+		log("mode", "mi_wave_delivery", "lua_spawn", "disabled_av_safe")
 	else
 		log("mode", "idle_not_attacking")
 	end
@@ -298,11 +245,8 @@ end
 
 local function onQuant()
 	state.quant = state.quant + 1
-	if not state.identityPublished and state.attackMission ~= false and state.quant % 10 == 0 then
-		publishIdentity(identity(), true)
-	end
 	orderNewSquads()
-	if state.quant > 0 and state.quant % 400 == 0 then
+	if ORDERING_ENABLED and state.quant > 0 and state.quant % 400 == 0 then
 		local sc = scene()
 		if sc and type(sc.Squads) == "table" then
 			for _, squad in pairs(sc.Squads) do
@@ -320,9 +264,7 @@ local function onQuant()
 end
 
 local function onGameEnd()
-	setVar("attack_support_native_birth", 0)
-	setVar("attack_support_ready", 0)
-	log("game_end", "q", state.quant, "human", state.humanId, "mate", state.mateId)
+	log("game_end", "q", state.quant)
 end
 
 local function safeEvent(name, fn)
@@ -342,7 +284,7 @@ if ev and ev.Subscribe then
 	ev:Subscribe(ev.GameStart, safeEvent("GameStart", onGameStart))
 	ev:Subscribe(ev.Quant, safeEvent("Quant", onQuant))
 	ev:Subscribe(ev.GameEnd, safeEvent("GameEnd", onGameEnd))
-	log("armed", "runtime_clone_human_birth_to_mate")
+	log("armed", "identity_orders_mi_waves")
 else
 	log("not_armed", "BotApi.Events_missing")
 end
