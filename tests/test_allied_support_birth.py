@@ -128,6 +128,31 @@ def test_birth_has_no_banned_strings(mod_root):
         assert banned not in text, f"banned substring {banned}"
 
 
+def test_no_run_only_arming_is_committed(mod_root):
+    """Guard against shipping the live-test arming.
+
+    A live run needs allied_support_cmd_enable$ and support_debug$ forced to 1 in
+    birth_init. That is a working-tree-only edit marked with RUN_ONLY_ARMING. This
+    test going red means the arming is still in the tree: expected during a live
+    test, must be reverted before committing.
+    """
+    text = _read(mod_root, BIRTH_INC)
+    assert "RUN_ONLY_ARMING" not in text, (
+        "run-only arming present in the working tree - expected during a live test, "
+        "revert it before committing (git checkout -- resource/map/multi/allied_support_birth.inc)"
+    )
+
+
+def test_shipped_default_is_disabled_and_silent(mod_root):
+    """Nothing in the shipped tree may set the enable or the debug flag."""
+    code = _strip_comments(_read(mod_root, BIRTH_INC))
+    for forbidden in (
+        '{"set_i" {var "allied_support_cmd_enable$"}',
+        '{"set_i" {var "support_debug$"}',
+    ):
+        assert forbidden not in code, f"shipped tree must not write: {forbidden}"
+
+
 def test_every_onscreen_timer_is_debug_gated(mod_root):
     """A shipped run must show the player nothing."""
     text = _read(mod_root, BIRTH_INC)
