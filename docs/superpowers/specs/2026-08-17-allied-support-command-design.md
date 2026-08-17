@@ -71,6 +71,14 @@ killed three earlier promote designs: a freshly created entity's provenance is i
 every selector this format can express, so the design never selects one — the waypoint tags
 it on arrival instead.
 
+**Arrival tagging fails closed.** If the `{commands}` block does not tag the arrival, the
+wave is abandoned and logged as a birth failure. There is no fallback path, and in
+particular the pipeline must never recover by selecting an arbitrary recently-appeared or
+otherwise "new-looking" human entity. That recovery shape is exactly the false-positive
+class #112 exposed: it produces telemetry indistinguishable from success while proving
+nothing about the clone's provenance. An untagged arrival is a failed experiment, not a unit
+to be salvaged.
+
 Prototype originals never move, so birth is infinitely repeatable and consumes nothing from
 the player's roster. Source pools (`attack_support_templates.inc`,
 `faction_support_templates.inc`) are reused unchanged.
@@ -80,16 +88,27 @@ run `{clone}` + `{approach "safe teleport & rotate"}` for the airstrike chain in
 
 ### `allied_support_handoff.inc` — ownership and Mate transfer
 
-1. Select `allied_support_cmd_fresh`, apply the literal 1–16 `{player}` switch onto the
-   resolved human player id, retag `allied_support_cmd_human`.
-2. **FoW checkpoint gate.** While still human-owned and before any Mate transfer, the actor
-   must be observed illuminating terrain on its own. This is a hard gate: a birth mechanism
-   that fails here does not become the production path.
-3. Settle, then transfer to the Mate by the same idiom — a second literal 1–16 `{player}`
-   switch, selecting on `allied_support_cmd_human` and setting the owner to the runtime-resolved
-   mate player id — and retag `allied_support_cmd_mate`. The transfer is a tag-driven ownership
-   switch, not a Lua call; the mate bot never issues the transfer itself.
-4. Re-verify FoW parity after transfer.
+This reuses the mechanism confirmed working in #110, unchanged: tag the actor, keep it
+human-controlled briefly, run a literal 1–16 `{player}` switch keyed from
+`id_attack_support$`, switch to AI, wait 3 seconds, then move. The transfer is a tag-driven
+ownership switch, not a Lua call; the mate bot never issues the transfer itself.
+
+1. Select `allied_support_cmd_fresh`, apply the literal 1–16 `{player}` switch keyed from
+   `id_attack_support$` onto the human player id, retag `allied_support_cmd_human`.
+2. **FoW checkpoint gate — an enforced hold, not a pass-through.** The actor stops here while
+   still human-owned and does not advance until a diagnostic continue variable
+   (`allied_support_cmd_fow_continue$`, default 0) is set. This exists because a fast
+   automatic transfer would destroy the single most important distinction in the whole
+   design: if the isolated actor is already dark *while human-owned*, candidate A has failed
+   and the commander is irrelevant. That observation must be made deliberately, by eye, on a
+   stationary actor.
+
+   Backstop for unattended runs: if no continue signal arrives within 60 seconds, proceed and
+   record in the log that the gate auto-released. An auto-release is never counted as a pass.
+3. On continue, transfer to the Mate by the same idiom — a second literal 1–16 `{player}`
+   switch selecting on `allied_support_cmd_human`, onto the runtime-resolved mate id — retag
+   `allied_support_cmd_mate`, then wait 3 seconds before any movement.
+4. Re-verify FoW illumination after transfer.
 
 These actors are **never** tagged `_lua_mi` or `_lua_ignore`. Either tag places them in the
 commander's exclude set permanently and makes them uncommandable.
@@ -164,16 +183,26 @@ Kept as a throwaway probe: one map, behind a variable defaulting to 0. It become
 production birth path only if it passes the same isolated FoW checkpoint as candidate A.
 Neither candidate is production until that gate passes.
 
+**The two birth mechanisms are mutually exclusive.** Exactly one is enabled per live test —
+never both in the same run. Attribution has to stay clean: with two birth paths active, a
+FoW observation cannot be assigned to a mechanism, and that ambiguity is what makes a result
+worthless. The probe variable and candidate A's enable variable are therefore interlocked,
+with A enabled and the probe off by default.
+
 ## Flow
 
 ```
 Q1 wave clock (existing, unchanged)
     -> birth request
-    -> clone to birth pad, {commands} tags arrival
-    -> 1-16 {player} switch -> human owner
-    -> [FoW CHECKPOINT: isolated actor must illuminate terrain]
-    -> settle -> automatic Mate handoff
-    -> [FoW re-verify: illumination retained]
+    -> clone to birth pad, {commands} tags arrival   (untagged => FAIL CLOSED, no fallback)
+    -> 1-16 {player} switch keyed from id_attack_support$ -> human owner
+    -> HOLD. actor stationary, human-owned.
+       [FoW CHECKPOINT: does this isolated actor illuminate terrain?]
+       dark here => candidate A has failed; commander is irrelevant
+    -> continue signal (allied_support_cmd_fow_continue$)
+    -> 1-16 {player} switch -> Mate owner
+    -> wait 3s
+       [FoW re-verify: illumination retained?]
     -> commander intake -> move / objective orders
                               ^
     Lua brain (mate slot) -- SetVar --+
@@ -208,18 +237,25 @@ switches over, the old `{"placement"}` path is off, not parallel.
 
 ### Live, staged on one map
 
-Each stage is a distinct observable, in order:
+Exactly one birth mechanism enabled per run. Each stage is a distinct observable, in order:
 
-1. clone appears at the birth pad
+1. clone appears at the birth pad, and is tagged on arrival
 2. owner reads as the human
-3. **isolated FoW checkpoint** — that actor alone illuminates terrain (hard gate)
+3. **isolated FoW checkpoint, under enforced hold.** The actor is stationary and human-owned.
+   Observe by eye whether it alone illuminates terrain, then release the continue variable.
+   This is the hard gate.
 4. owner reads as the Mate
-5. FoW illumination retained after transfer
+5. FoW illumination retained after transfer, checked after the 3s settle
 6. commander intake logged
 7. movement and objective behaviour observed
 
-A stage-3 failure stops the birth candidate from becoming production, regardless of whether
-later stages would pass.
+A stage-3 failure stops that birth candidate from becoming production, regardless of whether
+later stages would pass. A stage-1 tagging failure ends the run — it is never repaired by
+selecting some other entity.
+
+Results are recorded per run as: birth mechanism used, tagged yes/no, FoW at stage 3, whether
+the gate was released manually or auto-released, and FoW at stage 5. An auto-released gate
+does not count as a stage-3 pass.
 
 ## Risks
 
