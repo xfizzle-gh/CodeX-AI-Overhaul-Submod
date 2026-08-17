@@ -47,6 +47,8 @@ def test_existing_band_is_reported_as_occupied(map_files, mod_root):
     assert result["22"], "waypoint 22 is known to exist and must be reported occupied"
 
 
-def test_chosen_birth_band_is_free(map_files, mod_root):
+def test_chosen_birth_band_is_claimed_by_our_pads(map_files, mod_root):
+    """After patching, 31/32 must exist in all fourteen maps and nowhere unexpected."""
     result = band_is_free(mod_root, ["31", "32"])
-    assert result == {"31": [], "32": []}, f"chosen birth band is not free: {result}"
+    assert len(result["31"]) == 14, result["31"]
+    assert len(result["32"]) == 14, result["32"]

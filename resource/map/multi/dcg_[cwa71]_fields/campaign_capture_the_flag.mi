@@ -2537,9 +2537,31 @@
 			(include "../enemy_defense_support.inc")
 			(include "../defense_support_waves.inc")
 			(include "../enemy_attack_support.inc")
+			(include "../allied_support_birth.inc")
+			(include "../allied_support_handoff.inc")
 			(include "../dcg_script.inc")
 		}
 		{waypoints
+			{"32"
+				{position 6482.88 1507.47 0.00}
+				{radius 800}
+				{commands
+					{"entity_state"
+						{tag_add allied_support_cmd_fresh}
+						{tag_add allied_support_cmd_side_b}
+					}
+				}
+			}
+			{"31"
+				{position -6545.48 -920.01 0.00}
+				{radius 800}
+				{commands
+					{"entity_state"
+						{tag_add allied_support_cmd_fresh}
+						{tag_add allied_support_cmd_side_a}
+					}
+				}
+			}
 			{"attack_support_entry_a"
 				{position -5691.72 -800.01 0.00}
 				{radius 150}
