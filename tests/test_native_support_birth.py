@@ -65,15 +65,13 @@ class NativeSupportBirthTests(unittest.TestCase):
         self.assertIn('{"set_i" {var "native_support_stage$"} {op "="} {value 10}}', self.birth)
         self.assertIn('{"set_i" {var "native_support_stage$"} {op "="} {value 11}}', self.birth)
         self.assertIn('{"set_i" {var "native_support_stage$"} {op "="} {value 12}}', self.birth)
+        issue = self.birth.index('(define "native_support_issue_line"')
         finish = self.birth.index('(define "native_support_finish_clone"')
-        self.assertLess(
-            self.birth.index('{"set_i" {var "native_support_stage$"} {op "="} {value 11}}'),
-            self.birth.index('("native_support_clone_to_entry")'),
-        )
-        self.assertLess(
-            self.birth.index('("native_support_clone_to_entry")'),
-            self.birth.index('("native_support_mark_runtime_clone")', finish),
-        )
+        stage11 = self.birth.index('{"set_i" {var "native_support_stage$"} {op "="} {value 11}}', issue)
+        clone_call = self.birth.index('("native_support_clone_to_entry")', issue)
+        mark_call = self.birth.index('("native_support_mark_runtime_clone")', finish)
+        self.assertLess(stage11, clone_call)
+        self.assertLess(finish, mark_call)
 
     def test_source_prototype_is_restored_not_consumed(self):
         self.assertIn('{player "0"}', self.birth)
