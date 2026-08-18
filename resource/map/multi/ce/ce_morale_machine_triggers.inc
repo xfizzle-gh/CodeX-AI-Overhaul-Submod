@@ -148,25 +148,97 @@
 						}
 						{"2.entities"
 							{selector
-								{tag aio_morale_just_shaken}
-								{type human}
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_just_shaken}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{tag
+											{tag aio_morale_just_shaken_busy}
+										}
+									}
+								}
+								{amount 1}
 							}
 						}
 					}
 				}
 				{actions
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_just_shaken}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{tag
+										{tag aio_morale_just_shaken_busy}
+									}
+								}
+							}
+							{amount 1}
+						}
+						{tag_add aio_morale_just_shaken_busy}
+					}
 					{"delay"
 						{time 6}
 					}
 					{"entity_state"
 						{selector
-							{tag aio_morale_just_shaken}
-							{type human}
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_just_shaken_busy}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+							}
+							{amount 1}
 						}
 						{tag_remove aio_morale_just_shaken}
 					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_just_shaken_busy}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+							}
+							{amount 1}
+						}
+						{tag_remove aio_morale_just_shaken_busy}
+					}
 					{"delay"
-						{time 1}
+						{time 0.1}
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/morale/expire_just_shaken"}
@@ -183,13 +255,54 @@
 						}
 						{"2.entities"
 							{selector
-								{tag aio_morale_recent_pressure}
-								{type human}
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_recent_pressure}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{tag
+											{tag aio_morale_pressure_busy}
+										}
+									}
+								}
+								{amount 1}
 							}
 						}
 					}
 				}
 				{actions
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_recent_pressure}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{tag
+										{tag aio_morale_pressure_busy}
+									}
+								}
+							}
+							{amount 1}
+						}
+						{tag_add aio_morale_pressure_busy}
+					}
 					{"delay"
 						{time 5}
 					}
@@ -198,7 +311,7 @@
 							{condition
 								{type see_actors}
 								{selector
-									{tag aio_morale_recent_pressure}
+									{tag aio_morale_pressure_busy}
 									{type human}
 									{state operatable}
 								}
@@ -212,19 +325,69 @@
 								}
 								{detection located}
 							}
+							{"entity_state"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_pressure_busy}
+											}
+										}
+										{include
+											{prop
+												{prop human}
+											}
+										}
+									}
+									{amount 1}
+								}
+								{tag_remove aio_morale_pressure_busy}
+							}
 						}
 						{"default"
 							{"entity_state"
 								{selector
-									{tag aio_morale_recent_pressure}
-									{type human}
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_pressure_busy}
+											}
+										}
+										{include
+											{prop
+												{prop human}
+											}
+										}
+									}
+									{amount 1}
 								}
 								{tag_remove aio_morale_recent_pressure}
+							}
+							{"entity_state"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_pressure_busy}
+											}
+										}
+										{include
+											{prop
+												{prop human}
+											}
+										}
+									}
+									{amount 1}
+								}
+								{tag_remove aio_morale_pressure_busy}
 							}
 						}
 					}
 					{"delay"
-						{time 1}
+						{time 0.1}
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/morale/expire_pressure"}

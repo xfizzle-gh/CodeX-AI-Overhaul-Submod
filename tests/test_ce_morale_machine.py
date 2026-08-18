@@ -33,6 +33,16 @@ class CeMoraleMachineTests(unittest.TestCase):
         self.assertIn("aio_morale_just_shaken", escalate)
         self.assertIn("aio_morale_recent_pressure", escalate)
 
+    def test_expiry_timers_are_actor_local(self) -> None:
+        text = MACHINE.read_text(encoding="utf-8")
+        just = text.split("expire_just_shaken", 1)[1].split("expire_pressure", 1)[0]
+        self.assertIn("aio_morale_just_shaken_busy", just)
+        self.assertIn("{amount 1}", just)
+        pressure = text.split("expire_pressure", 1)[1].split("escalate_panic", 1)[0]
+        self.assertIn("aio_morale_pressure_busy", pressure)
+        self.assertIn("{amount 1}", pressure)
+        self.assertIn("{tag aio_morale_pressure_busy}", pressure)
+
     def test_recovery_latches_after_transition_and_requires_pressure_expiry(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")
         recover_panic = text.split("recover_panic", 1)[1].split("recover_shaken", 1)[0]
