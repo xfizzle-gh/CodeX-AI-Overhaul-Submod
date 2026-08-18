@@ -426,13 +426,87 @@
 		{delay 0.1
 			{tags add "aio_morale_recovering_from_shaken"}
 			{tags add "aio_morale_recovering"}
-			{delay 20
-				{if not tagged "aio_morale_panic"
-					{if tagged "aio_morale_recovering"
-						{call "recovered_from_shaken"}
+			{if tagged "aio_cmd_encouraged"
+				{delay 8
+					{if not tagged "aio_morale_panic"
+						{if tagged "aio_morale_recovering"
+							{call "recovered_from_shaken"}
+						}
 					}
+					{tags remove "aio_morale_recovering_from_shaken"}
 				}
-				{tags remove "aio_morale_recovering_from_shaken"}
+			else tagged "aio_steadfast"
+				{delay 8
+					{if not tagged "aio_morale_panic"
+						{if tagged "aio_morale_recovering"
+							{call "recovered_from_shaken"}
+						}
+					}
+					{tags remove "aio_morale_recovering_from_shaken"}
+				}
+			else tagged "aio_morale_elite"
+				{delay 10
+					{if not tagged "aio_morale_panic"
+						{if tagged "aio_morale_recovering"
+							{call "recovered_from_shaken"}
+						}
+					}
+					{tags remove "aio_morale_recovering_from_shaken"}
+				}
+			else tagged "aio_morale_trained"
+				{delay 14
+					{if not tagged "aio_morale_panic"
+						{if tagged "aio_morale_recovering"
+							{call "recovered_from_shaken"}
+						}
+					}
+					{tags remove "aio_morale_recovering_from_shaken"}
+				}
+			else tagged "aio_cmd_linked"
+				{delay 16
+					{if not tagged "aio_morale_panic"
+						{if tagged "aio_morale_recovering"
+							{call "recovered_from_shaken"}
+						}
+					}
+					{tags remove "aio_morale_recovering_from_shaken"}
+				}
+			else tagged "aio_cmd_shock"
+				{delay 28
+					{if not tagged "aio_morale_panic"
+						{if tagged "aio_morale_recovering"
+							{call "recovered_from_shaken"}
+						}
+					}
+					{tags remove "aio_morale_recovering_from_shaken"}
+				}
+			else tagged "aio_cmd_lost"
+				{delay 28
+					{if not tagged "aio_morale_panic"
+						{if tagged "aio_morale_recovering"
+							{call "recovered_from_shaken"}
+						}
+					}
+					{tags remove "aio_morale_recovering_from_shaken"}
+				}
+			else tagged "aio_morale_low"
+				{delay 24
+					{if not tagged "aio_morale_panic"
+						{if tagged "aio_morale_recovering"
+							{call "recovered_from_shaken"}
+						}
+					}
+					{tags remove "aio_morale_recovering_from_shaken"}
+				}
+			else
+				{delay 20
+					{if not tagged "aio_morale_panic"
+						{if tagged "aio_morale_recovering"
+							{call "recovered_from_shaken"}
+						}
+					}
+					{tags remove "aio_morale_recovering_from_shaken"}
+				}
 			}
 		}
 	}
@@ -451,18 +525,120 @@
 		{delay 0.1
 			{tags add "aio_morale_recovering_from_panic"}
 			{tags add "aio_morale_recovering"}
-			{delay 20
-				{if tagged "aio_morale_recovering"
-					{call "recovered_from_panic"}
+			{if tagged "aio_cmd_encouraged"
+				{delay 10
+					{if tagged "aio_morale_recovering"
+						{call "recovered_from_panic"}
+					}
+					{tags remove "aio_morale_recovering_from_panic"}
 				}
-				{tags remove "aio_morale_recovering_from_panic"}
+			else tagged "aio_steadfast"
+				{delay 10
+					{if tagged "aio_morale_recovering"
+						{call "recovered_from_panic"}
+					}
+					{tags remove "aio_morale_recovering_from_panic"}
+				}
+			else tagged "aio_morale_elite"
+				{delay 12
+					{if tagged "aio_morale_recovering"
+						{call "recovered_from_panic"}
+					}
+					{tags remove "aio_morale_recovering_from_panic"}
+				}
+			else tagged "aio_morale_trained"
+				{delay 16
+					{if tagged "aio_morale_recovering"
+						{call "recovered_from_panic"}
+					}
+					{tags remove "aio_morale_recovering_from_panic"}
+				}
+			else tagged "aio_cmd_linked"
+				{delay 16
+					{if tagged "aio_morale_recovering"
+						{call "recovered_from_panic"}
+					}
+					{tags remove "aio_morale_recovering_from_panic"}
+				}
+			else tagged "aio_cmd_shock"
+				{delay 28
+					{if tagged "aio_morale_recovering"
+						{call "recovered_from_panic"}
+					}
+					{tags remove "aio_morale_recovering_from_panic"}
+				}
+			else tagged "aio_cmd_lost"
+				{delay 28
+					{if tagged "aio_morale_recovering"
+						{call "recovered_from_panic"}
+					}
+					{tags remove "aio_morale_recovering_from_panic"}
+				}
+			else tagged "aio_morale_low"
+				{delay 24
+					{if tagged "aio_morale_recovering"
+						{call "recovered_from_panic"}
+					}
+					{tags remove "aio_morale_recovering_from_panic"}
+				}
+			else
+				{delay 20
+					{if tagged "aio_morale_recovering"
+						{call "recovered_from_panic"}
+					}
+					{tags remove "aio_morale_recovering_from_panic"}
+				}
 			}
 		}
 	}
 	{on "aio_morale_just_shaken"
 		{tags add "aio_morale_just_shaken"}
-		{delay 6
-			{tags remove "aio_morale_just_shaken"}
+		{if tagged "aio_cmd_shock"
+			{delay 2
+				{tags remove "aio_morale_just_shaken"}
+			}
+		else tagged "aio_steadfast"
+			{delay 12
+				{tags remove "aio_morale_just_shaken"}
+			}
+		else tagged "aio_cmd_lost"
+			{delay 3
+				{tags remove "aio_morale_just_shaken"}
+			}
+		else tagged "aio_morale_low"
+			{delay 4
+				{tags remove "aio_morale_just_shaken"}
+			}
+		else tagged "aio_morale_elite"
+			{delay 10
+				{tags remove "aio_morale_just_shaken"}
+			}
+		else tagged "aio_morale_trained"
+			{delay 8
+				{tags remove "aio_morale_just_shaken"}
+			}
+		else tagged "aio_cmd_linked"
+			{delay 8
+				{tags remove "aio_morale_just_shaken"}
+			}
+		else
+			{delay 6
+				{tags remove "aio_morale_just_shaken"}
+			}
+		}
+	}
+	{on "aio_cmd_encouraged"
+		{delay 0.1
+			{tags add "aio_cmd_encouraged"}
+			{delay 20
+				{tags remove "aio_cmd_encouraged"}
+			}
+		}
+	}
+	{on "aio_cmd_shock"
+		{tags add "aio_cmd_shock"}
+		{delay 10
+			{tags remove "aio_cmd_shock"}
 		}
 	}
 }

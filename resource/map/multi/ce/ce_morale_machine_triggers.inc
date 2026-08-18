@@ -270,6 +270,9 @@
 										{tag
 											{tag aio_morale_recovering}
 										}
+										{tag
+											{tag aio_cmd_encouraged}
+										}
 									}
 								}
 							}
@@ -312,6 +315,9 @@
 									}
 									{tag
 										{tag aio_morale_recovering}
+									}
+									{tag
+										{tag aio_cmd_encouraged}
 									}
 								}
 							}
