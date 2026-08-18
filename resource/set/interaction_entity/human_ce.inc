@@ -408,6 +408,11 @@
 		{view stop "beacon_fx"}
 	}
 
+	{on bullet_hit
+		{delay 0.10
+			{tags remove "aio_morale_recovering"}
+		}
+	}
 	{on "recovered_from_shaken"
 		{delay 0.1
 			{if tagged "aio_morale_shaken"

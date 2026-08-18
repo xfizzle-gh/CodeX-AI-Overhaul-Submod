@@ -61,6 +61,9 @@ class CeMoraleMachineTests(unittest.TestCase):
         self.assertIn("{effect recovering_from_shaken}", recover)
         self.assertIn("{effect recovering_from_panic}", recover)
         self.assertNotIn("{state suppressed}", recover)
+        human = HUMAN.read_text(encoding="utf-8")
+        hit = human.split("{on bullet_hit", 1)[1].split("{on ", 1)[0]
+        self.assertIn('{tags remove "aio_morale_recovering"}', hit)
 
     def test_pr_c_excludes_later_phases(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")
