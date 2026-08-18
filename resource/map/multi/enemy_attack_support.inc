@@ -147,20 +147,20 @@
 									{"case"
 										{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op "=="} {value 2}}
 										{"placement"
-											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 											{target_waypoint "attack_support_entry_a2"}
 										}
 									}
 									{"case"
 										{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op "=="} {value 3}}
 										{"placement"
-											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 											{target_waypoint "attack_support_entry_a3"}
 										}
 									}
 									{"default"
 										{"placement"
-											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 											{target_waypoint "attack_support_entry_a1"}
 										}
 									}
@@ -172,20 +172,20 @@
 									{"case"
 										{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op "=="} {value 2}}
 										{"placement"
-											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 											{target_waypoint "attack_support_entry_b2"}
 										}
 									}
 									{"case"
 										{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op "=="} {value 3}}
 										{"placement"
-											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 											{target_waypoint "attack_support_entry_b3"}
 										}
 									}
 									{"default"
 										{"placement"
-											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 											{target_waypoint "attack_support_entry_b1"}
 										}
 									}
@@ -196,20 +196,20 @@
 									{"case"
 										{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op "=="} {value 2}}
 										{"placement"
-											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 											{target_waypoint "attack_support_entry_a2"}
 										}
 									}
 									{"case"
 										{condition {type cmp_i} {var "enemy_attack_entry_rr$"} {op "=="} {value 3}}
 										{"placement"
-											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 											{target_waypoint "attack_support_entry_a3"}
 										}
 									}
 									{"default"
 										{"placement"
-											{selector {ignore_captured_by_user 0} {tag ea_place_one}}
+											{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 											{target_waypoint "attack_support_entry_a1"}
 										}
 									}
@@ -252,22 +252,22 @@
 			; id_1st_enemy$ > 0, so the default is unreachable in practice.
 			(define "ea_own_to_enemy"
 				{"switch"
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 1}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "1"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 2}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "2"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 3}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "3"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 4}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "4"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 5}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "5"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 6}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "6"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 7}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "7"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 8}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "8"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 9}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "9"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 10}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "10"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 11}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "11"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 12}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "12"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 13}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "13"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 14}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "14"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 15}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "15"}}}
-					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag ea_deploy}} {operation set} {player "16"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 1}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "1"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 2}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "2"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 3}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "3"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 4}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 5}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 6}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 7}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 8}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 9}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 10}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 11}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 12}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 13}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 14}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 15}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 16}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "16"}}}
 					{"default"
 						{"set_i" {var "enemy_attack_owner_fail$"} {op "="} {value 1}}
 						{"switch"
@@ -395,7 +395,7 @@
 				("ea_own_to_enemy")
 				{"delay" {time 0.4}}
 				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{control AI}
 					{ai_move {mode enable}}
 					{weapon_prepare on}
@@ -405,7 +405,7 @@
 					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
 				}
 				{"ables"
-					{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{remove select}
 				}
 				; Brief settle only — long pad dwell stacked corpses (parity fix).
@@ -484,7 +484,7 @@
 				}
 				; Off the pad immediately (no multi-second dwell / stack deaths).
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag ea_g1}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_g1}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag ea_flag1}}
@@ -494,7 +494,7 @@
 					{"case"
 						{condition {type rand} {value 0.34}}
 						{"action"
-							{selector {ignore_captured_by_user 0} {tag ea_g2}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_g2}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{drop orders}
 							{action advance}
 							{target {ignore_captured_by_user 0} {tag ea_flag3}}
@@ -502,7 +502,7 @@
 					}
 					{"default"
 						{"action"
-							{selector {ignore_captured_by_user 0} {tag ea_g2}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_g2}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{drop orders}
 							{action advance}
 							{target {ignore_captured_by_user 0} {tag ea_flag2}}
@@ -1227,20 +1227,20 @@
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 						{"placement"
-							{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{target_waypoint "attack_support_entry_a"}
 						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
 						{"placement"
-							{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{target_waypoint "attack_support_entry_b"}
 						}
 					}
 					{"default"
 						{"placement"
-							{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{target_waypoint "attack_support_entry_a"}
 						}
 					}
@@ -1267,7 +1267,7 @@
 				("ea_own_to_enemy")
 				{"delay" {time 0.4}}
 				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{control AI}
 					{ai_move {mode enable}}
 					{weapon_prepare on}
@@ -1277,7 +1277,7 @@
 					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
 				}
 				{"ables"
-					{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{remove select}
 				}
 				{"delay" {time 0.25}}
@@ -1299,7 +1299,7 @@
 				}
 				{"delay" {time 0.1}}
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_motor_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag ea_flag1}}
@@ -1319,7 +1319,7 @@
 				}
 				{"delay" {time 3}}
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag ea_motor_pax}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_motor_pax}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag ea_flag1}}
@@ -1327,11 +1327,11 @@
 				; Driver leaves the field instead of idling: drive for waypoint "0" and the
 				; cleanup trigger below removes the hull 45s later, wreck included.
 				{"entity_state"
-					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_motor_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{tag_add ea_motor_leaving}
 				}
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag ea_motor_hull}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_motor_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action move}
 					{waypoint "0"}
@@ -1555,20 +1555,20 @@
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 						{"placement"
-							{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{target_waypoint "attack_support_entry_a1"}
 						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
 						{"placement"
-							{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{target_waypoint "attack_support_entry_b1"}
 						}
 					}
 					{"default"
 						{"placement"
-							{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{target_waypoint "attack_support_entry_a1"}
 						}
 					}
@@ -1580,7 +1580,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_ea_step$"} {op "=="} {value 1}}
 						{"action"
-							{selector {ignore_captured_by_user 0} {tag transport_ea_hull}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ea_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_1"}
@@ -1590,7 +1590,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_ea_step$"} {op "=="} {value 2}}
 						{"action"
-							{selector {ignore_captured_by_user 0} {tag transport_ea_hull}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ea_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_2"}
@@ -1600,7 +1600,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_ea_step$"} {op "=="} {value 3}}
 						{"action"
-							{selector {ignore_captured_by_user 0} {tag transport_ea_hull}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ea_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_3"}
@@ -1610,7 +1610,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_ea_step$"} {op "=="} {value 4}}
 						{"action"
-							{selector {ignore_captured_by_user 0} {tag transport_ea_hull}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ea_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_4"}
@@ -1620,7 +1620,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_ea_step$"} {op "=="} {value 5}}
 						{"action"
-							{selector {ignore_captured_by_user 0} {tag transport_ea_hull}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ea_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_5"}
@@ -1662,7 +1662,7 @@
 					}
 					("transport_ea_place")
 					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{tag_remove transport_enemy_tpl}
 						{tag_remove transport_enemy_rusa}
 						{tag_remove hidden}
@@ -1674,7 +1674,7 @@
 					("ea_own_to_enemy")
 					{"delay" {time 0.4}}
 					{"actor_state"
-						{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{control AI}
 						{ai_move {mode enable}}
 						{weapon_prepare on}
@@ -1723,7 +1723,7 @@
 					}
 					("transport_ea_place")
 					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{tag_remove transport_enemy_tpl}
 						{tag_remove transport_enemy_ukr}
 						{tag_remove hidden}
@@ -1735,7 +1735,7 @@
 					("ea_own_to_enemy")
 					{"delay" {time 0.4}}
 					{"actor_state"
-						{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{control AI}
 						{ai_move {mode enable}}
 						{weapon_prepare on}
@@ -1784,7 +1784,7 @@
 					}
 					("transport_ea_place")
 					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{tag_remove transport_enemy_tpl}
 						{tag_remove transport_enemy_nato}
 						{tag_remove hidden}
@@ -1796,7 +1796,7 @@
 					("ea_own_to_enemy")
 					{"delay" {time 0.4}}
 					{"actor_state"
-						{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{control AI}
 						{ai_move {mode enable}}
 						{weapon_prepare on}
@@ -1845,7 +1845,7 @@
 					}
 					("transport_ea_place")
 					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{tag_remove transport_enemy_tpl}
 						{tag_remove transport_enemy_prc}
 						{tag_remove hidden}
@@ -1857,7 +1857,7 @@
 					("ea_own_to_enemy")
 					{"delay" {time 0.4}}
 					{"actor_state"
-						{selector {ignore_captured_by_user 0} {tag ea_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{control AI}
 						{ai_move {mode enable}}
 						{weapon_prepare on}
@@ -1913,6 +1913,6 @@
 				}
 				{actions
 					{"delay" {time 90}}
-					{"delete" {selector {ignore_captured_by_user 0} {tag ea_motor_leaving}}}
+					{"delete" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_motor_leaving}}} {exclude {tag {tag aio_morale_owned}}}}}}
 				}
 			}

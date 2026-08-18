@@ -173,6 +173,13 @@ local function pickFlagName()
 end
 
 local function orderSquad(squad)
+	local sc = scene()
+	if sc and sc.IsSquadTagged then
+		local ok, owned = pcall(function()
+			return sc:IsSquadTagged(squad, "aio_morale_owned") or sc:IsSquadTagged(squad, "_lua_mi") or sc:IsSquadTagged(squad, "repairing")
+		end)
+		if ok and owned then return end
+	end
 	local c = cmds()
 	if not c then return end
 	local flagName = pickFlagName()

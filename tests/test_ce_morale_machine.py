@@ -67,14 +67,12 @@ class CeMoraleMachineTests(unittest.TestCase):
         hit = human.split("{on bullet_hit", 1)[1].split("{on ", 1)[0]
         self.assertIn('{tags remove "aio_morale_recovering"}', hit)
 
-    def test_pr_c_excludes_later_phases(self) -> None:
+    def test_broken_handoff_exists(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")
-        self.assertNotIn("aio_morale_broken", text)
-        self.assertNotIn("aio_morale_retreating", text)
-        self.assertNotIn("aio_morale_surrendering", text)
-        self.assertNotIn("{name aio_morale_broken}", MOD.read_text(encoding="utf-8"))
-        self.assertNotIn("escalate_broken", text)
-        self.assertNotIn("recovering_from_broken", HUMAN.read_text(encoding="utf-8"))
+        self.assertIn("escalate_broken", text)
+        self.assertIn("aio_morale_broken", text)
+        self.assertIn("{name aio_morale_broken}", MOD.read_text(encoding="utf-8"))
+        self.assertIn("recovering_from_broken", HUMAN.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

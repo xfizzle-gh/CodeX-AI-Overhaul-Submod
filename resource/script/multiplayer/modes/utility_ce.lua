@@ -395,7 +395,27 @@ local function readMoraleVar(name)
   return tonumber(value) or 0
 end
 
+local function startMoraleEventWatch()
+  local seenRetreat = false
+  local seenSurrender = false
+  local function watch()
+    if not seenRetreat and readMoraleVar("ce_morale_diag_retreat") > 0 then
+      seenRetreat = true
+      print("CE_MORALE_EVENT retreat")
+    end
+    if not seenSurrender and readMoraleVar("ce_morale_diag_surrender") > 0 then
+      seenSurrender = true
+      print("CE_MORALE_EVENT surrender")
+    end
+    if not (seenRetreat and seenSurrender) then
+      BotApi.Events:SetQuantTimer(watch, 2000)
+    end
+  end
+  BotApi.Events:SetQuantTimer(watch, 2000)
+end
+
 function StartCeMoraleProbeLog()
+  startMoraleEventWatch()
   if readMoraleVar("enable_ce_morale_autodemo") <= 0 then
     return
   end
@@ -468,7 +488,7 @@ function StartCeMoraleProbeLog()
     local cmd_shock = readMoraleVar("ce_morale_diag_cmd_shock")
     local cmd_encourage = readMoraleVar("ce_morale_diag_cmd_encourage")
     local vet_live = readMoraleVar("ce_morale_diag_vet_live")
-    print("CE_MORALE_SYS mi=" .. mi .. " human=" .. human .. " tag_add=" .. tag_add .. " tag_read=" .. tag_read .. " known_tag=" .. known_tag .. " pr_a=" .. pr_a .. " canary=" .. canary_present .. " inv=" .. inventory .. " ai=" .. ai_human .. " pressure=" .. pressure .. " suppressed=" .. suppressed_state .. " shaken=" .. shaken_apply .. " recover=" .. recover .. " recover_panic=" .. recover_panic .. " recover_clear=" .. recover_clear .. " panic=" .. panic_apply .. " player_ex=" .. player_excluded .. " cmd_link=" .. cmd_link .. " cmd_lost=" .. cmd_lost .. " cmd_shock=" .. cmd_shock .. " cmd_encourage=" .. cmd_encourage .. " vet_live=" .. vet_live)
+    print("CE_MORALE_SYS mi=" .. mi .. " human=" .. human .. " tag_add=" .. tag_add .. " tag_read=" .. tag_read .. " known_tag=" .. known_tag .. " pr_a=" .. pr_a .. " canary=" .. canary_present .. " inv=" .. inventory .. " ai=" .. ai_human .. " pressure=" .. pressure .. " suppressed=" .. suppressed_state .. " shaken=" .. shaken_apply .. " recover=" .. recover .. " recover_panic=" .. recover_panic .. " recover_clear=" .. recover_clear .. " panic=" .. panic_apply .. " player_ex=" .. player_excluded .. " cmd_link=" .. cmd_link .. " cmd_lost=" .. cmd_lost .. " cmd_shock=" .. cmd_shock .. " cmd_encourage=" .. cmd_encourage .. " vet_live=" .. vet_live .. " broken=" .. broken .. " retreat=" .. retreat .. " surrender=" .. surrender)
     if ticks >= 2 then
       local fails = {}
       if human > 0 and tag_add <= 0 then
