@@ -1,6 +1,71 @@
 ; PR C: Steady -> Shaken -> Panic, then Panic -> Shaken -> Steady.
 ; Production pressure is native {state suppressed}, proven in Conquest game.log.
 ; Age tags tick everyone together, oldest first. Players may be Shaken/Panic.
+			{"conquest_enhanced_mechanics/morale/observe_ai"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag _bot}
+										}
+										{tag
+											{tag bot}
+										}
+										{tag
+											{tag _ai}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+									}
+								}
+								{group
+									{select
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag player}
+										}
+										{tag
+											{tag _user}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
+					{"set_i"
+						{var "ce_morale_diag_ai_human$"}
+						{op "="}
+						{value 1}
+					}
+					{"delay"
+						{time 1}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/morale/observe_ai"}
+					}
+				}
+			}
 			{"conquest_enhanced_mechanics/morale/shaken_entry"
 				{condition
 					{terms
@@ -738,6 +803,9 @@
 										{tag
 											{tag aio_morale_recent_pressure}
 										}
+										{state
+											{state suppressed}
+										}
 									}
 								}
 							}
@@ -765,6 +833,9 @@
 								{exclude
 									{tag
 										{tag aio_morale_recent_pressure}
+									}
+									{state
+										{state suppressed}
 									}
 								}
 							}
@@ -805,8 +876,19 @@
 						{condition
 							{type entities}
 							{selector
-								{tag aio_morale_recovered_panic}
-								{type human}
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_recovered_panic}
+										}
+									}
+									{exclude
+										{state
+											{state suppressed}
+										}
+									}
+								}
 							}
 						}
 						{"set_i"
@@ -879,6 +961,9 @@
 										{tag
 											{tag aio_morale_just_shaken}
 										}
+										{state
+											{state suppressed}
+										}
 									}
 								}
 							}
@@ -910,6 +995,9 @@
 									{tag
 										{tag aio_morale_recent_pressure}
 									}
+									{state
+										{state suppressed}
+									}
 								}
 							}
 						}
@@ -926,12 +1014,48 @@
 						{condition
 							{type entities}
 							{selector
-								{tag aio_morale_recovered_shaken}
-								{type human}
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_recovered_shaken}
+										}
+									}
+									{exclude
+										{state
+											{state suppressed}
+										}
+									}
+								}
 							}
 						}
 						{"set_i"
 							{var "ce_morale_diag_recover$"}
+							{op "="}
+							{value 1}
+						}
+					}
+					{"if"
+						{condition
+							{type entities}
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_recovered_shaken}
+										}
+									}
+									{exclude
+										{state
+											{state suppressed}
+										}
+									}
+								}
+							}
+						}
+						{"set_i"
+							{var "ce_morale_diag_recover_clear$"}
 							{op "="}
 							{value 1}
 						}

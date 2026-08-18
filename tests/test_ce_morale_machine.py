@@ -17,6 +17,8 @@ class CeMoraleMachineTests(unittest.TestCase):
         lua = LUA.read_text(encoding="utf-8")
         self.assertIn("CE_MORALE_SYS", lua)
         self.assertIn("recover_panic=", lua)
+        self.assertIn("recover_clear=", lua)
+        self.assertIn("observe_ai", MACHINE.read_text(encoding="utf-8"))
 
     def test_production_pressure_is_native_suppressed(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")
