@@ -507,6 +507,24 @@
 							{source advanced}
 							{group
 								{select
+									{tag
+										{tag aio_cmd_weak}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_remove aio_cmd_lost}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
 									{prop
 										{prop human}
 									}

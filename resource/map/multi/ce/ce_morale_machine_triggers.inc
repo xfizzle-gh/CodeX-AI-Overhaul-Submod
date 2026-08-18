@@ -123,12 +123,6 @@
 										{tag
 											{tag aio_morale_panic}
 										}
-										{tag
-											{tag aio_steadfast}
-										}
-										{tag
-											{tag aio_cmd_encouraged}
-										}
 									}
 								}
 							}
@@ -180,12 +174,6 @@
 									}
 									{tag
 										{tag aio_morale_panic}
-									}
-									{tag
-										{tag aio_steadfast}
-									}
-									{tag
-										{tag aio_cmd_encouraged}
 									}
 								}
 							}
@@ -283,9 +271,6 @@
 											{tag aio_morale_recovering}
 										}
 										{tag
-											{tag aio_steadfast}
-										}
-										{tag
 											{tag aio_cmd_encouraged}
 										}
 									}
@@ -330,9 +315,6 @@
 									}
 									{tag
 										{tag aio_morale_recovering}
-									}
-									{tag
-										{tag aio_steadfast}
 									}
 									{tag
 										{tag aio_cmd_encouraged}

@@ -41,14 +41,33 @@ class CeCommandCohesionTests(unittest.TestCase):
         text = CMD.read_text(encoding="utf-8")
         self.assertIn("aio_cmd_shock_spent", text)
 
+    def test_lost_to_weak_clears_lost(self) -> None:
+        text = CMD.read_text(encoding="utf-8")
+        weak = text.split("{tag_add aio_cmd_weak}", 1)[1]
+        self.assertIn("{tag_remove aio_cmd_lost}", weak.split("{tag_add aio_cmd_lost}", 1)[0])
+
     def test_discipline_does_not_skip_recovery(self) -> None:
         human = HUMAN.read_text(encoding="utf-8")
         enc = human.split('{on "aio_cmd_encouraged"', 1)[1].split('{on "', 1)[0]
         self.assertNotIn('{tags remove "aio_morale_panic"}', enc)
         self.assertNotIn('{tags remove "aio_morale_shaken"}', enc)
         machine = MACHINE.read_text(encoding="utf-8")
-        self.assertIn("aio_cmd_encouraged", machine)
-        self.assertIn("aio_steadfast", machine)
+        entry = machine.split("shaken_entry", 1)[1].split("escalate_panic", 1)[0]
+        self.assertNotIn("aio_steadfast", entry)
+        self.assertNotIn("aio_cmd_encouraged", entry)
+        escalate = machine.split("escalate_panic", 1)[1].split("start_recover", 1)[0]
+        self.assertIn("aio_cmd_encouraged", escalate)
+        self.assertNotIn("aio_steadfast", escalate)
+
+    def test_command_changes_recovery_time(self) -> None:
+        human = HUMAN.read_text(encoding="utf-8")
+        shaken = human.split('{on "recovering_from_shaken"', 1)[1].split('{on "', 1)[0]
+        self.assertIn("aio_cmd_encouraged", shaken)
+        self.assertIn("aio_cmd_linked", shaken)
+        self.assertIn("aio_cmd_lost", shaken)
+        self.assertIn("aio_steadfast", shaken)
+        self.assertIn("{delay 16", shaken)
+        self.assertIn("{delay 28", shaken)
 
     def test_quality_tuning_exists(self) -> None:
         human = HUMAN.read_text(encoding="utf-8")
