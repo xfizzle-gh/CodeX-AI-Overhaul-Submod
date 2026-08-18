@@ -395,7 +395,27 @@ local function readMoraleVar(name)
   return tonumber(value) or 0
 end
 
+local function startMoraleEventWatch()
+  local seenRetreat = false
+  local seenSurrender = false
+  local function watch()
+    if not seenRetreat and readMoraleVar("ce_morale_diag_retreat") > 0 then
+      seenRetreat = true
+      print("CE_MORALE_EVENT retreat")
+    end
+    if not seenSurrender and readMoraleVar("ce_morale_diag_surrender") > 0 then
+      seenSurrender = true
+      print("CE_MORALE_EVENT surrender")
+    end
+    if not (seenRetreat and seenSurrender) then
+      BotApi.Events:SetQuantTimer(watch, 2000)
+    end
+  end
+  BotApi.Events:SetQuantTimer(watch, 2000)
+end
+
 function StartCeMoraleProbeLog()
+  startMoraleEventWatch()
   if readMoraleVar("enable_ce_morale_autodemo") <= 0 then
     return
   end

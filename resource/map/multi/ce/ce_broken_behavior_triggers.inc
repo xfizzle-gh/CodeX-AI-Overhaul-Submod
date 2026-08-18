@@ -24,7 +24,7 @@
 									}
 									{exclude
 										{state
-											{state dead}
+											{state "dead inactive"}
 										}
 										{state
 											{state inactive}
@@ -61,7 +61,7 @@
 								}
 								{exclude
 									{state
-										{state dead}
+										{state "dead inactive"}
 									}
 									{state
 										{state inactive}
@@ -107,6 +107,9 @@
 										{state dead}
 									}
 									{state
+										{state inactive}
+									}
+									{state
 										{state user_control}
 									}
 									{tag
@@ -133,7 +136,7 @@
 								}
 								{exclude
 									{state
-										{state dead}
+										{state "dead inactive"}
 									}
 									{state
 										{state inactive}
@@ -159,7 +162,7 @@
 								}
 								{exclude
 									{state
-										{state dead}
+										{state "dead inactive"}
 									}
 									{state
 										{state inactive}
@@ -193,14 +196,20 @@
 										{tag aio_morale_broken}
 									}
 								}
-								{exclude
-									{state
-										{state user_control}
-									}
-									{tag
-										{tag aio_morale_watching_regroup}
-									}
+							{exclude
+								{state
+									{state dead}
 								}
+								{state
+									{state inactive}
+								}
+								{state
+									{state user_control}
+								}
+								{tag
+									{tag aio_morale_watching_regroup}
+								}
+							}
 							}
 						}
 						{effect aio_morale_watch_regroup}
@@ -245,7 +254,7 @@
 									}
 									{exclude
 										{state
-											{state dead}
+											{state "dead inactive"}
 										}
 										{state
 											{state inactive}
@@ -282,7 +291,7 @@
 								}
 								{exclude
 									{state
-										{state dead}
+										{state "dead inactive"}
 									}
 									{state
 										{state inactive}
@@ -322,7 +331,7 @@
 								}
 								{exclude
 									{state
-										{state dead}
+										{state "dead inactive"}
 									}
 									{state
 										{state inactive}
@@ -351,6 +360,12 @@
 									}
 								}
 								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
 									{state
 										{state user_control}
 									}
@@ -403,7 +418,7 @@
 											{state suppressed}
 										}
 										{state
-											{state dead}
+											{state "dead inactive"}
 										}
 										{tag
 											{tag aio_morale_recovering_from_broken}
@@ -432,17 +447,23 @@
 										{tag aio_cmd_linked}
 									}
 								}
-								{exclude
-									{state
-										{state suppressed}
-									}
-									{tag
-										{tag aio_morale_recovering_from_broken}
-									}
-									{tag
-										{tag aio_morale_surrendering}
-									}
+							{exclude
+								{state
+									{state dead}
 								}
+								{state
+									{state inactive}
+								}
+								{state
+									{state suppressed}
+								}
+								{tag
+									{tag aio_morale_recovering_from_broken}
+								}
+								{tag
+									{tag aio_morale_surrendering}
+								}
+							}
 							}
 						}
 						{effect recovering_from_broken}
@@ -482,7 +503,7 @@
 									}
 									{exclude
 										{state
-											{state dead}
+											{state "dead inactive"}
 										}
 										{state
 											{state user_control}
@@ -506,7 +527,7 @@
 									}
 									{exclude
 										{state
-											{state dead}
+											{state "dead inactive"}
 										}
 										{state
 											{state inactive}
@@ -536,25 +557,31 @@
 										{tag aio_morale_surrender_cand}
 									}
 								}
-								{include
-									{tag
-										{tag aio_morale_broken}
-									}
-									{tag
-										{tag aio_morale_regroup_failed}
-									}
+							{include
+								{tag
+									{tag aio_morale_broken}
 								}
-								{exclude
-									{state
-										{state user_control}
-									}
-									{tag
-										{tag player}
-									}
-									{tag
-										{tag aio_morale_surrendering}
-									}
+								{tag
+									{tag aio_morale_regroup_failed}
 								}
+							}
+							{exclude
+								{state
+									{state dead}
+								}
+								{state
+									{state inactive}
+								}
+								{state
+									{state user_control}
+								}
+								{tag
+									{tag player}
+								}
+								{tag
+									{tag aio_morale_surrendering}
+								}
+							}
 							}
 						}
 						{effect aio_morale_surrender}
@@ -573,7 +600,7 @@
 								}
 								{exclude
 									{state
-										{state dead}
+										{state "dead inactive"}
 									}
 									{state
 										{state inactive}
@@ -628,7 +655,7 @@
 									}
 									{exclude
 										{state
-											{state dead}
+											{state "dead inactive"}
 										}
 										{state
 											{state inactive}
@@ -673,10 +700,13 @@
 										{tag
 											{tag aio_morale_surrender_cand}
 										}
+										{tag
+											{tag aio_morale_watching_regroup}
+										}
 									}
 									{include
 										{state
-											{state dead}
+											{state "dead inactive"}
 										}
 									}
 								}
@@ -714,7 +744,7 @@
 								}
 								{include
 									{state
-										{state dead}
+										{state "dead inactive"}
 									}
 								}
 							}
@@ -732,7 +762,7 @@
 								}
 								{include
 									{state
-										{state dead}
+										{state "dead inactive"}
 									}
 								}
 							}
@@ -750,7 +780,7 @@
 								}
 								{include
 									{state
-										{state dead}
+										{state "dead inactive"}
 									}
 								}
 							}
@@ -768,7 +798,7 @@
 								}
 								{include
 									{state
-										{state dead}
+										{state "dead inactive"}
 									}
 								}
 							}
@@ -786,7 +816,7 @@
 								}
 								{include
 									{state
-										{state dead}
+										{state "dead inactive"}
 									}
 								}
 							}
@@ -804,12 +834,48 @@
 								}
 								{include
 									{state
-										{state dead}
+										{state "dead inactive"}
 									}
 								}
 							}
 						}
 						{tag_remove aio_morale_regroup_failed}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_moving_to_rally}
+									}
+								}
+								{include
+									{state
+										{state "dead inactive"}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_moving_to_rally}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_watching_regroup}
+									}
+								}
+								{include
+									{state
+										{state "dead inactive"}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_watching_regroup}
 					}
 					{"delay"
 						{time 2}

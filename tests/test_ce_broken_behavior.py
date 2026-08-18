@@ -21,6 +21,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{advance_ratio 0.1}", BEH.read_text(encoding="utf-8"))
         lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
         self.assertIn("retreat=", lua)
+        self.assertIn("CE_MORALE_EVENT retreat", lua)
+        self.assertIn("CE_MORALE_EVENT surrender", lua)
         self.assertIn("observe_surrender", BEH.read_text(encoding="utf-8"))
         die = HUMAN.read_text(encoding="utf-8").split('{on "die"', 1)[1].split("{on ", 1)[0]
         self.assertIn('{tags remove "aio_morale_broken"}', die)
@@ -84,6 +86,29 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             BEH.read_text(encoding="utf-8").count("broken/surrender"),
             2,
         )
+
+    def test_effect_selectors_exclude_dead_inactive(self) -> None:
+        parts = BEH.read_text(encoding="utf-8").split('{"effect"')
+        self.assertGreater(len(parts), 1)
+        for part in parts[1:]:
+            block = part.split("{effect ", 1)[0]
+            self.assertIn("{state dead}", block)
+            self.assertIn("{state inactive}", block)
+
+    def test_cleanup_strips_inactive_broken_tags(self) -> None:
+        cleanup = BEH.read_text(encoding="utf-8").split("broken/cleanup_dead", 1)[1]
+        self.assertIn('{state "dead inactive"}', cleanup)
+        for tag in (
+            "aio_morale_owned",
+            "aio_morale_broken",
+            "aio_morale_regrouping",
+            "aio_morale_regroup_failed",
+            "aio_morale_moving_to_rally",
+            "aio_morale_surrender_cand",
+            "aio_morale_surrendering",
+            "aio_morale_watching_regroup",
+        ):
+            self.assertIn("tag_remove " + tag, cleanup)
 
 
 if __name__ == "__main__":
