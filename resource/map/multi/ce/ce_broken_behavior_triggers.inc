@@ -676,6 +676,9 @@
 										{tag
 											{tag aio_morale_surrender_fx}
 										}
+										{tag
+											{tag aio_morale_surrender_presenting}
+										}
 									}
 								}
 							}
@@ -683,13 +686,46 @@
 					}
 				}
 				{actions
-					{"inventory"
+					{"entity_state"
 						{selector
 							{source advanced}
 							{group
 								{select
 									{tag
 										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrender_fx}
+									}
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+							}
+						}
+						{tag_add aio_morale_surrender_presenting}
+					}
+					{"inventory"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
 									}
 								}
 								{include
@@ -728,7 +764,7 @@
 							{group
 								{select
 									{tag
-										{tag aio_morale_surrendering}
+										{tag aio_morale_surrender_presenting}
 									}
 								}
 								{include
@@ -764,7 +800,7 @@
 							{group
 								{select
 									{tag
-										{tag aio_morale_surrendering}
+										{tag aio_morale_surrender_presenting}
 									}
 								}
 								{exclude
@@ -779,9 +815,6 @@
 									}
 									{tag
 										{tag player}
-									}
-									{tag
-										{tag aio_morale_surrender_fx}
 									}
 								}
 							}
@@ -800,7 +833,7 @@
 							{group
 								{select
 									{tag
-										{tag aio_morale_surrendering}
+										{tag aio_morale_surrender_presenting}
 									}
 								}
 								{exclude
@@ -815,9 +848,6 @@
 									}
 									{tag
 										{tag player}
-									}
-									{tag
-										{tag aio_morale_surrender_fx}
 									}
 								}
 							}
@@ -834,7 +864,7 @@
 							{group
 								{select
 									{tag
-										{tag aio_morale_surrendering}
+										{tag aio_morale_surrender_presenting}
 									}
 								}
 								{exclude
@@ -854,6 +884,19 @@
 							}
 						}
 						{tag_add aio_morale_surrender_fx}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_surrender_presenting}
 					}
 					{"delay"
 						{time 1}
@@ -940,7 +983,7 @@
 						}
 					}
 					{"delay"
-						{time 0.5}
+						{time 2}
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/broken/surrender_expire"}
@@ -1017,6 +1060,9 @@
 										{tag
 											{tag aio_morale_surrender_fx}
 										}
+										{tag
+											{tag aio_morale_surrender_presenting}
+										}
 									}
 									{include
 										{state
@@ -1043,6 +1089,9 @@
 										}
 										{tag
 											{tag aio_morale_surrender_fx}
+										}
+										{tag
+											{tag aio_morale_surrender_presenting}
 										}
 									}
 									{include
@@ -1361,6 +1410,36 @@
 							}
 						}
 						{tag_remove aio_morale_surrender_fx}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+								{include
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_surrender_presenting}
 					}
 					{"entity_state"
 						{selector

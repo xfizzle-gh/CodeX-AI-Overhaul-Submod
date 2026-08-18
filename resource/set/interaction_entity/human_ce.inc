@@ -413,6 +413,7 @@
 		{tags remove "aio_morale_surrendering"}
 		{tags remove "aio_morale_surrender_cand"}
 		{tags remove "aio_morale_surrender_fx"}
+		{tags remove "aio_morale_surrender_presenting"}
 		{tags remove "aio_morale_surrender_expire"}
 		{tags remove "aio_morale_watching_regroup"}
 		{view stop "beacon_fx"}

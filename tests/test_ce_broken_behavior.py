@@ -102,8 +102,13 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertLess(apply.find('{call "start_white_flag"}'), apply.find("{delay 35"))
         self.assertEqual(human.count('{call "start_white_flag"}'), 1)
         self.assertNotIn("{effect start_white_flag}", beh)
-        drop = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_expire", 1)[0]
-        self.assertGreaterEqual(drop.count("{tag aio_morale_surrender_fx}"), 4)
+        present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_expire", 1)[0]
+        self.assertIn("{tag_add aio_morale_surrender_presenting}", present)
+        self.assertLess(present.find("{tag_add aio_morale_surrender_presenting}"), present.find("{action drop}"))
+        self.assertLess(present.find("{collage walk_giveup_1}"), present.find("{collage stand_giveup_2}"))
+        self.assertLess(present.find("{collage stand_giveup_2}"), present.find("{tag_add aio_morale_surrender_fx}"))
+        self.assertIn("{tag_remove aio_morale_surrender_presenting}", present)
+        self.assertGreaterEqual(present.count("{tag aio_morale_surrender_presenting}"), 5)
         self.assertNotIn('{player "0"}', beh)
         self.assertNotIn("{control AI}", beh)
         self.assertIn("enable_ce_morale_autodemo", lua.split("function StartCeMoraleProbeLog()", 1)[1][:400])
@@ -132,6 +137,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "aio_morale_surrendering",
             "aio_morale_watching_regroup",
             "aio_morale_surrender_fx",
+            "aio_morale_surrender_presenting",
             "aio_morale_surrender_expire",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
