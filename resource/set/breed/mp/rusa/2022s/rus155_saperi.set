@@ -4,7 +4,7 @@
 	{portrait "155th"}
 	{icon bazooka}
 	{icon_priority 0}
-	{tags "soldier_at aio_morale_trained"}
+	{tags "soldier_at"}
 	{nationality rus}
 	{armors
 		{body "rus_fsb_abody_3"}
@@ -33,6 +33,7 @@
 		{item "c4pn" 2}				
 		{item "rus_fsb_abody_12_1"}
                 {item "shovel_rus"}
+		{item "aio_marker_morale_trained"}
 		{in_hands 3}
 	}
 }

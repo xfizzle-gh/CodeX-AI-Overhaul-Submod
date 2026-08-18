@@ -5,7 +5,7 @@
 	{field_icon "rus_tankman"}
 	{icon "tech"}
 	{icon_priority 0}
-	{tags "crew aio_morale_low"}
+	{tags "crew"}
 	{nationality rus}
 	{armors
 		{head helmet_6b48}
@@ -29,6 +29,7 @@
 		{item "first_aid_kit_army" 2.5 0.5}
 		{item "binocular_bpos_10x42"}
 
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

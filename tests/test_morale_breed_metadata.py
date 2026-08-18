@@ -42,6 +42,23 @@ RUNTIME_FORBIDDEN = {
 }
 TAGS_RE = re.compile(r'(\{tags\s+")([^"]*)("\})')
 AIO_RE = re.compile(r"^aio_")
+ITEM_RE = re.compile(r'\{item "([^"]+)"')
+MARKER_RE = re.compile(
+    r'\r?\n[ \t]*\{item "(?:aio_morale_marker|secret_doc_bag2|aio_marker_[^"]+)"\}'
+)
+TOKEN_TO_ITEM = {
+    "aio_morale_low": "aio_marker_morale_low",
+    "aio_morale_regular": "aio_marker_morale_regular",
+    "aio_morale_trained": "aio_marker_morale_trained",
+    "aio_morale_elite": "aio_marker_morale_elite",
+    "aio_cmd_junior": "aio_marker_cmd_junior",
+    "aio_cmd_primary": "aio_marker_cmd_primary",
+    "aio_cmd_senior": "aio_marker_cmd_senior",
+    "aio_cmd_independent": "aio_marker_cmd_independent",
+    "aio_discipline": "aio_marker_discipline",
+    "aio_steadfast": "aio_marker_steadfast",
+}
+ITEM_TO_TOKEN = {item: token for token, item in TOKEN_TO_ITEM.items()}
 
 
 def load_legacy_allowlist() -> set[str]:
@@ -50,10 +67,8 @@ def load_legacy_allowlist() -> set[str]:
 
 
 def aio_tokens(text: str) -> list[str]:
-    match = TAGS_RE.search(text)
-    if not match:
-        return []
-    return [token for token in match.group(2).split() if AIO_RE.match(token)]
+    items = ITEM_RE.findall(text)
+    return [ITEM_TO_TOKEN[item] for item in items if item in ITEM_TO_TOKEN]
 
 
 def strip_aio_tags(text: str) -> str:
@@ -72,6 +87,10 @@ def strip_aio_tags(text: str) -> str:
     if match.group(2).split() and all(AIO_RE.match(token) for token in match.group(2).split()):
         return text[:line_start] + text[line_end:]
     return text[: match.start()] + match.group(1) + match.group(3) + text[match.end() :]
+
+
+def strip_diag_marker(text: str) -> str:
+    return MARKER_RE.sub("", text)
 
 
 class MoraleBreedMetadataTests(unittest.TestCase):
@@ -102,7 +121,8 @@ class MoraleBreedMetadataTests(unittest.TestCase):
     def test_every_overlay_has_exactly_one_morale_profile(self) -> None:
         self.assertEqual(len(self.sets), 2091)
         for path in self.sets:
-            tokens = aio_tokens(path.read_text(encoding="utf-8", errors="replace"))
+            text = path.read_text(encoding="utf-8", errors="replace")
+            tokens = aio_tokens(text)
             morale = [token for token in tokens if token in MORALE]
             self.assertEqual(len(morale), 1, path)
             unknown = [token for token in tokens if token not in ALLOWED]
@@ -111,6 +131,10 @@ class MoraleBreedMetadataTests(unittest.TestCase):
             self.assertEqual(forbidden, [], path)
             cmd = [token for token in tokens if token in CMD and token != "aio_cmd_independent"]
             self.assertLessEqual(len(cmd), 1, path)
+            tags = TAGS_RE.search(text)
+            if tags:
+                tag_aio = [token for token in tags.group(2).split() if AIO_RE.match(token)]
+                self.assertEqual(tag_aio, [], path)
 
     def test_tsv_covers_every_overlay(self) -> None:
         lines = TSV.read_text(encoding="utf-8").splitlines()
@@ -137,7 +161,7 @@ class MoraleBreedMetadataTests(unittest.TestCase):
         unexpected = []
         for rel, path in self.rel.items():
             aio = path.read_text(encoding="utf-8", errors="replace")
-            stripped = strip_aio_tags(aio)
+            stripped = strip_diag_marker(strip_aio_tags(aio))
             upstream = (codex / Path(*rel.split("/"))).read_text(encoding="utf-8", errors="replace")
             if stripped != upstream and rel not in self.legacy:
                 unexpected.append(rel)

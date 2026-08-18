@@ -4,7 +4,7 @@
 	{portrait "21th"}
 	{icon sniper}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_b_1}
@@ -26,6 +26,7 @@
 		{item "shovel_rus"}
 		{item "m107_ag90" filling "ammo m107_ammo" 10}
 		{item "ammo m107_ammo" 100}
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

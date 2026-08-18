@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained aio_cmd_junior"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "fj_1"}
 	{portrait "pzgd1"}
@@ -30,6 +30,8 @@
 		{item "bandage_usa" 4.5 0.5}
         {item "shovel_csa"}
 		 
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 0}
 	}
 }

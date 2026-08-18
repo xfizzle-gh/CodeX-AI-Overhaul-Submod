@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_regular aio_cmd_primary"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "gb_rmc2"}
 	{portrait "gb"}
@@ -33,6 +33,8 @@
         {item "shovel_csa"}
 		{item "benelli_m4" filling "ammo shotgun" 7}
 		{item "ammo shotgun" 21}		
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

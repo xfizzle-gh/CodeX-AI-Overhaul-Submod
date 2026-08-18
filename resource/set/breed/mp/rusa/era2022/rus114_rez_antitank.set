@@ -4,7 +4,7 @@
 	{portrait "vostok"}
 	{icon "bazooka"}
 	{icon_priority 0}
-	{tags "soldier_bazooka aio_morale_low"}
+	{tags "soldier_bazooka"}
 	{nationality rus}
 	{armors
 		{head helmet_sh68}
@@ -33,6 +33,7 @@
 		{item "bandage_rus" 3}
 		{item "knife_rus"}
 
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

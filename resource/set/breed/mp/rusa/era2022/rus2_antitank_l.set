@@ -4,7 +4,7 @@
 	{portrait svo_2rd}
 	{icon bazooka}
 	{icon_priority 0}
-	{tags "soldier_at aio_morale_regular"}
+	{tags "soldier_at"}
 	{nationality rus}
 	{armors
 		{body "rus_fsb_abody_3_4"}
@@ -28,6 +28,7 @@
 		{item "5x39 ammo" 180}
 		{item "RPG26 weapon weapon" 3 filled}
                 {item "shovel_rus"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

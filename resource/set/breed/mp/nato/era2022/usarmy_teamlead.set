@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_regular aio_cmd_junior"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "ng3"}
 	{portrait "acav"}
@@ -32,6 +32,8 @@
 		{item "shovel_csa"}
 		{item "ng_vest2"}
 		{item "ng_backpack1"}		
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 0}
 	}
 }

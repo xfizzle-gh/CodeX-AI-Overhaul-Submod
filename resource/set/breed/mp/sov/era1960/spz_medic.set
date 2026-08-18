@@ -1,5 +1,5 @@
 {breed
-	{tags "soldier aio_morale_elite aio_cmd_independent"}
+	{tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_afg_spz"}
 	{portrait "sov_medic"}
@@ -29,6 +29,8 @@
 		{item "6b2" 1}
 		{item "shovel_rus"}
 
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

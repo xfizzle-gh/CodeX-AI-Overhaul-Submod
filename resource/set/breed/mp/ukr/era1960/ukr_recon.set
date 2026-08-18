@@ -4,7 +4,7 @@
 	{portrait "vsu_svo_2"}
 	{icon sniper}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_b_1}
@@ -27,6 +27,7 @@
 		{item "ak74m_pso" filled}
 		{item "5x39 ammo" 210}
                 {item "binocular"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

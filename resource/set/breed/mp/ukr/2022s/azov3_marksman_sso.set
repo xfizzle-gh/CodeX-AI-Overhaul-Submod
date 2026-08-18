@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_elite aio_cmd_independent"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "ukr_sso_2"}
 	{portrait "azov3_sso"}
@@ -33,6 +33,8 @@
 		{item "pais_bron_vsu" 1}
 
 
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained aio_cmd_junior"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "usmc_woodland_5"}
 	{portrait "usmc"}
@@ -34,6 +34,8 @@
 
 		{item "usmc_woodland_backpack_1"}
 		{item "usmc_desert_belt_3"}			
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 0}
 	}
 }

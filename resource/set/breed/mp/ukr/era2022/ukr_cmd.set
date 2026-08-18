@@ -4,7 +4,7 @@
 	{portrait "cmdu"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained aio_cmd_senior aio_discipline"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_a_1}
@@ -26,6 +26,9 @@
 		{item "5x39 ammo" 210}
                 {item "binocular"}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_senior"}
+		{item "aio_marker_discipline"}
 		{in_hands 0}
 	}
 }

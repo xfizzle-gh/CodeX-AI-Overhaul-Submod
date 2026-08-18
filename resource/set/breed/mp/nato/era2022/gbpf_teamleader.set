@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained aio_cmd_junior aio_cmd_independent"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "gb_rmc4"}
 	{portrait "16abpf"}
@@ -33,6 +33,9 @@
 		{item "bandage_usa" 4.5 0.5}
 		{item "laser_designator" filling "flare_usa artillery_105_vt" 1}	
                 {item "shovel_csa"}
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_junior"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait nrf_rec}
 	{icon autorifle}
 	{icon_priority 2}
-	{tags "soldier aio_morale_elite aio_cmd_independent aio_steadfast"}
+	{tags "soldier"}
 	{nationality eng_para}
 	{armors
 		{head sas_hat1}
@@ -35,6 +35,9 @@
 		{item "c4pn" 2}			
 		{item "m84" 2}
 		{item "drone_fpv_ammo" filled}		
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
 		{in_hands 0}
 	}
 }

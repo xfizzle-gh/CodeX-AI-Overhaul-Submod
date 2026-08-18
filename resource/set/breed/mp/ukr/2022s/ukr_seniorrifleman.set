@@ -4,7 +4,7 @@
 	{portrait "ukr_ammo"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular aio_cmd_junior"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors		
 		{body backpack_eagleaiii}
@@ -31,6 +31,8 @@
 		{item "aks74gp25" filled}
 		{item "vog25 he ammo" 12}
  		{item "m72_law" 2 filled}			
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 4}
 	}
 }

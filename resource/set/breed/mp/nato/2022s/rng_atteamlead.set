@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier_at aio_morale_trained aio_cmd_junior aio_cmd_independent"}
+    {tags "soldier_at"}
 	{behaviour soldier}
 	{skin "ranger4"}
 	{portrait "rng_a"}
@@ -33,6 +33,9 @@
 		{item "bandage_usa" 4.5 0.5}
 		{item "fast_backpack"}	 
 		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_junior"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

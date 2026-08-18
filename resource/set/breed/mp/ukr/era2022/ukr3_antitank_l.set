@@ -4,7 +4,7 @@
 	{portrait "3rd"}
 	{icon bazooka}
 	{icon_priority 0}
-	{tags "soldier_at aio_morale_trained"}
+	{tags "soldier_at"}
 	{nationality ukr}
 	{armors
 		{head ukr_47}
@@ -29,6 +29,7 @@
 		{item "ukr_ua_body_a_2"}
 		{item "ukr_backpack_01"}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_trained"}
 		{in_hands 3}
 	}
 }

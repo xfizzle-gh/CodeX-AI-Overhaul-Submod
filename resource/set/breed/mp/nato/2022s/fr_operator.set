@@ -4,7 +4,7 @@
 	{portrait fr}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier aio_morale_elite aio_cmd_independent aio_steadfast"}
+	{tags "soldier"}
 	{nationality usa}
 	{armors
 		{head usmc_desert_panama_1}
@@ -33,6 +33,9 @@
 		{item "c4pn" 2}		
 				{item "usmc_desert_glasses_2"}	
 				{item "usmc_mask_2"}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
 		{in_hands 0}
 	}
 }

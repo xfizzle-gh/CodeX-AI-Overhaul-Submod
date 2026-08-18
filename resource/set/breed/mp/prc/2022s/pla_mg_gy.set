@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_regular"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "pla21_new_hm"}
 	{portrait "pla139"}
@@ -28,6 +28,7 @@
 
 		{item "t86 grenade" 2}
 		{item "dsf161 grenade" 2}			
+		{item "aio_marker_morale_regular"}
 		{in_hands 0} {item "pla21_glass"}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait ukr_jav}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ger}
 	{armors
 		{head ukr_helmet_03}
@@ -32,6 +32,7 @@
                 {item "shovel_csa"}
 		{item "javelin weapon" filling "jav_rock ammo" 1}
 		{item "jav_rock ammo" 2}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

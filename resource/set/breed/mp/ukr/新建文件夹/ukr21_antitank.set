@@ -4,7 +4,7 @@
 	{portrait "21th"}
 	{icon bazooka}
 	{icon_priority 0}
-	{tags "soldier_at aio_morale_regular"}
+	{tags "soldier_at"}
 	{nationality ukr}
 	{armors
 		{head ukr_helmet_gor_03}
@@ -27,6 +27,7 @@
 		{item "ammo 5x39" 180}
 		{item "rpg_26 weapon" 2 filled}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

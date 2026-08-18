@@ -4,7 +4,7 @@
 	{portrait lud_ammo}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_low"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body ww3_rus_armor_13}
@@ -29,6 +29,7 @@
 		{item "bandage_rus" 3.5 0.5}
 		{item "shovel_rus"}
 		{item "rus_fsb_abody_12"}
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

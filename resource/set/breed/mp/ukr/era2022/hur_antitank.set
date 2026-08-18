@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier_at aio_morale_elite aio_cmd_independent"}
+    {tags "soldier_at"}
 	{behaviour soldier}
 	{skin "ukr_army_sbu_1"}
 	{portrait "hur"}
@@ -31,6 +31,8 @@
 		{item "bandage_rus" 2}
                 {item "shovel_csa"}			
 
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

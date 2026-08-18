@@ -4,7 +4,7 @@
 	{portrait nrf}
 	{icon autorifle}
 	{icon_priority 2}
-	{tags "soldier aio_morale_regular aio_cmd_primary"}
+	{tags "soldier"}
 	{nationality nato}
 	{armors
 		{head us_highcut_2}
@@ -32,6 +32,8 @@
         {item "shovel_csa"}
 		{item "benelli_m4" filling "ammo shotgun" 7}
 		{item "ammo shotgun" 21}				
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_low"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "demon2"}
 	{portrait "demon"}
@@ -32,6 +32,7 @@
                 {item "pickaxe"}
                 {item "wirecutters"}
                 {item "mine_detector"}		
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

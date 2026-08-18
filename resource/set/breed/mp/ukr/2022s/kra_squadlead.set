@@ -4,7 +4,7 @@
 	{portrait "vsu_svo_5"}
 	{icon autorifle}
 	{icon_priority 2}
-	{tags "soldier aio_morale_elite aio_cmd_primary aio_cmd_independent"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{head ukr_ua_opscore_02}
@@ -34,6 +34,9 @@
 		{item "ukr_backpack_01"}
 		{item "pais_bron_vsu"}
                 {item "m72a7law weapon" 2 filled}		
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 4}
 	}
 }

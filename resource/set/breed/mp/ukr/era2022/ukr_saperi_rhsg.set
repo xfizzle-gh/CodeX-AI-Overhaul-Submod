@@ -4,7 +4,7 @@
 	{portrait vsu_svo_2}
 	{icon tech}
 	{icon_priority 2}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_a_1}
@@ -31,6 +31,7 @@
                 {item "wirecutters"}
                 {item "mine_detector"}
 		{item "RShG_2 weapon" 2 filled}				
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

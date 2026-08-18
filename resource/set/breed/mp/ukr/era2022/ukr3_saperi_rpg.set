@@ -4,7 +4,7 @@
 	{portrait "3RD"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors		
 		{body ukr_ua_body_st_04}
@@ -33,6 +33,7 @@
 		{item "backpack_90"}
 		{item "rpg7vs weapon" filled}
 		{item "rpg7l ammo" 5}		
+		{item "aio_marker_morale_trained"}
 		{in_hands 4}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait "vsu_svo_2"}
 	{icon tech}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_a_1}
@@ -26,6 +26,7 @@
 		{item "shovel_rus"}
 		{item "rus_fsb_abody_1"}
 		{item "ak74u" filled}
+		{item "aio_marker_morale_regular"}
 		{in_hands 5}
 	}
 }

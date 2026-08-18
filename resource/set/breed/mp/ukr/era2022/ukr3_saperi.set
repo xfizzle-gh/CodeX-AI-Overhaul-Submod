@@ -4,7 +4,7 @@
 	{portrait "3RD"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors		
 		{body ukr_ua_body_st_06}
@@ -31,6 +31,7 @@
                 {item "wirecutters"}
                 {item "mine_detector"}
 		{item "backpack_bundes"}
+		{item "aio_marker_morale_trained"}
 		{in_hands 4}
 	}
 }

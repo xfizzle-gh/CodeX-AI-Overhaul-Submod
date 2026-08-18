@@ -4,7 +4,7 @@
 	{portrait "25th"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular aio_cmd_primary"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_bron_1}
@@ -34,6 +34,8 @@
         {item "fort600" filled}
 		{item "40mm_grenade he ammo" 12}
 		{item "pais_bron_vsu"}
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 3}
 	}
 }

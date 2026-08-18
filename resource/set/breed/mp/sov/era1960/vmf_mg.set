@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_afg_infantry_6b2_longsleeve_vmf"}
 	{portrait "sov_marine"}
@@ -33,6 +33,7 @@
 		{item "ammobag_sov"}
 		{item "6b2" 0.75 0.5}
 
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

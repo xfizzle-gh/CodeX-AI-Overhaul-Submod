@@ -4,7 +4,7 @@
 	{portrait ildu_ammo}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier aio_morale_regular aio_cmd_junior"}
+	{tags "soldier"}
 	{nationality ger}
 	{armors
                 {body backpack_eagleaiii}
@@ -32,6 +32,8 @@
 		{item "ukr_ua_body_a_2"}
  		{item "m72_law" 2 filled}			
         {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 0}
 	}
 }

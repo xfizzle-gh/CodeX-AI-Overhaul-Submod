@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_regular aio_cmd_primary"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "usa_ocp3"}
 	{portrait "acav"}
@@ -30,6 +30,8 @@
 		{item "us_backpack_3"}				
 		{item "msv_2"}
 		
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

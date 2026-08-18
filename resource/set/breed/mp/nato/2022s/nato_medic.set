@@ -4,7 +4,7 @@
 	{portrait nrf_med}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality nato}
 	{armors
 		{head us_highcut_2}
@@ -28,6 +28,7 @@
 		{item "m16a2 ammo" 240}
 		{item "tent_kit" 2}
         {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait fr_svo_3}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_fsb_helmet_11}
@@ -34,6 +34,7 @@
                 {item "wirecutters"}
                 {item "mine_detector"}
 		{item "c4pn" 2}		
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

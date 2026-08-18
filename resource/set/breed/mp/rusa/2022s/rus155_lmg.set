@@ -4,7 +4,7 @@
 	{portrait "155th"}
 	{icon mg}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body "rus_fsb_abody_2_0"}
@@ -27,6 +27,7 @@
 		{item "pk_box ammo" 400}
                 {item "shovel_rus"}
 		{item "rus_fsb_abody_12_1"}
+		{item "aio_marker_morale_trained"}
 		{in_hands 3}
 	}
 }

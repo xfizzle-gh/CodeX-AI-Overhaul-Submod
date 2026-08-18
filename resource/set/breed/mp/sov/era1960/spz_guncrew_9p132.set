@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_elite"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "sov_spetsnaz"}
 	{portrait "sov_spetsnaz"}
@@ -34,6 +34,7 @@
 		
 		{item "sov_gasmask_gp5"}
 
+		{item "aio_marker_morale_elite"}
 		{in_hands 0}
 	}
 }

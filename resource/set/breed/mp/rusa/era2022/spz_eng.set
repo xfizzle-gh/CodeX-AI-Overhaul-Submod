@@ -4,7 +4,7 @@
 	{portrait sov_spz}
 	{icon tech}
 	{icon_priority 2}
-	{tags "soldier aio_morale_elite"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_rus_sso_gru__helmet_13}
@@ -35,6 +35,7 @@
                 {item "pickaxe"}
                 {item "wirecutters"}
                 {item "mine_detector"}
+		{item "aio_marker_morale_elite"}
 		{in_hands 0}
 	}
 }

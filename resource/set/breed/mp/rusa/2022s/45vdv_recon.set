@@ -4,7 +4,7 @@
 	{portrait rec_rus}
 	{icon sniper}
 	{icon_priority 0}
-	{tags "soldier aio_morale_elite aio_cmd_independent aio_steadfast"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_opscore_helmet_1}
@@ -32,6 +32,9 @@
         {item "napashnik"}
 		{item "uav_dji_air2s_ammo" 1}
 		{item "fpv_bomber_ammo" 1}		
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
 		{in_hands 0}
 	}
 }

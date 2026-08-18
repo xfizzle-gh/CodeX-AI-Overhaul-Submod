@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_elite aio_cmd_independent"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_rusich_gr_2_1"}
 	{portrait "rusc_ammo"}
@@ -33,6 +33,8 @@
 		{item "rus_wagner_glasses_2"}
 		{item "shovel_rus"}
 		{item "zarya" 2}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

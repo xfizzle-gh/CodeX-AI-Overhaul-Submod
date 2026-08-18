@@ -4,7 +4,7 @@
 	{portrait rus150}
 	{icon bazooka}
 	{icon_priority 0}
-	{tags "soldier_at aio_morale_regular"}
+	{tags "soldier_at"}
 	{nationality rus}
 	{armors
 		{body "modul_m_02"}
@@ -31,6 +31,7 @@
 		{item "rpg7l he ammo" 10}
         {item "rus_fsb_abody_13"}			
                 {item "shovel_rus"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

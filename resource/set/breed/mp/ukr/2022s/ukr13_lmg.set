@@ -4,7 +4,7 @@
 	{portrait "ukr13"}
 	{icon mg}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_a_2}
@@ -30,6 +30,7 @@
 		{item "drone_fpv_ammo" filled}	
 		{item "poviazka_rus"}				
                 {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

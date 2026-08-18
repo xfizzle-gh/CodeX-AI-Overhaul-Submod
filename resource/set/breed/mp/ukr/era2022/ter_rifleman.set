@@ -4,7 +4,7 @@
 	{portrait "ter_ammo"}
 	{icon rifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_low"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
                 {body backpack_eagleaiii}
@@ -28,6 +28,7 @@
 		{item "shovel_rus"}
 		{item "rgd5 grenade" 2}
 		{item "rdg2 grenade" 0.25 0.5}
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

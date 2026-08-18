@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_elite aio_cmd_independent"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "marsoc_1"}
 	{portrait "marsoc"}
@@ -37,6 +37,8 @@
 		{item "shovel_csa"}
 		{item "mw19_usmc_vest"}
 		
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

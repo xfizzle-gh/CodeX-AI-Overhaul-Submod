@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier_at aio_morale_regular"}
+    {tags "soldier_at"}
 	{behaviour soldier}
 	{skin "ger8"}
 	{portrait "ger_pzgd"}
@@ -30,6 +30,7 @@
  		{item "rgw90_as_he" 1 filled} 		
 		{item "shovel_csa"}			
 
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

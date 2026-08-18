@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "usa_ocp7"}
 	{portrait "acav"}
@@ -31,6 +31,7 @@
 		
 		{item "vest_usa_m69" 0.5 0.5}
 		{item "jpc_1"}		
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

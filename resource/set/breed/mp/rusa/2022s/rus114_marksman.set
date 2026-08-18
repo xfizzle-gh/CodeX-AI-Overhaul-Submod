@@ -1,5 +1,4 @@
 {breed
-	{tags "aio_morale_regular"}
 	{behaviour soldier}
 	{skin "114th3"}
 	{portrait "rec_rus"}
@@ -30,6 +29,7 @@
 		{item ""}
 
 		{item "svd ammo" 120}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

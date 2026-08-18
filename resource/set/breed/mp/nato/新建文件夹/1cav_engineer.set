@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier_at aio_morale_regular"}
+    {tags "soldier_at"}
 	{behaviour soldier}
 	{skin "sfg_3"}
 	{portrait "acav"}
@@ -22,6 +22,7 @@
 	}
 	{inventory
 		{item "sfg_glass_1"}			
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

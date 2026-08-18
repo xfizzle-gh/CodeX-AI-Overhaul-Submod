@@ -4,7 +4,7 @@
 	{portrait vsu_svo_1}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier_at aio_morale_regular"}
+	{tags "soldier_at"}
 	{nationality ger}
 	{armors
 		{head ukr_helmet_06}
@@ -34,6 +34,7 @@
 		{item "ukr_backpack_01"}
 
                 {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

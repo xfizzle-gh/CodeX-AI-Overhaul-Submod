@@ -4,7 +4,7 @@
 	{portrait rus90_ammo}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body "rus_6b45_body_03"}
@@ -29,6 +29,7 @@
 		{item "gunbag_9m113" 1}
                 {item "shovel_rus"}
 		{item "rus_fsb_abody_3_4"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

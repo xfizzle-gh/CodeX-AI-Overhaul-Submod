@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier_at aio_morale_low"}
+    {tags "soldier_at"}
 	{behaviour soldier}
 	{skin "rus_s_vkpo_shtormz_2"}
 	{portrait "fr_svo_4"}
@@ -33,6 +33,7 @@
 		{item "bandage_rus" 3.5 0.5}
 		{item "shovel_rus"}
 
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

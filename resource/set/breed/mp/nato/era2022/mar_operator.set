@@ -4,7 +4,7 @@
 	{portrait marsoc}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier aio_morale_elite aio_cmd_independent aio_steadfast"}
+	{tags "soldier"}
 	{nationality usa}
 	{armors
 		{head mw19_usmc_helmet2}
@@ -29,6 +29,9 @@
 		 
 		{item "shovel_csa"}
 		{item "mw19_usmc_vest"}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
 		{in_hands 0}
 	}
 }

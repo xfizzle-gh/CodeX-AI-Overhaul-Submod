@@ -4,7 +4,7 @@
 	{portrait rus150}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body "kirasa_bron_7"}
@@ -30,6 +30,7 @@
 
                 {item "shovel_rus"}
 		{item "rus_fsb_abody_3_4"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

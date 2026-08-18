@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_low"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "demon2"}
 	{portrait "demon"}
@@ -31,6 +31,7 @@
 		{item "rgd5 grenade" 1.4 0.5}
 		{item "rdg2 grenade" 0.25 0.5}
 		{item "ukr_backpack_01"}		
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

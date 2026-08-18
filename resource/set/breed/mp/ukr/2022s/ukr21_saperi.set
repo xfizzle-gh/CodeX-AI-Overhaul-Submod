@@ -4,7 +4,7 @@
 	{portrait "21th"}
 	{icon bazooka}
 	{icon_priority 0}
-	{tags "soldier_at aio_morale_regular"}
+	{tags "soldier_at"}
 	{nationality ukr}
 	{armors
 		{head ukr_helmet_gor_03}
@@ -34,6 +34,7 @@
 
 		{item "backpack_90"}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

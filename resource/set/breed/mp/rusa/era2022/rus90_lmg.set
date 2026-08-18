@@ -4,7 +4,7 @@
 	{portrait rus90}
 	{icon mg}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body "modul_m_01"}
@@ -27,6 +27,7 @@
 		{item "pkm" filled}
 		{item "pk_box ammo" 400}
                 {item "shovel_rus"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

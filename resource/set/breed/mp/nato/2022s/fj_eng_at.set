@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier_at aio_morale_trained"}
+    {tags "soldier_at"}
 	{behaviour soldier}
 	{skin "fj"}
 	{portrait "fj"}
@@ -34,6 +34,7 @@
                 {item "wirecutters"}
                 {item "mine_detector"}	
 		{item "c4pn" 1}							 		
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

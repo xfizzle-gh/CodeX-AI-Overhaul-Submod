@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_low"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "demon1"}
 	{portrait "demon_ammo"}
@@ -30,6 +30,7 @@
 		{item "shovel_rus"}
 		{item "aks74gp25" filled}
 		{item "vog25 he ammo" 12}
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

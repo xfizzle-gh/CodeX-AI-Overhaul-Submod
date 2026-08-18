@@ -4,7 +4,7 @@
 	{portrait wgn_crew}
 	{icon tech}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head shlemofon_tsh4m}
@@ -26,6 +26,7 @@
 		{item "bandage_rus" 4.5 0.5}
 		{item "shovel_rus"}
 
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

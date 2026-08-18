@@ -4,7 +4,7 @@
 	{portrait lud_ammo}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_low"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		
@@ -29,6 +29,7 @@
 		{item "bandage_rus" 3.5 0.5}
 		{item "shovel_rus"}
 		{item "6b_23_rus_vog"}
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

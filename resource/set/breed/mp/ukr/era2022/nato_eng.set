@@ -4,7 +4,7 @@
 	{portrait vsu_svo_1}
 	{icon tech}
 	{icon_priority 2}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ger}
 	{armors
 		{head ukr_helmet_03}
@@ -32,6 +32,7 @@
                 {item "wirecutters"}
                 {item "mine_detector"}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait "93th"}
 	{icon sniper}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body cpc_ua_vest}
@@ -29,6 +29,7 @@
 		{item "shovel_rus"}
 		{item "svdk_v2" filled}
 		{item "svd ammo" 100}
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait nrf}
 	{icon autorifle}
 	{icon_priority 2}
-	{tags "soldier aio_morale_regular aio_cmd_primary"}
+	{tags "soldier"}
 	{nationality nato}
 	{armors
 		{head nato_1}
@@ -32,6 +32,8 @@
 		{item "ukr_backpack_01"}
 		{item "ukr_ua_body_b_1"}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

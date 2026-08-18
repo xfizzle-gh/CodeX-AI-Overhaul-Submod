@@ -4,7 +4,7 @@
 	{portrait rus150}
 	{icon sniper}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body "rus_fsb_abody_1"}
@@ -28,6 +28,7 @@
 		{item "shovel_rus"}
 		{item "svdk_v2" filled}
 		{item "svd ammo" 90}
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

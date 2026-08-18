@@ -4,7 +4,7 @@
 	{portrait "rec_rus"}
 	{icon "rifle"}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_wagner_helmet_3}
@@ -28,6 +28,7 @@
 		{item "bandage_rus" 3.5 0.5}
 {item "shovel_rus"}
 		{item "drone_recon_ammo" 1}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

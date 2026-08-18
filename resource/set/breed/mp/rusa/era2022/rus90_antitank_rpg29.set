@@ -4,7 +4,7 @@
 	{portrait rus90_ammo}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body "rus_fsb_abody_12"}
@@ -31,6 +31,7 @@
 		{item "tbg-29 rpg29 ammo" 2}		
                 {item "shovel_rus"}
 		{item "modul_m_03"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

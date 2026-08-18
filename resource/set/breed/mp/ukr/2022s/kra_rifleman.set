@@ -4,7 +4,7 @@
 	{portrait "kra_ammo"}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier aio_morale_elite aio_cmd_independent"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
         {body ukr_ua_body_kra_02}
@@ -30,6 +30,8 @@
 		{item "backpack_eagleaiii"}
 		{item "pais_bron_vsu"}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_elite aio_cmd_independent"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_afg_spz_female"}
 	{portrait "sov_sniper_female"}
@@ -33,6 +33,8 @@
 		{item "6b2" 0.75 0.5}
 		{item "shovel_rus"}
 		{item "rus_afg_sh68" 1}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

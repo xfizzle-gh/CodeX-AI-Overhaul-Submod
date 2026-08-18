@@ -4,7 +4,7 @@
 	{portrait vdv83}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head tor_helmet_2}
@@ -32,6 +32,7 @@
 		{item "rus_fsb_abody_13"}
         {item "shovel_rus"}
 		{item "rus_wagner_mask_2"}	
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

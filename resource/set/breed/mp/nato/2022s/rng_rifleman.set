@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained aio_cmd_independent"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "ranger6"}
 	{portrait "rng_ammo"}
@@ -33,6 +33,8 @@
 		
 		{item "ranger_vest_4"}
 		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

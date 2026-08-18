@@ -1,5 +1,4 @@
 {breed
-	{tags "aio_morale_elite aio_cmd_independent aio_steadfast"}
 	{behaviour soldier}
 	{skin "45th2"}
 	{portrait med_rus}
@@ -30,6 +29,9 @@
 		{item "rus_fsb_abody_12_1"}
 		{item "tent_kit"}
 		{item "weapon rpg26" 2 filled}		
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
 		{in_hands 3}
 	}
 }

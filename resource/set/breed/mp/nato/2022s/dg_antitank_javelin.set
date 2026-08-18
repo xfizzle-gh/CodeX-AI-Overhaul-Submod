@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier_at aio_morale_regular"}
+    {tags "soldier_at"}
 	{behaviour soldier}
 	{skin "gb_rmc3"}
 	{portrait "dg"}
@@ -29,6 +29,7 @@
 		{item "m18 grenade" 2}
         {item "shovel_csa"}			
         {item "gb_backpack_1"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

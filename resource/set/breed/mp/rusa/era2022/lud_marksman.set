@@ -4,7 +4,7 @@
 	{portrait fr_svo_7}
 	{icon sniper}
 	{icon_priority 0}
-	{tags "soldier aio_morale_low"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head sh68_1}
@@ -30,6 +30,7 @@
 		{item "shovel_rus"}
 
 		{item "svd ammo" 60}
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

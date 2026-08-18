@@ -4,7 +4,7 @@
 	{portrait "155th"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained aio_cmd_junior"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body "rus_fsb_abody_2_0"}
@@ -32,6 +32,8 @@
 		{item "aks74gp25" filled}
 		{item "vog25 he ammo" 12}
 		{item "RPG26 weapon weapon" 2 filled}			
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 3}
 	}
 }

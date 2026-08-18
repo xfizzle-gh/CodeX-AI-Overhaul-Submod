@@ -4,7 +4,7 @@
 	{portrait "114th"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular aio_cmd_junior"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_opscore_helmet_1}
@@ -32,6 +32,8 @@
 		{item "aks74gp25" filled}	
 		{item "vog25 he ammo" 12}	
 		{item "weapon rpg26 " 2 filled}				
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 0}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait "3rd"}
 	{icon sniper}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_b_1}
@@ -28,6 +28,7 @@
 		{item "shovel_rus"}
 		{item "svd" filled}
 		{item "svd ammo" 100}
+		{item "aio_marker_morale_trained"}
 		{in_hands 4}
 	}
 }

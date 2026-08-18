@@ -4,7 +4,7 @@
 	{portrait "rec_ukr"}
 	{icon sniper}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_b_1}
@@ -29,6 +29,7 @@
 		{item "ammo 5x39" 180}
                 {item "binocular"}
 		{item "drone_recon_ammo" 1}
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

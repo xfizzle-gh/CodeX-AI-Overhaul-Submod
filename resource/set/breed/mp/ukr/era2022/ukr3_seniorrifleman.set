@@ -4,7 +4,7 @@
 	{portrait "72th_ammo"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained aio_cmd_junior"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors		
 		{body backpack_eagleaiii}
@@ -30,6 +30,8 @@
 		{item "ammo 5x39" 210}
  		{item "m72_law" 2 filled}	
 		{item "ukr_ua_body_a_1"}
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 4}
 	}
 }

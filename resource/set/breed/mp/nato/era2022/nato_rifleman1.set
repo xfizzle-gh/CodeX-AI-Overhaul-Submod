@@ -4,7 +4,7 @@
 	{portrait nrf_ammo}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality nato}
 	{armors
                 {body backpack_eagleaiii}
@@ -29,6 +29,7 @@
 		 
 		{item "ukr_ua_body_a_1"}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

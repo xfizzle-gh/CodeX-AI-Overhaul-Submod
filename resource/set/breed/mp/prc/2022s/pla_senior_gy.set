@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_regular aio_cmd_junior"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "pla21_new_hm"}
 	{portrait "pla139"}
@@ -31,6 +31,8 @@
 
 		{item "pf89b weapon" filled}
 		{item "t86 grenade" 2}				
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 0} {item "pla21_glass"}
 	}
 }

@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained aio_cmd_primary"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_vdv_gr_vor_21_gusev"}
 	{portrait "vdv83"}
@@ -35,6 +35,8 @@
 		{item "rdg2 grenade" 0.25 0.5}
 		{item "RPG26 weapon weapon" filled}
 		{item "RShG_2 weapon" filled}		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait "47th"}
 	{icon sniper}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_b_1}
@@ -30,6 +30,7 @@
 		{item "backpack_bundes"}			
 		{item "m107a1_ammo ammo" 30}
 		{item "poviazka_rus"}
+		{item "aio_marker_morale_trained"}
 		{in_hands 4}
 	}
 }

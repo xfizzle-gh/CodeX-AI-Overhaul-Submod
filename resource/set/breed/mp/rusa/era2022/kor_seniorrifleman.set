@@ -1,5 +1,4 @@
 {breed
-	{tags "aio_morale_trained aio_cmd_junior"}
 	{behaviour soldier}
 	{skin "kor2"}
 	{portrait "kor"}
@@ -30,6 +29,8 @@
 		{item "shovel_rus"}
 		{item "modul_m_03"}
 		{item "weapon rpg26 " 2 filled}				
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 0}
 	}
 }

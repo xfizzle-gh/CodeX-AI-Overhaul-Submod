@@ -4,7 +4,7 @@
 	{portrait fr_svo_2}
 	{icon tech}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body rus_6b45_body_04}
@@ -31,6 +31,7 @@
                 {item "wirecutters"}
                 {item "mine_detector"}
 		{item "tmd_b mine" 8.5 0.5}
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

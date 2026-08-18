@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "skin_vsu_azov"}
 	{portrait rec_ukr}
@@ -35,6 +35,7 @@
 		{item "pais_bron_vsu" 1}
                 {item "shovel_csa"}
 						{item "drone_recon_ammo" 1}
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_elite aio_cmd_primary aio_cmd_independent aio_steadfast"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "usmc_desert_3"}
 	{portrait "fr"}
@@ -36,6 +36,10 @@
         {item "m4a1_m203" filled}
 		{item "40mm_grenade he ammo" 12}
 		{item "usmc_desert_glasses_2"}			
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
 		{in_hands 0}
 	}
 }

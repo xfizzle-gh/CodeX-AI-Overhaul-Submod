@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_low"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "ukr_tdf"}
 	{portrait "vsu_svo_6"}
@@ -27,6 +27,7 @@
 		{item "bandage_rus" 8}
 		{item "shovel_rus"}
 		{item "tent_kit" 2}
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

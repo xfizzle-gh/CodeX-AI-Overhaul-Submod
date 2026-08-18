@@ -4,7 +4,7 @@
 	{portrait "fr_svo_7"}
 	{icon "atrifle"}
 	{icon_priority 2}
-	{tags "soldier_atr aio_morale_low"}
+	{tags "soldier_atr"}
 	{nationality rus}
 	{armors
 		{head sh68_1}
@@ -26,6 +26,7 @@
 		{item "bandage_sov" 3.5 0.5}
 		{item "shovel_rus"}
 
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

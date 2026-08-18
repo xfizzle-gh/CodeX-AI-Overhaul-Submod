@@ -4,7 +4,7 @@
 	{portrait "nrf_crew"}
 	{icon tech}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality nato}
 	{armors
 		{head nrf_helmet_2}
@@ -25,6 +25,7 @@
 		{item "bandage_usa" 4.5 0.5}
 		{item "shovel_rus"}
 		{item "gunbag_usa_m252"}			
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

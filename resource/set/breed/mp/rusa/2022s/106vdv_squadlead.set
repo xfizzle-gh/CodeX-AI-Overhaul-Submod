@@ -4,7 +4,7 @@
 	{portrait "106th"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained aio_cmd_primary"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_helmet_v05}
@@ -31,6 +31,8 @@
 		{item "bekas-12m_v1" filled}
 		{item "ammo shotguns" 18}
 		{item "RShG_2" 1 filled}		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

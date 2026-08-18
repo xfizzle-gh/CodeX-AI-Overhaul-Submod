@@ -4,7 +4,7 @@
 	{portrait "rus80_sso"}
 	{icon "rifle"}
 	{icon_priority 0}
-	{tags "soldier aio_morale_elite aio_cmd_junior aio_cmd_independent"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_wagner_cap_1}
@@ -30,6 +30,9 @@
 		{item "bandage_rus" 3.5 0.5}
 		{item "aks74gp25" filled}
 		{item "vog25 he ammo" 12}	
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_junior"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

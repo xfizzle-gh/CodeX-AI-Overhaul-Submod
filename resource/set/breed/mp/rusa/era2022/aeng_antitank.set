@@ -1,5 +1,4 @@
 {breed
-	{tags "aio_morale_regular"}
 	{behaviour soldier}
 	{skin "rus_s_vkpo_new_c_povyaz_01"}
 	{portrait fr_svo_2}
@@ -35,6 +34,7 @@
                 {item "wirecutters"}
                 {item "mine_detector"}
 		{item "shovel_rus"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait "ukr_jav"}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier_at aio_morale_elite aio_cmd_independent"}
+	{tags "soldier_at"}
 	{nationality ukr}
 	{armors
 		{head ukr_ua_opscore_01}
@@ -31,6 +31,8 @@
 		{item "ukr_ua_body_kra_03"}
 		{item "ukr_backpack_01"}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

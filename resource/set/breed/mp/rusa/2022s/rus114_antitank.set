@@ -1,5 +1,4 @@
 {breed
-	{tags "aio_morale_regular"}
 	{behaviour soldier}
 	{skin "114th2"}
 	{portrait "114th"}
@@ -31,6 +30,7 @@
 		{item "rpg7vs weapon" filling "rpg7l vr ammo" 1}
 		{item "rpg7l vr ammo" 5}
 		{item "shovel_rus"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

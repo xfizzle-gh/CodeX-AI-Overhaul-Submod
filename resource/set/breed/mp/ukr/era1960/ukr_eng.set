@@ -4,7 +4,7 @@
 	{portrait vsu_svo_2}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_a_1}
@@ -30,6 +30,7 @@
                 {item "pickaxe"}
                 {item "wirecutters"}
                 {item "mine_detector"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

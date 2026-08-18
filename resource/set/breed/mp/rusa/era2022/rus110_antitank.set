@@ -4,7 +4,7 @@
 	{portrait "rus110"}
 	{icon "bazooka"}
 	{icon_priority 0}
-	{tags "soldier_bazooka aio_morale_regular"}
+	{tags "soldier_bazooka"}
 	{nationality rus}
 	{armors
 		{head rus_fsb_helmet_3}
@@ -33,6 +33,7 @@
 
 		{item "bandage_rus" 3}
 
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

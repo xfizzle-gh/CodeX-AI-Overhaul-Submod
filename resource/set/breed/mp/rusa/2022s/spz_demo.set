@@ -4,7 +4,7 @@
 	{portrait sov_spz}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier aio_morale_elite aio_cmd_independent"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_opscore_helmet_2}
@@ -31,6 +31,8 @@
 		{item "zarya" 2}
 		{item "gm94" filled}	
 		{item "43mm he ammo" 12}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

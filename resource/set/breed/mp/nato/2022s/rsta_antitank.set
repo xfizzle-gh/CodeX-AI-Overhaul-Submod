@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier_at aio_morale_trained aio_cmd_independent"}
+    {tags "soldier_at"}
 	{behaviour soldier}
 	{skin "usa_ocp6"}
 	{portrait "acav"}
@@ -33,6 +33,8 @@
 		{item "bandage_usa" 3.5 0.5}
 		{item "shovel_csa"}
 		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

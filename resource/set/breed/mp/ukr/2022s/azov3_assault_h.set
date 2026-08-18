@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier_at aio_morale_trained"}
+    {tags "soldier_at"}
 	{behaviour soldier}
 	{skin "ukr_army_3th_2"}
 	{portrait "azov3_h"}
@@ -33,6 +33,7 @@
         {item "shovel_csa"}			
 
 		{item "zarya" 2}
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait "211th"}
 	{icon bazooka}
 	{icon_priority 0}
-	{tags "soldier_at aio_morale_trained aio_cmd_independent"}
+	{tags "soldier_at"}
 	{nationality ukr}
 	{armors
 		{head azov_g}
@@ -30,6 +30,8 @@
 		{item "ukr_ua_body_b_1"}
 		{item "pais_bron_vsu"}		
         {item "shovel_csa"}
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 3}
 	}
 }

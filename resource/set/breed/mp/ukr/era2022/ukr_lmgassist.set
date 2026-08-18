@@ -4,7 +4,7 @@
 	{portrait "vsu_svo_2"}
 	{icon tech}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_bron_3}
@@ -26,6 +26,7 @@
 		{item "rgd5 grenade" 2}
 		{item "m249_ammo ammo" 200}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_regular"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "pla21_new_hm"}
 	{portrait "placrew"}
@@ -25,6 +25,7 @@
 		{item "58ammo_basic ammo" 210}
 		{item "bandage_chn" 4.5 0.5}
 		{item "gunbag_qjz89"}				
+		{item "aio_marker_morale_regular"}
 		{in_hands 0} {item "pla21_glass"}
 	}
 }

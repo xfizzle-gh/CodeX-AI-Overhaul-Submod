@@ -1,5 +1,5 @@
 {breed
-    {tags "crew aio_morale_regular"}
+    {tags "crew"}
 	{behaviour soldier}
 	{skin "usa_ocp1"}
 	{portrait "usarmy"}
@@ -24,6 +24,7 @@
 		{item "bandage_usa" 3.5 0.5}
 		{item "shovel_csa"}
 		{item "itov_1"}	
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

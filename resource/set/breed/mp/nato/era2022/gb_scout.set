@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_regular"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "gb01"}
 	{portrait "gb_ammo"}
@@ -32,6 +32,7 @@
 		{item "gb_vest_3"}
 		{item "m16a2 ammo" 240}
 		{item "drone_recon_ammo" 1}				
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

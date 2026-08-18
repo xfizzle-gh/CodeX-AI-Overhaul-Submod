@@ -4,7 +4,7 @@
 	{portrait "93th_ammo"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular aio_cmd_junior"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors		
 		{body ukr_ua_body_b_1}
@@ -32,6 +32,8 @@
 		{item "fort600" filled}
  		{item "at4cs_v1" filled}			
 		{item "ammo 40mm_grenade" 8}		
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 4}
 	}
 }

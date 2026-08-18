@@ -4,7 +4,7 @@
 	{portrait "ukr_jav"}
 	{icon bazooka}
 	{icon_priority 0}
-	{tags "soldier_at aio_morale_regular"}
+	{tags "soldier_at"}
 	{nationality ukr}
 	{armors
 		{head ops_core_azov}
@@ -34,6 +34,7 @@
                 {item "pickaxe"}
                 {item "wirecutters"}
                 {item "mine_detector"}				
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

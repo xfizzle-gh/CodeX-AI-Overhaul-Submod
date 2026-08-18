@@ -4,7 +4,7 @@
 	{portrait "rus80_sso"}
 	{icon "rifle"}
 	{icon_priority 0}
-	{tags "soldier aio_morale_elite aio_cmd_independent"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_wagner_helmet_3}
@@ -28,6 +28,8 @@
 		{item "bandage_rus" 3.5 0.5}
         {item "shovel_rus"}
 		{item "weapon RPG26" 1 filled}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

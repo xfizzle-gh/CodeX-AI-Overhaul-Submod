@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_regular aio_cmd_primary"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "usa_ocp5"}
 	{portrait "inf2"}
@@ -31,6 +31,8 @@
 		{item "us_backpack_3"}				
 		{item "benelli_m4" filling "ammo shotgun" 7}
 		{item "ammo shotgun" 21}				
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

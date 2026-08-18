@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier_at aio_morale_low"}
+    {tags "soldier_at"}
 	{behaviour soldier}
 	{skin "ukr_army_priv_ca_1"}
 	{portrait "vsu_svo_6"}
@@ -29,6 +29,7 @@
 		{item "shovel_rus"}
 		{item "rgd5 grenade" 1.4 0.5}
 		{item "rdg2 grenade" 0.25 0.5}
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

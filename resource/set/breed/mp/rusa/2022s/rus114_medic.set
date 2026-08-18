@@ -1,5 +1,4 @@
 {breed
-	{tags "aio_morale_regular"}
 	{behaviour soldier}
 	{skin "114th2"}
 	{portrait med_rus}
@@ -31,6 +30,7 @@
 		{item "tent_kit"}
 		{item "shovel_rus"}
 		{item "drone_fpv_ammo" filled}			
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

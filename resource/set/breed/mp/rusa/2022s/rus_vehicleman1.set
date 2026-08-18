@@ -4,7 +4,7 @@
 	{portrait als1}
 	{icon tech}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head helmet_6b48}
@@ -25,6 +25,7 @@
 		{item "bandage_rus" 4.5 0.5}
 		{item "shovel_rus"}
 
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

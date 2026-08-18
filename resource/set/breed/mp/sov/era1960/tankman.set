@@ -1,5 +1,5 @@
 {breed
-    {tags "crew aio_morale_regular"}
+    {tags "crew"}
 	{behaviour soldier}
 	{skin "rus_afg_tanker"}
 	{portrait "sov_tankman"}
@@ -27,6 +27,7 @@
 
 		{item "bandage_rus" 2.5 0.5}
 
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

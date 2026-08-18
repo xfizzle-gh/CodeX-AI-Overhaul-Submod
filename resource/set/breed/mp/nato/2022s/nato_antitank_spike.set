@@ -4,7 +4,7 @@
 	{portrait nrf}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier_at aio_morale_regular"}
+	{tags "soldier_at"}
 	{nationality nato}
 	{armors
 		{head us_highcut_2}
@@ -29,6 +29,7 @@
 		{item "bandage_usa" 4.5 0.5}
 		{item "spike-sr weapon" 2 filled}
         {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

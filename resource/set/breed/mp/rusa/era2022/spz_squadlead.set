@@ -4,7 +4,7 @@
 	{portrait sov_spz}
 	{icon autorifle}
 	{icon_priority 2}
-	{tags "soldier aio_morale_elite aio_cmd_primary aio_cmd_independent"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_helmet_6b47_4}
@@ -32,6 +32,9 @@
 		{item "zarya" 2}
 		{item "bekas-12m_v1" filled}
 		{item "ammo shotguns" 18}		
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

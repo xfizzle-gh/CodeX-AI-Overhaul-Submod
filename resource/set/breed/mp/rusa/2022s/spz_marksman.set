@@ -4,7 +4,7 @@
 	{portrait sov_spz}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier aio_morale_elite aio_cmd_independent"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_opscore_helmet_2}
@@ -30,6 +30,8 @@
 		{item "sso_bacpack"}
 		{item "rus_sso_body_1"}
 		{item "shovel_rus"}	
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

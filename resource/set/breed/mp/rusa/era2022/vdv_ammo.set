@@ -4,7 +4,7 @@
 	{portrait fr_svo_1}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		
@@ -28,6 +28,7 @@
 		{item "bandage_rus" 4.5 0.5}
 		{item "rus_6b45_body_02"}
                 {item "shovel_rus"}
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_elite aio_cmd_primary aio_cmd_independent"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_rusich_gr_2_5"}
 	{portrait "ruisch"}
@@ -35,6 +35,9 @@
 		{item "rus_sso_body_1"}
 				{item "bekas-12m_v1" filled}
 		{item "ammo shotguns" 18}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

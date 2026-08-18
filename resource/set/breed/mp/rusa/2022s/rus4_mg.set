@@ -4,7 +4,7 @@
 	{portrait rus4}
 	{icon mg}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body "rus_6b45_body_05"}
@@ -28,6 +28,7 @@
 		{item "pk_box ammo" 400}
 		{item "rus_backpack_02"}		
                 {item "shovel_rus"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

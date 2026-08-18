@@ -4,7 +4,7 @@
 	{portrait rus150}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular aio_cmd_primary"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body "rus_6b45_body_03"}
@@ -29,6 +29,8 @@
         {item "rus_fsb_abody_13"}	
 		{item "bekas-12m_v1" filled}
 		{item "ammo shotguns" 18}		
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 3}
 	}
 }

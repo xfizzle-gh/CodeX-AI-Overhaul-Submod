@@ -4,7 +4,7 @@
 	{portrait spz_ammo}
 	{icon autorifle}
 	{icon_priority 2}
-	{tags "soldier aio_morale_elite aio_cmd_independent"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body sso_bacpack}
@@ -32,6 +32,8 @@
 		{item "rus_nazgul_03"}
 		{item "napashnik"}
 		{item "RPG26 weapon weapon" 2 filled}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

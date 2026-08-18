@@ -4,7 +4,7 @@
 	{portrait "93th"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular aio_cmd_primary"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body cpc_ua_vest}
@@ -30,6 +30,8 @@
 		{item "benelli_m4" filling "ammo shotgun" 7}
 		{item "ammo shotgun" 21}		
 		{item "pais_bron_vsu"}
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 3}
 	}
 }

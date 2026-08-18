@@ -4,7 +4,7 @@
 	{portrait "ukr_ammo"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors		
 		{body backpack_eagleaiii}
@@ -28,6 +28,7 @@
 		{item "ammo 5x39" 150}
 		{item "ukr_ua_body_a_1"}
 
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

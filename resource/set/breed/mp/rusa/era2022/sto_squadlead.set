@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_low aio_cmd_primary"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_s_vkpo_shtormz_2"}
 	{portrait "fr_svo_4"}
@@ -33,6 +33,8 @@
 		{item "bekas-12m_v1" filled}
 		{item "ammo shotguns" 18}
 
+		{item "aio_marker_morale_low"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

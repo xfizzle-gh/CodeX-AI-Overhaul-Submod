@@ -1,5 +1,4 @@
 {breed
-	{tags "aio_morale_elite aio_cmd_independent aio_steadfast"}
 	{behaviour soldier}
 	{skin "rus_s_vkpo_vdv"}
 	{portrait fsb_ammo}
@@ -31,6 +30,9 @@
 		{item "zarya" 2}
 		{item "weapon rpg26" 2 filled}	
 		
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
 		{in_hands 5}
 	}
 }

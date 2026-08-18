@@ -4,7 +4,7 @@
 	{portrait rec_ukr}
 	{icon autorifle}
 	{icon_priority 2}
-	{tags "soldier aio_morale_elite aio_cmd_independent"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{head azov_g}
@@ -33,6 +33,8 @@
 		{item "drone_uav_ammo" filled}		
 		{item "ukr_ua_body_kra_02"}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_regular"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "ng1"}
 	{portrait "usmc_med"}
@@ -30,6 +30,7 @@
 		{item "tent_kit" 2}		
 		{item "ng_vest2"}
 		
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

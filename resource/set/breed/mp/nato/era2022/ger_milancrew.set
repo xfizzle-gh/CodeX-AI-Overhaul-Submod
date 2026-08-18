@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_regular"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "ger7"}
 	{portrait "ger_crew"}
@@ -30,6 +30,7 @@
         {item "gunbag_milan"}		 
         {item "shovel_csa"}
 
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

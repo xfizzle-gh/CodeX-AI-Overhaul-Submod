@@ -4,7 +4,7 @@
 	{portrait "rus80_sso"}
 	{icon "rifle"}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular aio_cmd_primary"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_wagner_cap_1}
@@ -28,6 +28,8 @@
 		{item "bandage_rus" 3.5 0.5}
 		{item "bekas-12m_v1" filled}
 		{item "ammo shotguns" 18}
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

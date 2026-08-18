@@ -4,7 +4,7 @@
 	{portrait "82nd"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained aio_cmd_primary"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_c_4}
@@ -33,6 +33,8 @@
 		{item "benelli_m4" filling "ammo shotgun" 7}
 		{item "ammo shotgun" 21}
 		{item "zarya" 2}
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 3}
 	}
 }

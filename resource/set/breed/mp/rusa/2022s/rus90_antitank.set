@@ -4,7 +4,7 @@
 	{portrait rus90}
 	{icon bazooka}
 	{icon_priority 0}
-	{tags "soldier_at aio_morale_regular"}
+	{tags "soldier_at"}
 	{nationality rus}
 	{armors
 		{body "rus_fsb_abody_3_4"}
@@ -29,6 +29,7 @@
 		{item "rpg7vs weapon" filling "rpg7l ammo" 1}
 		{item "rpg7l ammo" 6}
                 {item "shovel_rus"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

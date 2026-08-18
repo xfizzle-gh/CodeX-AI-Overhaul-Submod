@@ -4,7 +4,7 @@
 	{portrait rus90}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body "modul_m_02"}
@@ -30,6 +30,7 @@
 		{item "weapon RPG26" 2 filled}				
                 {item "shovel_rus"}
 		{item "rus_backpack_05"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

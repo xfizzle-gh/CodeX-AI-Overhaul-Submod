@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier_at aio_morale_trained"}
+    {tags "soldier_at"}
 	{behaviour soldier}
 	{skin "rus_wagner_pmc_4"}
 	{portrait "sov_wgn"}
@@ -35,6 +35,7 @@
 		{item "bandage_rus" 2}
 		{item "shovel_rus"}
 
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

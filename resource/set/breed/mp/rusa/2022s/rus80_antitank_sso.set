@@ -4,7 +4,7 @@
 	{portrait "rus80_sso"}
 	{icon "bazooka"}
 	{icon_priority 0}
-	{tags "soldier_bazooka aio_morale_elite aio_cmd_independent"}
+	{tags "soldier_bazooka"}
 	{nationality rus}
 	{armors
 		{head rus_wagner_helmet_1}
@@ -35,6 +35,8 @@
 		{item "bandage_rus" 3}
 		{item "shovel_rus"}
 
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

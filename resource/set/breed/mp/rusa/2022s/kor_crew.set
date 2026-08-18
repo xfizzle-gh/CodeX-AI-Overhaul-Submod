@@ -1,5 +1,4 @@
 {breed
-	{tags "aio_morale_trained"}
 	{behaviour soldier}
 	{skin "kor5"}
 	{portrait "kor"}
@@ -31,6 +30,7 @@
 		{item ""}
 {item "rus_bandan"}
 
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

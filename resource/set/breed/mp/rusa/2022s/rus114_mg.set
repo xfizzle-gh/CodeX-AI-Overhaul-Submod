@@ -1,5 +1,4 @@
 {breed
-	{tags "aio_morale_regular"}
 	{behaviour soldier}
 	{skin "114th3"}
 	{portrait "114th"}
@@ -31,6 +30,7 @@
 		{item "shovel_rus"}
 		
 
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

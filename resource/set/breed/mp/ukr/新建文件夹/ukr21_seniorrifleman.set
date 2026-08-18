@@ -4,7 +4,7 @@
 	{portrait "21th_ammo"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular aio_cmd_junior"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors		
 		{body backpack_90}
@@ -28,6 +28,8 @@
         {item "poviazka_rus"}			
 		{item "ammo m16a2" 210}
 		{item "ukr_ua_body_c_3"}
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 4}
 	}
 }

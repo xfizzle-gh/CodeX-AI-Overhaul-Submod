@@ -4,7 +4,7 @@
 	{portrait "47th_ammo"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained aio_cmd_junior"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors		
 		{body backpack_eagleaiii}
@@ -31,6 +31,8 @@
         {item "pais_bron_vsu"}
 		{item "ukr_ua_body_c_1"}
 		{item "at4cs_v1" filled}
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 4}
 	}
 }

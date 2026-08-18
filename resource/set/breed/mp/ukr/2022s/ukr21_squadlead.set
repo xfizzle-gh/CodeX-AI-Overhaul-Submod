@@ -4,7 +4,7 @@
 	{portrait "21th"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular aio_cmd_primary"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_c_3}
@@ -34,6 +34,8 @@
 		{item "ammo shotgun" 21}		
         {item "fort600" filled}
 		{item "40mm_grenade he ammo" 12}
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 3}
 	}
 }

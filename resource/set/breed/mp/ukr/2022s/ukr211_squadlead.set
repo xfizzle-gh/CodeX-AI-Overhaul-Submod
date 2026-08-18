@@ -4,7 +4,7 @@
 	{portrait "211th"}
 	{icon bazooka}
 	{icon_priority 0}
-	{tags "soldier_at aio_morale_trained aio_cmd_primary aio_cmd_independent"}
+	{tags "soldier_at"}
 	{nationality ukr}
 	{armors
 		{head rus_wagner_capn_3}
@@ -32,6 +32,9 @@
         {item "shovel_csa"}
 		{item "benelli_m4" filling "ammo shotgun" 7}
 		{item "ammo shotgun" 21}		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 3}
 	}
 }

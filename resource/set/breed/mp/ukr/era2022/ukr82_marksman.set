@@ -4,7 +4,7 @@
 	{portrait "82nd"}
 	{icon sniper}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_c_2}
@@ -28,6 +28,7 @@
 		{item "shovel_rus"}
 		{item "tt_308_v2" filled}
 		{item "ammo g28_ammo" 180}
+		{item "aio_marker_morale_trained"}
 		{in_hands 4}
 	}
 }

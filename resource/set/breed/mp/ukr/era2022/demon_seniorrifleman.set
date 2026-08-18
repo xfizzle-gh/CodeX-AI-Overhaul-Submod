@@ -4,7 +4,7 @@
 	{portrait "demon"}
 	{icon rifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_low aio_cmd_junior"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{head ukr_helmet_01}
@@ -29,6 +29,8 @@
 		{item "rgd5 grenade" 2}
  		{item "m72_law" 2 filled}				
 		{item "rdg2 grenade" 0.25 0.5}	
+		{item "aio_marker_morale_low"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 0}
 	}
 }

@@ -1,5 +1,4 @@
 {breed
-	{tags "aio_morale_trained"}
 	{behaviour soldier}
 	{skin "kor8"}
 	{portrait "kor"}
@@ -31,6 +30,7 @@
 		{item "shovel_rus"}
 
 		{item "5x39 ammo" 240}
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

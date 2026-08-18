@@ -4,7 +4,7 @@
 	{portrait fr_svo_7}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_low aio_cmd_primary"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
                 {body "rusf_vs_smerch_body_1"}
@@ -30,6 +30,8 @@
 		{item "shovel_rus"}
 		{item "bekas-12m_v1" filled}
 		{item "ammo shotguns" 18}		
+		{item "aio_marker_morale_low"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

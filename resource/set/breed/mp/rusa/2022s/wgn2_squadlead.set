@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained aio_cmd_primary"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_wagner_01"}
 	{portrait "wgn2"}
@@ -36,6 +36,8 @@
 		{item "vog25 he ammo" 12}	
 		{item "bekas-12m_v1" filled}
 		{item "ammo shotguns" 18}		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

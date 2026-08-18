@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_elite"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_vdv_gr_vor_19_shaltai"}
 	{portrait "vdv83"}
@@ -32,6 +32,7 @@
 
 		{item "shovel_rus"}
 		{item "gunbag_9m133"}
+		{item "aio_marker_morale_elite"}
 		{in_hands 0}
 	}
 }

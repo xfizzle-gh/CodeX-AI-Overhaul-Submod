@@ -4,7 +4,7 @@
 	{portrait "25th"}
 	{icon bazooka}
 	{icon_priority 0}
-	{tags "soldier_at aio_morale_regular"}
+	{tags "soldier_at"}
 	{nationality ukr}
 	{armors
 		{head ukr_47}
@@ -32,6 +32,7 @@
 		{item "ukr_backpack_01"}
 		{item "pais_bron_vsu"}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

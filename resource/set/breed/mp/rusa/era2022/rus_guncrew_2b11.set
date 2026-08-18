@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_regular"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_s_vkpo_new_c_povyaz_01"}
 	{portrait fr_svo_2}
@@ -27,6 +27,7 @@
 		{item "shovel_rus"}
                 {item "gunbag_2b11"}
 {item "rus_backpack_02"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 		
 	

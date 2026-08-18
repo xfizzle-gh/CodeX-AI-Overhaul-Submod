@@ -4,7 +4,7 @@
 	{portrait "med_rus"}
 	{icon "tech"}
 	{icon_priority 5}
-	{tags "soldier aio_morale_low"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_helmet_tor}
@@ -28,5 +28,6 @@
 
 		{item "bandage_rus" 22.5 2.5}
 		{item "tent_kit" 2}
+		{item "aio_marker_morale_low"}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait "93th"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors		
 		{head ukr_ua_helmet_a_3}
@@ -30,6 +30,7 @@
 		{item "m16a2 ammo" 210}
 		{item "pais_bron_vsu"}
 		{item "binocular"}	
+		{item "aio_marker_morale_regular"}
 		{in_hands 4}
 	}
 }

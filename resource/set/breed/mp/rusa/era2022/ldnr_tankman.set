@@ -4,7 +4,7 @@
 	{portrait fr_svo_7}
 	{icon "tech"}
 	{icon_priority 0}
-	{tags "crew aio_morale_low"}
+	{tags "crew"}
 	{nationality rus}
 	{armors
 		{head shlemofon_tsh4m}
@@ -23,6 +23,7 @@
 		{item "5x39 ammo" 150}
 
 		{item "bandage_rus" 4.5 0.5}
+		{item "aio_marker_morale_low"}
 		{in_hands 0}
 	}
 }

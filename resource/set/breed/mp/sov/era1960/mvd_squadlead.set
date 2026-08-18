@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_low aio_cmd_primary"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_afg_infantry_longsleeve_mvd"}
 	{portrait "sov_internal_nco"}
@@ -28,6 +28,8 @@
 		{item "shovel_rus"}
 		{item "rus_afg_sh68" 1}
 
+		{item "aio_marker_morale_low"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

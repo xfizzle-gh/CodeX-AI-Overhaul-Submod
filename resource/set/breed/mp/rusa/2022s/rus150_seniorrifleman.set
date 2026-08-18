@@ -4,7 +4,7 @@
 	{portrait rus150}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular aio_cmd_junior"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{body "rus_nazgul_03"}
@@ -33,6 +33,8 @@
 		{item "aks74gp25" filled}
 		{item "vog25 he ammo" 12}
         {item "rus_fsb_abody_13"}	
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 0}
 	}
 }

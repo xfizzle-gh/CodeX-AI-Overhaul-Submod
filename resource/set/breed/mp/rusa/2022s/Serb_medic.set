@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_Serbian_gr_07_3"}
 	{portrait med_rus}
@@ -31,6 +31,7 @@
 		{item "tent_kit" 2}
 
 
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

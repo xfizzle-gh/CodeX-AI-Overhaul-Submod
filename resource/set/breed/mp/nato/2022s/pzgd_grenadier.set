@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "pzgd_1"}
 	{portrait "pzgd1"}
@@ -31,6 +31,7 @@
 		 
         {item "shovel_csa"}
 
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

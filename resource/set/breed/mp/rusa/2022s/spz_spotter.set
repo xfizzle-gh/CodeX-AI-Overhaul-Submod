@@ -4,7 +4,7 @@
 	{portrait rec_rus}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier aio_morale_elite aio_cmd_independent"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rusich_opscore_helmet_2}
@@ -34,6 +34,8 @@
 		{item "fpv_bomber_ammo" 1}	
 		{item "RPG26 weapon weapon" 2 filled}
 		{item "zarya" 2}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

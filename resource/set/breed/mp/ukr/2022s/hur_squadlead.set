@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier_at aio_morale_elite aio_cmd_primary aio_cmd_independent"}
+    {tags "soldier_at"}
 	{behaviour soldier}
 	{skin "ukr_army_sbu_1"}
 	{portrait "hur"}
@@ -32,6 +32,9 @@
 		{item "at4cs_v1 weapon" filled}
 		{item "benelli_m4" filling "ammo shotgun" 7}
 		{item "ammo shotgun" 21}		
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

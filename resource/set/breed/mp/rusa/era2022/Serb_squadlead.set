@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained aio_cmd_primary"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_Serbian_gr_07_5"}
 	{portrait "serb"}
@@ -34,6 +34,8 @@
 		{item "rus_fsb_abody_3_5"}
 		{item "bekas-12m_v1" filled}
 		{item "ammo shotguns" 18}		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

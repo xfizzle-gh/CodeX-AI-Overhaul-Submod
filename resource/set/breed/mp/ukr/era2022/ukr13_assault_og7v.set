@@ -4,7 +4,7 @@
 	{portrait "ukr13"}
 	{icon bazooka}
 	{icon_priority 0}
-	{tags "soldier_at aio_morale_regular"}
+	{tags "soldier_at"}
 	{nationality ukr}
 	{armors
 		{head ops_core_azov}
@@ -35,6 +35,7 @@
 		{item "rus_fsb_glasses_2"}		
 		{item "zarya" 2}
 		
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

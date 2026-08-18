@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_regular"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "rus_afg_infantry_6b2_longsleeve"}
 	{portrait "sov_medic"}
@@ -31,6 +31,7 @@
 		{item "tent_kit" 2}
 		{item "rus_afg_sh68" 1}
 		{item "6b2" 0.25 0.5}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

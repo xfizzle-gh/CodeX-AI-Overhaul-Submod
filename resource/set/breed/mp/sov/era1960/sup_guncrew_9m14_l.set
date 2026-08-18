@@ -1,5 +1,5 @@
 {breed
-    {tags "crew aio_morale_regular"}
+    {tags "crew"}
 	{behaviour soldier}
 	{skin "sov_supporter"}
 	{portrait "sov_basic"}
@@ -29,6 +29,7 @@
 		
 		{item "gunbag_sov_9m14_launcher"}
 
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait "dpr100"}
 	{icon "rifle"}
 	{icon_priority 0}
-	{tags "soldier aio_morale_low aio_cmd_junior"}
+	{tags "soldier"}
 	{nationality rus}
 	{armors
 		{head rus_wagner_cap_1}
@@ -31,6 +31,8 @@
 		{item "bandage_rus" 3.5 0.5}
 		{item "shovel_rus"}
 		{item "rpg22" 2 filled }		
+		{item "aio_marker_morale_low"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 0}
 	}
 }

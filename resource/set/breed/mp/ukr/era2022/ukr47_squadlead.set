@@ -4,7 +4,7 @@
 	{portrait "47th"}
 	{icon autorifle}
 	{icon_priority 0}
-	{tags "soldier aio_morale_trained aio_cmd_primary"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_c_mg}
@@ -31,6 +31,8 @@
 		{item "benelli_m4" filling "ammo shotgun" 7}
 		{item "ammo shotgun" 21}		
 		{item "40mm_grenade ammo" 18}
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 3}
 	}
 }

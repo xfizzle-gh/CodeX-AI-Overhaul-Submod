@@ -4,7 +4,7 @@
 	{portrait "med_ukr"}
 	{icon tech}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_c_3}
@@ -27,6 +27,7 @@
 		{item "ak5" filled}
 		{item "ammo m16a2" 210}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

@@ -4,7 +4,7 @@
 	{portrait "25th"}
 	{icon mg}
 	{icon_priority 0}
-	{tags "soldier aio_morale_regular"}
+	{tags "soldier"}
 	{nationality ukr}
 	{armors
 		{body ukr_ua_body_a_2}
@@ -30,6 +30,7 @@
 		{item "ukr_backpack_01"}
 		{item "pais_bron_vsu"}
                 {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 3}
 	}
 }

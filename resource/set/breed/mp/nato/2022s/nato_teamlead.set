@@ -4,7 +4,7 @@
 	{portrait nrf}
 	{icon autorifle}
 	{icon_priority 2}
-	{tags "soldier aio_morale_regular aio_cmd_junior"}
+	{tags "soldier"}
 	{nationality nato}
 	{armors
 		{head us_highcut_2}
@@ -30,6 +30,8 @@
 		{item "m18 grenade" 0.25 0.5}
 		{item "bandage_usa" 3.5 0.5}
          {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
 		{in_hands 0}
 	}
 }

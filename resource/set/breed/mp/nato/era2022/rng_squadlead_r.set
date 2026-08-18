@@ -1,5 +1,5 @@
 {breed
-    {tags "soldier aio_morale_trained aio_cmd_primary aio_cmd_independent"}
+    {tags "soldier"}
 	{behaviour soldier}
 	{skin "ranger6"}
 	{portrait "rngr_a"}
@@ -32,6 +32,9 @@
 		{item "anm8_smoke grenade" 0.25 0.5}
 		{item "bandage_usa" 3.5 0.5}
 		{item "drone_fpv_ammo" filled}		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }
