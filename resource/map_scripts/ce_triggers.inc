@@ -1,5 +1,6 @@
 			(include "ce_player_triggers.inc")
 			(include "ce_mechanics_triggers.inc")
+			(include "/map/multi/ce/ce_morale_classification_triggers.inc")
 			(include "ai_logic/ce_lua_triggers.inc")
 			(include "ai_logic/ce_ai_spawn_triggers.inc")
 			(include "ai_logic/ce_ai_logic_triggers.inc")

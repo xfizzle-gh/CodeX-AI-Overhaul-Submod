@@ -129,12 +129,45 @@ function SetCEMissionVariables(botDefender)
   if sabotage == nil then sabotage = 0 end
   local abandon = enableAiAbandonMechanics
   if abandon == nil then abandon = 0 end
+  local morale = enableCeMoraleMechanic
+  if morale == nil then morale = 0 end
+  local moraleDebug = enableCeMoraleDebug
+  if moraleDebug == nil then moraleDebug = 0 end
+  local moraleAutodemo = enableCeMoraleAutodemo
+  if moraleAutodemo == nil then moraleAutodemo = 0 end
 
   --checkVarPercentage("enable_ce_radio_mechanic", enableRadioMechanics)
   checkVarPercentage("enable_ce_radio_mechanic", radioCut) -- use this to control both variables for now
   checkVarPercentage("enable_ce_cut_communications_mechanic", radioCut)
   checkVarPercentage("ai_sabotage", sabotage)
   checkVarPercentage("enable_ai_abandon_mechanics", abandon)
+  checkVarPercentage("enable_ce_morale_mechanic", morale)
+  checkVarPercentage("enable_ce_morale_debug", moraleDebug)
+  checkVarPercentage("enable_ce_morale_autodemo", moraleAutodemo)
+  BotApi.Scene:SetVar("ce_morale_force_shaken", 0)
+  BotApi.Scene:SetVar("ce_morale_force_panic", 0)
+  BotApi.Scene:SetVar("ce_morale_autodemo_done", 0)
+  BotApi.Scene:SetVar("ce_morale_source_tag_seen", 0)
+  BotApi.Scene:SetVar("ce_morale_source_quality_seen", 0)
+  BotApi.Scene:SetVar("ce_morale_source_command_seen", 0)
+  BotApi.Scene:SetVar("ce_morale_autodemo_shaken_done", 0)
+  BotApi.Scene:SetVar("ce_morale_late_seen", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_mi_alive", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_human", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_tag_roundtrip", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_existing_tag_read", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_existing_soldier", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_add_action_ran", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_added_tag_read", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_source_tag_read", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_known_tag", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_pr_a_source", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_canary_present", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_inventory_canary", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_shaken", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_panic", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_player_hit", 0)
+  StartCeMoraleProbeLog()
 
 
   -- only run rear attack script if bot is attacking
@@ -335,6 +368,109 @@ function SetCEWaveSettings()
   end
 
   SetFirstWaveOffset(totalFlags)
+end
+
+local function readMoraleVar(name)
+  local ok, value = pcall(function()
+    return BotApi.Scene:GetVar(name)
+  end)
+  if not ok or value == nil then
+    return 0
+  end
+  return tonumber(value) or 0
+end
+
+function StartCeMoraleProbeLog()
+  if readMoraleVar("enable_ce_morale_autodemo") <= 0 then
+    return
+  end
+  print("CE_MORALE_PROBE armed waiting")
+  local ticks = 0
+  local function tick()
+    ticks = ticks + 1
+    local source = readMoraleVar("ce_morale_source_tag_seen")
+    local quality = readMoraleVar("ce_morale_source_quality_seen")
+    local late = readMoraleVar("ce_morale_late_seen")
+    local done = readMoraleVar("ce_morale_autodemo_done")
+    local shaken = readMoraleVar("ce_morale_autodemo_shaken_done")
+    local result = "waiting source=" .. source .. " quality=" .. quality .. " shaken=" .. shaken .. " late=" .. late .. " done=" .. done
+    if done > 0 and source <= 0 then
+      result = "source_fail"
+    elseif done > 0 and quality <= 0 then
+      result = "source_regular_only"
+    elseif done > 0 and late <= 0 then
+      result = "late_fail"
+    elseif done > 0 and quality > 0 and late > 0 then
+      result = "pass quality_ok shaken late_ok panic"
+    elseif shaken > 0 then
+      result = "in_progress quality_ok shaken waiting_late"
+    end
+    print("CE_MORALE_PROBE", result)
+    local mi = readMoraleVar("ce_morale_diag_mi_alive")
+    local human = readMoraleVar("ce_morale_diag_human")
+    local roundtrip = readMoraleVar("ce_morale_diag_tag_roundtrip")
+    local canary = 0
+    local ok, squads = pcall(function()
+      return BotApi.Scene.Squads
+    end)
+    if ok and type(squads) == "table" then
+      for _, squad in pairs(squads) do
+        local tok, tagged = pcall(function()
+          return BotApi.Scene:IsSquadTagged(squad, "aio_morale_diag_roundtrip")
+        end)
+        if tok and tagged then
+          canary = 1
+          break
+        end
+      end
+    end
+    print("CE_MORALE_DIAG mi_alive=" .. mi .. " human=" .. human .. " tag_roundtrip=" .. roundtrip .. " source=" .. source .. " squad_canary=" .. canary)
+    local tag_add = readMoraleVar("ce_morale_diag_add_action_ran")
+    local tag_read = readMoraleVar("ce_morale_diag_added_tag_read")
+    local known_tag = readMoraleVar("ce_morale_diag_known_tag")
+    local pr_a = readMoraleVar("ce_morale_diag_pr_a_source")
+    local canary_present = readMoraleVar("ce_morale_diag_canary_present")
+    local inventory = readMoraleVar("ce_morale_diag_inventory_canary")
+    local shaken_apply = readMoraleVar("ce_morale_diag_shaken")
+    local panic_apply = readMoraleVar("ce_morale_diag_panic")
+    local player_hit = readMoraleVar("ce_morale_diag_player_hit")
+    local player_excluded = 0
+    if (shaken_apply > 0 or panic_apply > 0) and player_hit <= 0 then
+      player_excluded = 1
+    end
+    print("CE_MORALE_ARCH mi=" .. mi .. " human=" .. human .. " tag_add=" .. tag_add .. " tag_read=" .. tag_read .. " known_tag=" .. known_tag .. " pr_a_source=" .. pr_a .. " canary_present=" .. canary_present .. " inventory_canary=" .. inventory .. " shaken=" .. shaken_apply .. " panic=" .. panic_apply .. " player_excluded=" .. player_excluded)
+    if ticks >= 2 then
+      local fails = {}
+      if human > 0 and tag_add <= 0 then
+        fails[#fails + 1] = "TAG_ADD_FAIL"
+      end
+      if tag_add > 0 and tag_read <= 0 then
+        fails[#fails + 1] = "TAG_READ_FAIL"
+      end
+      if human > 0 and pr_a <= 0 then
+        fails[#fails + 1] = "PR_A_SOURCE_FAIL"
+      end
+      if human > 0 and canary_present <= 0 then
+        fails[#fails + 1] = "CANARY_ABSENT"
+      end
+      if canary_present > 0 and inventory <= 0 then
+        fails[#fails + 1] = "INVENTORY_CANARY_FAIL"
+      end
+      if human > 0 and shaken_apply <= 0 then
+        fails[#fails + 1] = "SHAKEN_APPLY_FAIL"
+      end
+      if human > 0 and panic_apply <= 0 then
+        fails[#fails + 1] = "PANIC_APPLY_FAIL"
+      end
+      if #fails > 0 then
+        print("CE_MORALE_ARCH_FAIL " .. table.concat(fails, " "))
+      end
+    end
+    if ticks < 24 then
+      BotApi.Events:SetQuantTimer(tick, 5000)
+    end
+  end
+  BotApi.Events:SetQuantTimer(tick, 5000)
 end
 
 -- =================== Noresus Mechanics ==================

@@ -2364,6 +2364,7 @@
 			{scoreTotal 0}
 			{scoreCurrent 0}
 		}
+		(include "/map/multi/ce/ce_morale_helpers.inc")
 		{vars
 			(include "../dcg_vars.inc")
 		}

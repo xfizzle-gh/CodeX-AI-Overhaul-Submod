@@ -11,6 +11,10 @@
 (include "/map/multi/ce/ce_generic_waypoint.inc")
 (include "/map/multi/ce/ce_mechanics_triggers.inc")
 (include "/map/multi/ce/ce_player_triggers.inc")
+(include "/map/multi/ce/ce_morale_marker_apply_triggers.inc")
+(include "/map/multi/ce/ce_morale_classification_triggers.inc")
+(include "/map/multi/ce/ce_morale_probe_report.inc")
+(include "/map/multi/ce/ce_morale_diag_triggers.inc")
 
 (include "/map/blow_panels_trigger.inc")
 (include "/map/nikral's trigger.mi")

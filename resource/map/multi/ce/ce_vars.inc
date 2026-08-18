@@ -43,4 +43,30 @@
 ;============ CE SPAWN VARIABLES			
 			{"change_ai_spawns"}
 			{"ai_spawn_strategy"}
-			{"enable_rear_attack_mechanic"}	       
+			{"enable_rear_attack_mechanic"}
+			{"enable_ce_morale_mechanic"}
+			{"enable_ce_morale_debug"}
+			{"enable_ce_morale_autodemo"}
+			{"ce_morale_force_shaken"}
+			{"ce_morale_force_panic"}
+			{"ce_morale_autodemo_done"}
+			{"ce_morale_source_tag_seen"}
+			{"ce_morale_source_quality_seen"}
+			{"ce_morale_source_command_seen"}
+			{"ce_morale_autodemo_shaken_done"}
+			{"ce_morale_late_seen"}
+			{"ce_morale_diag_mi_alive"}
+			{"ce_morale_diag_human"}
+			{"ce_morale_diag_tag_roundtrip"}
+			{"ce_morale_diag_existing_tag_read"}
+			{"ce_morale_diag_existing_soldier"}
+			{"ce_morale_diag_add_action_ran"}
+			{"ce_morale_diag_added_tag_read"}
+			{"ce_morale_diag_source_tag_read"}
+			{"ce_morale_diag_known_tag"}
+			{"ce_morale_diag_pr_a_source"}
+			{"ce_morale_diag_canary_present"}
+			{"ce_morale_diag_inventory_canary"}
+			{"ce_morale_diag_shaken"}
+			{"ce_morale_diag_panic"}
+			{"ce_morale_diag_player_hit"} 

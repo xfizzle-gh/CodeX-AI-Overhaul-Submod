@@ -31,6 +31,8 @@
 		{item "5x39 ammo" 210}
 		{item "drone_recon_ammo" 1}
 		{item "aio_marker_morale_regular"}
+		{item "secret_doc_bag2"}
+		{item "aio_morale_marker"}
 		{in_hands 4}
 	}
 }
