@@ -62,7 +62,7 @@ class CeMoraleRuntimeGateTests(unittest.TestCase):
         self.assertIn("{name aio_morale_panic}", text)
         self.assertIn("{tag aio_morale_shaken}", text)
         self.assertIn("{tag aio_morale_panic}", text)
-        self.assertNotIn("{name aio_morale_broken}", text)
+        self.assertIn("{name aio_morale_broken}", text)
         self.assertIn("{scale 0.75}", text)
         self.assertIn("{scale 0.5}", text)
         self.assertIn("{scale 0.8}", text)

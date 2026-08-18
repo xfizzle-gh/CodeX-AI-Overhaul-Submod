@@ -278,13 +278,13 @@
 											{"case"
 												{condition {type cmp_i} {var "attack_support_flank_rr$"} {op "=="} {value 2}}
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_air_b2"}
 												}
 											}
 											{"default"
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_air_b1"}
 												}
 											}
@@ -296,13 +296,13 @@
 											{"case"
 												{condition {type cmp_i} {var "attack_support_flank_rr$"} {op "=="} {value 2}}
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_air_a2"}
 												}
 											}
 											{"default"
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_air_a1"}
 												}
 											}
@@ -310,7 +310,7 @@
 									}
 									{"default"
 										{"placement"
-											{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+											{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 											{target_waypoint "attack_support_air_b1"}
 										}
 									}
@@ -325,13 +325,13 @@
 											{"case"
 												{condition {type cmp_i} {var "attack_support_flank_rr$"} {op "=="} {value 2}}
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_flank_b2"}
 												}
 											}
 											{"default"
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_flank_b1"}
 												}
 											}
@@ -343,13 +343,13 @@
 											{"case"
 												{condition {type cmp_i} {var "attack_support_flank_rr$"} {op "=="} {value 2}}
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_flank_a2"}
 												}
 											}
 											{"default"
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_flank_a1"}
 												}
 											}
@@ -360,13 +360,13 @@
 											{"case"
 												{condition {type cmp_i} {var "attack_support_flank_rr$"} {op "=="} {value 2}}
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_flank_b2"}
 												}
 											}
 											{"default"
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_flank_b1"}
 												}
 											}
@@ -382,20 +382,20 @@
 											{"case"
 												{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 2}}
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_entry_b2"}
 												}
 											}
 											{"case"
 												{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 3}}
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_entry_b3"}
 												}
 											}
 											{"default"
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_entry_b1"}
 												}
 											}
@@ -407,20 +407,20 @@
 											{"case"
 												{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 2}}
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_entry_a2"}
 												}
 											}
 											{"case"
 												{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 3}}
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_entry_a3"}
 												}
 											}
 											{"default"
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_entry_a1"}
 												}
 											}
@@ -431,20 +431,20 @@
 											{"case"
 												{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 2}}
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_entry_b2"}
 												}
 											}
 											{"case"
 												{condition {type cmp_i} {var "attack_support_entry_rr$"} {op "=="} {value 3}}
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_entry_b3"}
 												}
 											}
 											{"default"
 												{"placement"
-													{selector {ignore_captured_by_user 0} {tag attack_support_place_one}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
 													{target_waypoint "attack_support_entry_b1"}
 												}
 											}
@@ -540,25 +540,25 @@
 
 			(define "am_own_to_support"
 				{"switch"
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 1}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "1"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 2}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "2"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 3}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "3"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 4}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "4"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 5}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "5"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 6}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "6"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 7}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "7"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 8}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "8"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 9}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "9"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 10}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "10"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 11}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "11"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 12}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "12"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 13}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "13"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 14}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "14"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 15}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "15"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag attack_support_deploy}} {operation set} {player "16"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 1}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "1"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 2}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "2"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 3}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "3"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 4}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 5}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 6}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 7}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 8}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 9}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 10}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 11}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 12}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 13}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 14}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 15}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 16}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "16"}}}
 					{"default"
 						{"player"
-							{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{operation set}
 							{player "3"}
 						}
@@ -600,7 +600,7 @@
 				("am_own_to_support")
 				{"delay" {time 0.4}}
 				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{control AI}
 					{ai_move {mode enable}}
 					{weapon_prepare on}
@@ -610,7 +610,7 @@
 					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
 				}
 				{"ables"
-					{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{remove select}
 				}
 				; Brief settle only â€” long pad dwell was stacking corpses at the entry.
@@ -715,28 +715,28 @@
 				}
 				; Get everyone OFF the pad immediately (staggered peels, no multi-second dwell).
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag attack_support_g1}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_g1}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
 				}
 				{"delay" {time 0.35}}
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag attack_support_g2}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_g2}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag attack_support_flag2}}
 				}
 				{"delay" {time 0.35}}
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag attack_support_g3}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_g3}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
 				}
 				{"delay" {time 0.35}}
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag attack_support_g4}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_g4}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag attack_support_flag3}}
@@ -3322,22 +3322,22 @@
 
 			(define "e2_own_current"
 				{"switch"
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 1}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "1"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 2}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "2"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 3}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "3"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 4}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "4"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 5}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "5"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 6}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "6"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 7}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "7"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 8}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "8"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 9}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "9"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 10}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "10"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 11}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "11"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 12}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "12"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 13}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "13"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 14}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "14"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 15}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "15"}}}
-					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 16}} {"player" {selector {ignore_captured_by_user 0} {tag support_e2_claim}} {operation set} {player "16"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 1}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "1"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 2}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "2"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 3}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "3"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 4}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 5}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 6}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 7}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 8}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 9}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 10}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 11}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 12}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 13}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 14}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 15}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "id_attack_support$"} {op "=="} {value 16}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_claim}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "16"}}}
 					{"default" {"set_i" {var "support_e2_fail$"} {op "="} {value 8}}}
 				}
 			)
@@ -3357,16 +3357,16 @@
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
 						{"switch"
-							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}} {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target_waypoint "attack_support_air_a2"}}}
-							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 1}} {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target_waypoint "attack_support_air_a1"}}}
-							{"default" {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target {ignore_captured_by_user 0} {amount 1} {tag spawn_a}}}}
+							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}} {"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_place_one}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_air_a2"}}}
+							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 1}} {"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_place_one}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_air_a1"}}}
+							{"default" {"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_place_one}}} {exclude {tag {tag aio_morale_owned}}}}} {target {ignore_captured_by_user 0} {amount 1} {tag spawn_a}}}}
 						}
 					}
 					{"default"
 						{"switch"
-							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}} {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target_waypoint "attack_support_air_b2"}}}
-							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 1}} {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target_waypoint "attack_support_air_b1"}}}
-							{"default" {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target {ignore_captured_by_user 0} {amount 1} {tag spawn_b}}}}
+							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}} {"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_place_one}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_air_b2"}}}
+							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 1}} {"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_place_one}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_air_b1"}}}
+							{"default" {"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_place_one}}} {exclude {tag {tag aio_morale_owned}}}}} {target {ignore_captured_by_user 0} {amount 1} {tag spawn_b}}}}
 						}
 					}
 				}
@@ -3400,14 +3400,14 @@
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
-						{"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target_waypoint "attack_support_entry_b1"}}
+						{"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_place_one}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_entry_b1"}}
 					}
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
-						{"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target_waypoint "attack_support_entry_a1"}}
+						{"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_place_one}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_entry_a1"}}
 					}
 					{"default"
-						{"placement" {selector {ignore_captured_by_user 0} {tag support_e2_place_one}} {target_waypoint "attack_support_entry_b1"}}
+						{"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_place_one}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_entry_b1"}}
 					}
 				}
 				{"entity_state"
@@ -3428,7 +3428,7 @@
 
 			(define "e2_order_team"
 				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag support_e2_team}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_team}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{control AI}
 					{ai_move {mode enable}}
 					{weapon_prepare on}
@@ -3438,7 +3438,7 @@
 					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
 				}
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag support_e2_team}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_team}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag support_e2_flag_target}}
@@ -3460,21 +3460,21 @@
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 						{"switch"
-							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}} {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_lz_marker}} {target_waypoint "attack_support_air_b2"}}}
-							{"default" {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_lz_marker}} {target_waypoint "attack_support_air_b1"}}}
+							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}} {"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_lz_marker}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_air_b2"}}}
+							{"default" {"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_lz_marker}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_air_b1"}}}
 						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
 						{"switch"
-							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}} {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_lz_marker}} {target_waypoint "attack_support_air_a2"}}}
-							{"default" {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_lz_marker}} {target_waypoint "attack_support_air_a1"}}}
+							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}} {"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_lz_marker}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_air_a2"}}}
+							{"default" {"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_lz_marker}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_air_a1"}}}
 						}
 					}
 					{"default"
 						{"switch"
-							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}} {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_lz_marker}} {target_waypoint "attack_support_air_b2"}}}
-							{"default" {"placement" {selector {ignore_captured_by_user 0} {tag support_e2_lz_marker}} {target_waypoint "attack_support_air_b1"}}}
+							{"case" {condition {type cmp_i} {var "support_e2_lz$"} {op "=="} {value 2}} {"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_lz_marker}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_air_b2"}}}
+							{"default" {"placement" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag support_e2_lz_marker}}} {exclude {tag {tag aio_morale_owned}}}}} {target_waypoint "attack_support_air_b1"}}}
 						}
 					}
 				}
@@ -4021,20 +4021,20 @@
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 						{"placement"
-							{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{target_waypoint "attack_support_entry_b"}
 						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
 						{"placement"
-							{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{target_waypoint "attack_support_entry_a"}
 						}
 					}
 					{"default"
 						{"placement"
-							{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{target_waypoint "attack_support_entry_b"}
 						}
 					}
@@ -4062,7 +4062,7 @@
 				("am_own_to_support")
 				{"delay" {time 0.4}}
 				{"actor_state"
-					{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{control AI}
 					{ai_move {mode enable}}
 					{weapon_prepare on}
@@ -4072,7 +4072,7 @@
 					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
 				}
 				{"ables"
-					{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{remove select}
 				}
 				{"delay" {time 0.25}}
@@ -4096,7 +4096,7 @@
 				{"delay" {time 0.1}}
 				; Truck drives toward the flag (standoff handled by emit after travel delay).
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_motor_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
@@ -4118,7 +4118,7 @@
 				{"delay" {time 3}}
 				; Pax advance on foot; truck holds.
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag attack_support_motor_pax}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_motor_pax}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
@@ -4126,11 +4126,11 @@
 				; Driver leaves the field instead of idling: drive for waypoint "0" and the
 				; cleanup trigger below removes the hull 45s later, wreck included.
 				{"entity_state"
-					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_motor_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{tag_add am_motor_leaving}
 				}
 				{"action"
-					{selector {ignore_captured_by_user 0} {tag attack_support_motor_hull}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_motor_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action move}
 					{waypoint "0"}
@@ -4369,20 +4369,20 @@
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 						{"placement"
-							{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{target_waypoint "attack_support_entry_b1"}
 						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
 						{"placement"
-							{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{target_waypoint "attack_support_entry_a1"}
 						}
 					}
 					{"default"
 						{"placement"
-							{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{target_waypoint "attack_support_entry_b1"}
 						}
 					}
@@ -4394,7 +4394,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_as_step$"} {op "=="} {value 1}}
 						{"action"
-							{selector {ignore_captured_by_user 0} {tag transport_as_hull}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_as_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_1"}
@@ -4404,7 +4404,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_as_step$"} {op "=="} {value 2}}
 						{"action"
-							{selector {ignore_captured_by_user 0} {tag transport_as_hull}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_as_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_2"}
@@ -4414,7 +4414,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_as_step$"} {op "=="} {value 3}}
 						{"action"
-							{selector {ignore_captured_by_user 0} {tag transport_as_hull}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_as_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_3"}
@@ -4424,7 +4424,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_as_step$"} {op "=="} {value 4}}
 						{"action"
-							{selector {ignore_captured_by_user 0} {tag transport_as_hull}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_as_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_4"}
@@ -4434,7 +4434,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_as_step$"} {op "=="} {value 5}}
 						{"action"
-							{selector {ignore_captured_by_user 0} {tag transport_as_hull}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_as_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_5"}
@@ -4476,7 +4476,7 @@
 					}
 					("transport_as_place")
 					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{tag_remove ally_sup_tpl}
 						{tag_remove ally_sup_rusa_motor}
 						{tag_remove hidden}
@@ -4488,7 +4488,7 @@
 					("am_own_to_support")
 					{"delay" {time 0.4}}
 					{"actor_state"
-						{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{control AI}
 						{ai_move {mode enable}}
 						{weapon_prepare on}
@@ -4537,7 +4537,7 @@
 					}
 					("transport_as_place")
 					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{tag_remove ally_sup_tpl}
 						{tag_remove ally_sup_ukr_motor}
 						{tag_remove hidden}
@@ -4549,7 +4549,7 @@
 					("am_own_to_support")
 					{"delay" {time 0.4}}
 					{"actor_state"
-						{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{control AI}
 						{ai_move {mode enable}}
 						{weapon_prepare on}
@@ -4598,7 +4598,7 @@
 					}
 					("transport_as_place")
 					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{tag_remove ally_sup_tpl}
 						{tag_remove ally_sup_nato_motor}
 						{tag_remove hidden}
@@ -4610,7 +4610,7 @@
 					("am_own_to_support")
 					{"delay" {time 0.4}}
 					{"actor_state"
-						{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{control AI}
 						{ai_move {mode enable}}
 						{weapon_prepare on}
@@ -4659,7 +4659,7 @@
 					}
 					("transport_as_place")
 					{"entity_state"
-						{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{tag_remove ally_sup_tpl}
 						{tag_remove ally_sup_prc_motor}
 						{tag_remove hidden}
@@ -4671,7 +4671,7 @@
 					("am_own_to_support")
 					{"delay" {time 0.4}}
 					{"actor_state"
-						{selector {ignore_captured_by_user 0} {tag attack_support_deploy}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
 						{control AI}
 						{ai_move {mode enable}}
 						{weapon_prepare on}
@@ -4727,6 +4727,6 @@
 				}
 				{actions
 					{"delay" {time 90}}
-					{"delete" {selector {ignore_captured_by_user 0} {tag am_motor_leaving}}}
+					{"delete" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag am_motor_leaving}}} {exclude {tag {tag aio_morale_owned}}}}}}
 				}
 			}

@@ -389,11 +389,173 @@
 							{value 1}
 						}
 					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_panic}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_morale_just_panic}
+									}
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+							}
+						}
+						{effect aio_morale_just_panic}
+					}
 					{"delay"
 						{time 3}
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/morale/escalate_panic"}
+					}
+				}
+			}
+			{"conquest_enhanced_mechanics/morale/escalate_broken"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_cmd_lost}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+										{tag
+											{tag aio_morale_panic}
+										}
+									}
+									{exclude
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag player}
+										}
+										{tag
+											{tag aio_morale_just_panic}
+										}
+										{tag
+											{tag aio_morale_broken}
+										}
+									}
+								}
+								{group
+									{select
+										{tag
+											{tag aio_cmd_shock}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+										{tag
+											{tag aio_morale_panic}
+										}
+									}
+									{exclude
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag player}
+										}
+										{tag
+											{tag aio_morale_just_panic}
+										}
+										{tag
+											{tag aio_morale_broken}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_lost}
+									}
+									{tag
+										{tag aio_cmd_shock}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_panic}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag aio_morale_just_panic}
+									}
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+							}
+						}
+						{tag_add aio_morale_broken}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_panic}
+					}
+					{"set_i"
+						{var "ce_morale_diag_broken$"}
+						{op "="}
+						{value 1}
+					}
+					{"delay"
+						{time 3}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/morale/escalate_broken"}
 					}
 				}
 			}

@@ -641,4 +641,55 @@
 			{tags remove "aio_cmd_shock"}
 		}
 	}
+	{on "aio_morale_just_panic"
+		{tags add "aio_morale_just_panic"}
+		{delay 8
+			{tags remove "aio_morale_just_panic"}
+		}
+	}
+	{on "recovering_from_broken"
+		{delay 0.1
+			{tags add "aio_morale_recovering_from_broken"}
+			{tags add "aio_morale_recovering"}
+			{delay 20
+				{if tagged "aio_morale_recovering"
+					{call "recovered_from_broken"}
+				}
+				{tags remove "aio_morale_recovering_from_broken"}
+			}
+		}
+	}
+	{on "recovered_from_broken"
+		{delay 0.1
+			{tags remove "aio_morale_broken"}
+			{tags remove "aio_morale_owned"}
+			{tags remove "aio_morale_regrouping"}
+			{tags remove "aio_morale_regroup_failed"}
+			{tags remove "aio_morale_moving_to_rally"}
+			{tags remove "aio_morale_recovering"}
+			{tags add "aio_morale_panic"}
+			{tags add "aio_morale_did_recover_broken"}
+			{call "aio_morale_just_panic"}
+			{call "recovering_from_panic"}
+		}
+	}
+	{on "aio_morale_moving_to_rally"
+		{tags add "aio_morale_moving_to_rally"}
+		{delay 8
+			{tags remove "aio_morale_moving_to_rally"}
+		}
+	}
+	{on "aio_morale_surrender"
+		{delay 0.1
+			{if not user_control
+				{if not tagged "aio_morale_surrendering"
+					{tags add "aio_morale_surrendering"}
+					{tags remove "aio_morale_broken"}
+					{tags remove "aio_morale_regrouping"}
+					{able "select" 0}
+					{able "fight" 0}
+				}
+			}
+		}
+	}
 }

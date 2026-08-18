@@ -17,6 +17,7 @@
 (include "/map/multi/ce/ce_morale_diag_triggers.inc")
 (include "/map/multi/ce/ce_morale_machine_triggers.inc")
 (include "/map/multi/ce/ce_command_cohesion_triggers.inc")
+(include "/map/multi/ce/ce_broken_behavior_triggers.inc")
 
 (include "/map/blow_panels_trigger.inc")
 (include "/map/nikral's trigger.mi")
@@ -16815,6 +16816,9 @@
 										{tag
 											{tag repairing}
 										}
+										{tag
+											{tag aio_morale_owned}
+										}
 										{state
 											{state inactive}
 										}
@@ -19378,6 +19382,9 @@
 										{tag
 											{tag repairing}
 										}
+										{tag
+											{tag aio_morale_owned}
+										}
 										{state
 											{state inactive}
 										}
@@ -19981,6 +19988,9 @@
 										}
 										{tag
 											{tag repairing}
+										}
+										{tag
+											{tag aio_morale_owned}
 										}
 										{state
 											{state inactive}
@@ -21572,6 +21582,9 @@
 										}
 										{tag
 											{tag repairing}
+										}
+										{tag
+											{tag aio_morale_owned}
 										}
 										{tag
 											{tag _lua_ignore}

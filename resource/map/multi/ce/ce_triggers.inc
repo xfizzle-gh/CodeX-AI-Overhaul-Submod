@@ -6,6 +6,7 @@
 			(include "ce_morale_diag_triggers.inc")
 			(include "ce_morale_machine_triggers.inc")
 			(include "ce_command_cohesion_triggers.inc")
+			(include "ce_broken_behavior_triggers.inc")
 			(include "ai_logic/ce_lua_triggers.inc")
 			(include "ai_logic/ce_ai_spawn_triggers.inc")
 			(include "ai_logic/ce_ai_logic_triggers.inc")
