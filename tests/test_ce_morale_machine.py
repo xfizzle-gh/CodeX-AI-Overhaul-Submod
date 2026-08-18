@@ -57,6 +57,7 @@ class CeMoraleMachineTests(unittest.TestCase):
         self.assertNotIn("see_actors", entry)
         self.assertNotIn("gamezone", text)
         self.assertNotIn("refresh_cancel_recover", text)
+        self.assertNotIn("{tag_remove aio_morale_recovering}", text)
         recover = text.split("start_recover", 1)[1].split("observe_recover", 1)[0]
         self.assertIn("{effect recovering_from_shaken}", recover)
         self.assertIn("{effect recovering_from_panic}", recover)

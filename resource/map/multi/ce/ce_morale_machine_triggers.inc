@@ -180,35 +180,6 @@
 						}
 						{tag_add aio_morale_shaken}
 					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{prop
-										{prop human}
-									}
-								}
-								{include
-									{state
-										{state suppressed}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{state
-										{state linked}
-									}
-								}
-							}
-						}
-						{tag_remove aio_morale_recovering}
-					}
 					{"effect"
 						{selector
 							{source advanced}
@@ -369,35 +340,6 @@
 							}
 						}
 						{tag_remove aio_morale_shaken}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_panic}
-									}
-								}
-								{include
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{state
-										{state linked}
-									}
-								}
-							}
-						}
-						{tag_remove aio_morale_recovering}
 					}
 					{"if"
 						{condition
