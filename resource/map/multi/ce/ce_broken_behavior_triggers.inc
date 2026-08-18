@@ -84,7 +84,7 @@
 							{mode enable}
 						}
 						{ai
-							{advance_ratio 0.1}
+							{advance_ratio "0.1"}
 							{retreat_ratio 4}
 						}
 					}
@@ -175,7 +175,7 @@
 							{mode enable}
 						}
 						{ai
-							{advance_ratio 0.1}
+							{advance_ratio "0.1"}
 							{retreat_ratio 4}
 						}
 					}

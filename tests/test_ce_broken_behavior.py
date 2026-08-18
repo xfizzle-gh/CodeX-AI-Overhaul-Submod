@@ -17,6 +17,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
     def test_stack_and_lua_yield(self) -> None:
         self.assertIn("ce_broken_behavior_triggers.inc", DCG.read_text(encoding="utf-8"))
         self.assertIn("aio_morale_owned", CONQ.read_text(encoding="utf-8"))
+        self.assertIn('{advance_ratio "0.1"}', BEH.read_text(encoding="utf-8"))
+        self.assertNotIn("{advance_ratio 0.1}", BEH.read_text(encoding="utf-8"))
         lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
         self.assertIn("retreat=", lua)
         self.assertIn("observe_surrender", BEH.read_text(encoding="utf-8"))
