@@ -33,6 +33,7 @@
 		{item "shovel_csa"}
 		
 		{item "iotv_3"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

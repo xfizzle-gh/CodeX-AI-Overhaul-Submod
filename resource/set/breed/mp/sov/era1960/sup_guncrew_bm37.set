@@ -1,0 +1,34 @@
+{breed
+    {tags "crew"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_6b2_longsleeve"}
+	{portrait "sov_basic"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_afg_sh68}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("guncrew")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 150}
+		{item "rdgm_smoke grenade" 1.15 0.5}
+
+		{item "bandage_rus" 2.5 0.5}
+		{item "shovel_rus"}
+		
+		{item "gunbag_sov_bm37"}
+
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_povyaz_6"}
+	{portrait ukr_jav}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality ger}
+	{armors
+		{head ukr_helmet_03}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("skilled_manpad_operator")
+		("ildu")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+                {item "g27_hgfs" filled}
+		{item "g28_ammo" 200}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+ 
+		{item "ukr_ua_body_a_1"}
+		{item "ukr_backpack_01"}
+                {item "shovel_csa"}
+		{item "javelin weapon" filling "jav_rock ammo" 1}
+		{item "jav_rock ammo" 2}
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

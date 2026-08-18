@@ -1,0 +1,33 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ng44"}
+	{portrait "acav"}
+	{icon "mg"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ng_hel_6}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_mg")
+		("mg_rank_4")
+		("cavalry")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m240l_a" filled}
+		{item "m240_box bag ammo" 225}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "msv_vest_2"}		
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

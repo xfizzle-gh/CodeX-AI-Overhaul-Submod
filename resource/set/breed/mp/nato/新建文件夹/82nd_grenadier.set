@@ -33,6 +33,7 @@
 		{item "shovel_csa"}
 		
 		{item "msv_3"}
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

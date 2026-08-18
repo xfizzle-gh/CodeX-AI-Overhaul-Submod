@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "nrf_2"}
+	{portrait nrf}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality nato}
+	{armors
+		{head nrf_helmet_2}
+		{body "nrf_vest_3"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_mg")
+		("mg_rank_4")
+				("ildu")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m240l_a" filled}
+		{item "m240_box ammo" 375}
+        {item "shovel_csa"}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+		 
+		
+
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

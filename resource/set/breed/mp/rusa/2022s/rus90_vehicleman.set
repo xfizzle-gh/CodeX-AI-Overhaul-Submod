@@ -1,0 +1,33 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_s_vkpo_new_c_povyaz_01"}
+	{portrait rus90}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head shlemofon_tsh4m}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("tankman")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak74u" filled}
+		{item "5x39 ammo" 120}
+                {item "shovel_rus"}
+		{item "rus_fsb_abody_3_4"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 4}
+	}
+}

@@ -1,0 +1,33 @@
+{breed
+    {tags "crew"}
+	{behaviour soldier}
+	{skin "rus_afg_vdv_longsleeve"}
+	{portrait "rus_pilot"}
+	{icon "tech"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head zsh7apn}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("crewman")
+		("traits_pilot")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		
+		{item "stechkin" filling "stechkin ammo" 30}
+		{item "stechkin ammo" 60}
+		{item "rdgm_smoke grenade" 0.25 0.5}
+
+		{item "bandage_rus" 2.5 0.5}
+
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

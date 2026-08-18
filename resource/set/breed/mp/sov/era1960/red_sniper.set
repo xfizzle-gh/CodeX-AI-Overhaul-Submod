@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_afg_spz_female"}
+	{portrait "sov_sniper_female"}
+	{icon "sniper"}
+	{icon_priority 0}
+	{nationality rus_fmsniper}
+	{armors
+		{head rus_afg_ushanka}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("spetsnaz")
+		("elite_sniper_vision")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_6")
+	}
+	{inventory
+		{item "svd" filling "svd ammo" 10}
+		{item "svd ammo" 110}
+
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdgm_smoke grenade" 0.25 0.5}
+
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "6b2" 0.75 0.5}
+		{item "shovel_rus"}
+		{item "rus_afg_sh68" 1}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

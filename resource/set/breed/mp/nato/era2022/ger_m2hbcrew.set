@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ger8"}
+	{portrait "ger_crew"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality ger}
+	{armors
+		{head ger_helmet_1}
+		{body ger_vest_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("guncrew")	
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "g36a2_h" filling "g36_ammo" 30}
+		{item "g36_ammo ammo" 180}
+
+		{item "dm51 grenade" 2}
+		{item "m18 grenade" 2}
+
+		{item "bandage_usa" 4.5 0.5}
+		{item "gunbag_usa_m2"}
+        {item "shovel_csa"}
+
+
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,39 @@
+{breed
+	{behaviour soldier}
+	{skin "114th3"}
+	{portrait "114th"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_opscore_helmet_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("114dv")
+		("medic")		
+		("at_rank_3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+        }
+	{inventory
+		{item "ak12_m1" filled}
+		{item "5x39 ammo" 210}
+		{item "bandage_rus" 3}
+		{item "rgd5 grenade" 2}
+		{item "zarya" 2}
+		{item "rus_6b45_body_01"}
+		{item "rdg2 grenade"}
+		{item "shovel_rus"}
+		{item "aks74gp25" filled}	
+		{item "vog25 he ammo" 12}	
+		{item "weapon rpg26 " 2 filled}				
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
+		{in_hands 0}
+	}
+}

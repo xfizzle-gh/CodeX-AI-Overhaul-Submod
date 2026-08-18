@@ -1,0 +1,34 @@
+{breed
+    {tags "soldier_at"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_longsleeve_mvd"}
+	{portrait "sov_internal"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality rus_elite}
+	{armors
+		{head rus_afg_sh68}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("at_rank_1")
+		("basic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "sks" filled}
+		{item "sks ammo" 50 5}
+
+		{item "rkg3 grenade" 4.25 0.5}
+
+		{item "bandage_rus" 2.5 0.5}
+		{item "shovel_rus"}
+
+		{item "aio_marker_morale_low"}
+		{in_hands 0}
+	}
+}

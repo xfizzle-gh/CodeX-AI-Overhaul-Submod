@@ -1,0 +1,33 @@
+{breed
+	{behaviour soldier}
+	{skin "25th"}
+	{portrait "med_ukr"}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_a_1}
+		{head azov_b2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("72th")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rdg2 grenade" 4}
+		{item "bandage_rus" 10}
+		{item "tent_kit" 2}
+		{item "uar15_v2" filled}
+		{item "ammo m16a2" 210}
+                {item "shovel_csa"}
+		{item "aio_marker_morale_trained"}
+		{in_hands 3}
+	}
+}

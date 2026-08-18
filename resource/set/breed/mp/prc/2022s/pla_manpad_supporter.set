@@ -1,0 +1,35 @@
+{breed
+	{tags "soldier"}
+	{behaviour soldier}
+	{skin "pla21_new"}
+	{portrait "placrew"}
+	{icon tech}
+	{icon_priority 0}
+	{nationality chi}
+	{armors
+		{head pla21_helmet_1}
+				{body "pla21_vest_2"}
+	}
+	{perks
+		(include "ability.inc")
+		("skilled_manpad_operator")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "qbz_191" filling "58ammo_basic ammo" 30}
+		{item "58ammo_basic ammo" 210}
+		{item "fn6a_ammo ammo" 4}
+
+		{item "bandage_chn" 4.5 0.5}
+
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "binocular"}
+ {item "pla21_glass"}		
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

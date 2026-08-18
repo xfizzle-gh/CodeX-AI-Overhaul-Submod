@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ng2"}
+	{portrait "acav_ng"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ng_hel2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_xm157")
+		("cavalry_e")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "xm157" filled}
+		{item "xm7_ammo ammo" 120}
+		
+		{item "m26 grenade" 1.25 0.5}
+		{item "anm8_smoke grenade" 0.25 0.5}
+
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		
+		{item "ng_vest3"}
+		{item "ng_backpack"}		
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 0}
+	}
+}

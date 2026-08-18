@@ -1,0 +1,41 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "pzgd_1"}
+	{portrait "jager"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality ger}
+	{armors
+		{head viper_p2_1}
+		{body mnac_vest_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("jager")
+		("sniper_vision")
+		("stealth")	
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "g28" filling "g28_ammo" 10}
+		{item "g28_ammo ammo" 110}
+		
+		{item "dm51 grenade" 2}
+		{item "m18 grenade" 2}
+		 
+		{item "bandage_rus" 2}
+                {item "shovel_csa"}
+		
+		
+		
+		{item "backpack_90"}
+
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

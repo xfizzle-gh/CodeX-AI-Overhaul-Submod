@@ -1,0 +1,25 @@
+{breed
+    {tags "soldier_at"}
+	{behaviour soldier}
+	{skin "sfg_5"}
+	{portrait "acav"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("cavalry")		
+		("at_rank_3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory			
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

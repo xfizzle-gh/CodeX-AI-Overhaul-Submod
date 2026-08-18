@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_afg_spz_gp"}
+	{portrait "sov_spetsnaz"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality rus_sniper}
+	{armors
+		{head rus_maska1_visorup}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("spetsnaz")
+		("elite_officer_vision")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_4")
+	}
+	{inventory
+		
+		
+		{item "rpg26 weapon" filling "rpg26 ammo" 1}
+		{item "vss_vintorez_v1" filling "9x39_1 ammo" 10}
+		{item "9x39_1 ammo" 100}
+		{item "rdgm_smoke grenade" 2}
+		{item "shovel_rus"}
+		{item "bandage_rus" 4.5 0.5}
+		{item "knife_rus" 1.5 0.5}
+		{item "6b2" 1}
+
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

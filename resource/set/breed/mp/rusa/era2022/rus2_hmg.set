@@ -1,0 +1,33 @@
+{breed
+	{behaviour soldier}
+	{skin "155th1"}
+	{portrait svo_2rd}
+	{icon mg}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{body "rus_fsb_abody_3_4"}
+		{head rus_fsb_helmet_4}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+                ("mg_rank_3")
+		("21th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "pkm" filled}
+		{item "pk_box ammo" 400}
+                {item "shovel_rus"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 3}
+	}
+}

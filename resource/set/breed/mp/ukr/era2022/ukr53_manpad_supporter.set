@@ -1,0 +1,38 @@
+{breed
+	{tags "soldier"}
+	{behaviour soldier}
+	{skin "53th"}
+	{portrait "vsu_svo_2"}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_a_1}
+		{head ukr_cah92_2_green}
+	}
+	{perks
+		(include "ability.inc")
+		;("skill_rank_1")
+		("skilled_manpad_operator")
+		("guncrew")
+		("binocular_vision")
+		("recon")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filled}
+		{item "5x39 ammo" 150}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "fim-92a_ammo ammo" 4}
+		{item "bandage_usa" 3.5 0.5}
+		
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_s_vkpo_vdv"}
+	{portrait fsb_ammo}
+	{icon autorifle}
+	{icon_priority 2}
+	{nationality rus}
+	{armors
+		{body rus_fsb_abody_2_0}
+		{head tor_helmet_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("fsb")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "rus_fsb_abody_12"}
+		{item "ak12_m1_holo" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "zarya" 2}
+		{item "weapon rpg26" 2 filled}	
+		
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
+		{in_hands 5}
+	}
+}

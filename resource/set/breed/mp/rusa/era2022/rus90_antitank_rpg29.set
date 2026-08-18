@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "2rd1"}
+	{portrait rus90_ammo}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{body "rus_fsb_abody_12"}
+		{head rus_helmet_6b47_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("21th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak74" filled}
+		{item "5x39 ammo" 210}
+		{item "rpg29 weapon" filling "pg-29v rpg29 ammo" 1}
+		{item "pg-29v rpg29 ammo" 2}
+		{item "tbg-29 rpg29 ammo" 2}		
+                {item "shovel_rus"}
+		{item "modul_m_03"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 4}
+	}
+}

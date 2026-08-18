@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_sbu_1"}
+	{portrait "48th_ammo"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors		
+		{body backpack_eagleaiii}
+		{head azov_g}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("48th")
+        ("rifle_rank_4")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "mk16_mod1" filled}
+		{item "ammo m16a2" 240}
+
+		{item "ukr_ua_body_a_1"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 4}
+	}
+}

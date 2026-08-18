@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "nrf_2"}
+	{portrait nrf}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier_at"}
+	{nationality nato}
+	{armors
+		{head us_highcut_2}
+		{body "nrf_vest_3"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("at_rank_3")
+("ildu")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+        {item "mars_l" filled}
+		{item "m16a2 ammo" 240}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+		{item "spike-sr weapon" 2 filled}
+        {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

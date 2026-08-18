@@ -33,6 +33,9 @@
 		{item "uav_dji_air2s_ammo" 1}
 		{item "drone_recon_ammo" 1}	
 		{item "drone_fpv_ammo" 1}				
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

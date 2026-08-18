@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_wagner_pmc_4"}
+	{portrait sov_wgn3}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_wagner_helmet_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_3")
+		("guards")
+		("health_rank_3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_3")
+	}
+	{inventory
+		{item "ak12_m1" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rpg7l ammo" 4}
+		{item "bandage_rus" 3}
+		{item "rus_sso_body_2"}	
+		{item "rus_fsb_abody_13"}	
+		{item "rus_wagner_mask_1"}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade"}
+		{item "RPG26 weapon weapon" filled}
+		{item "RShG_2 weapon" filled}
+        {item "shovel_rus"}
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

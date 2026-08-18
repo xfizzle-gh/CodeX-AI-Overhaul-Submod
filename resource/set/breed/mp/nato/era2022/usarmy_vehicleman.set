@@ -1,0 +1,35 @@
+{breed
+    {tags "crew"}
+	{behaviour soldier}
+	{skin "ng2"}
+	{portrait "acav"}
+	{icon "tech"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ng_helmet}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("crewman_2")
+		("cavalry")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m4a1_v3b" filled}
+		{item "m16a2 ammo" 180}
+
+
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		
+		{item "ng_vest"}
+		
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

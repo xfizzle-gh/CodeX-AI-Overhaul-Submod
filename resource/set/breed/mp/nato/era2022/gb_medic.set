@@ -1,0 +1,38 @@
+{breed
+	{tags "soldier"}
+	{behaviour soldier}
+	{skin "gb07"}
+	{portrait "med_gbr"}
+	{icon "tech"}
+	{icon_priority 2}
+	{nationality eng}
+	{armors
+		{head gb_helmet_5}
+		{body gb_vest_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_br")
+		("medic")
+	    ("health_rank_2")
+		("british_rifleman")		
+		("british")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "l85a2" filling "m16a2 ammo" 30}
+		{item "m16a2 ammo" 240}
+		{item "m18 grenade" 2}
+        {item "gb_backpack_1"}
+		{item "bandage_rus" 10}
+		{item "tent_kit" 2}
+        {item "shovel_csa"}
+		
+
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

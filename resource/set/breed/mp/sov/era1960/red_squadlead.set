@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_6b3_winter"}
+	{portrait "sov_guards_nco"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus_guards}
+	{armors
+		{head rus_afg_hat}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("redbanner")
+		("elite_officer_vision")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_4")
+	}
+	{inventory
+		{item "aks74" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+
+		{item "rpg26 weapon" filling "rpg26 ammo" 1}
+		
+		{item "rgd5 grenade" 1}
+		{item "rdgm_smoke grenade" 3}
+
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "6b2" 0.75 0.5}
+		{item "rus_afg_sh68" 1}
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 0}
+	}
+}

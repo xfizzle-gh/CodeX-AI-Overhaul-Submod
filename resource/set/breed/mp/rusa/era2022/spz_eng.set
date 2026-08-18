@@ -1,0 +1,41 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_sso_gru_1"}
+	{portrait sov_spz}
+	{icon tech}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_rus_sso_gru__helmet_13}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("spetsnaz_sso")
+                ("crewman_2")
+                ("engineer")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74m_zenitco_v4" filled}
+		{item "5x39 ammo" 240}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+ 		{item "drone_fpv_ammo" filled}	
+		{item "rus_sso_body_1"}
+		{item "shovel_rus"}
+		{item "rus_rus_sso_gru__abody_13"}
+		{item "zarya" 2}
+		{item "napashnik"}
+                {item "pickaxe"}
+                {item "wirecutters"}
+                {item "mine_detector"}
+		{item "aio_marker_morale_elite"}
+		{in_hands 0}
+	}
+}

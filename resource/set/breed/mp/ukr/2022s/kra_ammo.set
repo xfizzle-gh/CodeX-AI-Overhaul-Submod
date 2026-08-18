@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "3rd3"}
+	{portrait "vsu_svo_5"}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+                {body backpack_eagleaiii}
+		{head ukr_ua_opscore_02}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("specialforces")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "scar_h" filled}
+		{item "ammo scar" 210}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+ 		{item "drone_fpv_ammo" filled}
+		{item "ukr_bron_4"}
+		{item "pais_bron_vsu"}
+                {item "rgw90_as weapon" 1 filled}
+                {item "shovel_csa"}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

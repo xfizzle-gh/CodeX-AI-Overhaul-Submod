@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_vdv_gr_vor_20_scorp"}
+	{portrait "vdv83"}
+	{icon "mg"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_wagner_capn_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("health_rank_4")
+		("mg_rank_4")
+		("guards")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rpl_20" filling "rpk16_ammo ammo" 100}
+		{item "rpk16_ammo ammo" 400}
+		{item "kirasa_bron_6"}
+		{item "rgd5 grenade" 2.25 0.5}
+		{item "rdg2 grenade" 2.25 0.5}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

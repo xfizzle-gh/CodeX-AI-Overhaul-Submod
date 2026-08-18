@@ -31,6 +31,8 @@
 		{item "jpc_2"}
 		{item "drone_recon_ammo" 1}	
 		{item "drone_fpv_ammo" 3}		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

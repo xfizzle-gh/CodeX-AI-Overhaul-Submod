@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "25th2"}
+	{portrait "rec_ukr"}
+	{icon sniper}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_b_1}
+		{head azov_g}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("binocular_vision")
+		("72th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak74u" filled}
+		{item "ammo 5x39" 210}
+        {item "binocular"}
+		{item "uav_dji_air2s_ammo" 1 filled}	
+		{item "aio_marker_morale_trained"}
+		{in_hands 4}
+	}
+}

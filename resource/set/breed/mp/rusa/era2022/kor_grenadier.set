@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "kor3"}
+	{portrait "kor2"}
+	{icon autorifle}
+	{icon_priority 2}
+	{nationality kor}
+	{armors
+		
+		{head rus_helmet_6b47_1}
+	}
+	{perks
+		(include "ability.inc")
+		 	("skill_rank_kor")
+		("kor")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74m" filled}
+		{item "5x39 ammo" 240}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "aks74gp25" filling "vog25 he" 1}
+		{item "vog25 he" 10}				
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "modul_m_01"}
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

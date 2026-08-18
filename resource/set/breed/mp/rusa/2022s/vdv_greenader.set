@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_s_vkpo_vdv_4"}
+	{portrait fr_svo_1}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_helmet_v05}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("paratrooper")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "5x39 ammo" 210}
+		{item "ak12kgp25" filled}
+		{item "vog25 he ammo" 8}
+		{item "rgd5 grenade" 3}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdg2 grenade"}
+		{item "rus_6b45_body_05"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "ak12k" filled}
+                {item "shovel_rus"}
+		{item "aio_marker_morale_trained"}
+		{in_hands 8}
+	}
+}

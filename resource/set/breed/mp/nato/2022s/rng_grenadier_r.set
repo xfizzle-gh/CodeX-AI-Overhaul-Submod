@@ -1,0 +1,42 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ranger5"}
+	{portrait "rngr"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality usa}
+	{armors
+		{head ranger_helmet_5}
+		{body ranger_vest_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("rangere")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "mcx_virtus4e" filled}
+		{item "mcx_ammo ammo" 240}
+		 	
+		{item "shovel_csa"}		
+		 
+		{item "m320gl" filled}
+		{item "40mm_grenade he ammo" 12}
+		{item "dm51 grenade" 2}
+		{item "m18 grenade" 2}
+
+		{item "bandage_usa" 4.5 0.5}
+
+		{item "drone_fpv_ammo" filled}		
+		 
+		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

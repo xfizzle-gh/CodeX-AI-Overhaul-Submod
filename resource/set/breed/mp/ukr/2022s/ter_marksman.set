@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ukr_tdf"}
+	{portrait "vsu_svo_6"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality ukr}
+	{armors
+		{head ukr_ter1}
+		{body "ukr_bron_4"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("tdf")
+				 
+						("sniper_vision")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "svd" filling "ammo svd" 10}
+		{item "ammo svd" 60}
+
+		{item "rgd5 grenade" 0.15 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 2.5 0.5}
+		{item "shovel_rus"}
+
+		{item "aio_marker_morale_low"}
+		{in_hands 0}
+	}
+}

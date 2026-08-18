@@ -1,0 +1,31 @@
+{breed
+	{behaviour soldier}
+	{skin "nrf_4"}
+	{portrait "nrf_crew"}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality nato}
+	{armors
+		{head nrf_helmet_2}
+				{body "nrf_vest_3"}	
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("crewman")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "mars_l" filled}
+		{item "m16a2 ammo" 220}
+		{item "bandage_usa" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "gunbag_usa_mk19"}		
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

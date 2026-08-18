@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "rus90"}
+	{portrait rus90}
+	{icon sniper}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{body "rus_nazgul_02"}
+		{head rus_wagner_capn_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("21th")
+		("sniper_vision")
+		("stealth")	
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "sv98" filled}
+		{item "sv98_ammo ammo" 50}
+		{item "aio_marker_morale_regular"}
+		{in_hands 4}
+	}
+}

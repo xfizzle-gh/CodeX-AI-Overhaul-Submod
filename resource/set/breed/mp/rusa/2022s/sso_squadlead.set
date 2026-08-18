@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_vdv_gr_vor_21_gusev"}
+	{portrait "vdv83"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_helmet_6b47_inviz}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("spetsnaz_sso")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "amb_17_g33" filling "9x39 ammo" 20}
+		{item "9x39 ammo" 140}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "rus_backpack_02"}
+		{item "kirasa_bron_7"}
+		{item "bekas-12m_v1" filled}
+		{item "ammo shotguns" 18}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "RPG26 weapon weapon" filled}
+		{item "RShG_2 weapon" filled}		
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

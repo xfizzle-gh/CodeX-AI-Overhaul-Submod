@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ukr_spec"}
+	{portrait "vsu_svo_7"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality ukr}
+	{armors
+                {body backpack_eagleaiii}
+		{head ukr_helmet_08}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("azov")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74" filling "ammo 5x39" 30}
+		{item "ammo 5x39" 150}
+		{item "ukr_bron_3_azov" 1}
+		{item "pais_bron_vsu" 1}
+		{item "rgd5 grenade" 2}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 2}
+{item "shmel weapon" 1 filled}
+
+		{item "bandage_rus" 4.5 0.5}
+ 
+                {item "shovel_csa"}
+
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

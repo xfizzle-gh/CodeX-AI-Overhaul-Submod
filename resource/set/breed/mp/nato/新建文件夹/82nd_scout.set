@@ -32,6 +32,7 @@
 		{item "msv_1"}
 		{item "drone_recon_ammo" 1}	
 		{item "drone_fpv_ammo" 3}		
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

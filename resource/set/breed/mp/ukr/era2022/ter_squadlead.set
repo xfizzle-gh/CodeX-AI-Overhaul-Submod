@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ukr_tdf"}
+	{portrait "vsu_svo_6"}
+	{icon "autorifle"}
+	{icon_priority 3}
+	{nationality ukr}
+	{armors
+		{head ukr_ter1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+				("tdf")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "amd65" filling "ammo ak47 akm" 30}
+		{item "ammo ak47 akm" 180}
+		{item "ukr_ua_body_a_2" 1}
+		{item "rgd5 grenade" 0.50 0.5}
+		{item "rdg2 grenade" 1.15 0.5}
+		{item "rgd5 grenade" 1.4 0.5}
+		{item "rdg2 grenade" 0.25 0.5}		
+		{item "rus_fsb_abody_12"}	
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "benelli_m4" filling "ammo shotgun" 7}
+		{item "ammo shotgun" 21}		
+		
+		
+		{item "aio_marker_morale_low"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 0}
+	}
+}

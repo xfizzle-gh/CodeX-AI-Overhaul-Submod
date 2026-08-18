@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "usmc_woodland_9"}
+	{portrait "usmc_vehcileman"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality usa}
+	{armors
+		{head usmc_pilot_helmet}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_usmce")
+		("marine")
+		("crewman_2")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		
+		{item "m4a1_h" filled}
+		{item "m16a2 ammo" 220}
+		{item "m18 grenade" 2}
+		{item "shovel_csa"}
+		{item "bandage_usa" 4.5 0.5}
+		 
+		
+
+
+		
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,41 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_priv_ca_01"}
+	{portrait "211th"}
+	{icon bazooka}
+	{icon_priority 0}
+	{tags "soldier_at"}
+	{nationality ukr}
+	{armors
+		{head azov_b2}
+		{body "ukr_ua_body_a_1"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("at_rank_4")
+		("211th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3}
+		{item "huskyhk416" filled}
+		{item "m16a2 ammo" 210}
+		{item "rus_bandan"}
+		{item "m72a7law" 2 filled}
+		{item "m72_law" 1 filled}		
+
+		{item "pais_bron_vsu"}		
+        {item "shovel_csa"}
+		{item "laser_designator" filling "flare_usa artillery_155" 1}
+		{item "flare_usa artillery_155"}				
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 3}
+	}
+}

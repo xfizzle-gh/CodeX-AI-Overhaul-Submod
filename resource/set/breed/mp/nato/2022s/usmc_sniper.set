@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "usmc_woodland_8"}
+	{portrait "usmc_r"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality usa}
+	{armors
+		{head usmc_woodland_helmet_7}
+		{body usmc_desert_armor_4}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("marine")
+		("sniper_vision")
+		("stealth")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m110a1_v1" filled}
+		{item "m39_ammo ammo" 40}
+		{item "shovel_csa"}
+		{item "usmc_mask_1"}		
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+
+		{item "bandage_usa" 3.5 0.5}
+		{item "usmc_woodland_backpack_1"}
+		{item "usmc_desert_belt_2"}		
+		
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

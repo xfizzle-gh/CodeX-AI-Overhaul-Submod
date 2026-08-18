@@ -1,0 +1,33 @@
+{breed
+	{tags "soldier"}
+	{behaviour soldier}
+	{skin "ukr_army_priv_ca_1"}
+	{portrait "vsu_svo_2"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_a_1}
+		{head ukr_ua_helmet_a_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("guncrew")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filled}
+		{item "5x39 ammo" 150}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "gunbag_mk19_ukr"}
+		{item "backpack_bundes" 1}		
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

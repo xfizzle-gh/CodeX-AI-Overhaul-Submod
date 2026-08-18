@@ -1,0 +1,39 @@
+{breed
+	{behaviour soldier}
+	{skin "rus111"}
+	{portrait "rus110"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_wagner_cap_1}
+        {body "rus_nazgul_02"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("110dv")
+		("medic")
+		("at_rank_2")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "ak74m1c" filled}
+		{item "5x39 ammo" 210}
+		{item "rus_fsb_abody_12_1"}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}		
+		{item "shovel_rus"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "aks74gp25" filled}
+		{item "vog25 he ammo" 12}	
+				{item "rpg22" 2 filled }
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
+		{in_hands 0}
+	}
+}

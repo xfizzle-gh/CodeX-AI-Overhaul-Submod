@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "usa_ocp5"}
+	{portrait "usmc_med"}
+	{icon "tech"}
+	{icon_priority 3}
+	{nationality usa_paratrooper}
+	{armors
+		{head wendy_ex_3}
+		{body "jpc_2"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("paratrooper")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m7_spear_holo" filled}
+		{item "ammo xm7_ammo" 180}
+		{item "us_backpack_4"}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 4}
+		{item "bandage_usa" 20}
+		{item "shovel_csa"}
+		{item "tent_kit" 2}		
+
+		
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

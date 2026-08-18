@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "106th3"}
+	{portrait "106th"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_helmet_v05}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("106dv")
+		 
+		("health_rank_3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+        }
+	{inventory
+		{item "ak12_m1_holo" filled}
+		{item "ak47 akm ammo" 210}
+		{item "bandage_rus" 3}
+		{item "rgd5 grenade" 2}
+		{item "rus_fsb_abody_2_0"}
+		{item "rdg2 grenade"}
+		{item "shovel_rus"}
+		{item "bekas-12m_v1" filled}
+		{item "ammo shotguns" 18}
+		{item "RShG_2" 1 filled}		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 0}
+	}
+}

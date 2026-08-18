@@ -1,0 +1,43 @@
+{breed
+    {tags "soldier_at"}
+	{behaviour soldier}
+	{skin "usmc_desert_2"}
+	{portrait "usa_jav"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality usa}
+	{armors
+		{head usmc_desert_panama_1}
+		{body usmc_desert_armor_2}
+        }
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("at_rank_5")
+		("seals")
+		 	
+		("skilled_manpad_operator")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "m4a1_block_ii_v3" filled}
+		{item "m16a2 ammo" 220}
+		{item "shovel_csa"}
+		{item "javelin weapon" filling "jav_rock ammo" 1}
+		{item "jav_rock ammo" 2}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "m84 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+		{item "usmc_desert_glasses_2"}			
+		
+		{item "usmc_mask_2"}		
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
+		{in_hands 0}
+	}
+}

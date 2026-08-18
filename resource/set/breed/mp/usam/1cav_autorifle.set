@@ -32,6 +32,7 @@
 		{item "us_backpack_2"}		
 		{item "thor_2"}
 		
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

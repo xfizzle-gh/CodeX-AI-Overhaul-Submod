@@ -1,0 +1,39 @@
+{breed
+	{behaviour soldier}
+	{skin "45th2"}
+	{portrait sov_fsb}
+	{icon sniper}
+	{icon_priority 2}
+	{nationality rus}
+	{armors
+		{body rus_fsb_abody_2_0}
+		{head rus_opscore_helmet_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("fsb")
+
+		("skilled_manpad_operator")
+		("skilled_gun")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "ak12_m1_holo" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 240}
+		{item "igla weapon" filling "igla_S ammo" 1}
+		{item "igla_S ammo" 3}
+
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
+		{in_hands 4}
+	}
+}

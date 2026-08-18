@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "3rd3"}
+	{portrait "93th_ammo"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors		
+		{body backpack_eagleaiii}
+		{head ukr_ua_helmet_a_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("93th")
+        ("rifle_rank_4")				 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak74m_zenitco_v3" filled}
+		{item "5X39 ammo" 210}
+		{item "pais_bron_vsu"}
+
+		{item "ukr_ua_body_a_1"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 4}
+	}
+}

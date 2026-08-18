@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr47_3"}
+	{portrait "25asb"}
+	{icon bazooka}
+	{icon_priority 0}
+	{tags "soldier_at"}
+	{nationality ukr}
+	{armors
+		{head ukr_47}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("at_rank_4")
+		("assault")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3}
+		{item "uar15_v1" filled}
+		{item "m16a2 ammo" 210}
+		{item "m136" 2 filled}
+		{item "ukr_ua_body_b_1"}
+		{item "pais_bron_vsu"}		
+		{item "ukr_backpack_01"}
+        {item "shovel_csa"}
+        {item "pais_bron_vsu"}
+		{item "aio_marker_morale_trained"}
+		{in_hands 3}
+	}
+}

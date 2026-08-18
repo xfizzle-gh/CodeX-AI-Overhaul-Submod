@@ -1,0 +1,33 @@
+{breed
+	{behaviour soldier}
+	{skin "3rd3"}
+	{portrait "med_ukr"}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_c_mg2}
+		{head vsu_helmet_ach_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("48th")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rdg2 grenade" 4}
+		{item "bandage_rus" 10}
+		{item "tent_kit" 2}
+		{item "ak74u" filling "ammo 5x39" 30}
+		{item "ammo 5x39" 180}
+                {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 3}
+	}
+}

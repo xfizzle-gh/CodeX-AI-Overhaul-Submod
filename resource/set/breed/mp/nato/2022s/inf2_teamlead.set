@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "usa_ocp6"}
+	{portrait "inf2"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ihps_new_1}
+		{body "iotv_6"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("cavalry")		
+		("at_rank_3")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "m4a1_v4b" filled}
+		{item "m16a2 ammo" 180}
+
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "at4cs_v1 weapon" filled}
+		
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+
+		{item "us_backpack_2"}		
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
+		{in_hands 0}
+	}
+}

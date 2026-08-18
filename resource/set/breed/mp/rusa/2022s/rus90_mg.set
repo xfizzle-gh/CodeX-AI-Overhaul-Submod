@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_s_vkpo_new_c_povyaz_03"}
+	{portrait rus90}
+	{icon mg}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{body "modul_m_01"}
+		{head rus_helmet_6b47_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2_mg")
+        ("mg_rank_3")
+		("21th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "pkm" filled}
+		{item "pk_box ammo" 400}
+                {item "shovel_rus"}
+                {item "rus_backpack_02"}				
+		{item "aio_marker_morale_regular"}
+		{in_hands 3}
+	}
+}

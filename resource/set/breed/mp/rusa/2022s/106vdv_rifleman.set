@@ -1,0 +1,33 @@
+{breed
+	{behaviour soldier}
+	{skin "106th2"}
+	{portrait "106ammo"}
+	{icon autorifle}
+	{icon_priority 2}
+	{nationality rus}
+	{armors
+		{head rus_wagner_capn_1}
+		{body rus_6b45_body_01}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("106dv")
+		("rifle_rank_5")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak12k_syq" filled}
+		{item "5x39 ammo" 210}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "rus_fsb_abody_12"}		
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

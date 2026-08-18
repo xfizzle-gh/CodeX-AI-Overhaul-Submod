@@ -30,6 +30,9 @@
 		{item "us_backpack_3"}				
 		{item "iotv_gen4_1"}
 		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

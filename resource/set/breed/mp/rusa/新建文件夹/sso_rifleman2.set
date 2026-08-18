@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_wagner_gr_2_1"}
+	{portrait "vdv83"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		
+		{head tor_helmet_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("guards")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "as_val_v1" filling "9x39 ammo" 20}
+		{item "9x39 ammo" 140}
+
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "RPG26 weapon weapon" filled}
+		{item "RShG_2 weapon" filled}
+		{item "bandage_rus" 3.5 0.5}
+		{item "rus_nazgul_03"}
+		{item "shovel_rus"}
+
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

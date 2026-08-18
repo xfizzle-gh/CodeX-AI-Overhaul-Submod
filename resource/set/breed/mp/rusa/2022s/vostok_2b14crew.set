@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "vostok1"}
+	{portrait "vostok"}
+	{icon "mg"}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_fsb_helmet_2}
+                {body "6b13_02"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+        ("crewman")		
+		("vostok")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filled}
+		{item "ammo 5x39" 120}
+
+		{item "rgd5 grenade" 0.25 0.5}
+                {item "gunbag_2b14"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ger2"}
+	{portrait "pzgd1"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality ger}
+	{armors
+		{head ger_helmet_3}
+		{body ger_vest_5}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("pzgrene")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "g36ka4_hg" filling "g36_ammo" 30}
+		{item "g36_ammo ammo" 240}
+		{item "rgw90_as" filled}
+		{item "backpack_90"}
+		{item "dm51 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+        {item "shovel_csa"}
+		 
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 0}
+	}
+}

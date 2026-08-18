@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "dnr_sparta_sniper"}
+	{portrait "spd"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head helmet_sh68}
+        {body rus_fsb_abody_6}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("sniper_vision")
+		("stealth")
+		("spd")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "mosin_scope" filled}
+		{item "rifle_rus clip ammo" 60 5}
+		
+		{item "rgd5 grenade" 0.25 0.5}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "knife_rus"}
+
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

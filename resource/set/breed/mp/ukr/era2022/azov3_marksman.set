@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ukr_army_3th_2"}
+	{portrait "azov3"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality ukr}
+	{armors
+		{head vsu_capn}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_4")
+		("sniper_vision")
+		("azov3")
+		("stealth")		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "svd" filling "svd ammo" 10}
+		{item "svd ammo" 110}
+
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 1}
+
+		{item "bandage_rus" 2}
+        {item "shovel_csa"}
+		{item "pais_bron_vsu" 1}
+		{item "zarya" 2}
+		{item "ukr_bron_4_azov"}
+
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

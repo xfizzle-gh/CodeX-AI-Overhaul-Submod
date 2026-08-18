@@ -1,0 +1,40 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_povyaz_6"}
+	{portrait vsu_svo_1}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier_at"}
+	{nationality ger}
+	{armors
+		{head ukr_helmet_06}
+		{body "ukr_ua_body_a_2"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("at_rank_2")
+("ildu")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+        {item "m4a1_hg" filled}
+		{item "m16a2 ammo" 240}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+		{item "carl_gustaf_v1 weapon" filling "84mmgustaf fg ammo" 1}
+		{item "84mmgustaf cm ammo" 4}
+		{item "84mmgustaf fg ammo" 4}
+		{item "pais_bron_vsu"}
+		{item "ukr_backpack_01"}
+
+                {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,79 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_priv_ca_1"}
+	{portrait "vsu_svo_2"}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_a_1}
+		{head ukr_ua_helmet_a_1}
+	}
+	{perks
+		{"rocketlauncher" lvl_3
+		}
+		{"pistol" lvl_4
+		}
+		{"smg" lvl_4
+		}
+		{"mgun" lvl_3
+		}
+		{"rifle" lvl_4
+		}
+		{"melee" lvl_3
+		}
+		{"avoidance" lvl_3
+		}
+		{"health" "100%"
+		}
+		{"health_regeneration" "10%"
+		}
+		{"stamina" "300%"
+		}
+		{"stamina_regeneration" "150%"
+		}
+		{"personage" 0}
+		{"vision" mp_soldier
+		}
+		{"barricade"
+			{fortifications "foxhole" "medic_rally" "deploy_sg43" "deploy_pk" "deploy_dshk" "deploy_bm37" "deploy_b10" "deploy_spg9" "deploy_9m14" "deploy_ammobag_sov" "deploy_9k111" "deploy_9m113" "deploy_9k115" "deploy_9m14_launcher" "deploy_9m14_controller" "deploy_ags17_sov" "deploy_sg43_pol" "deploy_pk_pol" "deploy_dshk_pol" "deploy_bm37_pol" "deploy_b10_pol" "deploy_spg9_pol" "deploy_9m14_pol" "deploy_ammobag_pol" "deploy_m1919" "deploy_m60" "deploy_m2" "deploy_m29" "deploy_m20" "deploy_entac" "deploy_mk18" "deploy_ammobag_usa" "deploy_bgm71_tow" "deploy_mk19_usa" "deploy_mg3" "deploy_m2_frg" "deploy_krh36_frg" "deploy_m20_frg" "deploy_cobra_frg" "deploy_ammobag_frg" "deploy_sg43_prc" "deploy_dshk_prc" "deploy_bm37_prc" "deploy_m20_prc" "deploy_b10_prc" "deploy_ammobag_prc" "deploy_hj8" "deploy_type63" "deploy_pp87" "deploy_pk67" "deploy_qjy171" "deploy_qjy88" "deploy_pf98" "deploy_qlz87" "deploy_qlz04" "deploy_fh901" "deploy_ch802" "de_sharherd136" "deploy_m120" "deploy_m224" "deploy_m252"}
+			{factor 1}
+		}
+		{"resources" "10%"
+		}
+		{"mechanic"}
+		{"tank_gun" lvl_4
+		}
+		{"speed" 1.1
+		}
+	}
+	{veterancy
+		{"lvl_1" -1
+		}
+		{"lvl_2" -1
+		}
+		{"lvl_3" 0
+		}
+		{"lvl_4" 10
+		}
+		{"lvl_5" 20
+		}
+		{"lvl_6" 30
+		}
+		{"lvl_7" 40
+		}
+		{"lvl_8" 50
+		}
+	}
+	{inventory
+		{item "5x39 ammo" 150}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "rus_fsb_abody_1"}
+		{item "ak74u" filled}
+		{item "aio_marker_morale_regular"}
+		{in_hands 5}
+	}
+}

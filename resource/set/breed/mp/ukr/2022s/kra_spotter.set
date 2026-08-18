@@ -1,0 +1,41 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_sbu"}
+	{portrait rec_ukr}
+	{icon autorifle}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{head azov_g}
+		{body "ukr_ua_body_kra_02"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("specialforces")
+		("binocular_vision")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "hk433_v2" filling "ammo ammo m16a2" 30}
+		{item "ammo m16a2" 180}
+
+                {item "m72a7law weapon" 2 filled}	
+		{item "m26 grenade" 1.25 0.5}
+		{item "anm8_smoke grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "binocular"}
+		{item "drone_recon_ammo" filled}		
+
+                {item "shovel_csa"}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

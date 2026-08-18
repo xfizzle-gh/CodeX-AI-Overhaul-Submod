@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "25th2"}
+	{portrait "3rd"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_a_1}
+		{head azov_b2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("72th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 3.5 0.5}
+		{item "ak74m_eot" filled}
+		{item "ammo 5x39" 210}
+		{item "ukr_backpack_01"}
+                {item "shovel_csa"}
+       {item "fort600" filled}
+		{item "40mm_grenade he ammo" 12}
+		{item "benelli_m4" filling "ammo shotgun" 7}
+		{item "ammo shotgun" 21}	
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 3}
+	}
+}

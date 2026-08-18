@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "gb_rmc3"}
+	{portrait "16ab"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality eng_para}
+	{armors
+		{head rmc_helmet_4}
+		{body gb_vest_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4_br")
+		("paratrooper")
+		 
+				("skilled_manpad_operator")
+		("health_rank_3")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "l403" filling "m16a2 ammo" 30}
+		{item "m16a2 ammo" 240}
+		{item "nlaw" filled}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+        {item "gb_backpack_1"}		 
+                {item "shovel_csa"}
+
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 0}
+	}
+}

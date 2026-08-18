@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_95DSHV_01"}
+	{portrait "ukr13"}
+	{icon mg}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_a_2}
+		{head vsu_helmet_ach_4}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4_mg")
+		("82th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "m240l_a" filled}
+		{item "m240_box ammo" 400}
+		{item "ukr_backpack_01"}
+		{item "pais_bron_vsu"}
+		{item "drone_fpv_ammo" filled}	
+		{item "poviazka_rus"}				
+                {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 3}
+	}
+}

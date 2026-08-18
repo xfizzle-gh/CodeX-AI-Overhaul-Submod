@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "demon1"}
+	{portrait "demon"}
+	{icon rifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{head ukr_helmet_01}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("tdf")
+		("medic")	
+		("at_rank_2")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak47_akm" filling "ammo ak47 akm" 30}
+		{item "ammo ak47 akm" 180}
+		{item "ukr_bron_2"}
+		{item "bandage_rus" 2.5 0.5}
+		{item "shovel_rus"}
+		{item "rgd5 grenade" 2}
+ 		{item "m72_law" 2 filled}				
+		{item "rdg2 grenade" 0.25 0.5}	
+		{item "aio_marker_morale_low"}
+		{item "aio_marker_cmd_junior"}
+		{in_hands 0}
+	}
+}

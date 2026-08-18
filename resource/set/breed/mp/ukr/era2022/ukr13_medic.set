@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "82th"}
+	{portrait "med_ukr"}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_c_2}
+		{head ukr_helmet_gor_02}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("82th")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rdg2 grenade" 4}
+		{item "bandage_rus" 10}
+		{item "tent_kit" 2}
+		{item "mk16_mod1" filled}
+		{item "ammo m16a2" 180}
+                {item "shovel_csa"}
+		{item "pais_bron_vsu"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 3}
+	}
+}

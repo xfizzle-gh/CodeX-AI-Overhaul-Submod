@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ranger"}
+	{portrait "usmc_rec"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality usa}
+	{armors
+		{head ranger_helmet_2}
+		{body ranger_vest_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("rangere")
+		("binocular_vision")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "fn_scar_epr_v1b" filled}
+		{item "scar ammo" 220}
+		{item "shovel_csa"}
+		 
+		{item "m26 grenade" 2 0.5}
+		{item "anm8_smoke grenade" 0.25 0.5}
+		{item "drone_fpv_ammo" filled}		 		
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "fast_backpack"}	
+		{item "c4pn" 2}			
+		{item "m84" 2}		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "82th"}
+	{portrait "82nd"}
+	{icon bazooka}
+	{icon_priority 0}
+	{tags "soldier_at"}
+	{nationality ukr}
+	{armors
+		{head ops_core_azov}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("82th")
+		("at_rank_4")
+		("guncrew")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3}
+		{item "ak74" filled}
+		{item "ammo 5x39" 180}
+		{item "gunbag_usa_bgm71_tow"}
+		{item "ukr_ua_body_c_2"}
+		{item "pais_bron_vsu"}
+		{item "ukr_backpack_01"}
+                {item "shovel_csa"}
+		{item "drone_fpv_ammo" filled}				
+		{item "aio_marker_morale_trained"}
+		{in_hands 3}
+	}
+}

@@ -1,0 +1,44 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "marsoc_1"}
+	{portrait "marsoc"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality usa}
+	{armors
+		{head mw19_usmc_helmet2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("seals")
+		("sniper_vision")
+		("stealth")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m107a1" filled}
+		{item "m107a1_ammo ammo" 30}
+		
+		{item "m1911a1" filled}
+		{item "m1911a1 ammo" 32}
+
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 2}
+
+		{item "bandage_usa" 3.5 0.5}
+		 
+		
+		{item "shovel_csa"}
+		{item "mw19_usmc_vest"}
+		
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
+		{in_hands 0}
+	}
+}

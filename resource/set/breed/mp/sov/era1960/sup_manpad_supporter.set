@@ -1,0 +1,39 @@
+{breed
+	{tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_longsleeve"}
+	{portrait "sov_guards"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_afg_sh68}
+	}
+	{perks
+		(include "ability.inc")
+		;("skill_rank_3")
+		("skilled_manpad_operator")
+		("binocular_vision")
+		("recon")
+		("guards")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_8")
+	}
+	{inventory
+		{item "aks74" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		;{item "igla weapon" filling "igla_s ammo" 1}
+		{item "igla_s ammo" 4}
+
+		{item "rgd5 grenade" 1.4 0.5}
+		{item "rdgm_smoke grenade" 0.25 0.5}
+
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "binocular"}
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

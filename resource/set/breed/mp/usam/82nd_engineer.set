@@ -29,6 +29,7 @@
 		{item "shovel_csa"}
 		{item "c4pn" 1}			
 		{item "msv_1"}	
+		{item "aio_marker_morale_trained"}
 		{in_hands 0}
 	}
 }

@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_povyaz_6"}
+	{portrait ildu_ammo}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality ger}
+	{armors
+                {body backpack_eagleaiii}
+		{head ukr_helmet_03}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("ildu")
+        ("rifle_rank_3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+                {item "g3" filled}
+		{item "g3 ammo" 240}
+
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+ 
+		{item "ukr_ua_body_a_2"}
+                {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

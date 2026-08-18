@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "usmc_desert_2"}
+	{portrait "fr"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality usa}
+	{armors
+		{head usmc_desert_panama_1}
+		{body usmc_desert_armor_7}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("seals")
+		("sniper_vision")
+		("stealth")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "m107a1" filled}
+		{item "m107a1_ammo ammo" 30}
+		{item "shovel_csa"}		
+		{item "m26 grenade" 1.25 0.5}
+		{item "anm8_smoke grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}		
+		{item "usmc_mask_2"}	
+		{item "usmc_desert_glasses_2"}			
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
+		{in_hands 0}
+	}
+}

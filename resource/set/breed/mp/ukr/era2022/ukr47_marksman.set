@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr47_1"}
+	{portrait "47th"}
+	{icon sniper}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_b_1}
+		{head ukr_ua_helmet_a_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("47th")
+				("sniper_vision")
+				("stealth")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "m110a1_v1" filled}
+		{item "m39_ammo ammo" 180}
+		{item "poviazka_rus"}
+		{item "aio_marker_morale_trained"}
+		{in_hands 4}
+	}
+}

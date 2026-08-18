@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "dpr102"}
+	{portrait "dpr100_ammo"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_wagner_cap_1}
+        {body "rusf_vs_smerch_body_1"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("100dv")
+		("rifle_rank_3")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filled}
+		{item "ammo 5x39" 120}
+
+		{item "rdg2 grenade" 1}
+		{item "rgd5 grenade" 1}
+{item "rus_fsb_abody_12"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "aio_marker_morale_low"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "rus801"}
+	{portrait "rus80"}
+	{icon "mg"}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_opscore_helmet_1}
+                {body "rus_fsb_abody_4"}
+	}
+	{perks
+		(include "ability.inc")
+		("mg_rank_4")
+		("skill_rank_3_mg")
+				("80dv")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "pkp_a" filling "pk_box ammo" 100}
+		{item "pk_box ammo" 400}
+		{item "sidr_shturm_01"}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 2}
+		{item "shovel_rus"}
+
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

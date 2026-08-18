@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier_at"}
+	{behaviour soldier}
+	{skin "usa_ocp6"}
+	{portrait "82ab"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa_paratrooper}
+	{armors
+		{head wendy_ex_4}	
+		{body msv_2}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("paratrooper")
+		("at_rank_3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m7_spear_holo" filled}
+		{item "ammo xm7_ammo" 180}
+		
+		{item "m3_maaws weapon" filling "84mmgustaf fg ammo" 1}
+		{item "84mmgustaf cm ammo" 4}
+		{item "84mmgustaf fg ammo" 4}
+	
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

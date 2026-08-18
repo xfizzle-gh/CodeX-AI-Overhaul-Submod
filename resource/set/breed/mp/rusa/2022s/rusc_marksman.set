@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_rusich_gr_2_2"}
+	{portrait "ruisch"}
+	{icon "sniper"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_wagner_capn_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("sniper_vision")
+		("stealth")
+		("spetsnaz")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "svdk" filling "svd ammo" 10}
+		{item "svd ammo" 80}
+		{item "rus_fsb_abody_3_3"}
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "rus_wagner_glasses_1"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "drone_fpv_ammo" filled}			
+		{item "zarya" 2}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

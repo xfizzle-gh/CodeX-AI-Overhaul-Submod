@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_95DSHV_03"}
+	{portrait "82nd"}
+	{icon sniper}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_c_2}
+		{head ukr_helmet_01}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("82th")
+		("sniper_vision")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "tt_308_v2" filled}
+		{item "ammo g28_ammo" 180}
+		{item "aio_marker_morale_trained"}
+		{in_hands 4}
+	}
+}

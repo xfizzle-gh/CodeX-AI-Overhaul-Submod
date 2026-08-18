@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "gb_rmc3"}
+	{portrait "dg"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality eng_para}
+	{armors
+		{head virtus_mk8_2}
+		{body rmc_vest_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")	
+		("cavalry")
+		("sniper_vision")
+		("stealth")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "l129a1" filling "g28_ammo" 10}
+		{item "g28_ammo ammo" 60}
+		
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+
+		{item "bandage_rus" 2}
+        {item "shovel_csa"}
+		
+
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

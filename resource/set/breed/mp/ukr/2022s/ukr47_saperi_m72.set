@@ -1,0 +1,40 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr47_1"}
+	{portrait "47th"}
+	{icon bazooka}
+	{icon_priority 0}
+	{tags "soldier_at"}
+	{nationality ukr}
+	{armors
+		{head vsu_helmet_ach_3}
+		{body "ukr_ua_body_c_mg2"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("at_rank_4")
+		("47th")
+                ("engineer")			
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3}
+		{item "cz_bren_2" filling "ammo m16a2" 30}
+		{item "ammo m16a2" 180}
+		{item "ukr_backpack_01"}
+                {item "shovel_csa"}
+                {item "pickaxe"}
+                {item "wirecutters"}
+                {item "mine_detector"}
+		{item "m72a7law weapon" 2 filled}			
+								
+		{item "aio_marker_morale_trained"}
+		{in_hands 3}
+	}
+}

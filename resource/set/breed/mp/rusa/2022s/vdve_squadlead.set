@@ -1,0 +1,39 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_VDV_gr_vor_20_scorp"}
+	{portrait fr_svo_3}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head "tor_helmet_3"}
+                {body "kirasa_bron_com"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		 
+		("paratroopere")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak12k_syq" filled}
+		{item "5x39 ammo" 210}
+		{item "bandage_rus" 4.5 0.5}
+		{item "rus_fsb_abody_12_1"}
+                {item "napashnik"}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade"}
+                {item "shovel_rus"}
+		{item "bekas-12m_v1" filled}
+		{item "ammo shotguns" 18}
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 0}
+	}
+}

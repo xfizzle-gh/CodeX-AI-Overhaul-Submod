@@ -1,0 +1,40 @@
+{breed
+	{behaviour soldier}
+	{skin "114th2"}
+	{portrait "114th"}
+	{icon bazooka}
+	{icon_priority 2}
+	{nationality rus}
+	{armors
+		{body rus_fsb_abody_13}
+		{head rus_helmet_v07}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("at_rank_4")
+		("114dv")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "rus_6b45_body_03"}
+		{item "ak74m1d" filled}
+		{item "5x39 ammo" 240}
+		{item "rpg7vs weapon" filling "rpg7l vr ammo" 1}
+
+		{item "rpg7l tbg ammo" 5}
+
+		{item "zarya" 2}
+	
+		{item "shovel_rus"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 4}
+	}
+}

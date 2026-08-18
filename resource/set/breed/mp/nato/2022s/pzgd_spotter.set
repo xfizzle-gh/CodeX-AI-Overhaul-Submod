@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "pzgd_1"}
+	{portrait "rec_pzg"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality ger}
+	{armors
+		{head viper_p2_2}
+		{body ger_vest_5}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("recon")
+		("pzgrene")
+		("binocular_vision")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "g36k" filling "m16a2 ammo" 30}
+		{item "m16a2 ammo" 240}
+		{item "dm51 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "drone_recon_ammo" 1}		
+		{item "bandage_usa" 4.5 0.5}
+		{item "binocular"}
+		{item "backpack_90"}
+                {item "shovel_csa"}
+		{item "drone_recon_ammo" 1}		
+		{item "drone_fpv_ammo" 3}				
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

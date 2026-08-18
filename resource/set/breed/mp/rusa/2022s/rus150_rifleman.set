@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "2rd1"}
+	{portrait rus150}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{body "kirasa_bron_7"}
+		{head rus_helmet_6b47_4}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_3")
+		("150th")
+		("rifle_rank_4")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+        {item "tm62_g" 1}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak12_m1_holo" filled}
+		{item "5x39 ammo" 210}
+
+                {item "shovel_rus"}
+		{item "rus_fsb_abody_3_4"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 4}
+	}
+}

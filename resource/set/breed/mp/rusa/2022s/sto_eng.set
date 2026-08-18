@@ -1,0 +1,43 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_s_vkpo_shtormz_2"}
+	{portrait "fr_svo_4"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_helmet_v2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+
+		("stoz")
+		("engineer")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak47_akm" filling "ak47 akm ammo" 30}
+		{item "ak47 akm ammo" 210}
+		{item "rus_ibt6049_body3" }
+		
+		{item "rgd5 grenade" 1}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 3}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		
+                {item "pickaxe"}
+                {item "wirecutters"}
+                {item "mine_detector"}
+
+
+		{item "aio_marker_morale_low"}
+		{in_hands 0}
+	}
+}

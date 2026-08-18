@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "45th2"}
+	{portrait sov_fsb}
+	{icon autorifle}
+	{icon_priority 2}
+	{nationality rus}
+	{armors
+		{body rus_fsb_abody_2_0}
+		{head helmet_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("fsb")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "huskyak74zv2" filled}
+		{item "5x39 ammo" 240}
+		{item "rgd5 grenade" 3}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 3}
+		{item "rus_fsb_abody_12_1"}
+		{item "shmel weapon" 1 filled}
+		{item "zarya" 2}
+		{item "gm94" filled}
+		{item "43mm he ammo" 12}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
+		{in_hands 0}
+	}
+}

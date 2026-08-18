@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "nrf_4"}
+	{portrait nrf}
+	{icon tech}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality nato}
+	{armors
+		{head nrf_helmet_2}
+        
+		{body "nrf_vest_3"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+        ("ildu")
+                ("engineer")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+        {item "mars_l" filled}
+		{item "m16a2 ammo" 240}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 3.5 0.5}
+
+                {item "pickaxe"}
+                {item "wirecutters"}
+                {item "mine_detector"}
+                {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

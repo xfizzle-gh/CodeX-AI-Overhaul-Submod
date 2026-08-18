@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_Serbian_gr_07_3"}
+	{portrait med_rus}
+	{icon "tech"}
+	{icon_priority 0}
+	{nationality yug}
+	{armors
+		{head rus_wagner_capn_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("medic")
+		("paratrooper")
+		("health_rank_3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rus_serb_abody_1"}
+		
+		{item "rdg2 grenade" 3}
+
+		{item "bandage_rus" 8}
+		{item "tent_kit" 2}
+
+
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

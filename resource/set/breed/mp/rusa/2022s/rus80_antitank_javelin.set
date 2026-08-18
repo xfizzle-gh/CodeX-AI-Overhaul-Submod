@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "rus802"}
+	{portrait "med_rus"}
+	{icon "tech"}
+	{icon_priority 5}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_helmet_tor}
+                {body "rus_fsb_abody_3_3"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("medic")
+				("80dv")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "ak74u" filled}
+		{item "ammo 5x39" 180}
+		{item "rdg2 grenade" 4}
+		{item "rgd5 grenade" 2}
+{item "shovel_rus"}
+		{item "bandage_rus" 22.5 2.5}
+		{item "tent_kit" 2}
+		{item "aio_marker_morale_regular"}
+				{in_hands 0}
+	}
+}

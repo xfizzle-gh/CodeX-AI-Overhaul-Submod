@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_shortsleeve"}
+	{portrait "rus_engineer"}
+	{icon "tech"}
+	{icon_priority 0}
+	{nationality rus_unique}
+	{armors
+		{head rus_afg_hat}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("engineer")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 150}
+
+		{item "rdgm_smoke grenade" 0.25 0.5}
+		{item "satchel_charge_rus" 0.15 0.5}
+		
+		{item "bandage_rus" 2.5 0.5}
+		{item "wirecutters"}
+		{item "mine_detector"}
+		{item "bandage_rus"}
+		{item "shovel_rus"}
+		{item "pickaxe"}
+		{item "6b2" 0.25 0.5}
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

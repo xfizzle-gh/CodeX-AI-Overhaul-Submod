@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_povyaz_6"}
+	{portrait vsu_svo_1}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality pol}
+	{armors
+		{head ukr_helmet_03}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("ranger")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+                {item "c8a1" filled}
+		{item "m16a2 ammo" 240}
+        {item "shovel_csa"}
+		{item "m26 grenade" 2}
+		{item "satchel_charge_rus" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+ 		{item "m72_law" 2 filled}
+		{item "ukr_backpack_01"}
+		{item "ukr_ua_body_a_2"}
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_afg_spz"}
+	{portrait "sov_basic_nco"}
+	{icon "autorifle"}
+	{icon_priority 3}
+	{nationality rus_guards}
+	{armors
+		{head rus_afg_ushanka}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak47" filling "ammo ak47" 30}
+		{item "ak47 ammo" 180}
+
+		{item "rgd5 grenade" 0.50 0.5}
+		{item "rdgm_smoke grenade" 1.15 0.5}
+		{item "rpg40 grenade" 0.15 0.5}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "6b2" 0.5 0.5}
+		{item "rus_afg_sh68" 1}
+		
+		{item "aio_marker_morale_low"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 0}
+	}
+}

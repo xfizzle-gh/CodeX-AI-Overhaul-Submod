@@ -1,0 +1,33 @@
+{breed
+    {tags "crew"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_6b2_longsleeve"}
+	{portrait "sov_basic"}
+	{icon "tech"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_shlemofon}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("crewman")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filled }
+		{item "5x39 ammo" 150}
+		{item "stechkin" filling "stechkin ammo" 30}
+		{item "stechkin ammo" 60}
+		{item "rdgm_smoke grenade" 0.25 0.5}
+
+		{item "bandage_rus" 2.5 0.5}
+
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "gb03"}
+	{portrait "gb"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality eng}
+	{armors
+		{head gb2}
+		{body gb_vest_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_br")
+		("british")
+				("skilled_manpad_operator")
+	    ("health_rank_2")
+		("british_rifleman")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "l85a2" filling "m16a2 ammo" 30}
+		{item "m16a2 ammo" 240}
+		{item "nlaw" filled}
+        {item "gb_backpack_1"}		
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+
+		{item "bandage_usa" 4.5 0.5}
+		 
+                {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_junior"}
+		{in_hands 0}
+	}
+}

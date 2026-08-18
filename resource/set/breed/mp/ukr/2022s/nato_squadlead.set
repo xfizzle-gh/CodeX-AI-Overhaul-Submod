@@ -1,0 +1,42 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_povyaz_6"}
+	{portrait vsu_svo_1}
+	{icon autorifle}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality usa}
+	{armors
+		{head ukr_helmet_02}
+		{body "ukr_ua_body_b_1"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+("ildu")
+		("binocular_vision")
+		("at_rank_3")		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+        {item "g36ka4_hg" filled}
+		{item "g36_ammo ammo" 240}
+		{item "m4a1_m203" filled}
+		{item "40mm_grenade he ammo" 8}
+		{item "at4cs_v1 weapon" filled}
+		{item "m26 grenade" 1.25 0.5}
+		{item "anm8_smoke grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "ukr_backpack_01"}
+
+        {item "shovel_csa"}
+		{item "benelli_m4" filling "ammo shotgun" 7}
+		{item "ammo shotgun" 21}		
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 0}
+	}
+}

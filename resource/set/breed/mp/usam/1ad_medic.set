@@ -30,6 +30,7 @@
 		{item "tent_kit" 2}		
 		{item "msv_2"}
 		
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

@@ -31,6 +31,8 @@
 		
 		{item "at4cs_v1 weapon" filled}
 		{item "iotv_gen4_2"}		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

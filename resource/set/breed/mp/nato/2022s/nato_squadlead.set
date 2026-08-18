@@ -1,0 +1,39 @@
+{breed
+	{behaviour soldier}
+	{skin "nrf_3"}
+	{portrait nrf}
+	{icon autorifle}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality nato}
+	{armors
+		{head us_highcut_2}
+		
+		{body "nrf_vest_1"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+        ("ildu")
+		("medic")
+
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+         {item "mars_l_elcan" filled}
+		{item "m16a2 ammo" 240}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+        {item "shovel_csa"}
+		{item "benelli_m4" filling "ammo shotgun" 7}
+		{item "ammo shotgun" 21}				
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 0}
+	}
+}

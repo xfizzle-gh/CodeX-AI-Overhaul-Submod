@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier_at"}
+	{behaviour soldier}
+	{skin "ukr_spec"}
+	{portrait "vsu_svo_7"}
+	{icon "bazooka"}
+	{icon_priority 2}
+	{nationality ukr}
+	{armors
+		{head ukr_helmet_08}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("at_rank_5")
+		("azov")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74" filling "ammo 5x39" 30}
+		{item "ammo 5x39" 150}
+		{item "ukr_ua_body_a_1_azov" 1}
+		{item "rpg7vs weapon" filling "rpg7l tbg ammo" 1}
+		 
+			{item "fpv_bomber_ammo"}	 
+		{item "rpg7l vr ammo" 5}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 2}
+                {item "shovel_csa"}			
+
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

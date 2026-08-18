@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "usa_ocp1"}
+	{portrait "nrf_rec"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa_paratrooper}
+	{armors
+		{head ihps_new_2}
+				{body "msv_1"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("binocular_vision")
+		("paratrooper")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m7_spear_lvpo" filled}
+		{item "ammo xm7_ammo" 180}
+		{item "us_backpack_2"}		
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+				{item "binocular"}
+
+		{item "drone_recon_ammo" 1}	
+		{item "drone_fpv_ammo" 3}		
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ng4"}
+	{portrait "acav"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ng_helmet}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("at_rank_3")
+		("cavalry")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m4a1_hg" filled}
+		{item "m16a2 ammo" 180}
+		
+		{item "84mmgustaf cm ammo" 4}
+		{item "84mmgustaf fg ammo" 4}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "ng_backpack1"}		
+		{item "ng_vest2"}
+		
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

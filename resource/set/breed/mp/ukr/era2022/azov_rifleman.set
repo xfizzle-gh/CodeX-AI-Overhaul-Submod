@@ -1,0 +1,41 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ukr_spec"}
+	{portrait "azov_ammo"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality ukr}
+	{armors
+                {body backpack_eagleaiii}
+		{head ukr_helmet_08}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("azov")
+        ("rifle_rank_4")		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "uar15_v2" filled}
+		{item "m16a2 ammo" 210}
+		{item "ukr_bron_3_azov" 1}
+		{item "at4cs_v1 weapon" filled}
+		{item "pais_bron_vsu" 1}
+		{item "rgd5 grenade" 2}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 2}
+
+
+		{item "bandage_rus" 4.5 0.5}
+ 
+                {item "shovel_csa"}
+
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

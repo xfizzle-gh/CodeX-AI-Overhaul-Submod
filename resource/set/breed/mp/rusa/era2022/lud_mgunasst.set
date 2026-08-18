@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "dnr_regular_gr_04"}
+	{portrait "fr_svo_7"}
+	{icon "mg"}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head sh68_1}
+                {body rusf_vs_smerch_body_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1_mg")
+("tdf")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filled}
+		{item "ammo 5x39" 120}
+		{item "sidr_shturm_01"}
+		{item "rgd5 grenade" 1.25 0.5}
+
+		{item "pk_box ammo" 400}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+
+		{item "aio_marker_morale_low"}
+		{in_hands 0}
+	}
+}

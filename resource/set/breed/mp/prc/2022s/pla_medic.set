@@ -1,0 +1,35 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "pla21_new"}
+	{portrait "med_pla"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality chi}
+	{armors
+		{head pla21_helmet_5}
+		{body "pla21_vest_5"}					
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("guards")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "qbz_191_holo" filling "58ammo_basic ammo" 30}
+		{item "58ammo_basic ammo" 210}
+		{item "pla21_backpacks"}
+		{item "bandage_chn" 12}
+		{item "shovel_rus"}
+		{item "dsf161 grenade" 4}		
+		{item "pf89b weapon" filled}		
+
+		{item "aio_marker_morale_trained"}
+		{in_hands 0} {item "pla21_glass"}
+	}
+}

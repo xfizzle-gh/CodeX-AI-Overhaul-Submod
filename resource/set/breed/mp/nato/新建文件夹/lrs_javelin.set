@@ -1,0 +1,31 @@
+{breed
+	{tags "soldier_at"}
+	{behaviour soldier}
+	{skin "KsK_spec_01"}
+	{portrait "acav"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("paratrooper_lrs")
+		("skilled_manpad_operator")
+		("at_rank_5")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+
+
+
+		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

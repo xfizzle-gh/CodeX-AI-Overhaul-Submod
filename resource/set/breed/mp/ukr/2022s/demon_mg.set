@@ -1,0 +1,35 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "demon1"}
+	{portrait "demon"}
+	{icon "mg"}
+	{icon_priority 0}
+	{nationality ukr}
+	{armors
+		{head ukr_helmet_08}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2_mg")
+		("tdf")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "pkm" filled}
+		{item "pk_box ammo" 400}
+		{item "rgd5 grenade" 1.4 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "rgd5 grenade" 0.5 0.5}
+		{item "molotov_cocktail grenade" 0.15 0.5}
+		{item "ukr_ua_body_c_2"}
+		{item "bandage_rus" 2.5 0.5}
+		{item "shovel_rus"}
+
+		{item "aio_marker_morale_low"}
+		{in_hands 0}
+	}
+}

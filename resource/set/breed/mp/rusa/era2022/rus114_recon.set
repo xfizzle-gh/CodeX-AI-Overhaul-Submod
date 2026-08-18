@@ -1,0 +1,38 @@
+{breed
+	{behaviour soldier}
+	{skin "114th3"}
+	{portrait "rec_rus"}
+	{icon autorifle}
+	{icon_priority 2}
+	{nationality rus}
+	{armors
+		
+		{head rus_opscore_helmet_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("114dv")
+
+		("binocular_vision")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "zarya" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "rus_6b45_body_05"}
+		{item "ak74m" filled}
+		{item "5x39 ammo" 210}
+		{item "drone_fpv_ammo" filled}			
+		{item "drone_recon_ammo" 1}
+		{item "aio_marker_morale_regular"}
+		{in_hands 6}
+	}
+}

@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier_at"}
+	{behaviour soldier}
+	{skin "usa_ocp7"}
+	{portrait "inf2"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ihps_new_1}	
+		{body thor_1}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("cavalry")		
+		("at_rank_3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "m4a1_v3b" filled}
+		{item "m16a2 ammo" 180}
+		
+		{item "m3_maaws weapon" filling "84mmgustaf fg ammo" 1}
+		{item "84mmgustaf cm ammo" 4}
+		{item "84mmgustaf fg ammo" 4}
+	
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "us_backpack_2"}		
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

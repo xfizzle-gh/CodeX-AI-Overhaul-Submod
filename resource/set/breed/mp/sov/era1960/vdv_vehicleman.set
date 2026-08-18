@@ -1,0 +1,35 @@
+{breed
+    {tags "crew"}
+	{behaviour soldier}
+	{skin "rus_afg_tanker"}
+	{portrait "sov_vdv_tankman"}
+	{icon "tech"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_shlemofon}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("crewman_2")
+		("paratrooper")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_4")
+	}
+	{inventory
+		{item "ak74u" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 150}
+
+		{item "rdgm_smoke grenade" 0.25 0.5}
+
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "beret_vdv" 1}
+		{item "6b2" 1}
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

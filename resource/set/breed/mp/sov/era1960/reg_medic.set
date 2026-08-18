@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_afg_infantry_6b2_longsleeve"}
+	{portrait "sov_medic"}
+	{icon "tech"}
+	{icon_priority 0}
+	{nationality rus_unique}
+	{armors
+		{head rus_afg_sh68}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "akms" filling "ak47 steel ammo" 30}
+		{item "ak47 steel ammo" 210}
+
+		{item "tt33" filled}
+		{item "tt33 ammo" 24 8}
+		
+		{item "rdgm_smoke grenade" 2.25 0.5}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "tent_kit" 2}
+		{item "rus_afg_sh68" 1}
+		{item "6b2" 0.25 0.5}
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

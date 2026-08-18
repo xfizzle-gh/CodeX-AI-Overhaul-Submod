@@ -1,0 +1,40 @@
+{breed
+	{behaviour soldier}
+	{skin "3rd3"}
+	{portrait "93th"}
+	{icon bazooka}
+	{icon_priority 0}
+	{tags "soldier_at"}
+	{nationality ukr}
+	{armors
+		{head ukr_cah95}
+		{body "ukr_ua_body_c_2"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("93th")
+		("at_rank_4")
+						 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3}
+		{item "ak74m_zenitco_v3" filled}
+		{item "5x39 ammo" 210}
+		{item "rpg7l he ammo" 2}
+		{item "rpg7l tbg ammo" 2}
+		{item "rpg7l ammo" 2}
+
+		{item "pais_bron_vsu"}
+		{item "ukr_backpack_01"}
+        {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 3}
+	}
+}

@@ -1,0 +1,40 @@
+{breed
+	{behaviour soldier}
+	{skin "nato"}
+	{portrait nrf}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier_at"}
+	{nationality nato}
+	{armors
+		{head nato_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("at_rank_2")
+("ildu")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+        {item "g27_hgfs" filled}
+		{item "g28_ammo" 200}
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+		 
+		{item "carl_gustaf_v1 weapon" filling "84mmgustaf fg ammo" 1}
+		{item "84mmgustaf cm ammo" 4}
+		{item "84mmgustaf fg ammo" 4}
+		{item "pais_bron_vsu"}
+		{item "ukr_backpack_01"}
+		{item "ukr_ua_body_a_2"}
+                {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

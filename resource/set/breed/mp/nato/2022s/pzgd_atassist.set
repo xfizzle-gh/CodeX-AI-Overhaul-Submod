@@ -1,0 +1,35 @@
+{breed
+    {tags "soldier_at"}
+	{behaviour soldier}
+	{skin "pzgd_1"}
+	{portrait "pzgd1"}
+	{icon "bazooka"}
+	{icon_priority 2}
+	{nationality ger}
+	{armors
+		{head viper_p2_2}
+		{body "511tac_vest_2"}	
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("at_rank_4")
+		("pzgrene")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "g36k" filling "m16a2 ammo" 30}
+		{item "m16a2 ammo" 240}
+		{item "backpack_90"}
+		{item "dm51 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "dm22 ammo" 3}	
+		{item "shovel_csa"}			
+		{item "rgw90_as" filled}
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

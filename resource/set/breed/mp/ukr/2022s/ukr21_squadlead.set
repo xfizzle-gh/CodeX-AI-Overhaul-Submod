@@ -1,0 +1,41 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_army_21th_2"}
+	{portrait "21th"}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body ukr_ua_body_c_3}
+		{head vsu_helmet_ach_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("21th")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 3.5 0.5}
+		{item "ak5" filled}
+		{item "ammo m16a2" 210}
+		{item "ukr_backpack_01"}
+        {item "shovel_csa"}
+        {item "poviazka_rus"}
+        {item "rus_fsb_glasses_2"}		
+		{item "benelli_m4" filling "ammo shotgun" 7}
+		{item "ammo shotgun" 21}		
+        {item "fort600" filled}
+		{item "40mm_grenade he ammo" 12}
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 3}
+	}
+}

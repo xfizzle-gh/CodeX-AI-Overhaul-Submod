@@ -1,0 +1,31 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_wagner_gr_2_1"}
+	{portrait sov_wgn2}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_wagner_helmet_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_4")
+		("spetsnaz")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_3")
+	}
+	{inventory
+		{item "5x39 ammo" 210}
+		{item "bandage_rus" 4.5 0.5}
+		{item "ak74m_a" filled}
+		{item "rus_wagner_body_2"}
+		{item "rgd5 grenade" 3}
+		{item "aio_marker_morale_elite"}
+		{in_hands 2}
+	}
+}

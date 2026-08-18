@@ -1,0 +1,35 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_afg_spz_gorka_2"}
+	{portrait "sov_regular"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus_unique}
+	{armors
+		;{head rus_afg_ermolka}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("binocular_vision")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "akms_s" filling "ak47 steel ammo" 30}
+		{item "ak47 steel ammo" 180}
+
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdgm_smoke grenade" 0.25 0.5}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "binocular"}
+		{item "6b2" 0.25 0.5}
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

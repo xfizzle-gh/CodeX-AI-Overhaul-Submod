@@ -1,0 +1,37 @@
+{breed
+	{behaviour soldier}
+	{skin "dnr_sparta_squadlead"}
+	{portrait "spd"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_fsb_helmet_1}
+        {body "rusf_vs_smerch_body_1"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("spd")
+		("at_rank_2")				
+		("medic")		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "aks74" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "aks74gp25" filling "vog25 he" 1}
+		{item "vog25 he ammo" 6}		
+		{item "rgd5 grenade" 1}
+		{item "rpg22" 2 filled }
+		{item "bandage_rus" 3.5 0.5}
+
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_junior"}
+		{in_hands 0}
+	}
+}

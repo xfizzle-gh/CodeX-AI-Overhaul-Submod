@@ -1,0 +1,39 @@
+{breed
+	{tags "soldier_at"}
+	{behaviour soldier}
+	{skin "ng1"}
+	{portrait "acav"}
+	{icon "assaultrifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ng_helmet}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("cavalry")
+		("skilled_manpad_operator")
+		("guncrew")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "xm7" filled}
+		{item "xm7_ammo ammo" 120}
+		{item "javelin weapon" filling "jav_rock ammo" 1}
+		{item "ng_backpack1"}
+		{item "jav_rock ammo" 2}
+
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "ng_vest2"}		
+
+
+		
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

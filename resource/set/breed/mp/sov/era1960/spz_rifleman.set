@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_afg_spz"}
+	{portrait "sov_marksman"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality rus_sniper}
+	{armors
+		{head rus_afg_sh68_hat}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("spetsnaz")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_4")
+	}
+	{inventory
+		{item "akms_s" filling "ak47 steel ammo" 30}
+		{item "ak47 steel ammo" 180}
+		{item "rgd5 grenade" 2}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdgm_smoke grenade" 2}
+		{item "rpg26 weapon" filling "rpg26 ammo" 1}
+		{item "bandage_rus" 4.5 0.5}
+		{item "knife_rus" 1.5 0.5}
+		{item "shovel_rus"}
+		{item "6b2" 1}
+
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

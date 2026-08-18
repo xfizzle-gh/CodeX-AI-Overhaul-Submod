@@ -1,0 +1,43 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_wagner_01"}
+	{portrait "wgn2"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_opscore_helmet_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("guards")
+
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_3")
+	}
+	{inventory
+		{item "ak12_m1" filling "ammo 5x39" 30}
+		{item "5x39 ammo" 240}
+		
+				{item "drone_fpv_ammo" filled}	
+		{item "Shmel weapon" filled}
+		
+		{item "drone_recon_ammo" 1}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "rus_backpack_02"}
+		{item "rus_sso_body_4"}
+		{item "aks74gp25" filled}
+		{item "vog25 he ammo" 12}	
+		{item "bekas-12m_v1" filled}
+		{item "ammo shotguns" 18}		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 0}
+	}
+}

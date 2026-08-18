@@ -1,0 +1,30 @@
+{breed
+	{behaviour soldier}
+	{skin "nato"}
+	{portrait "nrf_cmd"}
+	{icon tech}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality nato}
+	{armors
+		{head nato_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("crewman")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m4a1_h" filled}
+		{item "m16a2 ammo" 220}
+		{item "rdgm_smoke grenade" 0.25 0.5}
+		{item "bandage_usa" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

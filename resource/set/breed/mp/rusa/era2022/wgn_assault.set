@@ -1,0 +1,40 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_wagner_gr_2_1"}
+	{portrait sov_wgn3}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_wagner_helmet_5}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_3")
+		("guards")
+		("health_rank_3")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_3")
+	}
+	{inventory
+
+		{item "huskyak74zv2" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rgd5 grenade"}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdg2 grenade"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "rus_wagner_body_2"}
+		{item "shmel weapon" 1 filled}
+		{item "rus_fsb_abody_13"}
+        {item "shovel_rus"}
+
+		{item "gm94" filled}
+		{item "43mm he ammo" 12}
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

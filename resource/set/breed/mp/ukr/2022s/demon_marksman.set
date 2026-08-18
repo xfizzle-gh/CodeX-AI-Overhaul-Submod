@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "demon1"}
+	{portrait "demon"}
+	{icon "rifle"}
+	{icon_priority 0}
+	{nationality ukr}
+	{armors
+		{head vsu_capn}
+		{body "ukr_bron_3"}		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("tdf")
+				 
+						("sniper_vision")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "svd" filling "ammo SVD" 10}
+		{item "ammo svd" 60}
+
+		{item "rgd5 grenade" 0.15 0.5}
+		{item "rgd5 grenade" 1.4 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 2.5 0.5}
+		{item "shovel_rus"}
+
+		{item "aio_marker_morale_low"}
+		{in_hands 0}
+	}
+}

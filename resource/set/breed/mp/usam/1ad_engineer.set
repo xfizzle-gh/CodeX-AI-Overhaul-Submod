@@ -32,6 +32,7 @@
 		{item "shovel_csa"}
 		{item "c4pn" 1}			
 		{item "iotv_5"}
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

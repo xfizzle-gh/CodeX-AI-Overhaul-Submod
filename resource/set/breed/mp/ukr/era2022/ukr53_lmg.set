@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "53th"}
+	{portrait "25th"}
+	{icon mg}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body cpc_ua_vest}
+		{head ukr_72_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("25th")
+		("mg_rank_4")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "pkm" filled}
+		{item "pk_box ammo" 400}
+		{item "ukr_backpack_01"}
+		{item "pais_bron_vsu"}
+        {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 3}
+	}
+}

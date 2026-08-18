@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "3rd3"}
+	{portrait "93th"}
+	{icon sniper}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+		{body cpc_ua_vest}
+		{head azov_g}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("93th")
+		("sniper_vision")
+				 
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_1")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "svdk_v2" filled}
+		{item "svd ammo" 100}
+		{item "aio_marker_morale_regular"}
+		{in_hands 4}
+	}
+}

@@ -30,6 +30,8 @@
 		{item "us_backpack_3"}				
 		{item "jpc_2"}
 		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
 		{in_hands 0}
 	}
 }

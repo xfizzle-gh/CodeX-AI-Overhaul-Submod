@@ -1,0 +1,39 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_sso_gru_1"}
+	{portrait spz_ammo}
+	{icon autorifle}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{body sso_bacpack}
+		{head rus_fsb_hat_4}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+            
+		("spetsnaz_sso")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak105_v2" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rgd5 grenade" 2}
+		{item "rkg3 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "zarya" 2}
+		{item "rus_nazgul_03"}
+		{item "napashnik"}
+		{item "RPG26 weapon weapon" 2 filled}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

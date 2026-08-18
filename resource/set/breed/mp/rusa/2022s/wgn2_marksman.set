@@ -1,0 +1,37 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_wagner_pmc_6"}
+	{portrait "wgn2"}
+	{icon "sniper"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_wagner_capn_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_4")
+		("sniper_vision")
+		("stealth")
+		("guards")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_3")
+	}
+	{inventory
+		{item "svdk" filling "svd ammo" 10}
+		{item "svd ammo" 80}
+		{item "rus_sso_body_3"}
+		{item "rgd5 grenade" 1.25 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "rus_wagner_glasses_1"}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "drone_fpv_ammo" filled}			
+		{item "drone_recon_ammo" 1}
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "gb04"}
+	{portrait "gb"}
+	{icon "sniper"}
+	{icon_priority 2}
+	{nationality eng}
+	{armors
+		{head gb_helmet_3}
+		{body gb_vest_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_br")
+		("british")
+	    ("health_rank_2")
+		("british_rifleman")		
+		("sniper_vision")
+		("stealth")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "l129a1" filling "g28_ammo" 10}
+		{item "g28_ammo ammo" 60}
+		
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+
+		{item "bandage_rus" 2}
+        {item "shovel_csa"}
+		
+
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

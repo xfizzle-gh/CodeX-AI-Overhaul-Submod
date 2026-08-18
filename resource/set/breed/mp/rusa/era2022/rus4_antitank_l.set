@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "2rd1"}
+	{portrait rus4}
+	{icon bazooka}
+	{icon_priority 0}
+	{tags "soldier_at"}
+	{nationality rus}
+	{armors
+		{body "rus_fsb_abody_3_3"}
+		{head rus_helmet_v07}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("at_rank_3")
+		("21th")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 1.25 0.5}
+		{item "bandage_rus" 3}
+		{item "ak74m" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 180}
+		{item "RPG26 weapon weapon" 3 filled}
+                {item "shovel_rus"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 3}
+	}
+}

@@ -31,6 +31,7 @@
 		
 		{item "vest_usa_m69" 0.5 0.5}
 		{item "iotv_4"}		
+		{item "aio_marker_morale_regular"}
 		{in_hands 0}
 	}
 }

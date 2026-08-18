@@ -1,0 +1,36 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "ng1"}
+	{portrait "usmc_med"}
+	{icon "tech"}
+	{icon_priority 3}
+	{nationality usa}
+	{armors
+		{head ng_helmet}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("cavalry")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m4a1_v3b" filled}
+		{item "m16a2 ammo" 180}
+		{item "ng_backpack1"}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 4}
+		{item "bandage_usa" 20}
+		{item "shovel_csa"}
+		{item "tent_kit" 2}		
+		{item "ng_vest2"}
+		
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

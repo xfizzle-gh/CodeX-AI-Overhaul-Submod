@@ -1,0 +1,43 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_rusich_gr_2_5"}
+	{portrait "ruisch"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality rus}
+	{armors
+		{head rus_wagner_helmet_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("spetsnaz")
+		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak105_v1" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		
+		
+		{item "Shmel weapon" filled}
+		{item "gm94" filled}
+		{item "43mm he ammo" 12}
+		{item "drone_fpv_ammo" filled}	
+		{item "zarya" 2}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+		{item "rus_backpack_02"}
+		{item "rus_sso_body_1"}
+				{item "bekas-12m_v1" filled}
+		{item "ammo shotguns" 18}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

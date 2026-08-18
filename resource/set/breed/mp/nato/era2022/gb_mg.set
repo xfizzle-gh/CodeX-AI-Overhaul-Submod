@@ -1,0 +1,39 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "gb02"}
+	{portrait "gb"}
+	{icon "mg"}
+	{icon_priority 2}
+	{nationality eng}
+	{armors
+		{head gb_helmet_5}
+		{body gb_vest_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_br")
+		("british")
+                ("mg_rank_3")
+	    ("health_rank_2")
+		("british_rifleman")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "fn_mag_v1" filling "m240_box" 50}
+		{item "m240_box ammo" 400}
+        {item "gb_backpack_1"}		
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+
+		{item "bandage_usa" 4.5 0.5}
+		 
+                {item "shovel_csa"}
+
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

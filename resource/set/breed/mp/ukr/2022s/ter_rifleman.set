@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "ukr_tdf"}
+	{portrait "ter_ammo"}
+	{icon rifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality ukr}
+	{armors
+                {body backpack_eagleaiii}
+		{head ukr_ter}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+        ("rifle_rank_2")	
+		("tdf")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak47_akm" filling "ammo ak47 akm" 30}
+		{item "ammo ak47 akm" 180}
+		{item "ukr_bron_1"}
+		{item "bandage_rus" 2.5 0.5}
+		{item "shovel_rus"}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "aio_marker_morale_low"}
+		{in_hands 0}
+	}
+}

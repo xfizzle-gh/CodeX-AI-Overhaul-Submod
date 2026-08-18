@@ -1,0 +1,32 @@
+{breed
+	{behaviour soldier}
+	{skin "dnr_regular_gr_02"}
+	{portrait "fr_svo_7"}
+	{icon "atrifle"}
+	{icon_priority 2}
+	{tags "soldier_atr"}
+	{nationality rus}
+	{armors
+		{head sh68_1}
+        {body ww3_rus_armor_12}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+		("at_rank_2")
+		("tdf")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ptrs" filled}
+		{item "atrifle_rus ammo" 35 5}
+		{item "bandage_sov" 3.5 0.5}
+		{item "shovel_rus"}
+
+		{item "aio_marker_morale_low"}
+		{in_hands 0}
+	}
+}

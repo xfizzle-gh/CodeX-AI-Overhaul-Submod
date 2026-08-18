@@ -1,0 +1,38 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "usa_ocp5"}
+	{portrait "inf2"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{nationality usa}
+	{armors
+		{head ihps_new_2}
+				{body "msv_2"}
+		
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_4")
+		("cavalry")		
+		("medic")		 
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "m7_spear_xm157" filled}
+		{item "xm7_ammo ammo" 180}
+		{item "m26 grenade" 1.25 0.5}
+		{item "m18 grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "shovel_csa"}
+		{item "us_backpack_3"}				
+		{item "benelli_m4" filling "ammo shotgun" 7}
+		{item "ammo shotgun" 21}				
+		{item "aio_marker_morale_regular"}
+		{item "aio_marker_cmd_primary"}
+		{in_hands 0}
+	}
+}

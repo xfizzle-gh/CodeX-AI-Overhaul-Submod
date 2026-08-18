@@ -1,0 +1,36 @@
+{breed
+	{behaviour soldier}
+	{skin "82th1"}
+	{portrait ildu_ammo}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality ger}
+	{armors
+                {body backpack_eagleaiii}
+		{head ukr_helmet_06}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("ildu")
+
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "ak74u" filled}
+		{item "5x39 ammo" 150}
+
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+		{item "bandage_usa" 4.5 0.5}
+         {item "metis_hand"}
+		{item "ukr_ua_body_a_1"}
+        {item "shovel_csa"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 0}
+	}
+}

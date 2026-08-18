@@ -1,0 +1,39 @@
+{breed
+	{behaviour soldier}
+	{skin "dpr101"}
+	{portrait "dpr100"}
+	{icon "autorifle"}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_fsb_helmet_1}
+                {body "6b13_04"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("at_rank_2")
+		("100dv")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+
+		{item "akms" filling "ammo ak47 steel" 30}
+		{item "ammo ak47 steel" 90}
+		{item "rus_fsb_abody_13"}
+		{item "rpg7 ammo" 5}
+
+		{item "rpg22 weapon" 2 filled}
+		{item "rgd5 grenade" 2}
+		{item "rdg2 grenade" 1}
+		{item "bandage_rus" 4.5 0.5}
+		{item "shovel_rus"}
+
+		{item "aio_marker_morale_low"}
+		{in_hands 0}
+	}
+}

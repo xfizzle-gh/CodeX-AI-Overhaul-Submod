@@ -1,0 +1,45 @@
+{breed
+	{behaviour soldier}
+	{skin "sas03"}
+	{portrait sas}
+	{icon autorifle}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality eng_para}
+	{armors
+		{head sas_helmet4_2}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+("sas")
+		("binocular_vision")
+		 
+		("skilled_manpad_operator")		
+		 		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+        {item "l403" filled}
+		{item "m16a2 ammo" 240}
+		{item "gl06" filled}
+		{item "40mm_grenade he ammo" 8}
+		{item "nlaw" 1}		
+		{item "m26 grenade" 1.25 0.5}
+		{item "anm8_smoke grenade" 0.25 0.5}
+		{item "bandage_usa" 3.5 0.5}
+		{item "sas_armor1"}
+		{item "c4pn" 2}		
+		{item "drone_fpv_ammo" filled}		
+		{item "m84" 2}			
+         {item "shovel_csa"}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
+		{item "aio_marker_steadfast"}
+		{in_hands 0}
+	}
+}

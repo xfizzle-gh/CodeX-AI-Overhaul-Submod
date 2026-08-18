@@ -1,0 +1,39 @@
+{breed
+	{behaviour soldier}
+	{skin "rus_sso_gru_1"}
+	{portrait med_rus}
+	{icon tech}
+	{icon_priority 2}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_opscore_helmet_1}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_sf_5")
+		("spetsnaz_sso")
+                ("medic")
+				
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_5")
+	}
+	{inventory
+		{item "ak105_v2" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rdg2 grenade" 2.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "tent_kit" 2}
+		{item "rus_rus_sso_gru__abody_12"}
+		{item "rus_sso_body_1"}
+		{item "drone_fpv_ammo" filled}	
+		{item "napashnik"}
+		{item "shovel_rus"}
+		{item "zarya" 2}
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}

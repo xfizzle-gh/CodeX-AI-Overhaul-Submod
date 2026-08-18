@@ -1,0 +1,37 @@
+{breed
+	{tags "soldier"}
+	{behaviour soldier}
+	{skin "pzgd_1"}
+	{portrait "med_pzg"}
+	{icon "tech"}
+	{icon_priority 2}
+	{nationality ger}
+	{armors
+		{head viper_p2_2}
+		{body mnac_vest_3}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("medic")
+		("pzgrene")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "g36k" filling "m16a2 ammo" 30}
+		{item "m16a2 ammo" 240}
+		{item "m18 grenade" 2}
+		 
+		{item "bandage_rus" 10}
+		{item "tent_kit" 2}
+		{item "backpack_90"}
+                {item "shovel_csa"}
+		
+
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,35 @@
+{breed
+	{behaviour soldier}
+	{skin "2rd1"}
+	{portrait rus4}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{body "rus_fsb_abody_12"}
+		{head rus_helmet_red}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3")
+		("21th")
+		("rifle_rank_4")		
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "rgd5 grenade" 2 0.5}
+		{item "rdg2 grenade" 0.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "ak74m_pso" filled}
+		{item "5x39 ammo" 210}
+                {item "shovel_rus"}
+		{item "rus_6b45_body_03"}
+		{item "aio_marker_morale_regular"}
+		{in_hands 4}
+	}
+}

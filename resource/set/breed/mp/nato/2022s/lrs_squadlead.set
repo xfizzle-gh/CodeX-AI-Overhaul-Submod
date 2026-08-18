@@ -35,6 +35,9 @@
 		{item "laser_designator" filling "flare_usa artillery_155" 2}		
 				{item "benelli_m4" filling "ammo shotgun" 7}
 		{item "ammo shotgun" 21}		
+		{item "aio_marker_morale_trained"}
+		{item "aio_marker_cmd_primary"}
+		{item "aio_marker_cmd_independent"}
 		{in_hands 0}
 	}
 }

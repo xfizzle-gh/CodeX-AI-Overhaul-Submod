@@ -1,0 +1,40 @@
+{breed
+    {tags "soldier"}
+	{behaviour soldier}
+	{skin "usmc_woodland_4"}
+	{portrait "usmc"}
+	{icon "autorifle"}
+	{icon_priority 2}
+	{nationality usa}
+	{armors
+		{head usmc_woodland_helmet_6}
+		{body usmc_desert_armor_6}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_3_usmce")
+		("mg_rank_3")		
+		("marine")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "m249_saw_h" filled}
+		{item "m249_ammo" 400}
+
+		{item "shovel_csa"}		
+
+
+		{item "m26 grenade" 2}
+		{item "m18 grenade" 2}
+
+		{item "bandage_usa" 4.5 0.5}
+		{item "usmc_woodland_backpack_1_1"}
+		{item "usmc_desert_belt_2"}			 
+		
+		{item "aio_marker_morale_trained"}
+		{in_hands 0}
+	}
+}

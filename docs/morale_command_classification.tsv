@@ -1,0 +1,2092 @@
+path	faction	family	morale	cmd	independent	discipline	steadfast	vet	skill	sf	legacy_aio	flags
+mp/nato/2022s/1ad_antitank.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_antitank_assist.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_autorifle.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/1ad_autorifle_t.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/1ad_engineer.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_engineer_at.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_engineer_javelin.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_grenadier.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_grenadier_t.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_javelin.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_marksman.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_medic.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_mg.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/1ad_mg_assist.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/1ad_rifleman.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_rifleman_t.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_scout.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/1ad_squadlead.set	nato	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/nato/2022s/1ad_squadlead_t.set	nato	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/nato/2022s/1ad_teamlead.set	nato	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0	4		0	
+mp/nato/2022s/1ad_teamlead_t.set	nato	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/nato/2022s/82nd_antitank.set	nato	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/nato/2022s/82nd_engineer.set	nato	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/nato/2022s/82nd_engineer_at.set	nato	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/nato/2022s/82nd_grenadier.set	nato	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/nato/2022s/82nd_javelin.set	nato	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/nato/2022s/82nd_marksman.set	nato	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/nato/2022s/82nd_medic.set	nato	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/nato/2022s/82nd_mg.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/82nd_rifleman.set	nato	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/nato/2022s/82nd_scout.set	nato	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/nato/2022s/82nd_squadlead.set	nato	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/nato/2022s/82nd_teamlead.set	nato	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	5	5		0	
+mp/nato/2022s/dg_antitank.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/dg_antitank_javelin.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/dg_antitank_nlaw.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/dg_eng.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/dg_eng_at.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/dg_grenadier.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/dg_marksman.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/dg_medic.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/dg_mg.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/dg_rifleman.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/dg_scout.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/dg_squadlead.set	nato	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/nato/2022s/dg_teamleader.set	nato	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0	4		0	
+mp/nato/2022s/fj_antitank.set	nato	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/nato/2022s/fj_eng.set	nato	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/nato/2022s/fj_eng_at.set	nato	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/nato/2022s/fj_grenadier.set	nato	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/nato/2022s/fj_marksman.set	nato	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/nato/2022s/fj_mg.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/fj_rifleman.set	nato	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/nato/2022s/fj_spotter.set	nato	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/nato/2022s/fj_squadlead.set	nato	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0		5	0	
+mp/nato/2022s/fj_teamlead.set	nato	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	0		5	0	
+mp/nato/2022s/fr_antitank.set	nato	2022s	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/2022s/fr_grenadier.set	nato	2022s	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/2022s/fr_medic.set	nato	2022s	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/2022s/fr_operator.set	nato	2022s	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/2022s/fr_rifleman.set	nato	2022s	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/2022s/fr_sniper.set	nato	2022s	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/2022s/fr_spotter.set	nato	2022s	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/2022s/fr_squadlead.set	nato	2022s	aio_morale_elite	aio_cmd_primary	1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/2022s/gb_antitank.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/gb_antitank_at4.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/gb_antitank_javelin.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/gb_antitank_nlaw.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/gb_crew.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/gb_eng.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/gb_eng_at.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/gb_grenadier.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/gb_marksman.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/gb_medic.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/gb_mg.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/gb_pilot.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/gb_rifleman.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/gb_scout.set	nato	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/2022s/gb_squadlead.set	nato	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/nato/2022s/gb_teamleader.set	nato	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0	4		0	
+mp/nato/2022s/gb_vehicleman.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/ger_crew.set	nato	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/2022s/ger_crew_milan.set	nato	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/2022s/inf2_antitank.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_antitank_ngsw.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_autorifle.set	nato	2022s	aio_morale_regular		0	0	0	2			0	
+mp/nato/2022s/inf2_autorifle_ngsw.set	nato	2022s	aio_morale_regular		0	0	0	2			0	
+mp/nato/2022s/inf2_engineer.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_engineer_AT.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_grenadier.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_grenadier_ngsw.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_javelin.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_marksman.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_marksman_m82.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_medic.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_medic_ngsw.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_mg.set	nato	2022s	aio_morale_regular		0	0	0	2			0	
+mp/nato/2022s/inf2_rifleman.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_rifleman_ngsw.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_scout.set	nato	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/nato/2022s/inf2_squadlead.set	nato	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	2	4		0	
+mp/nato/2022s/inf2_squadlead_ngsw.set	nato	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	2	4		0	
+mp/nato/2022s/inf2_teamlead.set	nato	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	2	4		0	
+mp/nato/2022s/inf2_teamlead_ngsw.set	nato	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	2	4		0	
+mp/nato/2022s/jager_antitank.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/jager_grenadier.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/jager_marksman.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/jager_mg.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/jager_rifleman.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/jager_squadlead.set	nato	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	4		0	
+mp/nato/2022s/jager_teamlead.set	nato	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	0	4		0	
+mp/nato/2022s/lrs_javelin.set	nato	2022s	aio_morale_trained		1	0	0	0	4		1	
+mp/nato/2022s/lrs_marksman.set	nato	2022s	aio_morale_trained		1	0	0	0	4		1	
+mp/nato/2022s/lrs_mg.set	nato	2022s	aio_morale_trained		1	0	0	0			1	
+mp/nato/2022s/lrs_rifleman.set	nato	2022s	aio_morale_trained		1	0	0	0	4		1	
+mp/nato/2022s/lrs_squadlead.set	nato	2022s	aio_morale_trained	aio_cmd_primary	1	0	0	0	4		1	
+mp/nato/2022s/nato_antitank.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/nato_antitank_spike.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/nato_cmd.set	nato	2022s	aio_morale_regular		0	0	0	0	1		0	vehicle_or_crew_cmd
+mp/nato/2022s/nato_eng.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/nato_grenadier.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/nato_javelin.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/nato_medic.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/nato_mg.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/nato_mg_mg3.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/nato_pilot.set	nato	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/2022s/nato_rifleman.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/nato_sniper.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/nato_spotter.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/nato_squadlead.set	nato	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/nato/2022s/nato_supcrew.set	nato	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/2022s/nato_supcrew_m120.set	nato	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/2022s/nato_supcrew_m252.set	nato	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/2022s/nato_supcrew_m2hb.set	nato	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/2022s/nato_supcrew_mk19.set	nato	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/2022s/nato_supcrew_tow.set	nato	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/2022s/nato_teamlead.set	nato	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0	4		0	
+mp/nato/2022s/nato_vehicleman.set	nato	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/2022s/pzgd_antitank.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_antitank_pzf.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_antitank_rgw.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_atassist.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_eng.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_eng_at.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_grenadier.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_manpad.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_manpadassist.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_marksman.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_medic.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_mg.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/pzgd_mgassist.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/pzgd_rifleman.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_rifleman_puma.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_spotter.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/pzgd_squadlead.set	nato	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	4		0	
+mp/nato/2022s/pzgd_teamlead.set	nato	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	0	4		0	
+mp/nato/2022s/pzgd_vehicleman.set	nato	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/nato/2022s/rg_javelin.set	nato	2022s	aio_morale_trained		1	0	0	4		5	0	owner_review_formation_rg
+mp/nato/2022s/rg_m2hb_crew.set	nato	2022s	aio_morale_trained		0	0	0	4		5	0	sof_or_ranger_crew,owner_review_formation_rg
+mp/nato/2022s/rg_rifleman.set	nato	2022s	aio_morale_trained		1	0	0	4		5	0	owner_review_formation_rg
+mp/nato/2022s/rg_squadlead.set	nato	2022s	aio_morale_trained	aio_cmd_primary	1	0	0	4		5	0	owner_review_formation_rg
+mp/nato/2022s/rg_teamleader.set	nato	2022s	aio_morale_trained	aio_cmd_junior	1	0	0	4	5		0	owner_review_formation_rg
+mp/nato/2022s/rng_antitank.set	nato	2022s	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/2022s/rng_antitank_r.set	nato	2022s	aio_morale_trained		1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/2022s/rng_atteamlead.set	nato	2022s	aio_morale_trained	aio_cmd_junior	1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/2022s/rng_grenadier.set	nato	2022s	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/2022s/rng_grenadier_r.set	nato	2022s	aio_morale_trained		1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/2022s/rng_javelin.set	nato	2022s	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/2022s/rng_marksman.set	nato	2022s	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/2022s/rng_medic.set	nato	2022s	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/2022s/rng_medic_r.set	nato	2022s	aio_morale_trained		1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/2022s/rng_mg.set	nato	2022s	aio_morale_trained		1	0	0	5			0	owner_review_formation_rng
+mp/nato/2022s/rng_mg1.set	nato	2022s	aio_morale_trained		1	0	0	5			0	owner_review_formation_rng
+mp/nato/2022s/rng_mg_r.set	nato	2022s	aio_morale_trained		1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/2022s/rng_rifleman.set	nato	2022s	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/2022s/rng_rifleman1.set	nato	2022s	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/2022s/rng_rifleman_r.set	nato	2022s	aio_morale_trained		1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/2022s/rng_spotter.set	nato	2022s	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/2022s/rng_spotter_r.set	nato	2022s	aio_morale_trained		1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/2022s/rng_squadlead.set	nato	2022s	aio_morale_trained	aio_cmd_primary	1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/2022s/rng_squadlead_r.set	nato	2022s	aio_morale_trained	aio_cmd_primary	1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/2022s/rng_vehicleman.set	nato	2022s	aio_morale_trained		0	0	0	0	4		0	sof_or_ranger_crew,owner_review_formation_rng
+mp/nato/2022s/rsta_antitank.set	nato	2022s	aio_morale_trained		1	0	0	0	4		1	
+mp/nato/2022s/rsta_autorifle.set	nato	2022s	aio_morale_trained		1	0	0	0			1	
+mp/nato/2022s/rsta_rifleman.set	nato	2022s	aio_morale_trained		1	0	0	0	4		1	
+mp/nato/2022s/rsta_scout.set	nato	2022s	aio_morale_trained		1	0	0	0	4		1	
+mp/nato/2022s/rsta_squadlead.set	nato	2022s	aio_morale_trained	aio_cmd_primary	1	0	0	0	5		1	
+mp/nato/2022s/rsta_teamlead.set	nato	2022s	aio_morale_trained	aio_cmd_junior	1	0	0	5	5		1	
+mp/nato/2022s/usarmy_antitank.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_antitank_xm7.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_atassist.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_atassist_xm7.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_autorifle.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/usarmy_autorifle_xm250.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/usarmy_crew.set	nato	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/2022s/usarmy_engineer.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_engineer_at.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_engineer_javelin.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_grenadier.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_grenadier_xm7.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_javelin.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_javelin_xm7.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_manpad.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_manpadassist.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_marksman.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_medic.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_medic_xm7.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_mg.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/usarmy_mgassist.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/usarmy_mgassist_xm7.set	nato	2022s	aio_morale_regular		0	0	0	0			0	
+mp/nato/2022s/usarmy_pilot.set	nato	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/2022s/usarmy_rifleman.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_rifleman_xm7.set	nato	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/2022s/usarmy_squadlead.set	nato	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/nato/2022s/usarmy_squadlead_xm7.set	nato	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0			0	
+mp/nato/2022s/usarmy_teamlead.set	nato	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	5	3		0	unusual_high_vet_regular
+mp/nato/2022s/usarmy_teamlead_xm7.set	nato	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	5			0	unusual_high_vet_regular
+mp/nato/2022s/usarmy_vehicleman.set	nato	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/2022s/usmc_antitank.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_antitank_javelin.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_antitank_smaw.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_atassist.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_drone.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_eng.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_eng_at.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_grenadier.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_javelin.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_m2hb_crew.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/usmc_manpad.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/usmc_manpad_ass.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/usmc_marksman.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_marksman_m82.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_medic.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_mg.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/usmc_mg_m27.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/usmc_mgassist.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/usmc_mgassist_ammo.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/usmc_mk19_crew.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/usmc_pilot.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_rifleman.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_sniper.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_spotter.set	nato	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/2022s/usmc_squadlead.set	nato	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	4		0	
+mp/nato/2022s/usmc_squadlead_assist.set	nato	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	0	3		0	
+mp/nato/2022s/usmc_supcrew.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/usmc_teamlead.set	nato	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	0	4		0	
+mp/nato/2022s/usmc_tow_crew.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/2022s/usmc_vehicleman.set	nato	2022s	aio_morale_trained		0	0	0	0			0	
+mp/nato/early/artilleryman.set	nato	early	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/early/tankman.set	nato	early	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/era2022/acav_antitank.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_antitank_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_atassist.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_atassist_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_autorifle.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_autorifle_xm250.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_engineer.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_grenadier.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_grenadier_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_javelin.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_manpad.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_manpadassist.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_medic.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_medic_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_mg.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_mgassist.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_mgassist_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_rifleman.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_rifleman_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_scout.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/acav_squadlead.set	nato	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/nato/era2022/acav_squadlead_xm7.set	nato	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0			0	
+mp/nato/era2022/acav_teamlead.set	nato	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	5	3		0	unusual_high_vet_regular
+mp/nato/era2022/acav_teamlead_xm7.set	nato	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	5			0	unusual_high_vet_regular
+mp/nato/era2022/acav_vehicleman.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/fr_antitank.set	nato	era2022	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/era2022/fr_grenadier.set	nato	era2022	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/era2022/fr_medic.set	nato	era2022	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/era2022/fr_operator.set	nato	era2022	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/era2022/fr_rifleman.set	nato	era2022	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/era2022/fr_sniper.set	nato	era2022	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/era2022/fr_spotter.set	nato	era2022	aio_morale_elite		1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/era2022/fr_squadlead.set	nato	era2022	aio_morale_elite	aio_cmd_primary	1	0	1	5	5		0	owner_review_formation_fr
+mp/nato/era2022/gb_105mm_art.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_105mm_vt_art.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_155mm_art.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_155mm_vt_art.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_60mm_art.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_81mm_art.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_antitank.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_antitank_javelin.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_eng.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_eng_at.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_grenadier.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_marksman.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_medic.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_mg.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_pilot.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_rifleman.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_scout.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gb_squadlead.set	nato	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0			0	
+mp/nato/era2022/gb_teamleader.set	nato	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	0			0	
+mp/nato/era2022/gb_vehicleman.set	nato	era2022	aio_morale_regular		0	0	0	0			0	
+mp/nato/era2022/gbpara_antitank.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/gbpara_antitank_javelin.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/gbpara_antitank_nlaw.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/gbpara_grenadier.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/gbpara_marksman.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/gbpara_medic.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/gbpara_mg.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/gbpara_rifleman.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/gbpara_squadlead.set	nato	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0			0	
+mp/nato/era2022/gbpara_teamleader.set	nato	era2022	aio_morale_trained	aio_cmd_junior	0	0	0	0			0	
+mp/nato/era2022/gbpf_javelin.set	nato	era2022	aio_morale_trained		1	0	0	4	5		0	
+mp/nato/era2022/gbpf_medic.set	nato	era2022	aio_morale_trained		1	0	0	4	5		0	
+mp/nato/era2022/gbpf_rifleman.set	nato	era2022	aio_morale_trained		1	0	0	4	5		0	
+mp/nato/era2022/gbpf_squadlead.set	nato	era2022	aio_morale_trained	aio_cmd_primary	1	0	0	4	5		0	
+mp/nato/era2022/gbpf_teamleader.set	nato	era2022	aio_morale_trained	aio_cmd_junior	1	0	0	4	5		0	
+mp/nato/era2022/ger_antitank.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/ger_antitank_l.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/ger_eng.set	nato	era2022	aio_morale_regular		0	0	0	0	4		0	
+mp/nato/era2022/ger_grenadier.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/ger_m2hbcrew.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/ger_marksman.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/ger_medic.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/ger_mg.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/ger_mg4.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/ger_mg5.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/ger_milancrew.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/ger_rifleman.set	nato	era2022	aio_morale_regular		0	0	0	0	4		0	
+mp/nato/era2022/ger_sniper.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/ger_spotter.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/ger_squadlead.set	nato	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	2		0	
+mp/nato/era2022/ger_vehicleman.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/mar_antitank.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	elite_looking_low_vet,owner_review_formation_mar
+mp/nato/era2022/mar_grenadier.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	elite_looking_low_vet,owner_review_formation_mar
+mp/nato/era2022/mar_marksman.set	nato	era2022	aio_morale_elite		1	0	0	0	5		0	elite_looking_low_vet,owner_review_formation_mar
+mp/nato/era2022/mar_operator.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	elite_looking_low_vet,owner_review_formation_mar
+mp/nato/era2022/mar_rifleman.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	elite_looking_low_vet,owner_review_formation_mar
+mp/nato/era2022/mar_sniper.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	elite_looking_low_vet,owner_review_formation_mar
+mp/nato/era2022/mar_spotter.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	elite_looking_low_vet,owner_review_formation_mar
+mp/nato/era2022/mar_squadlead.set	nato	era2022	aio_morale_elite	aio_cmd_primary	1	0	1	0	5		0	elite_looking_low_vet,owner_review_formation_mar
+mp/nato/era2022/nato_antitank.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_antitank_e.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_antitank_f.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_antitank_l.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_cmd.set	nato	era2022	aio_morale_regular		0	0	0	0	1		0	vehicle_or_crew_cmd
+mp/nato/era2022/nato_demo.set	nato	era2022	aio_morale_trained		1	0	0	0	4		0	
+mp/nato/era2022/nato_eng.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_grenadier.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_grenadier_e.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_javelin.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_mg.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_mg1.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_pilot.set	nato	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/era2022/nato_rifleman.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_rifleman1.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_rifleman2.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_rifleman3.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_sniper.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_spotter.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/nato_squadlead.set	nato	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	2		0	
+mp/nato/era2022/nato_supcrew.set	nato	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/era2022/nato_vehicleman.set	nato	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/era2022/pzgd_antitank.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_antitank_l.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_atassist.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_eng.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_eng_at.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_engineer.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_grenadier.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_manpad.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_manpadassist.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_marksman.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_medic.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_mg.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_mgassist.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_rifleman.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_spotter.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/nato/era2022/pzgd_squadlead.set	nato	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	3		0	
+mp/nato/era2022/pzgd_teamlead.set	nato	era2022	aio_morale_trained	aio_cmd_junior	0	0	0	0	3		0	
+mp/nato/era2022/pzgd_vehicleman.set	nato	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/nato/era2022/rng_antitank.set	nato	era2022	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/era2022/rng_antitank_r.set	nato	era2022	aio_morale_trained		1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/era2022/rng_atteamlead.set	nato	era2022	aio_morale_trained	aio_cmd_junior	1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/era2022/rng_grenadier.set	nato	era2022	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/era2022/rng_grenadier_r.set	nato	era2022	aio_morale_trained		1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/era2022/rng_javelin.set	nato	era2022	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/era2022/rng_marksman.set	nato	era2022	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/era2022/rng_medic.set	nato	era2022	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/era2022/rng_medic_r.set	nato	era2022	aio_morale_trained		1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/era2022/rng_mg.set	nato	era2022	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/era2022/rng_mg1.set	nato	era2022	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/era2022/rng_mg_r.set	nato	era2022	aio_morale_trained		1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/era2022/rng_rifleman.set	nato	era2022	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/era2022/rng_rifleman1.set	nato	era2022	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/era2022/rng_rifleman_r.set	nato	era2022	aio_morale_trained		1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/era2022/rng_spotter.set	nato	era2022	aio_morale_trained		1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/era2022/rng_spotter_r.set	nato	era2022	aio_morale_trained		1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/era2022/rng_squadlead.set	nato	era2022	aio_morale_trained	aio_cmd_primary	1	0	0	5	4		0	owner_review_formation_rng
+mp/nato/era2022/rng_squadlead_r.set	nato	era2022	aio_morale_trained	aio_cmd_primary	1	0	0	5	5		0	owner_review_formation_rng
+mp/nato/era2022/rng_vehicleman.set	nato	era2022	aio_morale_trained		0	0	0	0	4		0	sof_or_ranger_crew,owner_review_formation_rng
+mp/nato/era2022/sas_grenadier.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	
+mp/nato/era2022/sas_javelin.set	nato	era2022	aio_morale_elite		1	0	1	0	3		0	
+mp/nato/era2022/sas_rifleman.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	
+mp/nato/era2022/sas_rifleman1.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	
+mp/nato/era2022/sas_rifleman2.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	
+mp/nato/era2022/sas_rifleman3.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	
+mp/nato/era2022/sas_sniper.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	
+mp/nato/era2022/sas_spotter.set	nato	era2022	aio_morale_elite		1	0	1	0	5		0	
+mp/nato/era2022/sas_squadlead.set	nato	era2022	aio_morale_elite	aio_cmd_primary	1	0	1	0	5		0	
+mp/nato/era2022/usa_vehicleman.set	nato	era2022	aio_morale_trained		0	0	0	0	3		0	sof_or_ranger_crew
+mp/nato/era2022/usarmy_antitank.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_antitank_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_atassist.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_atassist_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_autorifle.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_autorifle_xm250.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_crew.set	nato	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/nato/era2022/usarmy_engineer.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_engineer_at.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_grenadier.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_grenadier_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_javelin.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_javelin_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_manpad.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_manpadassist.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_marksman.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_medic.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_medic_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_mg.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_mgassist.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_mgassist_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_rifleman.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_rifleman_xm7.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_scout.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usarmy_squadlead.set	nato	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/nato/era2022/usarmy_squadlead_xm7.set	nato	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0			0	
+mp/nato/era2022/usarmy_teamlead.set	nato	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	5	3		0	unusual_high_vet_regular
+mp/nato/era2022/usarmy_teamlead_xm7.set	nato	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	5			0	unusual_high_vet_regular
+mp/nato/era2022/usarmy_vehicleman.set	nato	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/era2022/usmc_antitank.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_antitank_e.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_antitank_javelin.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_antitank_smaw.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_atassist.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_atassist_e.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_drone.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_eng.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_eng_at.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_grenadier.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_grenadier_e.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_javelin.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_m120_crew.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_m224_crew.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_m252_crew.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_m2hb_crew.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_manpad.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_manpad_ass.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_marksman.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_marksman_e.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_medic.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_medic_e.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_mg.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_mg_e.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_mg_m27.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_mgassist.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_mgassist_ammo.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_mgassist_e.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_mk19_crew.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_pilot.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_rifleman.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_rifleman_e.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_sniper.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_spotter.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_spotter_e.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_squadlead.set	nato	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0			0	
+mp/nato/era2022/usmc_squadlead_assist.set	nato	era2022	aio_morale_trained	aio_cmd_junior	0	0	0	0			0	
+mp/nato/era2022/usmc_squadlead_e.set	nato	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0			0	
+mp/nato/era2022/usmc_supcrew.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_teamlead.set	nato	era2022	aio_morale_trained	aio_cmd_junior	0	0	0	0			0	
+mp/nato/era2022/usmc_teamlead_e.set	nato	era2022	aio_morale_trained	aio_cmd_junior	0	0	0	0			0	
+mp/nato/era2022/usmc_tow_crew.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/era2022/usmc_vehicleman.set	nato	era2022	aio_morale_trained		0	0	0	0			0	
+mp/nato/mid/artilleryman.set	nato	mid	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/mid/tankman.set	nato	mid	aio_morale_regular		0	0	0	0	1		0	
+mp/nato/新建文件夹/1cav_antitank.set	nato	新建文件夹	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/新建文件夹/1cav_autorifle.set	nato	新建文件夹	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/新建文件夹/1cav_engineer.set	nato	新建文件夹	aio_morale_regular		0	0	0	0	3		0	
+mp/nato/新建文件夹/1cav_grenadier.set	nato	新建文件夹	aio_morale_regular		0	0	0	0	3		1	
+mp/nato/新建文件夹/1cav_javelin.set	nato	新建文件夹	aio_morale_regular		0	0	0	0	3		1	
+mp/nato/新建文件夹/1cav_medic.set	nato	新建文件夹	aio_morale_regular		0	0	0	0	3		1	
+mp/nato/新建文件夹/1cav_mg.set	nato	新建文件夹	aio_morale_regular		0	0	0	0			1	
+mp/nato/新建文件夹/1cav_rifleman.set	nato	新建文件夹	aio_morale_regular		0	0	0	0	3		1	
+mp/nato/新建文件夹/1cav_scout.set	nato	新建文件夹	aio_morale_regular		0	0	0	0	3		1	
+mp/nato/新建文件夹/1cav_squadlead.set	nato	新建文件夹	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		1	
+mp/nato/新建文件夹/1cav_teamlead.set	nato	新建文件夹	aio_morale_regular	aio_cmd_junior	0	0	0	5	4		1	unusual_high_vet_regular
+mp/nato/新建文件夹/82nd_antitank.set	nato	新建文件夹	aio_morale_trained		0	0	0	0	4		0	
+mp/nato/新建文件夹/82nd_engineer.set	nato	新建文件夹	aio_morale_trained		0	0	0	0	4		1	
+mp/nato/新建文件夹/82nd_engineer_at.set	nato	新建文件夹	aio_morale_trained		0	0	0	0	4		1	
+mp/nato/新建文件夹/82nd_grenadier.set	nato	新建文件夹	aio_morale_trained		0	0	0	0	4		1	
+mp/nato/新建文件夹/82nd_javelin.set	nato	新建文件夹	aio_morale_trained		0	0	0	0	4		1	
+mp/nato/新建文件夹/82nd_marksman.set	nato	新建文件夹	aio_morale_trained		0	0	0	0	4		1	
+mp/nato/新建文件夹/82nd_medic.set	nato	新建文件夹	aio_morale_trained		0	0	0	0	4		1	
+mp/nato/新建文件夹/82nd_mg.set	nato	新建文件夹	aio_morale_trained		0	0	0	0			1	
+mp/nato/新建文件夹/82nd_rifleman.set	nato	新建文件夹	aio_morale_trained		0	0	0	0	4		1	
+mp/nato/新建文件夹/82nd_scout.set	nato	新建文件夹	aio_morale_trained		0	0	0	0	4		1	
+mp/nato/新建文件夹/82nd_squadlead.set	nato	新建文件夹	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		1	
+mp/nato/新建文件夹/82nd_teamlead.set	nato	新建文件夹	aio_morale_trained	aio_cmd_junior	0	0	0	5	5		1	
+mp/nato/新建文件夹/lrs_javelin.set	nato	新建文件夹	aio_morale_trained		1	0	0	0	5		0	
+mp/nato/新建文件夹/lrs_marksman.set	nato	新建文件夹	aio_morale_trained		1	0	0	0	4		1	
+mp/nato/新建文件夹/lrs_mg.set	nato	新建文件夹	aio_morale_trained		1	0	0	0			1	
+mp/nato/新建文件夹/lrs_rifleman.set	nato	新建文件夹	aio_morale_trained		1	0	0	0	5		1	
+mp/nato/新建文件夹/lrs_squadlead.set	nato	新建文件夹	aio_morale_trained	aio_cmd_primary	1	0	0	0	5		1	
+mp/nato/新建文件夹/rsta_antitank.set	nato	新建文件夹	aio_morale_trained		1	0	0	0	4		1	
+mp/nato/新建文件夹/rsta_autorifle.set	nato	新建文件夹	aio_morale_trained		1	0	0	0			1	
+mp/nato/新建文件夹/rsta_rifleman.set	nato	新建文件夹	aio_morale_trained		1	0	0	0	4		1	
+mp/nato/新建文件夹/rsta_scout.set	nato	新建文件夹	aio_morale_trained		1	0	0	0	4		1	
+mp/nato/新建文件夹/rsta_squadlead.set	nato	新建文件夹	aio_morale_trained	aio_cmd_primary	1	0	0	0	5		1	
+mp/nato/新建文件夹/rsta_teamlead.set	nato	新建文件夹	aio_morale_trained	aio_cmd_junior	1	0	0	5	5		1	
+mp/prc/2022s/pla_antitank_hj12.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_antitank_hj12_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_antitank_pf98.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_antitank_pf98_fg.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_antitank_pf98_fg_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_antitank_pf98_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_crew.set	prc	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/prc/2022s/pla_crew_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_crew_hj8.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_crew_pbp172.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_crew_qjz171.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_crew_qjz89.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_drone.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_eng.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_eng_at.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_eng_at_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_eng_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_grenadier.set	prc	2022s	aio_morale_trained		0	0	0	0			0	
+mp/prc/2022s/pla_grenadier_gy.set	prc	2022s	aio_morale_regular		0	0	0	0			0	
+mp/prc/2022s/pla_manpad_operator.set	prc	2022s	aio_morale_regular		0	0	0	0			0	
+mp/prc/2022s/pla_manpad_supporter.set	prc	2022s	aio_morale_regular		0	0	0	0			0	
+mp/prc/2022s/pla_marksman.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_marksman_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_marksman_qbu10.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_marksman_qbu10_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_marksman_qbu11.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_marksman_qbu11_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_medic.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_medic_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_mg.set	prc	2022s	aio_morale_trained		0	0	0	0			0	
+mp/prc/2022s/pla_mg_gy.set	prc	2022s	aio_morale_regular		0	0	0	0			0	
+mp/prc/2022s/pla_mg_qjy.set	prc	2022s	aio_morale_trained		0	0	0	0			0	
+mp/prc/2022s/pla_mg_qjy_gy.set	prc	2022s	aio_morale_regular		0	0	0	0			0	
+mp/prc/2022s/pla_recon.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_recon_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_rifleman.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_rifleman_dza08.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_rifleman_dza08_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_rifleman_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_senior.set	prc	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	0	4		0	
+mp/prc/2022s/pla_senior_gy.set	prc	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0	4		0	
+mp/prc/2022s/pla_sniper.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_sniper_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/pla_squadlead.set	prc	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	4		0	
+mp/prc/2022s/pla_squadlead_gy.set	prc	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/prc/2022s/pla_vehicleman.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/2022s/pla_vehicleman_gy.set	prc	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/prc/2022s/tankman.set	prc	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/early/artilleryman.set	prc	early	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/early/tankman.set	prc	early	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/mid/artilleryman.set	prc	mid	aio_morale_trained		0	0	0	0	3		0	
+mp/prc/mid/tankman.set	prc	mid	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/106vdv_ags17crew.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/106vdv_antitank.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/106vdv_greenader.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/106vdv_kordcrew.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/106vdv_medic.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/106vdv_mg.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/106vdv_rifleman.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/106vdv_squadlead.set	rusa	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/rusa/2022s/45vdv_antitank.set	rusa	2022s	aio_morale_elite		1	0	1	5		5	0	
+mp/rusa/2022s/45vdv_assault.set	rusa	2022s	aio_morale_elite		1	0	1	5		5	0	
+mp/rusa/2022s/45vdv_lmg.set	rusa	2022s	aio_morale_elite		1	0	1	5		5	0	
+mp/rusa/2022s/45vdv_manpad.set	rusa	2022s	aio_morale_elite		1	0	1	5		5	0	
+mp/rusa/2022s/45vdv_marksman.set	rusa	2022s	aio_morale_elite		1	0	1	5		5	0	
+mp/rusa/2022s/45vdv_medic.set	rusa	2022s	aio_morale_elite		1	0	1	5		5	0	
+mp/rusa/2022s/45vdv_recon.set	rusa	2022s	aio_morale_elite		1	0	1	5		5	0	
+mp/rusa/2022s/45vdv_rifleman.set	rusa	2022s	aio_morale_elite		1	0	1	5		5	0	
+mp/rusa/2022s/45vdv_spg9crew.set	rusa	2022s	aio_morale_elite		1	0	1	5		5	0	
+mp/rusa/2022s/45vdv_squadlead.set	rusa	2022s	aio_morale_elite	aio_cmd_primary	1	0	1	5		5	0	
+mp/rusa/2022s/kor_antitank_rpg29.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_antitank_rpg30.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_antitank_rpg7.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_assault_rpg26.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_assault_rpg27.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_assault_rpg30.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_atassist.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_atassist_rpg29.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_crew.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_crew_ags.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_crew_nsv.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_crew_spg9.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_grenadier.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_marksman.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_marksman1.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_medic.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_mg.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_mgunasst.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_recon.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_recon1.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_rifleman.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_rifleman3.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_saperi.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_saperi_rpo.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_seniorrifleman.set	rusa	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/kor_squadlead.set	rusa	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0			0	owner_review_formation_kor
+mp/rusa/2022s/ldnr_tank_commander.set	rusa	2022s	aio_morale_low		0	0	0	0			0	vehicle_or_crew_cmd
+mp/rusa/2022s/ldnr_tankman.set	rusa	2022s	aio_morale_low		0	0	0	0			0	
+mp/rusa/2022s/lud_antitank.set	rusa	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/rusa/2022s/lud_atassist.set	rusa	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/rusa/2022s/lud_lmg.set	rusa	2022s	aio_morale_low		0	0	0	0			0	
+mp/rusa/2022s/lud_lmgunasst.set	rusa	2022s	aio_morale_low		0	0	0	0			0	
+mp/rusa/2022s/lud_marksman.set	rusa	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/rusa/2022s/lud_medic.set	rusa	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/rusa/2022s/lud_mg.set	rusa	2022s	aio_morale_low		0	0	0	0			0	
+mp/rusa/2022s/lud_mgunasst.set	rusa	2022s	aio_morale_low		0	0	0	0			0	
+mp/rusa/2022s/lud_ptrs.set	rusa	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/rusa/2022s/lud_rifleman.set	rusa	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/rusa/2022s/lud_squadlead.set	rusa	2022s	aio_morale_low	aio_cmd_primary	0	0	0	0	2		0	
+mp/rusa/2022s/rus110_203ob.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus110_antitank.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus110_antitankasst.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus110_medic.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus110_metis_crew.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus110_mg.set	rusa	2022s	aio_morale_regular		0	0	0	2			0	
+mp/rusa/2022s/rus110_mgunasst.set	rusa	2022s	aio_morale_regular		0	0	0	2			0	
+mp/rusa/2022s/rus110_rifleman.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus110_seniorrifleman.set	rusa	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	2	3		0	
+mp/rusa/2022s/rus110_squadlead.set	rusa	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	2	5		0	
+mp/rusa/2022s/rus114_2b11crew.set	rusa	2022s	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/2022s/rus114_9m133crew.set	rusa	2022s	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/2022s/rus114_antitank.set	rusa	2022s	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/2022s/rus114_antitank_javelin.set	rusa	2022s	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/2022s/rus114_antitank_tbg.set	rusa	2022s	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/2022s/rus114_antitankassist.set	rusa	2022s	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/2022s/rus114_marksman.set	rusa	2022s	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/2022s/rus114_medic.set	rusa	2022s	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/2022s/rus114_mg.set	rusa	2022s	aio_morale_regular		0	0	0	2			0	
+mp/rusa/2022s/rus114_recon.set	rusa	2022s	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/2022s/rus114_rez_antitank.set	rusa	2022s	aio_morale_low		0	0	0	2	2		0	reservist
+mp/rusa/2022s/rus114_rez_antitank_og7v.set	rusa	2022s	aio_morale_low		0	0	0	2	2		0	reservist
+mp/rusa/2022s/rus114_rez_antitank_rpg26.set	rusa	2022s	aio_morale_low		0	0	0	2	2		0	reservist
+mp/rusa/2022s/rus114_rez_medic.set	rusa	2022s	aio_morale_low		0	0	0	2	2		0	reservist
+mp/rusa/2022s/rus114_rez_mg.set	rusa	2022s	aio_morale_low		0	0	0	2			0	reservist
+mp/rusa/2022s/rus114_rez_mg_assault.set	rusa	2022s	aio_morale_low		0	0	0	2			0	reservist
+mp/rusa/2022s/rus114_rez_rifleman.set	rusa	2022s	aio_morale_low		0	0	0	2	2		0	reservist
+mp/rusa/2022s/rus114_rez_rifleman_assault.set	rusa	2022s	aio_morale_low		0	0	0	2	2		0	reservist
+mp/rusa/2022s/rus114_rez_seniorrifleman.set	rusa	2022s	aio_morale_low	aio_cmd_junior	0	0	0	2	2		0	reservist
+mp/rusa/2022s/rus114_rez_seniorrifleman_assault.set	rusa	2022s	aio_morale_low	aio_cmd_junior	0	0	0	2	2		0	reservist
+mp/rusa/2022s/rus114_rez_squadlead.set	rusa	2022s	aio_morale_low	aio_cmd_primary	0	0	0	2	4		0	reservist
+mp/rusa/2022s/rus114_rez_squadlead_assault.set	rusa	2022s	aio_morale_low	aio_cmd_primary	0	0	0	2	4		0	reservist
+mp/rusa/2022s/rus114_rifleman.set	rusa	2022s	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/2022s/rus114_rifleman2.set	rusa	2022s	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/2022s/rus114_saperi.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus114_saperi_rpo.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus114_seniorrifleman.set	rusa	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	2	4		0	
+mp/rusa/2022s/rus114_squadlead.set	rusa	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	2	5		0	
+mp/rusa/2022s/rus150_antitank.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_antitank_metis.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_antitank_og7v.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_antitank_rhsg.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_grenadier_gm94.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_grenadier_tm62.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_marksman.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_medic.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_metis.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_mg.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_recon.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_rifleman.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_saperi.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_saperi_rpo.set	rusa	2022s	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/2022s/rus150_seniorrifleman.set	rusa	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0		3	0	
+mp/rusa/2022s/rus150_squadlead.set	rusa	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0		4	0	
+mp/rusa/2022s/rus155_9k115_crew.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_antitank.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_antitank_og7.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_antitank_r.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_antitank_rpg28.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_atassist.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_lmg.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_lmgassist.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_marksman.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_medic.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_recon.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_rifleman.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_rmg.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_rshg.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_saperi.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_saperi_rpo.set	rusa	2022s	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/2022s/rus155_seniorrifleman.set	rusa	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	0		3	0	
+mp/rusa/2022s/rus155_squadlead.set	rusa	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0		4	0	
+mp/rusa/2022s/rus2_antitank.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus2_antitank_l.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus2_hmg.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus2_lmg.set	rusa	2022s	aio_morale_regular		0	0	0	0			0	
+mp/rusa/2022s/rus2_marksman.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus2_medic.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus2_recon.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus2_rifleman.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus2_seniorrifleman.set	rusa	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/rusa/2022s/rus2_squadlead.set	rusa	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/2022s/rus4_antitank.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_antitank_l.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_antitank_rpg22.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_antitank_rpg27.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_antitank_rpg29.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_antitank_rpg7vr.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_antitank_tbg7.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_hmg.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_marksman.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_medic.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_mg.set	rusa	2022s	aio_morale_regular		0	0	0	0			0	
+mp/rusa/2022s/rus4_recon.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_rifleman.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_saperi.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_saperi_rpo.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus4_seniorrifleman.set	rusa	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/rusa/2022s/rus4_squadlead.set	rusa	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/rusa/2022s/rus80_antitank.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus80_antitank_javelin.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus80_antitank_rhsg.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus80_antitank_sso.set	rusa	2022s	aio_morale_elite		1	0	0	2	4		0	
+mp/rusa/2022s/rus80_antitankasst.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus80_fpv.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus80_medic.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus80_mg.set	rusa	2022s	aio_morale_regular		0	0	0	2			0	
+mp/rusa/2022s/rus80_mg1.set	rusa	2022s	aio_morale_regular		0	0	0	2			0	
+mp/rusa/2022s/rus80_mg_sso.set	rusa	2022s	aio_morale_elite		1	0	0	2			0	
+mp/rusa/2022s/rus80_mgunasst.set	rusa	2022s	aio_morale_regular		0	0	0	2			0	
+mp/rusa/2022s/rus80_rifleman.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus80_rifleman1.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus80_rifleman_sso.set	rusa	2022s	aio_morale_elite		1	0	0	2	4		0	
+mp/rusa/2022s/rus80_seniorrifleman.set	rusa	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	2	3		0	
+mp/rusa/2022s/rus80_seniorrifleman_sso.set	rusa	2022s	aio_morale_elite	aio_cmd_junior	1	0	0	2	4		0	
+mp/rusa/2022s/rus80_sniper.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus80_spotter.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus80_squadlead.set	rusa	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	2	5		0	
+mp/rusa/2022s/rus80_squadlead_sso.set	rusa	2022s	aio_morale_elite	aio_cmd_primary	1	0	0	2	5		0	
+mp/rusa/2022s/rus80_uav.set	rusa	2022s	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/2022s/rus90_antitank.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_antitank_rpg26.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_antitank_rpg27.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_assault.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_lmgassist.set	rusa	2022s	aio_morale_regular		0	0	0	5			0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_marksman.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_medic.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_mg.set	rusa	2022s	aio_morale_regular		0	0	0	5			0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_recon.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_rifleman.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_rifleman_assault.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_saperi.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_saperi_mg.set	rusa	2022s	aio_morale_regular		0	0	0	5			0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_saperi_rpo.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_saperi_squadlead.set	rusa	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	5	3		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_seniorrifleman.set	rusa	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_sniper.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_squadlead.set	rusa	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	5	3		0	unusual_high_vet_regular
+mp/rusa/2022s/rus90_vehicleman.set	rusa	2022s	aio_morale_regular		0	0	0	5	2		0	unusual_high_vet_regular
+mp/rusa/2022s/rus_antitank.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/2022s/rus_atassist.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/2022s/rus_cmd.set	rusa	2022s	aio_morale_trained	aio_cmd_senior	0	1	0	0	3		0	officer_unit_table
+mp/rusa/2022s/rus_eng.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/2022s/rus_eng_ap.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/2022s/rus_eng_at.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/2022s/rus_guncrew_2b11.set	rusa	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/2022s/rus_guncrew_2b14.set	rusa	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/2022s/rus_guncrew_9m133.set	rusa	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/2022s/rus_guncrew_ags30.set	rusa	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/2022s/rus_guncrew_dshk.set	rusa	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/2022s/rus_guncrew_metis.set	rusa	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/2022s/rus_guncrew_nsvt.set	rusa	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/2022s/rus_guncrew_spg9.set	rusa	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/2022s/rus_lmg.set	rusa	2022s	aio_morale_regular		0	0	0	0			0	
+mp/rusa/2022s/rus_lmgassist.set	rusa	2022s	aio_morale_regular		0	0	0	0			0	
+mp/rusa/2022s/rus_manpad_operator.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus_manpad_supporter.set	rusa	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/2022s/rus_marksman.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/2022s/rus_medic.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/2022s/rus_pliot.set	rusa	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/2022s/rus_recon.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/2022s/rus_rifleman.set	rusa	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/2022s/rus_squadlead.set	rusa	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/2022s/rus_supporter.set	rusa	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/2022s/rus_vehicleman.set	rusa	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/2022s/rus_vehicleman1.set	rusa	2022s	aio_morale_regular		0	0	0	0	5		0	
+mp/rusa/2022s/rus_vehicleman2.set	rusa	2022s	aio_morale_regular		0	0	0	0	5		0	
+mp/rusa/2022s/rus_vehicleman3.set	rusa	2022s	aio_morale_regular		0	0	0	0	5		0	
+mp/rusa/2022s/rus_vehicleman_cmd.set	rusa	2022s	aio_morale_regular		0	0	0	0	1		0	vehicle_or_crew_cmd
+mp/rusa/2022s/rusc_antitank.set	rusa	2022s	aio_morale_elite		1	0	0	0	5		0	owner_review_formation_rusc
+mp/rusa/2022s/rusc_marksman.set	rusa	2022s	aio_morale_elite		1	0	0	0	5		0	owner_review_formation_rusc
+mp/rusa/2022s/rusc_medic.set	rusa	2022s	aio_morale_elite		1	0	0	0	5		0	owner_review_formation_rusc
+mp/rusa/2022s/rusc_mg.set	rusa	2022s	aio_morale_elite		1	0	0	0			0	owner_review_formation_rusc
+mp/rusa/2022s/rusc_rifleman.set	rusa	2022s	aio_morale_elite		1	0	0	0	5		0	owner_review_formation_rusc
+mp/rusa/2022s/rusc_rifleman2.set	rusa	2022s	aio_morale_elite		1	0	0	0	5		0	owner_review_formation_rusc
+mp/rusa/2022s/rusc_rifleman3.set	rusa	2022s	aio_morale_elite		1	0	0	0	4		0	owner_review_formation_rusc
+mp/rusa/2022s/rusc_squadlead.set	rusa	2022s	aio_morale_elite	aio_cmd_primary	1	0	0	0	5		0	owner_review_formation_rusc
+mp/rusa/2022s/Serb_antitank.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/Serb_marksman.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/Serb_medic.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/Serb_mg.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/Serb_rifleman.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/Serb_rifleman2.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/Serb_squadlead.set	rusa	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	4		0	
+mp/rusa/2022s/spd_antitank.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/spd_antitankasst.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/spd_fpv.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/spd_medic.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/spd_mg.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/spd_mgunasst.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/spd_rifleman.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/spd_rifleman1.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/spd_seniorrifleman.set	rusa	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	0	2		0	
+mp/rusa/2022s/spd_sniper.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/spd_spotter.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/spd_squadlead.set	rusa	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/2022s/spd_uav.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/spz_demo.set	rusa	2022s	aio_morale_elite		1	0	0	5		5	0	
+mp/rusa/2022s/spz_marksman.set	rusa	2022s	aio_morale_elite		1	0	0	5		5	0	
+mp/rusa/2022s/spz_medic.set	rusa	2022s	aio_morale_elite		1	0	0	5		5	0	
+mp/rusa/2022s/spz_mg.set	rusa	2022s	aio_morale_elite		1	0	0	5		5	0	
+mp/rusa/2022s/spz_rifleman.set	rusa	2022s	aio_morale_elite		1	0	0	5		5	0	
+mp/rusa/2022s/spz_spotter.set	rusa	2022s	aio_morale_elite		1	0	0	5		5	0	
+mp/rusa/2022s/spz_squadlead.set	rusa	2022s	aio_morale_elite	aio_cmd_primary	1	0	0	5		5	0	
+mp/rusa/2022s/sso_9m133_crew.set	rusa	2022s	aio_morale_elite		0	0	0	5		5	0	sof_or_ranger_crew
+mp/rusa/2022s/sso_assault.set	rusa	2022s	aio_morale_elite		1	0	0	5		5	0	
+mp/rusa/2022s/sso_rifleman.set	rusa	2022s	aio_morale_elite		1	0	0	5		5	0	
+mp/rusa/2022s/sso_rifleman1.set	rusa	2022s	aio_morale_elite		1	0	0	5		5	0	
+mp/rusa/2022s/sso_squadlead.set	rusa	2022s	aio_morale_elite	aio_cmd_primary	1	0	0	5		5	0	
+mp/rusa/2022s/sto_antitank.set	rusa	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/2022s/sto_antitank1.set	rusa	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/2022s/sto_antitank2.set	rusa	2022s	aio_morale_low		0	0	0	0	3		0	owner_review_formation_sto
+mp/rusa/2022s/sto_atassist.set	rusa	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/2022s/sto_atassist1.set	rusa	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/2022s/sto_eng.set	rusa	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/2022s/sto_eng_rpo.set	rusa	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/2022s/sto_marksman.set	rusa	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/2022s/sto_medic.set	rusa	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/2022s/sto_medic1.set	rusa	2022s	aio_morale_low		0	0	0	0	3		0	owner_review_formation_sto
+mp/rusa/2022s/sto_mg.set	rusa	2022s	aio_morale_low		0	0	0	0			0	owner_review_formation_sto
+mp/rusa/2022s/sto_mg2.set	rusa	2022s	aio_morale_low		0	0	0	0			0	owner_review_formation_sto
+mp/rusa/2022s/sto_recon.set	rusa	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/2022s/sto_rifleman.set	rusa	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/2022s/sto_rifleman1.set	rusa	2022s	aio_morale_low		0	0	0	0	3		0	owner_review_formation_sto
+mp/rusa/2022s/sto_sniper.set	rusa	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/2022s/sto_sniper1.set	rusa	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/2022s/sto_squadlead.set	rusa	2022s	aio_morale_low	aio_cmd_primary	0	0	0	0	4		0	owner_review_formation_sto
+mp/rusa/2022s/sto_squadlead1.set	rusa	2022s	aio_morale_low	aio_cmd_primary	0	0	0	0	5		0	owner_review_formation_sto
+mp/rusa/2022s/vdv76_antitank.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_antitank_rpg28.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_assault.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_greenader.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_marksman.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_medic.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_metis_crew.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_mg.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/vdv76_recon.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_rifleman.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_saperi.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_saperi_rpo.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_squadlead.set	rusa	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/rusa/2022s/vdv76_wepcrew_9m133.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_wepcrew_ags.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv76_wepcrew_kord.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv83_assault.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv83_atassist.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv83_lmgassist.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/vdv83_rifleman.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv83_rifleman2.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv83_rifleman3.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv83_squadlead.set	rusa	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/2022s/vdv_ammo.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv_antitank.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv_atassist.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv_greenader.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv_lmg.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/vdv_lmgassist.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/vdv_marksman.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv_medic.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv_rifleman.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv_squadlead.set	rusa	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	4		0	
+mp/rusa/2022s/vdv_support.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv_vehicleman.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdv_vehicleman1.set	rusa	2022s	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/2022s/vdve_antitank.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/vdve_assault.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/vdve_greenader.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/vdve_lmg.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/vdve_lmgassist.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/vdve_marksman.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/vdve_mechanic.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/vdve_medic.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/vdve_operator.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/vdve_recon.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/vdve_recon_lmg.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/vdve_rifleman.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/vdve_squadlead.set	rusa	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/rusa/2022s/vdve_wepcrew_9m133.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/vdve_wepcrew_ags.set	rusa	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/2022s/vostok_2b14crew.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/vostok_antitank.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/vostok_antitankasst.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/vostok_medic.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/vostok_mg.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/vostok_mgunasst.set	rusa	2022s	aio_morale_trained		0	0	0	0			0	
+mp/rusa/2022s/vostok_rifleman.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/vostok_rifleman1.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/vostok_seniorrifleman.set	rusa	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	0	2		0	
+mp/rusa/2022s/vostok_spg9crew.set	rusa	2022s	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/2022s/vostok_squadlead.set	rusa	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/2022s/wgn2_antitank.set	rusa	2022s	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/2022s/wgn2_assault.set	rusa	2022s	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/2022s/wgn2_lmg.set	rusa	2022s	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/2022s/wgn2_lmgassist.set	rusa	2022s	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/2022s/wgn2_marksman.set	rusa	2022s	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/2022s/wgn2_medic.set	rusa	2022s	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/2022s/wgn2_rifleman.set	rusa	2022s	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/2022s/wgn2_rifleman2.set	rusa	2022s	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/2022s/wgn2_rifleman3.set	rusa	2022s	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/2022s/wgn2_squadlead.set	rusa	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	3	5		0	owner_review_formation_wgn2
+mp/rusa/2022s/wgn_ammo.set	rusa	2022s	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_antitank.set	rusa	2022s	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_assault.set	rusa	2022s	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_atassist.set	rusa	2022s	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_egn.set	rusa	2022s	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_lmg.set	rusa	2022s	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_lmgassist.set	rusa	2022s	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_marksman.set	rusa	2022s	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_medic.set	rusa	2022s	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_rifleman.set	rusa	2022s	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_rifleman2.set	rusa	2022s	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_rifleman3.set	rusa	2022s	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_squadlead.set	rusa	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	3		4	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_vehicleman.set	rusa	2022s	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/2022s/wgn_wepcrew.set	rusa	2022s	aio_morale_elite		0	0	0	3		4	0	sof_or_ranger_crew,owner_review_formation_wgn
+mp/rusa/early/artilleryman.set	rusa	early	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/early/pilot.set	rusa	early	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/early/tankman.set	rusa	early	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/era1960/sup_vehicleman.set	rusa	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/era2022/106vdv_ags17crew.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/106vdv_antitank.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/106vdv_greenader.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/106vdv_kordcrew.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/106vdv_medic.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/106vdv_mg.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/106vdv_rifleman.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/106vdv_rifleman2.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/106vdv_rifleman3.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/106vdv_squadlead.set	rusa	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/rusa/era2022/45vdv_antitank.set	rusa	era2022	aio_morale_elite		1	0	1	0		5	0	
+mp/rusa/era2022/45vdv_assault.set	rusa	era2022	aio_morale_elite		1	0	1	0		5	0	
+mp/rusa/era2022/45vdv_lmg.set	rusa	era2022	aio_morale_elite		1	0	1	0		5	0	
+mp/rusa/era2022/45vdv_manpad.set	rusa	era2022	aio_morale_elite		1	0	1	0		5	0	
+mp/rusa/era2022/45vdv_marksman.set	rusa	era2022	aio_morale_elite		1	0	1	0		5	0	
+mp/rusa/era2022/45vdv_medic.set	rusa	era2022	aio_morale_elite		1	0	1	0		5	0	
+mp/rusa/era2022/45vdv_recon.set	rusa	era2022	aio_morale_elite		1	0	1	0		5	0	
+mp/rusa/era2022/45vdv_rifleman.set	rusa	era2022	aio_morale_elite		1	0	1	0		5	0	
+mp/rusa/era2022/45vdv_spg9crew.set	rusa	era2022	aio_morale_elite		1	0	1	0		5	0	
+mp/rusa/era2022/45vdv_squadlead.set	rusa	era2022	aio_morale_elite	aio_cmd_primary	1	0	1	0		5	0	
+mp/rusa/era2022/aeng_antitank.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/aeng_assault.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/aeng_mg.set	rusa	era2022	aio_morale_regular		0	0	0	0			0	
+mp/rusa/era2022/dpr100_152ob.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	
+mp/rusa/era2022/dpr100_antitank.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	
+mp/rusa/era2022/dpr100_antitankasst.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	
+mp/rusa/era2022/dpr100_medic.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	
+mp/rusa/era2022/dpr100_mg.set	rusa	era2022	aio_morale_low		0	0	0	0			0	
+mp/rusa/era2022/dpr100_mgunasst.set	rusa	era2022	aio_morale_low		0	0	0	0			0	
+mp/rusa/era2022/dpr100_rifleman.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	
+mp/rusa/era2022/dpr100_seniorrifleman.set	rusa	era2022	aio_morale_low	aio_cmd_junior	0	0	0	0	2		0	
+mp/rusa/era2022/dpr100_squadlead.set	rusa	era2022	aio_morale_low	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/era2022/kor_antitank_rpg29.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_antitank_rpg30.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_antitank_rpg7.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_assault_rpg26.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_assault_rpg27.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_assault_rpg30.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_atassist.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_atassist_rpg29.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_grenadier.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_marksman.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_marksman1.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_medic.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_mg.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_mgunasst.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_recon.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_recon1.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_rifleman.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_rifleman1.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	owner_review_formation_kor
+mp/rusa/era2022/kor_rifleman2.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	owner_review_formation_kor
+mp/rusa/era2022/kor_rifleman3.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_seniorrifleman.set	rusa	era2022	aio_morale_trained	aio_cmd_junior	0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/kor_squadlead.set	rusa	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0			0	owner_review_formation_kor
+mp/rusa/era2022/ldnr_tank_commander.set	rusa	era2022	aio_morale_low		0	0	0	0			0	vehicle_or_crew_cmd
+mp/rusa/era2022/ldnr_tankman.set	rusa	era2022	aio_morale_low		0	0	0	0			0	
+mp/rusa/era2022/lud_antitank.set	rusa	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/rusa/era2022/lud_atassist.set	rusa	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/rusa/era2022/lud_lmg.set	rusa	era2022	aio_morale_low		0	0	0	0			0	
+mp/rusa/era2022/lud_lmgunasst.set	rusa	era2022	aio_morale_low		0	0	0	0			0	
+mp/rusa/era2022/lud_marksman.set	rusa	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/rusa/era2022/lud_medic.set	rusa	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/rusa/era2022/lud_mg.set	rusa	era2022	aio_morale_low		0	0	0	0			0	
+mp/rusa/era2022/lud_mgunasst.set	rusa	era2022	aio_morale_low		0	0	0	0			0	
+mp/rusa/era2022/lud_ptrs.set	rusa	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/rusa/era2022/lud_rifleman.set	rusa	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/rusa/era2022/lud_squadlead.set	rusa	era2022	aio_morale_low	aio_cmd_primary	0	0	0	0	2		0	
+mp/rusa/era2022/rus110_203ob.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus110_antitank.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus110_antitankasst.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus110_medic.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus110_metis_crew.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus110_mg.set	rusa	era2022	aio_morale_regular		0	0	0	2			0	
+mp/rusa/era2022/rus110_mgunasst.set	rusa	era2022	aio_morale_regular		0	0	0	2			0	
+mp/rusa/era2022/rus110_rifleman.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus110_seniorrifleman.set	rusa	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	2	3		0	
+mp/rusa/era2022/rus110_squadlead.set	rusa	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	2	5		0	
+mp/rusa/era2022/rus114_2b11crew.set	rusa	era2022	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/era2022/rus114_9m133crew.set	rusa	era2022	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/era2022/rus114_antitank.set	rusa	era2022	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/era2022/rus114_antitank_javelin.set	rusa	era2022	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/era2022/rus114_antitank_tbg.set	rusa	era2022	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/era2022/rus114_antitankassist.set	rusa	era2022	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/era2022/rus114_marksman.set	rusa	era2022	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/era2022/rus114_medic.set	rusa	era2022	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/era2022/rus114_mg.set	rusa	era2022	aio_morale_regular		0	0	0	2			0	
+mp/rusa/era2022/rus114_recon.set	rusa	era2022	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/era2022/rus114_rez_antitank.set	rusa	era2022	aio_morale_low		0	0	0	2	2		0	reservist
+mp/rusa/era2022/rus114_rez_antitank_og7v.set	rusa	era2022	aio_morale_low		0	0	0	2	2		0	reservist
+mp/rusa/era2022/rus114_rez_antitank_rpg26.set	rusa	era2022	aio_morale_low		0	0	0	2	2		0	reservist
+mp/rusa/era2022/rus114_rez_medic.set	rusa	era2022	aio_morale_low		0	0	0	2	2		0	reservist
+mp/rusa/era2022/rus114_rez_mg.set	rusa	era2022	aio_morale_low		0	0	0	2			0	reservist
+mp/rusa/era2022/rus114_rez_mg_assault.set	rusa	era2022	aio_morale_low		0	0	0	2			0	reservist
+mp/rusa/era2022/rus114_rez_rifleman.set	rusa	era2022	aio_morale_low		0	0	0	2	2		0	reservist
+mp/rusa/era2022/rus114_rez_rifleman_assault.set	rusa	era2022	aio_morale_low		0	0	0	2	2		0	reservist
+mp/rusa/era2022/rus114_rez_seniorrifleman.set	rusa	era2022	aio_morale_low	aio_cmd_junior	0	0	0	2	2		0	reservist
+mp/rusa/era2022/rus114_rez_seniorrifleman_assault.set	rusa	era2022	aio_morale_low	aio_cmd_junior	0	0	0	2	2		0	reservist
+mp/rusa/era2022/rus114_rez_squadlead.set	rusa	era2022	aio_morale_low	aio_cmd_primary	0	0	0	2	4		0	reservist
+mp/rusa/era2022/rus114_rez_squadlead_assault.set	rusa	era2022	aio_morale_low	aio_cmd_primary	0	0	0	2	4		0	reservist
+mp/rusa/era2022/rus114_rifleman.set	rusa	era2022	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/era2022/rus114_rifleman2.set	rusa	era2022	aio_morale_regular		0	0	0	2	4		0	
+mp/rusa/era2022/rus114_saperi.set	rusa	era2022	aio_morale_regular		0	0	0	2	2		0	
+mp/rusa/era2022/rus114_seniorrifleman.set	rusa	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	2	4		0	
+mp/rusa/era2022/rus114_squadlead.set	rusa	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	2	5		0	
+mp/rusa/era2022/rus150_antitank.set	rusa	era2022	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/era2022/rus150_antitank_metis.set	rusa	era2022	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/era2022/rus150_antitank_og7v.set	rusa	era2022	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/era2022/rus150_antitank_rhsg.set	rusa	era2022	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/era2022/rus150_grenadier_gm94.set	rusa	era2022	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/era2022/rus150_grenadier_tm62.set	rusa	era2022	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/era2022/rus150_marksman.set	rusa	era2022	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/era2022/rus150_medic.set	rusa	era2022	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/era2022/rus150_metis.set	rusa	era2022	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/era2022/rus150_mg.set	rusa	era2022	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/era2022/rus150_recon.set	rusa	era2022	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/era2022/rus150_rifleman.set	rusa	era2022	aio_morale_regular		0	0	0	0		3	0	
+mp/rusa/era2022/rus150_seniorrifleman.set	rusa	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	0		3	0	
+mp/rusa/era2022/rus150_squadlead.set	rusa	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0		4	0	
+mp/rusa/era2022/rus155_9k115_crew.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_antitank.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_antitank_og7.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_antitank_r.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_antitank_rpg28.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_atassist.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_lmg.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_lmgassist.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_marksman.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_medic.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_recon.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_rhsg.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/rus155_rifleman.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_rmg.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_rshg.set	rusa	era2022	aio_morale_trained		0	0	0	0		3	0	
+mp/rusa/era2022/rus155_seniorrifleman.set	rusa	era2022	aio_morale_trained	aio_cmd_junior	0	0	0	0		3	0	
+mp/rusa/era2022/rus155_squadlead.set	rusa	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0		4	0	
+mp/rusa/era2022/rus2_antitank.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus2_antitank_l.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus2_hmg.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus2_lmg.set	rusa	era2022	aio_morale_regular		0	0	0	0			0	
+mp/rusa/era2022/rus2_marksman.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus2_medic.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus2_recon.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus2_rifleman.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus2_seniorrifleman.set	rusa	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/rusa/era2022/rus2_squadlead.set	rusa	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/era2022/rus4_antitank.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus4_antitank_l.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus4_antitank_rpg22.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus4_antitank_rpg27.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus4_antitank_rpg7vr.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus4_antitank_tbg7.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus4_hmg.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus4_marksman.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus4_medic.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus4_mg.set	rusa	era2022	aio_morale_regular		0	0	0	0			0	
+mp/rusa/era2022/rus4_recon.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus4_rifleman.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus4_seniorrifleman.set	rusa	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/rusa/era2022/rus4_squadlead.set	rusa	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/rusa/era2022/rus80_antitank.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus80_antitank_javelin.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus80_antitank_rhsg.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus80_antitank_sso.set	rusa	era2022	aio_morale_elite		1	0	0	2	4		0	
+mp/rusa/era2022/rus80_antitankasst.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus80_fpv.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus80_medic.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus80_mg.set	rusa	era2022	aio_morale_regular		0	0	0	2			0	
+mp/rusa/era2022/rus80_mg1.set	rusa	era2022	aio_morale_regular		0	0	0	2			0	
+mp/rusa/era2022/rus80_mg_sso.set	rusa	era2022	aio_morale_elite		1	0	0	2			0	
+mp/rusa/era2022/rus80_mgunasst.set	rusa	era2022	aio_morale_regular		0	0	0	2			0	
+mp/rusa/era2022/rus80_rifleman.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus80_rifleman1.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus80_rifleman_sso.set	rusa	era2022	aio_morale_elite		1	0	0	2	4		0	
+mp/rusa/era2022/rus80_seniorrifleman.set	rusa	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	2	3		0	
+mp/rusa/era2022/rus80_seniorrifleman_sso.set	rusa	era2022	aio_morale_elite	aio_cmd_junior	1	0	0	2	4		0	
+mp/rusa/era2022/rus80_sniper.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus80_spotter.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus80_squadlead.set	rusa	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	2	5		0	
+mp/rusa/era2022/rus80_squadlead_sso.set	rusa	era2022	aio_morale_elite	aio_cmd_primary	1	0	0	2	5		0	
+mp/rusa/era2022/rus80_uav.set	rusa	era2022	aio_morale_regular		0	0	0	2	3		0	
+mp/rusa/era2022/rus90_antitank.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_antitank_rpg26.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_antitank_rpg27.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_antitank_rpg29.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus90_antitankassist.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus90_antitankassist_rpg29.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus90_assault.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_lmg.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus90_lmgassist.set	rusa	era2022	aio_morale_regular		0	0	0	0			0	
+mp/rusa/era2022/rus90_marksman.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_medic.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_mg.set	rusa	era2022	aio_morale_regular		0	0	0	0			0	
+mp/rusa/era2022/rus90_recon.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_rifleman.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_rifleman_assault.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_saperi.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_saperi_mg.set	rusa	era2022	aio_morale_regular		0	0	0	0			0	
+mp/rusa/era2022/rus90_saperi_rpo.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_saperi_squadlead.set	rusa	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/era2022/rus90_seniorrifleman.set	rusa	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	0	2		0	
+mp/rusa/era2022/rus90_sniper.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_squadlead.set	rusa	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/era2022/rus90_vehicleman.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus90_wepcrew_9m113.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus_antitank.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus_atassist.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus_cmd.set	rusa	era2022	aio_morale_trained	aio_cmd_senior	0	1	0	0	3		0	officer_unit_table
+mp/rusa/era2022/rus_eng.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus_eng_ap.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus_eng_at.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus_guncrew_2b11.set	rusa	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/era2022/rus_guncrew_2b14.set	rusa	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/era2022/rus_guncrew_9m133.set	rusa	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/era2022/rus_guncrew_ags30.set	rusa	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/era2022/rus_guncrew_dshk.set	rusa	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/era2022/rus_guncrew_nsvt.set	rusa	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/era2022/rus_guncrew_spg9.set	rusa	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/era2022/rus_lmg.set	rusa	era2022	aio_morale_regular		0	0	0	0			0	
+mp/rusa/era2022/rus_lmgassist.set	rusa	era2022	aio_morale_regular		0	0	0	0			0	
+mp/rusa/era2022/rus_manpad_operator.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus_manpad_supporter.set	rusa	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/rusa/era2022/rus_marksman.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus_medic.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus_pliot.set	rusa	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/era2022/rus_recon.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus_rifleman.set	rusa	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/rusa/era2022/rus_squadlead.set	rusa	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/era2022/rus_supporter.set	rusa	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/era2022/rus_vehicleman.set	rusa	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/era2022/rus_vehicleman1.set	rusa	era2022	aio_morale_regular		0	0	0	0	5		0	
+mp/rusa/era2022/rus_vehicleman2.set	rusa	era2022	aio_morale_regular		0	0	0	0	5		0	
+mp/rusa/era2022/rus_vehicleman3.set	rusa	era2022	aio_morale_regular		0	0	0	0	5		0	
+mp/rusa/era2022/rus_vehicleman_cmd.set	rusa	era2022	aio_morale_regular		0	0	0	0	1		0	vehicle_or_crew_cmd
+mp/rusa/era2022/rusc_antitank.set	rusa	era2022	aio_morale_elite		1	0	0	0	5		0	owner_review_formation_rusc
+mp/rusa/era2022/rusc_marksman.set	rusa	era2022	aio_morale_elite		1	0	0	0	5		0	owner_review_formation_rusc
+mp/rusa/era2022/rusc_medic.set	rusa	era2022	aio_morale_elite		1	0	0	0	5		0	owner_review_formation_rusc
+mp/rusa/era2022/rusc_mg.set	rusa	era2022	aio_morale_elite		1	0	0	0			0	owner_review_formation_rusc
+mp/rusa/era2022/rusc_rifleman.set	rusa	era2022	aio_morale_elite		1	0	0	0	5		0	owner_review_formation_rusc
+mp/rusa/era2022/rusc_rifleman2.set	rusa	era2022	aio_morale_elite		1	0	0	0	5		0	owner_review_formation_rusc
+mp/rusa/era2022/rusc_rifleman3.set	rusa	era2022	aio_morale_elite		1	0	0	0	4		0	owner_review_formation_rusc
+mp/rusa/era2022/rusc_squadlead.set	rusa	era2022	aio_morale_elite	aio_cmd_primary	1	0	0	0	5		0	owner_review_formation_rusc
+mp/rusa/era2022/Serb_antitank.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/Serb_marksman.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/Serb_medic.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/Serb_mg.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/Serb_rifleman.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/Serb_rifleman2.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/Serb_squadlead.set	rusa	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	4		0	
+mp/rusa/era2022/spd_antitank.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/spd_antitankasst.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/spd_fpv.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/spd_medic.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/spd_mg.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/spd_mgunasst.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/spd_rifleman.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/spd_rifleman1.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/spd_seniorrifleman.set	rusa	era2022	aio_morale_trained	aio_cmd_junior	0	0	0	0	2		0	
+mp/rusa/era2022/spd_sniper.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/spd_spotter.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/spd_squadlead.set	rusa	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/era2022/spd_uav.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/spz_demo.set	rusa	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/rusa/era2022/spz_eng.set	rusa	era2022	aio_morale_elite		0	0	0	0		5	0	sof_or_ranger_crew
+mp/rusa/era2022/spz_marksman.set	rusa	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/rusa/era2022/spz_medic.set	rusa	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/rusa/era2022/spz_mg.set	rusa	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/rusa/era2022/spz_rifleman.set	rusa	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/rusa/era2022/spz_spotter.set	rusa	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/rusa/era2022/spz_squadlead.set	rusa	era2022	aio_morale_elite	aio_cmd_primary	1	0	0	0		5	0	
+mp/rusa/era2022/sto_antitank.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/era2022/sto_antitank1.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/era2022/sto_antitank2.set	rusa	era2022	aio_morale_low		0	0	0	0	3		0	owner_review_formation_sto
+mp/rusa/era2022/sto_atassist.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/era2022/sto_atassist1.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/era2022/sto_eng.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/era2022/sto_marksman.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/era2022/sto_medic.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/era2022/sto_medic1.set	rusa	era2022	aio_morale_low		0	0	0	0	3		0	owner_review_formation_sto
+mp/rusa/era2022/sto_mg.set	rusa	era2022	aio_morale_low		0	0	0	0			0	owner_review_formation_sto
+mp/rusa/era2022/sto_mg2.set	rusa	era2022	aio_morale_low		0	0	0	0			0	owner_review_formation_sto
+mp/rusa/era2022/sto_recon.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/era2022/sto_rifleman.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/era2022/sto_rifleman1.set	rusa	era2022	aio_morale_low		0	0	0	0	3		0	owner_review_formation_sto
+mp/rusa/era2022/sto_sniper.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/era2022/sto_sniper1.set	rusa	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_sto
+mp/rusa/era2022/sto_squadlead.set	rusa	era2022	aio_morale_low	aio_cmd_primary	0	0	0	0	4		0	owner_review_formation_sto
+mp/rusa/era2022/sto_squadlead1.set	rusa	era2022	aio_morale_low	aio_cmd_primary	0	0	0	0	5		0	owner_review_formation_sto
+mp/rusa/era2022/vdv76_antitank.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv76_antitank_rpg28.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv76_assault.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv76_greenader.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv76_marksman.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv76_medic.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv76_metis_crew.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv76_mg.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/vdv76_recon.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv76_rifleman.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv76_saperi.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv76_saperi_rpo.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv76_squadlead.set	rusa	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/rusa/era2022/vdv76_wepcrew_9m133.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv76_wepcrew_ags.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv83_antitank.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv83_assault.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv83_atassist.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv83_lmg.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv83_lmgassist.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/vdv83_medic.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv83_rifleman.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv83_rifleman2.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv83_rifleman3.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv83_squadlead.set	rusa	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/era2022/vdv_ammo.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv_antitank.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv_atassist.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv_greenader.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv_lmg.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/vdv_lmgassist.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/vdv_marksman.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv_medic.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv_rifleman.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv_squadlead.set	rusa	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	4		0	
+mp/rusa/era2022/vdv_support.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdv_vehicleman.set	rusa	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/rusa/era2022/vdve_antitank.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/vdve_assault.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/vdve_greenader.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/vdve_lmg.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/vdve_lmgassist.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/vdve_marksman.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/vdve_mechanic.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/vdve_medic.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/vdve_operator.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/vdve_recon.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/vdve_recon_lmg.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/vdve_rifleman.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/vdve_squadlead.set	rusa	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/rusa/era2022/vdve_wepcrew_9m133.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/vdve_wepcrew_ags.set	rusa	era2022	aio_morale_trained		0	0	0	0	4		0	
+mp/rusa/era2022/vostok_2b14crew.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/vostok_antitank.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/vostok_antitankasst.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/vostok_medic.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/vostok_mg.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/vostok_mgunasst.set	rusa	era2022	aio_morale_trained		0	0	0	0			0	
+mp/rusa/era2022/vostok_rifleman.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/vostok_rifleman1.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/vostok_seniorrifleman.set	rusa	era2022	aio_morale_trained	aio_cmd_junior	0	0	0	0	2		0	
+mp/rusa/era2022/vostok_spg9crew.set	rusa	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/rusa/era2022/vostok_squadlead.set	rusa	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	3		0	
+mp/rusa/era2022/wgn2_antitank.set	rusa	era2022	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/era2022/wgn2_assault.set	rusa	era2022	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/era2022/wgn2_lmg.set	rusa	era2022	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/era2022/wgn2_lmgassist.set	rusa	era2022	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/era2022/wgn2_marksman.set	rusa	era2022	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/era2022/wgn2_medic.set	rusa	era2022	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/era2022/wgn2_rifleman.set	rusa	era2022	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/era2022/wgn2_rifleman2.set	rusa	era2022	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/era2022/wgn2_rifleman3.set	rusa	era2022	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn2
+mp/rusa/era2022/wgn2_squadlead.set	rusa	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	3	5		0	owner_review_formation_wgn2
+mp/rusa/era2022/wgn_ammo.set	rusa	era2022	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_antitank.set	rusa	era2022	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_assault.set	rusa	era2022	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_atassist.set	rusa	era2022	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_egn.set	rusa	era2022	aio_morale_trained		0	0	0	3		4	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_lmg.set	rusa	era2022	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_lmgassist.set	rusa	era2022	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_marksman.set	rusa	era2022	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_medic.set	rusa	era2022	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_rifleman.set	rusa	era2022	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_rifleman2.set	rusa	era2022	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_rifleman3.set	rusa	era2022	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_squadlead.set	rusa	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	3		4	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_vehicleman.set	rusa	era2022	aio_morale_trained		0	0	0	3		3	0	owner_review_formation_wgn
+mp/rusa/era2022/wgn_wepcrew.set	rusa	era2022	aio_morale_elite		0	0	0	3		4	0	sof_or_ranger_crew,owner_review_formation_wgn
+mp/rusa/mid/artilleryman.set	rusa	mid	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/mid/pilot.set	rusa	mid	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/mid/tankman.set	rusa	mid	aio_morale_regular		0	0	0	0	1		0	
+mp/rusa/新建文件夹/sso_9m133_crew.set	rusa	新建文件夹	aio_morale_elite		0	0	0	0		5	0	sof_or_ranger_crew
+mp/rusa/新建文件夹/sso_assault.set	rusa	新建文件夹	aio_morale_elite		1	0	0	0		5	0	
+mp/rusa/新建文件夹/sso_rifleman.set	rusa	新建文件夹	aio_morale_elite		1	0	0	0		5	0	
+mp/rusa/新建文件夹/sso_rifleman2.set	rusa	新建文件夹	aio_morale_elite		1	0	0	0		5	0	
+mp/rusa/新建文件夹/sso_squadlead.set	rusa	新建文件夹	aio_morale_elite	aio_cmd_primary	1	0	0	0		5	0	
+mp/sov/era1960/artilleryman.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/brd_antitank.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/brd_mg.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/brd_rifleman.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/brd_senior.set	sov	era1960	aio_morale_regular	aio_cmd_junior	0	0	0	1	2		0	
+mp/sov/era1960/brd_squadlead.set	sov	era1960	aio_morale_regular	aio_cmd_primary	0	0	0	0	2		0	
+mp/sov/era1960/con_antitank.set	sov	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/sov/era1960/con_antitank_ak.set	sov	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/sov/era1960/con_atgren.set	sov	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/sov/era1960/con_marksman.set	sov	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/sov/era1960/con_mg.set	sov	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/sov/era1960/con_mg_ak.set	sov	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/sov/era1960/con_rifleman.set	sov	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/sov/era1960/con_rifleman_ak.set	sov	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/sov/era1960/con_squadlead.set	sov	era1960	aio_morale_low	aio_cmd_primary	0	0	0	0	1		0	
+mp/sov/era1960/grd_aaassist.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_antiair.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_antitank.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_atassist.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_flamer.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_flamer_rpo.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_grenadier.set	sov	era1960	aio_morale_trained		0	0	0	3	4		0	
+mp/sov/era1960/grd_lmg.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_lmgassist.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_manpad_test.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_marksman.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_medic.set	sov	era1960	aio_morale_trained		0	0	0	3	4		0	
+mp/sov/era1960/grd_mg.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_mgassist.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_rifleman.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/grd_senior.set	sov	era1960	aio_morale_trained	aio_cmd_junior	0	0	0	4	3		0	
+mp/sov/era1960/grd_squadlead.set	sov	era1960	aio_morale_trained	aio_cmd_primary	0	0	0	4	3		0	
+mp/sov/era1960/grd_vehicleman.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/mvd_antitank.set	sov	era1960	aio_morale_low		0	0	0	0	1		0	owner_review_formation_mvd
+mp/sov/era1960/mvd_mg.set	sov	era1960	aio_morale_low		0	0	0	0	1		0	owner_review_formation_mvd
+mp/sov/era1960/mvd_rifleman.set	sov	era1960	aio_morale_low		0	0	0	0	2		0	owner_review_formation_mvd
+mp/sov/era1960/mvd_squadlead.set	sov	era1960	aio_morale_low	aio_cmd_primary	0	0	0	0	1		0	owner_review_formation_mvd
+mp/sov/era1960/red_aaassist.set	sov	era1960	aio_morale_trained		0	0	0	4	4		0	
+mp/sov/era1960/red_antiair.set	sov	era1960	aio_morale_trained		0	0	0	4	4		0	
+mp/sov/era1960/red_antitank.set	sov	era1960	aio_morale_trained		0	0	0	4	4		0	
+mp/sov/era1960/red_atassist.set	sov	era1960	aio_morale_trained		0	0	0	4	4		0	
+mp/sov/era1960/red_flamer.set	sov	era1960	aio_morale_trained		0	0	0	4	4		0	
+mp/sov/era1960/red_grenadier.set	sov	era1960	aio_morale_trained		0	0	0	3	4		0	
+mp/sov/era1960/red_marksman.set	sov	era1960	aio_morale_trained		0	0	0	4	4		0	
+mp/sov/era1960/red_medic.set	sov	era1960	aio_morale_trained		0	0	0	3	4		0	
+mp/sov/era1960/red_mg.set	sov	era1960	aio_morale_trained		0	0	0	4	4		0	
+mp/sov/era1960/red_mgassist.set	sov	era1960	aio_morale_trained		0	0	0	4	4		0	
+mp/sov/era1960/red_rifleman.set	sov	era1960	aio_morale_trained		0	0	0	4	4		0	
+mp/sov/era1960/red_senior.set	sov	era1960	aio_morale_trained	aio_cmd_junior	0	0	0	5	4		0	
+mp/sov/era1960/red_sniper.set	sov	era1960	aio_morale_elite		1	0	0	6	5		0	
+mp/sov/era1960/red_squadlead.set	sov	era1960	aio_morale_trained	aio_cmd_primary	0	0	0	4	4		0	
+mp/sov/era1960/reg_aaassist.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_ammo.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_antiair.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_antitank.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_antitank_rpg2.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_atassist.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_atassist_rpg2.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_atgren.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_engineer.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_flamer.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_grenadier.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_lat.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_lmg.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_lmgassist.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_marksman.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_medic.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_mg.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_mgassist.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_officer.set	sov	era1960	aio_morale_trained	aio_cmd_senior	0	1	0	5	2		0	unusual_high_vet_regular,officer
+mp/sov/era1960/reg_radioman.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_rifleman.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_sapper-ap.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_sapper-at.set	sov	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/sov/era1960/reg_scout.set	sov	era1960	aio_morale_regular		0	0	0	0	4		0	
+mp/sov/era1960/reg_senior.set	sov	era1960	aio_morale_regular	aio_cmd_junior	0	0	0	1	2		0	
+mp/sov/era1960/reg_squadlead.set	sov	era1960	aio_morale_regular	aio_cmd_primary	0	0	0	0	2		0	
+mp/sov/era1960/spz_antiair.set	sov	era1960	aio_morale_elite		1	0	0	4	4		0	
+mp/sov/era1960/spz_antitank.set	sov	era1960	aio_morale_elite		1	0	0	4	5		0	
+mp/sov/era1960/spz_demo.set	sov	era1960	aio_morale_elite		1	0	0	4	5		0	
+mp/sov/era1960/spz_guncrew_9p132.set	sov	era1960	aio_morale_elite		0	0	0	4	4		0	sof_or_ranger_crew
+mp/sov/era1960/spz_marksman.set	sov	era1960	aio_morale_elite		1	0	0	4	5		0	
+mp/sov/era1960/spz_medic.set	sov	era1960	aio_morale_elite		1	0	0	4	5		0	
+mp/sov/era1960/spz_mg.set	sov	era1960	aio_morale_elite		1	0	0	4	5		0	
+mp/sov/era1960/spz_rifleman.set	sov	era1960	aio_morale_elite		1	0	0	4	5		0	
+mp/sov/era1960/spz_sniper.set	sov	era1960	aio_morale_elite		1	0	0	4	5		0	
+mp/sov/era1960/spz_spotter.set	sov	era1960	aio_morale_elite		1	0	0	4	5		0	
+mp/sov/era1960/spz_squadlead.set	sov	era1960	aio_morale_elite	aio_cmd_primary	1	0	0	4	5		0	
+mp/sov/era1960/sup_guncrew.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_guncrew_9k111.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_guncrew_9m14.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_guncrew_9m14_c.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_guncrew_9m14_l.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_guncrew_ags17.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_guncrew_b10.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_guncrew_bm37.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_guncrew_dshk.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_guncrew_dshk_aa.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_guncrew_pk.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_guncrew_sg43.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_guncrew_spg9.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_manpad_operator.set	sov	era1960	aio_morale_regular		0	0	0	8	3		0	unusual_high_vet_regular
+mp/sov/era1960/sup_manpad_supporter.set	sov	era1960	aio_morale_trained		0	0	0	8	3		0	
+mp/sov/era1960/sup_pilot.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_supporter.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_tankman.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/sup_vehicleman.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/tankman.set	sov	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/sov/era1960/vdv_aaassist.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/vdv_aaassist_jump.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/vdv_antiair.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/vdv_antiair_jump.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/vdv_antitank.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_antitank_jump.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_atassist.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_atassist_jump.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_guncrew.set	sov	era1960	aio_morale_trained		0	0	0	3	3		0	
+mp/sov/era1960/vdv_guncrew_9m113.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_guncrew_b10.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_lmg.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_lmg_jump.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_lmgassist.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_lmgassist_jump.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_marksman.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_marksman_jump.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_medic.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_rifleman.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_rifleman_jump.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vdv_senior.set	sov	era1960	aio_morale_trained	aio_cmd_junior	0	0	0	4	3		0	
+mp/sov/era1960/vdv_senior_jump.set	sov	era1960	aio_morale_trained	aio_cmd_junior	0	0	0	5	3		0	
+mp/sov/era1960/vdv_squadlead.set	sov	era1960	aio_morale_trained	aio_cmd_primary	0	0	0	4	3		0	
+mp/sov/era1960/vdv_squadlead_jump.set	sov	era1960	aio_morale_trained	aio_cmd_primary	0	0	0	4	3		0	
+mp/sov/era1960/vdv_vehicleman.set	sov	era1960	aio_morale_trained		0	0	0	4	3		0	
+mp/sov/era1960/vmf_antiair.set	sov	era1960	aio_morale_elite		1	0	0	4	4		0	
+mp/sov/era1960/vmf_antitank.set	sov	era1960	aio_morale_trained		0	0	0	3	4		0	
+mp/sov/era1960/vmf_cb_antitank.set	sov	era1960	aio_morale_elite		1	0	0	4	5		0	
+mp/sov/era1960/vmf_cb_marksman.set	sov	era1960	aio_morale_elite		1	0	0	4	5		0	
+mp/sov/era1960/vmf_cb_mg.set	sov	era1960	aio_morale_elite		1	0	0	4	5		0	
+mp/sov/era1960/vmf_cb_rifleman.set	sov	era1960	aio_morale_elite		1	0	0	4	5		0	
+mp/sov/era1960/vmf_cb_squadlead.set	sov	era1960	aio_morale_elite	aio_cmd_primary	1	0	0	4	5		0	
+mp/sov/era1960/vmf_demo.set	sov	era1960	aio_morale_elite		1	0	0	4	4		0	
+mp/sov/era1960/vmf_marksman.set	sov	era1960	aio_morale_trained		0	0	0	3	4		0	
+mp/sov/era1960/vmf_mg.set	sov	era1960	aio_morale_trained		0	0	0	3	4		0	
+mp/sov/era1960/vmf_rifleman.set	sov	era1960	aio_morale_trained		0	0	0	3	4		0	
+mp/sov/era1960/vmf_senior.set	sov	era1960	aio_morale_elite	aio_cmd_junior	1	0	0	4	4		0	
+mp/sov/era1960/vmf_sniper.set	sov	era1960	aio_morale_elite		1	0	0	4	4		0	
+mp/sov/era1960/vmf_spotter.set	sov	era1960	aio_morale_elite		1	0	0	4	4		0	
+mp/sov/era1960/vmf_squadlead.set	sov	era1960	aio_morale_trained	aio_cmd_primary	0	0	0	3	4		0	
+mp/sov/era1960/vmf_vehicleman.set	sov	era1960	aio_morale_trained		0	0	0	0	1		0	
+mp/ukr/2022s/azov3_antitank.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_antitank_h.set	ukr	2022s	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/2022s/azov3_antitank_javelin.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_assault.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_assault_h.set	ukr	2022s	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/2022s/azov3_demo.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_demo_h.set	ukr	2022s	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/2022s/azov3_drone.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_marksman.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_marksman_h.set	ukr	2022s	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/2022s/azov3_marksman_sso.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/azov3_medic.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_medic_h.set	ukr	2022s	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/2022s/azov3_mg.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_mg_h.set	ukr	2022s	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/2022s/azov3_mg_mg3.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_rifleman.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_rifleman1_sso.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/azov3_rifleman_h.set	ukr	2022s	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/2022s/azov3_rifleman_sso.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/azov3_saperi.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_saperi_rpo.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_spotter.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/azov3_spotter_sso.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/azov3_squadlead.set	ukr	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/ukr/2022s/azov3_squadlead_h.set	ukr	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/ukr/2022s/azov3_squadlead_sso.set	ukr	2022s	aio_morale_elite	aio_cmd_primary	1	0	0	0	5		0	
+mp/ukr/2022s/azov3_sup.set	ukr	2022s	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/2022s/demon_antitank.set	ukr	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/2022s/demon_antitank_assist.set	ukr	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/2022s/demon_antitank_rpg22.set	ukr	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/2022s/demon_antitank_rpg26.set	ukr	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/2022s/demon_grenadier.set	ukr	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/2022s/demon_marksman.set	ukr	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/2022s/demon_medic.set	ukr	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/2022s/demon_mg.set	ukr	2022s	aio_morale_low		0	0	0	0			0	owner_review_formation_demon
+mp/ukr/2022s/demon_mg_assist.set	ukr	2022s	aio_morale_low		0	0	0	0			0	owner_review_formation_demon
+mp/ukr/2022s/demon_mg_rpk.set	ukr	2022s	aio_morale_low		0	0	0	0			0	owner_review_formation_demon
+mp/ukr/2022s/demon_rifleman.set	ukr	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/2022s/demon_saperi.set	ukr	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/2022s/demon_saperi_RPO.set	ukr	2022s	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/2022s/demon_seniorrifleman.set	ukr	2022s	aio_morale_low	aio_cmd_junior	0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/2022s/demon_squadlead.set	ukr	2022s	aio_morale_low	aio_cmd_primary	0	0	0	0	3		0	owner_review_formation_demon
+mp/ukr/2022s/hur_antitank.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_assault.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_crew.set	ukr	2022s	aio_morale_elite		0	0	0	0		3	0	sof_or_ranger_crew
+mp/ukr/2022s/hur_grenadier.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_javelin.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_lmg.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_marksman_ax50.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_marksman_mk17.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_marksman_svd.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_medic.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_recon.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_rifleman.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_saperi.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_saperi_m72.set	ukr	2022s	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/2022s/hur_squadlead.set	ukr	2022s	aio_morale_elite	aio_cmd_primary	1	0	0	0	4		0	
+mp/ukr/2022s/hur_wepcrew_mk19.set	ukr	2022s	aio_morale_elite		0	0	0	0		3	0	sof_or_ranger_crew
+mp/ukr/2022s/hur_wepcrew_tow2.set	ukr	2022s	aio_morale_elite		0	0	0	0		3	0	sof_or_ranger_crew
+mp/ukr/2022s/kra_ammo.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/kra_antitank.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/kra_antitank_carl.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/kra_demo.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/kra_demo_sadm.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/kra_grenadier.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/kra_marksman.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/kra_mg.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/kra_rifleman.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/kra_sniper.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/kra_spotter.set	ukr	2022s	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/2022s/kra_squadlead.set	ukr	2022s	aio_morale_elite	aio_cmd_primary	1	0	0	0		5	0	
+mp/ukr/2022s/nato_antitank.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/nato_antitank_pzf3.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/nato_atassist.set	ukr	2022s	aio_morale_trained		1	0	0	0	4		0	
+mp/ukr/2022s/nato_eng.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/nato_grenadier.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/nato_javelin.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/nato_manpad_operator.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/nato_manpad_supporter.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/nato_medic.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/nato_mg.set	ukr	2022s	aio_morale_regular		0	0	0	0			0	
+mp/ukr/2022s/nato_mgassist.set	ukr	2022s	aio_morale_regular		0	0	0	0			0	
+mp/ukr/2022s/nato_rifleman.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/nato_rifleman1.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/nato_rifleman2.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/nato_seniorrifleman.set	ukr	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0	2		0	
+mp/ukr/2022s/nato_sniper.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/nato_spotter.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/nato_squadlead.set	ukr	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/ukr/2022s/nato_vehicleman.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/nato_wepcrew_9k115.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ter_antitank.set	ukr	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/2022s/ter_antitank2.set	ukr	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/2022s/ter_marksman.set	ukr	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/2022s/ter_marksman2.set	ukr	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/2022s/ter_medic.set	ukr	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/2022s/ter_mg.set	ukr	2022s	aio_morale_low		0	0	0	0			0	
+mp/ukr/2022s/ter_mg2.set	ukr	2022s	aio_morale_low		0	0	0	0			0	
+mp/ukr/2022s/ter_rifleman.set	ukr	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/2022s/ter_rifleman2.set	ukr	2022s	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/2022s/ter_seniorrifleman.set	ukr	2022s	aio_morale_low	aio_cmd_junior	0	0	0	0	1		0	
+mp/ukr/2022s/ter_squadlead.set	ukr	2022s	aio_morale_low	aio_cmd_primary	0	0	0	0	2		0	
+mp/ukr/2022s/ukr13_antitank.set	ukr	2022s	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/2022s/ukr13_antitank_javelin.set	ukr	2022s	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/2022s/ukr13_assault.set	ukr	2022s	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/2022s/ukr13_assault_og7v.set	ukr	2022s	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/2022s/ukr13_lmg.set	ukr	2022s	aio_morale_regular		0	0	0	0			0	
+mp/ukr/2022s/ukr13_marksman.set	ukr	2022s	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/2022s/ukr13_medic.set	ukr	2022s	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/2022s/ukr13_recon.set	ukr	2022s	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/2022s/ukr13_recon_at4.set	ukr	2022s	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/2022s/ukr13_recon_drop.set	ukr	2022s	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/2022s/ukr13_rifleman.set	ukr	2022s	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/2022s/ukr13_saperi.set	ukr	2022s	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/2022s/ukr13_saperi_at.set	ukr	2022s	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/2022s/ukr13_squadlead.set	ukr	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	5		0	
+mp/ukr/2022s/ukr211_demo.set	ukr	2022s	aio_morale_trained		1	0	0	0	4		0	
+mp/ukr/2022s/ukr211_recon.set	ukr	2022s	aio_morale_trained		1	0	0	0	4		0	
+mp/ukr/2022s/ukr211_sniper.set	ukr	2022s	aio_morale_trained		1	0	0	0	4		0	
+mp/ukr/2022s/ukr211_squadlead.set	ukr	2022s	aio_morale_trained	aio_cmd_primary	1	0	0	0	5		0	
+mp/ukr/2022s/ukr21_antitank.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_antitank_og7v.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_drone.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_drone_fpv.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_hmg.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_ksp58.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_ksp90b.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_lmg.set	ukr	2022s	aio_morale_regular		0	0	0	0			0	
+mp/ukr/2022s/ukr21_marksman.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_marksman_m107.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_medic.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_recon.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_rifleman.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_rifleman_nlaw.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_saperi.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_saperi_at.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_seniorrifleman.set	ukr	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/ukr/2022s/ukr21_squadlead.set	ukr	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/ukr/2022s/ukr47_antitank.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_antitank_h.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_antitank_l.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_antitank_rpg7.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_assault_at4.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_assault_m72.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_assault_nlaw.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_crew_cmd.set	ukr	2022s	aio_morale_trained		0	0	0	1	4		0	vehicle_or_crew_cmd
+mp/ukr/2022s/ukr47_lmg.set	ukr	2022s	aio_morale_trained		0	0	0	1			0	
+mp/ukr/2022s/ukr47_lmg_assault.set	ukr	2022s	aio_morale_trained		0	0	0	1			0	
+mp/ukr/2022s/ukr47_lmg_pkm.set	ukr	2022s	aio_morale_trained		0	0	0	1			0	
+mp/ukr/2022s/ukr47_marksman.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_medic.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_recon.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_rifleman.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_rifleman_assault.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_saperi.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_saperi_m72.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_seniorrifleman.set	ukr	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_seniorrifleman_assault.set	ukr	2022s	aio_morale_trained	aio_cmd_junior	0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_sniper.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_sniper_m107.set	ukr	2022s	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/2022s/ukr47_squadlead.set	ukr	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	1	4		0	
+mp/ukr/2022s/ukr47_squadlead_assault.set	ukr	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	1	4		0	
+mp/ukr/2022s/ukr48_antitank.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr48_antitank_l.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr48_lmg.set	ukr	2022s	aio_morale_regular		0	0	0	0			0	
+mp/ukr/2022s/ukr48_marksman.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr48_medic.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr48_recon.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr48_rifleman.set	ukr	2022s	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/2022s/ukr48_seniorrifleman.set	ukr	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/ukr/2022s/ukr48_squadlead.set	ukr	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/ukr/2022s/ukr82_antitank.set	ukr	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/ukr/2022s/ukr82_antitank_l.set	ukr	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/ukr/2022s/ukr82_assault.set	ukr	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/ukr/2022s/ukr82_assault2.set	ukr	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/ukr/2022s/ukr82_lmg.set	ukr	2022s	aio_morale_trained		0	0	0	0			0	
+mp/ukr/2022s/ukr82_marksman.set	ukr	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/ukr/2022s/ukr82_medic.set	ukr	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/ukr/2022s/ukr82_recon.set	ukr	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/ukr/2022s/ukr82_rifleman.set	ukr	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/ukr/2022s/ukr82_squadlead.set	ukr	2022s	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/ukr/2022s/ukr82_wepcrew.set	ukr	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/ukr/2022s/ukr82_wepcrew_metis.set	ukr	2022s	aio_morale_trained		0	0	0	0	4		0	
+mp/ukr/2022s/ukr93_155ob.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_antitank.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_antitank_javelin.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_atassist.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_eng.set	ukr	2022s	aio_morale_regular		0	0	0	1	2		0	
+mp/ukr/2022s/ukr93_javelin_assist.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_lmg.set	ukr	2022s	aio_morale_regular		0	0	0	1			0	
+mp/ukr/2022s/ukr93_lmgassist.set	ukr	2022s	aio_morale_regular		0	0	0	1			0	
+mp/ukr/2022s/ukr93_marksman.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_medic.set	ukr	2022s	aio_morale_regular		0	0	0	1	5		0	
+mp/ukr/2022s/ukr93_recon.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_recon_mg.set	ukr	2022s	aio_morale_regular		0	0	0	1			0	
+mp/ukr/2022s/ukr93_rifleman.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_seniorrifleman.set	ukr	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_squadlead.set	ukr	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	1	4		0	
+mp/ukr/2022s/ukr93_wepcrew.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_wepcrew_9m113.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_wepcrew_9m113_assist.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_wepcrew_stugna.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_wepcrew_stugna_assist.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr93_wepcrew_tow.set	ukr	2022s	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/2022s/ukr_antitank.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ukr_antitank_vr.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ukr_atassist.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ukr_atassist_vr.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ukr_cmd.set	ukr	2022s	aio_morale_trained	aio_cmd_senior	0	1	0	0	2		0	officer_unit_table
+mp/ukr/2022s/ukr_crew.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_eng.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ukr_eng_ap.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_eng_at.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_javelin.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ukr_lmg.set	ukr	2022s	aio_morale_regular		0	0	0	0			0	
+mp/ukr/2022s/ukr_lmgassist.set	ukr	2022s	aio_morale_regular		0	0	0	0			0	
+mp/ukr/2022s/ukr_manpad_operator.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_manpad_supporter.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_marksman.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ukr_medic.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ukr_pilot.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_recon.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ukr_rifleman.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ukr_saperi.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ukr_saperi_rhsg.set	ukr	2022s	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/2022s/ukr_seniorrifleman.set	ukr	2022s	aio_morale_regular	aio_cmd_junior	0	0	0	0	2		0	
+mp/ukr/2022s/ukr_squadlead.set	ukr	2022s	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/ukr/2022s/ukr_vehicleman.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_vehicleman_cmd.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	vehicle_or_crew_cmd
+mp/ukr/2022s/ukr_wepcrew.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_wepcrew_2b11.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_wepcrew_2b14.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_wepcrew_9k115.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_wepcrew_mk19.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_wepcrew_nsvt.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_wepcrew_spg9.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/2022s/ukr_wepcrew_tow.set	ukr	2022s	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/early/artilleryman.set	ukr	early	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/early/tankman.set	ukr	early	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era1960/sup_vehicleman.set	ukr	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era1960/ter_antitank.set	ukr	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era1960/ter_antitank2.set	ukr	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era1960/ter_marksman.set	ukr	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era1960/ter_marksman2.set	ukr	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era1960/ter_mg.set	ukr	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era1960/ter_mg2.set	ukr	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era1960/ter_rifleman.set	ukr	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era1960/ter_rifleman2.set	ukr	era1960	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era1960/ter_squadlead.set	ukr	era1960	aio_morale_low	aio_cmd_primary	0	0	0	0	1		0	
+mp/ukr/era1960/ukr_antitank.set	ukr	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era1960/ukr_atassist.set	ukr	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era1960/ukr_eng.set	ukr	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era1960/ukr_lmg.set	ukr	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era1960/ukr_lmgassist.set	ukr	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era1960/ukr_marksman.set	ukr	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era1960/ukr_medic.set	ukr	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era1960/ukr_recon.set	ukr	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era1960/ukr_rifleman.set	ukr	era1960	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era1960/ukr_squadlead.set	ukr	era1960	aio_morale_regular	aio_cmd_primary	0	0	0	0	2		0	
+mp/ukr/era1960/ukr_vehicleman.set	ukr	era1960	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era1960/ukr_wepcrew.set	ukr	era1960	aio_morale_regular		0	0	0				0	no_veterancy_marker
+mp/ukr/era1960/ukr_wepcrew_m2.set	ukr	era1960	aio_morale_regular		0	0	0				0	no_veterancy_marker
+mp/ukr/era2022/azov3_antitank.set	ukr	era2022	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/era2022/azov3_antitank_h.set	ukr	era2022	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/era2022/azov3_assault.set	ukr	era2022	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/era2022/azov3_assault_h.set	ukr	era2022	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/era2022/azov3_demo.set	ukr	era2022	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/era2022/azov3_demo_h.set	ukr	era2022	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/era2022/azov3_drone.set	ukr	era2022	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/era2022/azov3_marksman.set	ukr	era2022	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/era2022/azov3_marksman_h.set	ukr	era2022	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/era2022/azov3_marksman_sso.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/azov3_medic.set	ukr	era2022	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/era2022/azov3_medic_h.set	ukr	era2022	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/era2022/azov3_mg.set	ukr	era2022	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/era2022/azov3_mg_h.set	ukr	era2022	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/era2022/azov3_mg_mg3.set	ukr	era2022	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/era2022/azov3_rifleman.set	ukr	era2022	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/era2022/azov3_rifleman1_sso.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/azov3_rifleman_h.set	ukr	era2022	aio_morale_trained		0	0	0	0		5	0	
+mp/ukr/era2022/azov3_rifleman_sso.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/azov3_saperi.set	ukr	era2022	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/era2022/azov3_spotter.set	ukr	era2022	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/era2022/azov3_spotter_sso.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/azov3_squadlead.set	ukr	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/ukr/era2022/azov3_squadlead_h.set	ukr	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/ukr/era2022/azov3_squadlead_sso.set	ukr	era2022	aio_morale_elite	aio_cmd_primary	1	0	0	0	5		0	
+mp/ukr/era2022/azov3_sup.set	ukr	era2022	aio_morale_trained		0	0	0	0		4	0	
+mp/ukr/era2022/azov_antitank.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/azov_demo.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/azov_marksman.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/azov_medic.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/azov_mg.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/azov_rifleman.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/azov_rpo.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/azov_sniper.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/azov_spotter.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/azov_squadlead.set	ukr	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	4		0	
+mp/ukr/era2022/demon_antitank.set	ukr	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/era2022/demon_antitank_assist.set	ukr	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/era2022/demon_antitank_rpg22.set	ukr	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/era2022/demon_antitank_rpg26.set	ukr	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/era2022/demon_grenadier.set	ukr	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/era2022/demon_marksman.set	ukr	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/era2022/demon_medic.set	ukr	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/era2022/demon_mg.set	ukr	era2022	aio_morale_low		0	0	0	0			0	owner_review_formation_demon
+mp/ukr/era2022/demon_mg_assist.set	ukr	era2022	aio_morale_low		0	0	0	0			0	owner_review_formation_demon
+mp/ukr/era2022/demon_mg_rpk.set	ukr	era2022	aio_morale_low		0	0	0	0			0	owner_review_formation_demon
+mp/ukr/era2022/demon_rifleman.set	ukr	era2022	aio_morale_low		0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/era2022/demon_seniorrifleman.set	ukr	era2022	aio_morale_low	aio_cmd_junior	0	0	0	0	2		0	owner_review_formation_demon
+mp/ukr/era2022/demon_squadlead.set	ukr	era2022	aio_morale_low	aio_cmd_primary	0	0	0	0	3		0	owner_review_formation_demon
+mp/ukr/era2022/hur_antitank.set	ukr	era2022	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/era2022/hur_assault.set	ukr	era2022	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/era2022/hur_crew.set	ukr	era2022	aio_morale_elite		0	0	0	0		3	0	sof_or_ranger_crew
+mp/ukr/era2022/hur_grenadier.set	ukr	era2022	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/era2022/hur_javelin.set	ukr	era2022	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/era2022/hur_lmg.set	ukr	era2022	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/era2022/hur_marksman_ax50.set	ukr	era2022	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/era2022/hur_marksman_mk17.set	ukr	era2022	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/era2022/hur_marksman_svd.set	ukr	era2022	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/era2022/hur_medic.set	ukr	era2022	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/era2022/hur_recon.set	ukr	era2022	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/era2022/hur_rifleman.set	ukr	era2022	aio_morale_elite		1	0	0	0		3	0	
+mp/ukr/era2022/hur_squadlead.set	ukr	era2022	aio_morale_elite	aio_cmd_primary	1	0	0	0	4		0	
+mp/ukr/era2022/hur_wepcrew_mk19.set	ukr	era2022	aio_morale_elite		0	0	0	0		3	0	sof_or_ranger_crew
+mp/ukr/era2022/hur_wepcrew_tow2.set	ukr	era2022	aio_morale_elite		0	0	0	0		3	0	sof_or_ranger_crew
+mp/ukr/era2022/kra_ammo.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/kra_antitank.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/kra_antitank_carl.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/kra_demo.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/kra_demo_sadm.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/kra_grenadier.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/kra_marksman.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/kra_mg.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/kra_rifleman.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/kra_sniper.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/kra_spotter.set	ukr	era2022	aio_morale_elite		1	0	0	0		5	0	
+mp/ukr/era2022/kra_squadlead.set	ukr	era2022	aio_morale_elite	aio_cmd_primary	1	0	0	0		5	0	
+mp/ukr/era2022/nato_antitank.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/nato_antitank_pzf3.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/nato_atassist.set	ukr	era2022	aio_morale_trained		1	0	0	0	4		0	
+mp/ukr/era2022/nato_demo.set	ukr	era2022	aio_morale_trained		1	0	0	0	4		0	
+mp/ukr/era2022/nato_eng.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/nato_grenadier.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/nato_javelin.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/nato_manpad_operator.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/nato_manpad_supporter.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/nato_medic.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/nato_mg.set	ukr	era2022	aio_morale_regular		0	0	0	0			0	
+mp/ukr/era2022/nato_mgassist.set	ukr	era2022	aio_morale_regular		0	0	0	0			0	
+mp/ukr/era2022/nato_rifleman.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/nato_rifleman1.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/nato_rifleman2.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/nato_seniorrifleman.set	ukr	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	0	2		0	
+mp/ukr/era2022/nato_sniper.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/nato_spotter.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/nato_squadlead.set	ukr	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/ukr/era2022/nato_vehicleman.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/nato_wepcrew_9k115.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ter_antitank.set	ukr	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era2022/ter_antitank2.set	ukr	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era2022/ter_marksman.set	ukr	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era2022/ter_marksman2.set	ukr	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era2022/ter_medic.set	ukr	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era2022/ter_mg.set	ukr	era2022	aio_morale_low		0	0	0	0			0	
+mp/ukr/era2022/ter_mg2.set	ukr	era2022	aio_morale_low		0	0	0	0			0	
+mp/ukr/era2022/ter_rifleman.set	ukr	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era2022/ter_rifleman2.set	ukr	era2022	aio_morale_low		0	0	0	0	1		0	
+mp/ukr/era2022/ter_seniorrifleman.set	ukr	era2022	aio_morale_low	aio_cmd_junior	0	0	0	0	1		0	
+mp/ukr/era2022/ter_squadlead.set	ukr	era2022	aio_morale_low	aio_cmd_primary	0	0	0	0	2		0	
+mp/ukr/era2022/ukr13_antitank.set	ukr	era2022	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/era2022/ukr13_antitank_javelin.set	ukr	era2022	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/era2022/ukr13_assault.set	ukr	era2022	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/era2022/ukr13_assault_og7v.set	ukr	era2022	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/era2022/ukr13_lmg.set	ukr	era2022	aio_morale_regular		0	0	0	0			0	
+mp/ukr/era2022/ukr13_marksman.set	ukr	era2022	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/era2022/ukr13_medic.set	ukr	era2022	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/era2022/ukr13_recon.set	ukr	era2022	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/era2022/ukr13_recon_at4.set	ukr	era2022	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/era2022/ukr13_recon_drop.set	ukr	era2022	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/era2022/ukr13_rifleman.set	ukr	era2022	aio_morale_regular		0	0	0	0	4		0	
+mp/ukr/era2022/ukr13_squadlead.set	ukr	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	5		0	
+mp/ukr/era2022/ukr211_demo.set	ukr	era2022	aio_morale_trained		1	0	0	0	4		0	
+mp/ukr/era2022/ukr211_recon.set	ukr	era2022	aio_morale_trained		1	0	0	0	4		0	
+mp/ukr/era2022/ukr211_sniper.set	ukr	era2022	aio_morale_trained		1	0	0	0	4		0	
+mp/ukr/era2022/ukr211_squadlead.set	ukr	era2022	aio_morale_trained	aio_cmd_primary	1	0	0	0	5		0	
+mp/ukr/era2022/ukr21_antitank.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_antitank_l.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_antitank_og7v.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_drone.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_drone_fpv.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_hmg.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_ksp58.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_ksp90b.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_lmg.set	ukr	era2022	aio_morale_regular		0	0	0	0			0	
+mp/ukr/era2022/ukr21_marksman.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_marksman_m107.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_medic.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_recon.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_rifleman.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_rifleman_nlaw.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_seniorrifleman.set	ukr	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/ukr/era2022/ukr21_squadlead.set	ukr	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/ukr/era2022/ukr25_antitank.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr25_antitank_l.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr25_atassist.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr25_lmg.set	ukr	era2022	aio_morale_regular		0	0	0	0			0	
+mp/ukr/era2022/ukr25_marksman.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr25_medic.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr25_mgassist.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr25_recon.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr25_rifleman.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr25_seniorrifleman.set	ukr	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/ukr/era2022/ukr25_squadlead.set	ukr	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/ukr/era2022/ukr3_antitank.set	ukr	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/ukr/era2022/ukr3_antitank_l.set	ukr	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/ukr/era2022/ukr3_javelin.set	ukr	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/ukr/era2022/ukr3_lmg.set	ukr	era2022	aio_morale_trained		0	0	0	0			0	
+mp/ukr/era2022/ukr3_marksman.set	ukr	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/ukr/era2022/ukr3_medic.set	ukr	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/ukr/era2022/ukr3_recon.set	ukr	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/ukr/era2022/ukr3_rifleman.set	ukr	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/ukr/era2022/ukr3_saperi.set	ukr	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/ukr/era2022/ukr3_saperi_mg.set	ukr	era2022	aio_morale_trained		0	0	0	0			0	
+mp/ukr/era2022/ukr3_saperi_rpg.set	ukr	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/ukr/era2022/ukr3_saperi_rpo.set	ukr	era2022	aio_morale_trained		0	0	0	0	2		0	
+mp/ukr/era2022/ukr3_saperi_squadlead.set	ukr	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	3		0	
+mp/ukr/era2022/ukr3_seniorrifleman.set	ukr	era2022	aio_morale_trained	aio_cmd_junior	0	0	0	0	2		0	
+mp/ukr/era2022/ukr3_squadlead.set	ukr	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	3		0	
+mp/ukr/era2022/ukr47_antitank.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_antitank_h.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_antitank_l.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_assault_at4.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_assault_m72.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_assault_nlaw.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_crew_cmd.set	ukr	era2022	aio_morale_trained		0	0	0	1	4		0	vehicle_or_crew_cmd
+mp/ukr/era2022/ukr47_lmg.set	ukr	era2022	aio_morale_trained		0	0	0	1			0	
+mp/ukr/era2022/ukr47_lmg_assault.set	ukr	era2022	aio_morale_trained		0	0	0	1			0	
+mp/ukr/era2022/ukr47_lmg_pkm.set	ukr	era2022	aio_morale_trained		0	0	0	1			0	
+mp/ukr/era2022/ukr47_marksman.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_medic.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_recon.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_rifleman.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_rifleman_assault.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_seniorrifleman.set	ukr	era2022	aio_morale_trained	aio_cmd_junior	0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_seniorrifleman_assault.set	ukr	era2022	aio_morale_trained	aio_cmd_junior	0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_sniper.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_sniper_m107.set	ukr	era2022	aio_morale_trained		0	0	0	1	3		0	
+mp/ukr/era2022/ukr47_squadlead.set	ukr	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	1	4		0	
+mp/ukr/era2022/ukr47_squadlead_assault.set	ukr	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	1	4		0	
+mp/ukr/era2022/ukr48_antitank.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr48_antitank_l.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr48_lmg.set	ukr	era2022	aio_morale_regular		0	0	0	0			0	
+mp/ukr/era2022/ukr48_marksman.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr48_medic.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr48_recon.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr48_rifleman.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr48_seniorrifleman.set	ukr	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/ukr/era2022/ukr48_squadlead.set	ukr	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/ukr/era2022/ukr53_antitank.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr53_atassist.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr53_eng.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr53_lmg.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr53_lmgassist.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr53_manpad_operator.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr53_manpad_supporter.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr53_marksman.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr53_medic.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr53_recon.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr53_rifleman.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr53_seniorrifleman.set	ukr	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/ukr/era2022/ukr53_squadlead.set	ukr	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/ukr/era2022/ukr53_vehicleman.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr67_antitank.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr67_antitank_javelin.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr67_antitank_metis.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr67_antitank_tbg7.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr67_javelin_assist.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr67_lmg.set	ukr	era2022	aio_morale_regular		0	0	0	0			0	
+mp/ukr/era2022/ukr67_marksman.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr67_medic.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr67_recon.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr67_rifleman.set	ukr	era2022	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/era2022/ukr67_seniorrifleman.set	ukr	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/ukr/era2022/ukr67_squadlead.set	ukr	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		0	
+mp/ukr/era2022/ukr67_vehicleman.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr82_antitank.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/ukr82_antitank_l.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/ukr82_assault.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/ukr82_assault2.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/ukr82_lmg.set	ukr	era2022	aio_morale_trained		0	0	0	0			0	
+mp/ukr/era2022/ukr82_marksman.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/ukr82_medic.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/ukr82_recon.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/ukr82_rifleman.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/ukr82_squadlead.set	ukr	era2022	aio_morale_trained	aio_cmd_primary	0	0	0	0	4		0	
+mp/ukr/era2022/ukr82_wepcrew.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/ukr82_wepcrew_metis.set	ukr	era2022	aio_morale_trained		0	0	0	0	3		0	
+mp/ukr/era2022/ukr93_155ob.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_antitank.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_antitank_javelin.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_atassist.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_eng.set	ukr	era2022	aio_morale_regular		0	0	0	1	2		0	
+mp/ukr/era2022/ukr93_javelin_assist.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_lmg.set	ukr	era2022	aio_morale_regular		0	0	0	1			0	
+mp/ukr/era2022/ukr93_lmgassist.set	ukr	era2022	aio_morale_regular		0	0	0	1			0	
+mp/ukr/era2022/ukr93_marksman.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_medic.set	ukr	era2022	aio_morale_regular		0	0	0	1	5		0	
+mp/ukr/era2022/ukr93_recon.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_recon_mg.set	ukr	era2022	aio_morale_regular		0	0	0	1			0	
+mp/ukr/era2022/ukr93_rifleman.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_seniorrifleman.set	ukr	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_squadlead.set	ukr	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	1	4		0	
+mp/ukr/era2022/ukr93_wepcrew.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_wepcrew_9m113.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_wepcrew_9m113_assist.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_wepcrew_stugna.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_wepcrew_stugna_assist.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr93_wepcrew_tow.set	ukr	era2022	aio_morale_regular		0	0	0	1	3		0	
+mp/ukr/era2022/ukr_antitank.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr_antitank_vr.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr_atassist.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr_atassist_vr.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr_cmd.set	ukr	era2022	aio_morale_trained	aio_cmd_senior	0	1	0	0	2		0	officer_unit_table
+mp/ukr/era2022/ukr_crew.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_eng.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr_eng_ap.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_eng_at.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_javelin.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr_lmg.set	ukr	era2022	aio_morale_regular		0	0	0	0			0	
+mp/ukr/era2022/ukr_lmgassist.set	ukr	era2022	aio_morale_regular		0	0	0	0			0	
+mp/ukr/era2022/ukr_manpad_operator.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_manpad_supporter.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_marksman.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr_medic.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr_pilot.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_recon.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr_rifleman.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr_saperi.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr_saperi_rhsg.set	ukr	era2022	aio_morale_regular		0	0	0	0	2		0	
+mp/ukr/era2022/ukr_seniorrifleman.set	ukr	era2022	aio_morale_regular	aio_cmd_junior	0	0	0	0	2		0	
+mp/ukr/era2022/ukr_squadlead.set	ukr	era2022	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/ukr/era2022/ukr_vehicleman.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_vehicleman_cmd.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	vehicle_or_crew_cmd
+mp/ukr/era2022/ukr_wepcrew.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_wepcrew_2b11.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_wepcrew_2b14.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_wepcrew_9k115.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_wepcrew_mk19.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_wepcrew_nsvt.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_wepcrew_spg9.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/era2022/ukr_wepcrew_tow.set	ukr	era2022	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/mid/artilleryman.set	ukr	mid	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/mid/tankman.set	ukr	mid	aio_morale_regular		0	0	0	0	1		0	
+mp/ukr/新建文件夹/ukr21_antitank.set	ukr	新建文件夹	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/新建文件夹/ukr21_ksp58.set	ukr	新建文件夹	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/新建文件夹/ukr21_ksp90b.set	ukr	新建文件夹	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/新建文件夹/ukr21_marksman.set	ukr	新建文件夹	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/新建文件夹/ukr21_marksman_m107.set	ukr	新建文件夹	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/新建文件夹/ukr21_medic.set	ukr	新建文件夹	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/新建文件夹/ukr21_recon.set	ukr	新建文件夹	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/新建文件夹/ukr21_rifleman.set	ukr	新建文件夹	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/新建文件夹/ukr21_rifleman_nlaw.set	ukr	新建文件夹	aio_morale_regular		0	0	0	0	3		0	
+mp/ukr/新建文件夹/ukr21_seniorrifleman.set	ukr	新建文件夹	aio_morale_regular	aio_cmd_junior	0	0	0	0	3		0	
+mp/ukr/新建文件夹/ukr21_squadlead.set	ukr	新建文件夹	aio_morale_regular	aio_cmd_primary	0	0	0	0	3		0	
+mp/usam/1ad_antitank.set	usam	(root)	aio_morale_regular		0	0	0	0	2		1	
+mp/usam/1ad_autorifle.set	usam	(root)	aio_morale_regular		0	0	0	0	2		1	
+mp/usam/1ad_engineer.set	usam	(root)	aio_morale_regular		0	0	0	0	2		1	
+mp/usam/1ad_grenadier.set	usam	(root)	aio_morale_regular		0	0	0	0	2		1	
+mp/usam/1ad_javelin.set	usam	(root)	aio_morale_regular		0	0	0	0	2		1	
+mp/usam/1ad_medic.set	usam	(root)	aio_morale_regular		0	0	0	0	2		1	
+mp/usam/1ad_mg.set	usam	(root)	aio_morale_regular		0	0	0	0	2		1	
+mp/usam/1ad_rifleman.set	usam	(root)	aio_morale_regular		0	0	0	0	2		1	
+mp/usam/1ad_scout.set	usam	(root)	aio_morale_regular		0	0	0	0	2		1	
+mp/usam/1ad_squadlead.set	usam	(root)	aio_morale_regular	aio_cmd_primary	0	0	0	0	2		1	
+mp/usam/1ad_teamlead.set	usam	(root)	aio_morale_regular	aio_cmd_junior	0	0	0	5	2		1	unusual_high_vet_regular
+mp/usam/1cav_antitank.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/1cav_autorifle.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/1cav_engineer.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/1cav_grenadier.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/1cav_javelin.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/1cav_medic.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/1cav_mg.set	usam	(root)	aio_morale_regular		0	0	0	0			1	
+mp/usam/1cav_rifleman.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/1cav_scout.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/1cav_squadlead.set	usam	(root)	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		1	
+mp/usam/1cav_teamlead.set	usam	(root)	aio_morale_regular	aio_cmd_junior	0	0	0	5	4		1	unusual_high_vet_regular
+mp/usam/4id_antitank.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/4id_autorifle.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/4id_engineer.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/4id_grenadier.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/4id_javelin.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/4id_medic.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/4id_mg.set	usam	(root)	aio_morale_regular		0	0	0	0			1	
+mp/usam/4id_rifleman.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/4id_scout.set	usam	(root)	aio_morale_regular		0	0	0	0	3		1	
+mp/usam/4id_squadlead.set	usam	(root)	aio_morale_regular	aio_cmd_primary	0	0	0	0	4		1	
+mp/usam/4id_teamlead.set	usam	(root)	aio_morale_regular	aio_cmd_junior	0	0	0	5	4		1	unusual_high_vet_regular
+mp/usam/82nd_antitank.set	usam	(root)	aio_morale_trained		0	0	0	0	4		0	
+mp/usam/82nd_engineer.set	usam	(root)	aio_morale_trained		0	0	0	0	4		1	
+mp/usam/82nd_engineer_at.set	usam	(root)	aio_morale_trained		0	0	0	0	4		1	
+mp/usam/82nd_grenadier.set	usam	(root)	aio_morale_trained		0	0	0	0	4		1	
+mp/usam/82nd_javelin.set	usam	(root)	aio_morale_trained		0	0	0	0	4		1	
+mp/usam/82nd_marksman.set	usam	(root)	aio_morale_trained		0	0	0	0	4		0	
+mp/usam/82nd_medic.set	usam	(root)	aio_morale_trained		0	0	0	0	4		0	
+mp/usam/82nd_mg.set	usam	(root)	aio_morale_trained		0	0	0	0			1	
+mp/usam/82nd_rifleman.set	usam	(root)	aio_morale_trained		0	0	0	0	4		0	
+mp/usam/82nd_scout.set	usam	(root)	aio_morale_trained		0	0	0	0	4		1	
+mp/usam/82nd_squadlead.set	usam	(root)	aio_morale_trained	aio_cmd_primary	0	0	0	0	5		0	
+mp/usam/82nd_teamlead.set	usam	(root)	aio_morale_trained	aio_cmd_junior	0	0	0	5	5		0	

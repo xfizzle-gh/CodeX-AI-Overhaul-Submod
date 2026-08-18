@@ -1,0 +1,34 @@
+{breed
+	{behaviour soldier}
+	{skin "dnr_regular_gr_07"}
+	{portrait med_rus}
+	{icon autorifle}
+	{icon_priority 0}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_helmet_tor}
+                {body "6b13_01"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_1")
+("tdf")
+		("medic")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "tt33" filled}
+		{item "tt33 ammo" 24 8}
+		{item "rdg2 grenade" 4}
+		{item "molotov grenade" 1.25 0.5}
+		{item "bandage_rus" 3.5 0.5}
+		{item "shovel_rus"}
+		{item "tent_kit" 2}
+		{item "aio_marker_morale_low"}
+		{in_hands 0}
+	}
+}

@@ -1,0 +1,33 @@
+{breed
+	{behaviour soldier}
+	{skin "vostok3"}
+	{portrait "med_rus"}
+	{icon "tech"}
+	{icon_priority 5}
+	{tags "soldier"}
+	{nationality rus}
+	{armors
+		{head rus_helmet_tor}
+                {body "6b13_01"}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_2")
+		("medic")
+		("vostok")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_2")
+	}
+	{inventory
+		{item "tt33" filled}
+		{item "tt33 ammo" 24 8}
+
+		{item "rgd5 grenade" 2.25 0.5}
+
+		{item "bandage_rus" 22.5 2.5}
+		{item "tent_kit" 2}
+		{item "aio_marker_morale_low"}
+	}
+}

@@ -1,0 +1,36 @@
+{breed
+	{tags "soldier"}
+	{behaviour soldier}
+	{skin "rus_afg_spz"}
+	{portrait "sov_medic"}
+	{icon "tech"}
+	{icon_priority 2}
+	{nationality rus_sniper}
+	{armors
+		{head rus_afg_sh68}
+	}
+	{perks
+		(include "ability.inc")
+		("skill_rank_5")
+		("medic")
+		("spetsnaz")
+	}
+	{veterancy
+		(include "ability.inc")
+		("veterancy_lvl_4")
+	}
+	{inventory
+		{item "ak74u" filling "5x39 ammo" 30}
+		{item "5x39 ammo" 210}
+		{item "rdgm_smoke grenade" 2.25 0.5}
+
+		{item "bandage_rus" 3.5 0.5}
+		{item "tent_kit" 2}
+		{item "6b2" 1}
+		{item "shovel_rus"}
+
+		{item "aio_marker_morale_elite"}
+		{item "aio_marker_cmd_independent"}
+		{in_hands 0}
+	}
+}
