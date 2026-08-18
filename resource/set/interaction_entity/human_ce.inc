@@ -413,6 +413,7 @@
 		{tags remove "aio_morale_surrendering"}
 		{tags remove "aio_morale_surrender_cand"}
 		{tags remove "aio_morale_surrender_fx"}
+		{tags remove "aio_morale_surrender_expire"}
 		{tags remove "aio_morale_watching_regroup"}
 		{view stop "beacon_fx"}
 		{view pause "white_flag"}
@@ -753,7 +754,7 @@
 			{if tagged "aio_morale_surrendering"
 				{if not dead
 					{call "stop_white_flag"}
-					{call "delete"}
+					{tags add "aio_morale_surrender_expire"}
 				}
 			}
 		}

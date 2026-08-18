@@ -1,6 +1,7 @@
 ; F0: native retreat_ratio is not how FE/Old Boy move Broken units. Rally move is the authority.
 ; Actor-scoped ratios are assist only. Writers must exclude aio_morale_owned. No player seizure.
-; Surrender pose/drop/white flag/35s cleanup adapted from Old Boy Command Structure (walk_giveup_1, inventory drop, white_flag).
+; Surrender pose/drop/white flag/35s cleanup: Old Boy walk_giveup_1 + inventory drop + white_flag;
+; FE radio_calling_surrender.mi stand_giveup_2 final pose (no player-0). Delete uses Old Boy {"delete"{selector}}.
 			{"conquest_enhanced_mechanics/broken/acquire"
 				{condition
 					{terms
@@ -710,6 +711,9 @@
 									{tag
 										{tag player}
 									}
+									{tag
+										{tag aio_morale_surrender_fx}
+									}
 								}
 							}
 						}
@@ -745,6 +749,9 @@
 									}
 									{tag
 										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrender_fx}
 									}
 								}
 							}
@@ -782,10 +789,12 @@
 						{collage walk_giveup_1}
 						{cicledelay 0}
 						{delay 0}
-						{totalTime 99999}
-						{flags loop}
+						{totalTime 1.5}
 					}
-					{"effect"
+					{"delay"
+						{time 1.2}
+					}
+					{"animation"
 						{selector
 							{source advanced}
 							{group
@@ -813,7 +822,11 @@
 								}
 							}
 						}
-						{effect start_white_flag}
+						{collage stand_giveup_2}
+						{speed 0.5}
+						{cicledelay 12000}
+						{delay 0}
+						{flags loop}
 					}
 					{"entity_state"
 						{selector
@@ -847,6 +860,90 @@
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/broken/surrender_present"}
+					}
+				}
+			}
+			{"conquest_enhanced_mechanics/broken/surrender_expire"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_surrender_expire}
+										}
+									}
+									{include
+										{tag
+											{tag aio_morale_surrendering}
+										}
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag player}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
+					{"delete"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_expire}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+					}
+					{"delay"
+						{time 0.5}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/surrender_expire"}
 					}
 				}
 			}
@@ -1234,6 +1331,66 @@
 							}
 						}
 						{tag_remove aio_morale_watching_regroup}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_fx}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_fx}
+									}
+								}
+								{include
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_surrender_fx}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_expire}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_expire}
+									}
+								}
+								{include
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_surrender_expire}
 					}
 					{"delay"
 						{time 0.5}

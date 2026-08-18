@@ -91,13 +91,19 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         human = HUMAN.read_text(encoding="utf-8")
         lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
         self.assertIn("{collage walk_giveup_1}", beh)
+        self.assertIn("{collage stand_giveup_2}", beh)
         self.assertIn("{action drop}", beh)
-        self.assertIn("{effect start_white_flag}", beh)
+        self.assertIn('{"delete"', beh)
         self.assertIn('{on "start_white_flag"', human)
         self.assertIn("{delay 35", human)
-        self.assertIn('{call "delete"}', human)
+        self.assertIn('{tags add "aio_morale_surrender_expire"}', human)
+        self.assertNotIn('{call "delete"}', human)
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1]
         self.assertLess(apply.find('{call "start_white_flag"}'), apply.find("{delay 35"))
+        self.assertEqual(human.count('{call "start_white_flag"}'), 1)
+        self.assertNotIn("{effect start_white_flag}", beh)
+        drop = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_expire", 1)[0]
+        self.assertGreaterEqual(drop.count("{tag aio_morale_surrender_fx}"), 4)
         self.assertNotIn('{player "0"}', beh)
         self.assertNotIn("{control AI}", beh)
         self.assertIn("enable_ce_morale_autodemo", lua.split("function StartCeMoraleProbeLog()", 1)[1][:400])
@@ -125,6 +131,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "aio_morale_surrender_cand",
             "aio_morale_surrendering",
             "aio_morale_watching_regroup",
+            "aio_morale_surrender_fx",
+            "aio_morale_surrender_expire",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
 
