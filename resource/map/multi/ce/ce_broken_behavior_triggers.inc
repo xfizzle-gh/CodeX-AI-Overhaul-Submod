@@ -45,6 +45,43 @@
 					}
 				}
 				{actions
+					{"actor_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag aio_morale_owned}
+									}
+								}
+							}
+						}
+						{drop orders}
+						{move_mode free}
+						{ai_move
+							{mode enable}
+						}
+						{ai
+							{advance_ratio 0.1}
+							{retreat_ratio 4}
+						}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -91,43 +128,6 @@
 							}
 						}
 						{tag_add aio_morale_regrouping}
-					}
-					{"actor_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_broken}
-									}
-								}
-								{include
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state user_control}
-									}
-									{tag
-										{tag player}
-									}
-									{tag
-										{tag aio_morale_owned}
-									}
-								}
-							}
-						}
-						{drop orders}
-						{move_mode free}
-						{ai_move
-							{mode enable}
-						}
-						{ai
-							{advance_ratio 0.1}
-							{retreat_ratio 4}
-						}
 					}
 					{"actor_state"
 						{selector
@@ -493,6 +493,10 @@
 								{meters 30}
 							}
 							{detection located}
+							{tag
+								{"tag pair"}
+								{"for selector" aio_morale_surrender_cand}
+							}
 						}
 					}
 				}
@@ -503,10 +507,13 @@
 							{group
 								{select
 									{tag
-										{tag aio_morale_broken}
+										{tag aio_morale_surrender_cand}
 									}
 								}
 								{include
+									{tag
+										{tag aio_morale_broken}
+									}
 									{tag
 										{tag aio_morale_regroup_failed}
 									}
@@ -525,6 +532,9 @@
 							}
 						}
 						{effect aio_morale_surrender}
+					}
+					{"delay"
+						{time 0.2}
 					}
 					{"actor_state"
 						{selector
@@ -552,6 +562,12 @@
 						{ai_move
 							{mode disable}
 						}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_surrender_cand}
+						}
+						{tag_remove aio_morale_surrender_cand}
 					}
 					{"set_i"
 						{var "ce_morale_diag_surrender$"}
