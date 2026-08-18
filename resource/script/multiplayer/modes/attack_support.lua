@@ -1,293 +1,298 @@
--- Attack support controller (human ATTACK missions).
--- Identity + orders only. Do NOT require utility.lua / logic/main.lua here:
--- that path AVs on the attack support slot (no spawn deck) even with spawnPoint nil-guard
--- (proven 2026-07-29 log: crash in lua.event.notify2 right after Loading utility.lua).
+-- TMAI manual-transfer parity experiment.
 --
--- Unit delivery is MI: attack_support_waves.inc (real-breed pool, MOVE in).
--- Lua Spawn is not viable on this slot (IsUnitAvailable always false; utility load crashes).
--- Mission participation is gated in MI by support_mission_enabled$. This controller publishes
--- its own routed Team A playerId as the attack-support owner and issues squad orders.
+-- PURPOSE
+--   Reproduce the important TMAI v0.17 lifecycle for a clean native test:
+--   the player deploys normal Dynamic Conquest troops, manually transfers a
+--   squad to the extra Team-A Mate with the normal transfer UI, then this Mate
+--   waits for the transferred squad and commands it.
 --
--- This slot also carries the ENGINE-STATE MIRROR. Every MIRROR_QUANTS quants it writes
--- one game.log line per wave engine - attack_support, enemy_defense (plus its garrison
--- anchors), defense_support, enemy_attack - and the resolved faction_support_army$.
--- Always on and log-only, because the on-screen diagnostics in those engines are gated
--- behind support_debug$ and default to off, so the log is all a shipped run leaves
--- behind. Reads go through readVar, which pcall-guards GetVar.
+-- This branch intentionally DOES NOT arm CodeX automatic allied-support waves,
+-- spawn units, change ownership, or touch the player's campaign roster. If a
+-- squad appears in BotApi.Scene.Squads here, it arrived through the normal game
+-- lifecycle and was manually handed to this Mate.
+--
+-- TMAI behaviors mirrored from the v0.17 source audit recorded on issue #97:
+--   * ~3 second settle after transfer
+--   * managed squad registry + pruning
+--   * independent squad/vehicle tasking
+--   * spread groups across distinct objectives before stacking reinforcements
+--   * recently lost friendly flags receive counterattack priority
+--   * suppress identical order spam
+--
+-- Command transport stays on the already-proven BotApi CaptureFlag primitive
+-- with SeekAndDestroy fallback. The FoW test is about native player creation +
+-- manual transfer; command transport does not alter actor provenance.
 
-local PREFIX = "CODEX_ATTACK_SUPPORT"
-
-local DEBUG_LOG = true
+local PREFIX = "CODEX_TMAI_MANUAL"
+local SETTLE_MS = 3000
+local SCAN_QUANTS = 20
 
 local function emit(...)
-	local out = { PREFIX .. ":" }
-	for n = 1, select("#", ...) do
-		out[#out + 1] = tostring(select(n, ...))
-	end
-	print(table.concat(out, " "))
-end
-
-local function log(...)
-	if not DEBUG_LOG then return end
-	emit(...)
+    local out = { PREFIX .. ":" }
+    for n = 1, select("#", ...) do
+        out[#out + 1] = tostring(select(n, ...))
+    end
+    print(table.concat(out, " "))
 end
 
 local function instance()
-	return (BotApi and BotApi.Instance) or {}
+    return (BotApi and BotApi.Instance) or {}
 end
 
-local function conquestApi()
-	return (BotApi and BotApi.Conquest) or {}
+local function conquest()
+    return (BotApi and BotApi.Conquest) or {}
 end
 
 local function scene()
-	return (BotApi and BotApi.Scene) or nil
+    return (BotApi and BotApi.Scene) or nil
 end
 
 local function events()
-	return (BotApi and BotApi.Events) or nil
+    return (BotApi and BotApi.Events) or nil
 end
 
-local function cmds()
-	return (BotApi and BotApi.Commands) or nil
-end
-
-local function readVar(name)
-	local sc = scene()
-	if not sc then return "na" end
-	local ok, v = pcall(function() return sc:GetVar(name) end)
-	if not ok then return "err" end
-	if v == nil then return "nil" end
-	return tostring(v)
-end
-
-local function positiveId(primary, fallback)
-	primary = tonumber(primary or 0) or 0
-	fallback = tonumber(fallback or 0) or 0
-	if primary > 0 then return primary end
-	if fallback > 0 then return fallback end
-	return 0
-end
-
--- NEVER touch spawnPointName / PlayerSpawnPoint / require(utility) on this slot.
-local function identity()
-	local i = instance()
-	local c = conquestApi()
-	return {
-		playerId = tonumber(i.playerId or 0) or 0,
-		team = tostring(i.team or ""),
-		army = tostring(i.army or ""),
-		difficulty = tostring(i.difficulty or ""),
-		gameMode = tostring(i.gameMode or ""),
-		attacking = c.Attacking,
-		firstPlayerId = positiveId(c.FirstPlayerId, i.CampaignFirstPlayerId),
-		firstEnemyId = positiveId(c.FirstEnemyId, i.CampaignFirstEnemyId),
-		defenderBotId = positiveId(c.DefenderBotId, i.CampaignDefenderBotId),
-	}
-end
-
-local function mirrorMotor()
-	emit("motor_left", readVar("attack_support_motor_left"),
-		"wave_cmd", readVar("attack_support_wave_cmd"),
-		"test", readVar("attack_support_motor_test"),
-		"test_done", readVar("attack_support_motor_test_done"))
-	emit("place_defense", readVar("defense_support_place"),
-		"pad", readVar("defense_support_entry_rr"),
-		"stage", readVar("defense_support_stage"))
-	emit("place_enemy_defense", readVar("enemy_defense_place"),
-		"pad", readVar("enemy_defense_entry_rr"),
-		"stage", readVar("enemy_defense_stage"))
-	emit("place_attack", "pad", readVar("attack_support_entry_rr"),
-		"stage", readVar("attack_support_stage"))
-	emit("place_enemy_attack", "pad", readVar("enemy_attack_entry_rr"),
-		"stage", readVar("enemy_attack_stage"))
-	emit("motor_enemy_left", readVar("enemy_attack_motor_left"),
-		"wave_cmd", readVar("enemy_attack_wave_cmd"),
-		"test", readVar("enemy_attack_motor_test"),
-		"test_done", readVar("enemy_attack_motor_test_done"))
-	emit("e2", "e2_test", readVar("support_e2_test"),
-		"e2_stage", readVar("support_e2_stage"),
-		"e2_fail", readVar("support_e2_fail"),
-		"e2_lz", readVar("support_e2_lz"),
-		"e2_flag", readVar("support_e2_flag"))
+local function commands()
+    return (BotApi and BotApi.Commands) or nil
 end
 
 local state = {
-	quant = 0,
-	ordered = {},
-	identityPublished = false,
-	attackMission = nil,
+    generation = 0,
+    quant = 0,
+    attackMission = false,
+    managed = {},
+    flagHistory = {},
+    recentlyLost = {},
+    planDirty = true,
 }
 
-local function publishIdentity(id, isRetry)
-	if id.attacking == false then
-		state.attackMission = false
-		return false
-	end
-	if id.attacking ~= true then return false end
-	state.attackMission = true
-	local sc = scene()
-	if not sc or not sc.SetVar then
-		if not isRetry then log("identity_publish_skipped", "Scene.SetVar_missing") end
-		return false
-	end
-	-- bot.main.lua routes this module only onto the non-human Team A attack-support
-	-- controller and explicitly excludes DefenderBotId. Therefore this controller's
-	-- own playerId is the authoritative same-side owner. DefenderBotId is a defender-
-	-- side identity in human-attack missions and must never own friendly support.
-	local ownerId = positiveId(id.playerId, 0)
-	if ownerId <= 0 then
-		if not isRetry or state.quant % 50 == 0 then
-			log("identity_publish_skipped", "support_controller_owner_unresolved",
-				"controller_playerId", id.playerId,
-				"defenderBotId", id.defenderBotId,
-				"team", id.team,
-				"retry", tostring(isRetry == true))
-		end
-		return false
-	end
-	sc:SetVar("id_attack_support", ownerId)
-	sc:SetVar("attack_support_ready", 1)
-	sc:SetVar("attack_support_use_mi", 1)
-	state.identityPublished = true
-	log("identity_published", "id_attack_support", ownerId,
-		"controller_playerId", id.playerId,
-		"defenderBotId", id.defenderBotId,
-		"team", id.team,
-		"retry", tostring(isRetry == true),
-		"mi_waves", 1)
-	return true
+local function squadKey(squad)
+    return tostring(squad)
 end
 
-local function pickFlagName()
-	local sc = scene()
-	if not sc or type(sc.Flags) ~= "table" then return nil end
-	local names = {}
-	for _, flag in pairs(sc.Flags) do
-		if flag and flag.name then
-			names[#names + 1] = tostring(flag.name)
-		end
-	end
-	if #names == 0 then return nil end
-	return names[math.random(#names)]
+local function flagRelation(flag)
+    local i = instance()
+    local owner = tostring(flag and flag.occupant or "")
+    local team = tostring(i.team or "")
+    local enemy = tostring(i.enemyTeam or "")
+    if owner ~= "" and owner == team then return "friendly" end
+    if owner ~= "" and owner == enemy then return "enemy" end
+    return "neutral"
 end
 
-local function orderSquad(squad)
-	local c = cmds()
-	if not c then return end
-	local flagName = pickFlagName()
-	if flagName and c.CaptureFlag then
-		local ok = pcall(function() c:CaptureFlag(squad, flagName) end)
-		if ok then
-			log("order_capture", tostring(squad), flagName)
-			return
-		end
-	end
-	if c.SeekAndDestroy then
-		pcall(function() c:SeekAndDestroy(squad) end)
-		log("order_seek", tostring(squad))
-	end
+local function updateFlags()
+    local sc = scene()
+    if not sc or type(sc.Flags) ~= "table" then return end
+    for _, flag in pairs(sc.Flags) do
+        if flag and flag.name then
+            local name = tostring(flag.name)
+            local now = flagRelation(flag)
+            local before = state.flagHistory[name]
+            if before == "friendly" and now ~= "friendly" then
+                state.recentlyLost[name] = true
+                state.planDirty = true
+                emit("flag_lost", name, "now", now)
+            elseif before and before ~= "friendly" and now == "friendly" then
+                state.recentlyLost[name] = nil
+                state.planDirty = true
+                emit("flag_captured", name)
+            end
+            state.flagHistory[name] = now
+        end
+    end
 end
 
-local function orderNewSquads()
-	local sc = scene()
-	if not sc or type(sc.Squads) ~= "table" then return end
-	for _, squad in pairs(sc.Squads) do
-		local key = tostring(squad)
-		if not state.ordered[key] then
-			state.ordered[key] = true
-			orderSquad(squad)
-		end
-	end
+local function settleEntry(key, generation)
+    local e = state.managed[key]
+    if not e or generation ~= state.generation then return end
+    e.settled = true
+    state.planDirty = true
+    emit("settled", key, "after_ms", SETTLE_MS)
 end
 
-local MIRROR_QUANTS = 200
+local function discoverSquads()
+    local sc = scene()
+    local ev = events()
+    if not sc or type(sc.Squads) ~= "table" then return end
 
-local function mirrorEngineState()
-	emit("mirror", "q", state.quant,
-		"faction_support_army", readVar("faction_support_army"))
-	emit("mirror", "attack_support",
-		"armed", readVar("attack_support_armed"),
-		"wave_num", readVar("attack_support_wave_num"),
-		"waves_left", readVar("attack_support_waves_left"))
-	emit("mirror", "enemy_defense",
-		"armed", readVar("enemy_defense_armed"),
-		"wave_num", readVar("enemy_defense_wave_num"),
-		"waves_left", readVar("enemy_defense_waves_left"),
-		"garrison_place", readVar("enemy_defense_place"),
-		"garrison_group", readVar("enemy_defense_group"))
-	emit("mirror", "defense_support",
-		"armed", readVar("defense_support_armed"),
-		"wave_num", readVar("defense_support_wave_num"),
-		"waves_left", readVar("defense_support_waves_left"))
-	emit("mirror", "enemy_attack",
-		"armed", readVar("enemy_attack_armed"),
-		"wave_num", readVar("enemy_attack_wave_num"),
-		"waves_left", readVar("enemy_attack_waves_left"))
+    local seen = {}
+    for _, squad in pairs(sc.Squads) do
+        local key = squadKey(squad)
+        seen[key] = true
+        if not state.managed[key] then
+            state.managed[key] = {
+                squad = squad,
+                settled = false,
+                lastRole = nil,
+                lastTarget = nil,
+            }
+            state.planDirty = true
+            emit("discovered", key, "source", "manual_transfer_or_native_team_unit")
+            if ev and ev.SetQuantTimer then
+                local generation = state.generation
+                ev:SetQuantTimer(function() settleEntry(key, generation) end, SETTLE_MS)
+            else
+                state.managed[key].settled = true
+            end
+        end
+    end
+
+    for key, _ in pairs(state.managed) do
+        if not seen[key] then
+            state.managed[key] = nil
+            state.planDirty = true
+            emit("pruned", key)
+        end
+    end
+end
+
+local function sortedGroups()
+    local groups = {}
+    for key, e in pairs(state.managed) do
+        if e.settled then
+            groups[#groups + 1] = { key = key, entry = e }
+        end
+    end
+    table.sort(groups, function(a, b) return a.key < b.key end)
+    return groups
+end
+
+local function sortedObjectives()
+    local sc = scene()
+    local objectives = {}
+    if not sc or type(sc.Flags) ~= "table" then return objectives end
+    for _, flag in pairs(sc.Flags) do
+        if flag and flag.name then
+            local relation = flagRelation(flag)
+            if relation ~= "friendly" then
+                objectives[#objectives + 1] = {
+                    name = tostring(flag.name),
+                    relation = relation,
+                    lost = state.recentlyLost[tostring(flag.name)] == true,
+                }
+            end
+        end
+    end
+    table.sort(objectives, function(a, b)
+        if a.lost ~= b.lost then return a.lost end
+        if a.relation ~= b.relation then
+            if a.relation == "enemy" then return true end
+            if b.relation == "enemy" then return false end
+        end
+        return a.name < b.name
+    end)
+    return objectives
+end
+
+local function issue(entry, role, target)
+    if entry.lastRole == role and entry.lastTarget == target then return end
+    local cmd = commands()
+    if not cmd then return end
+
+    local ordered = false
+    if target and cmd.CaptureFlag then
+        local ok, result = pcall(function()
+            return cmd:CaptureFlag(entry.squad, target)
+        end)
+        ordered = ok and result ~= false
+    end
+    if not ordered and cmd.SeekAndDestroy then
+        local ok = pcall(function() cmd:SeekAndDestroy(entry.squad) end)
+        ordered = ok
+    end
+    if ordered then
+        entry.lastRole = role
+        entry.lastTarget = target
+        emit("order", role, "target", tostring(target), "squad", tostring(entry.squad))
+    else
+        emit("order_failed", role, "target", tostring(target), "squad", tostring(entry.squad))
+    end
+end
+
+local function plan()
+    if not state.planDirty then return end
+    state.planDirty = false
+
+    local groups = sortedGroups()
+    local objectives = sortedObjectives()
+    emit("plan", "groups", #groups, "objectives", #objectives)
+    if #groups == 0 then return end
+
+    if #objectives == 0 then
+        -- All objectives are friendly. Do not spam movement; let local AI fight/hold.
+        emit("hold_all_friendly", "groups", #groups)
+        return
+    end
+
+    -- First pass: spread distinct groups across distinct objectives.
+    local distinct = math.min(#groups, #objectives)
+    for i = 1, distinct do
+        local obj = objectives[i]
+        issue(groups[i].entry, obj.lost and "counterattack" or "attack", obj.name)
+    end
+
+    -- Excess groups reinforce objectives round-robin instead of dogpiling one flag.
+    for i = distinct + 1, #groups do
+        local obj = objectives[((i - distinct - 1) % #objectives) + 1]
+        issue(groups[i].entry, "reinforce", obj.name)
+    end
 end
 
 local function onGameStart()
-	state.quant = 0
-	state.ordered = {}
-	state.identityPublished = false
-	state.attackMission = nil
-	local id = identity()
-	log("game_start", "playerId", id.playerId, "attacking", tostring(id.attacking), "army", id.army)
-	publishIdentity(id, false)
-	if id.attacking == true then
-		log("mode", "mi_wave_delivery", "lua_spawn", "disabled_av_safe")
-	elseif id.attacking == false then
-		log("mode", "idle_not_attacking")
-	else
-		log("mode", "role_unresolved_retry_pending")
-	end
+    state.generation = state.generation + 1
+    state.quant = 0
+    state.managed = {}
+    state.flagHistory = {}
+    state.recentlyLost = {}
+    state.planDirty = true
+
+    local i = instance()
+    local c = conquest()
+    state.attackMission = c.Attacking == true
+    emit(
+        "GameStart",
+        "playerId", tostring(i.playerId),
+        "team", tostring(i.team),
+        "army", tostring(i.army),
+        "attacking", tostring(c.Attacking),
+        "auto_spawn", "disabled",
+        "auto_transfer", "disabled",
+        "support_waves", "disabled"
+    )
+    if state.attackMission then
+        emit("armed", "manual_transfer_only", "settle_ms", SETTLE_MS)
+    else
+        emit("idle", "not_human_attack")
+    end
 end
 
 local function onQuant()
-	state.quant = state.quant + 1
-	if not state.identityPublished and state.attackMission ~= false then
-		publishIdentity(identity(), true)
-	end
-	orderNewSquads()
-	if state.quant > 0 and state.quant % 400 == 0 then
-		local sc = scene()
-		if sc and type(sc.Squads) == "table" then
-			for _, squad in pairs(sc.Squads) do
-				orderSquad(squad)
-			end
-		end
-	end
-	if DEBUG_LOG and state.quant % 200 == 0 then
-		log("heartbeat", "q", state.quant)
-	end
-	if state.quant % MIRROR_QUANTS == 0 then
-		mirrorMotor()
-		mirrorEngineState()
-	end
+    if not state.attackMission then return end
+    state.quant = state.quant + 1
+    if state.quant % SCAN_QUANTS ~= 0 then return end
+    discoverSquads()
+    updateFlags()
+    plan()
 end
 
 local function onGameEnd()
-	log("game_end", "q", state.quant)
+    emit("GameEnd", "managed", tostring(#sortedGroups()))
 end
 
 local function safeEvent(name, fn)
-	return function(...)
-		local ok, err = pcall(fn, ...)
-		if not ok then
-			log("event_error", name, tostring(err))
-		end
-	end
+    return function(...)
+        local ok, err = pcall(fn, ...)
+        if not ok then emit("event_error", name, tostring(err)) end
+    end
 end
 
-local id0 = identity()
-log("module_loaded", "playerId", id0.playerId, "team", id0.team, "attacking", tostring(id0.attacking))
-
 local ev = events()
+local i = instance()
+emit("module_loaded", "playerId", tostring(i.playerId), "team", tostring(i.team))
 if ev and ev.Subscribe then
-	ev:Subscribe(ev.GameStart, safeEvent("GameStart", onGameStart))
-	ev:Subscribe(ev.Quant, safeEvent("Quant", onQuant))
-	ev:Subscribe(ev.GameEnd, safeEvent("GameEnd", onGameEnd))
-	log("armed", "identity_orders_mi_waves")
+    ev:Subscribe(ev.GameStart, safeEvent("GameStart", onGameStart))
+    ev:Subscribe(ev.Quant, safeEvent("Quant", onQuant))
+    ev:Subscribe(ev.GameEnd, safeEvent("GameEnd", onGameEnd))
+    emit("subscribed")
 else
-	log("not_armed", "BotApi.Events_missing")
+    emit("not_armed", "BotApi.Events_missing")
 end
