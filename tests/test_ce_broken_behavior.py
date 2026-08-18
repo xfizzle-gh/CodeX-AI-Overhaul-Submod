@@ -128,13 +128,22 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{waypoint "attack_support_entry_a"}', evac)
         self.assertIn('{waypoint "attack_support_entry_b"}', evac)
         self.assertIn("enemy_spawnside$", evac)
+        self.assertIn("{tag _user_ally}", evac)
+        self.assertIn("{tag def_sup_src}", evac)
+        self.assertIn('{op "=="}', evac)
+        self.assertIn("{value 1}", evac)
+        self.assertIn("{value 2}", evac)
         self.assertNotIn("{able", evac)
         self.assertNotIn("fight", evac)
         self.assertIn("{weapon_prepare off}", evac)
         arrive = beh.split("broken/surrender_arrive", 1)[1].split("broken/surrender_expire", 1)[0]
         self.assertIn('{"delete"', arrive)
+        self.assertIn("aio_morale_surrender_at_egress", arrive)
         self.assertIn("{tag spawn_a}", arrive)
         self.assertIn("{tag spawn_b}", arrive)
+        self.assertIn('{"for selector" aio_morale_surrender_at_egress}', arrive)
+        self.assertNotIn('{zone "attack_support_entry_a"}', arrive)
+        self.assertNotIn('{zone "attack_support_entry_b"}', arrive)
         self.assertIn("aio_morale_surrendering", lua)
         self.assertIn("aio_morale_surrender_evacuating", lua)
 
@@ -164,6 +173,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "aio_morale_surrender_presenting",
             "aio_morale_surrender_expire",
             "aio_morale_surrender_evacuating",
+            "aio_morale_surrender_at_egress",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
 
