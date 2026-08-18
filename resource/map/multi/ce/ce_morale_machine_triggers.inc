@@ -280,6 +280,44 @@
 					}
 				}
 				{actions
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+									{tag
+										{tag aio_morale_shaken}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_morale_just_shaken}
+									}
+									{tag
+										{tag aio_morale_panic}
+									}
+									{tag
+										{tag aio_morale_recovering}
+									}
+									{tag
+										{tag aio_cmd_encouraged}
+									}
+								}
+							}
+						}
+						{effect aio_morale_just_panic}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -388,30 +426,6 @@
 							{op "="}
 							{value 1}
 						}
-					}
-					{"effect"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_panic}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{tag
-										{tag aio_morale_just_panic}
-									}
-									{tag
-										{tag aio_morale_broken}
-									}
-								}
-							}
-						}
-						{effect aio_morale_just_panic}
 					}
 					{"delay"
 						{time 3}

@@ -17,5 +17,6 @@ Production path:
 - Broken: Panic + (lost or shock), after 8s `just_panic`. Not every Panic. Not players.
 - Owned: drop orders, free move, rally to commander.
 - 20s still lost → `aio_morale_regroup_failed`
-- Recover when linked and not suppressed: Broken → Panic → existing Panic→Shaken→Steady. Releases owned.
+- Recover when still linked and not suppressed: Broken → Panic → existing Panic→Shaken→Steady. `aio_morale_owned` stays until Steady.
+- Regroup fail is a per-actor 20s watch, cancelled if that actor is linked again.
 - Surrender: Broken + failed regroup + enemy human <30m. Not elite/steadfast/independent/player. No delete, no player 0.

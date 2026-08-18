@@ -36,9 +36,6 @@
 											{tag player}
 										}
 										{tag
-											{tag aio_morale_owned}
-										}
-										{tag
 											{tag aio_morale_surrendering}
 										}
 									}
@@ -71,9 +68,6 @@
 									}
 									{tag
 										{tag player}
-									}
-									{tag
-										{tag aio_morale_owned}
 									}
 								}
 							}
@@ -128,6 +122,32 @@
 							{advance_ratio 0.1}
 							{retreat_ratio 4}
 						}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_owned}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{exclude
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag aio_morale_watching_regroup}
+									}
+								}
+							}
+						}
+						{effect aio_morale_watch_regroup}
 					}
 					{"set_i"
 						{var "ce_morale_diag_broken$"}
@@ -234,6 +254,9 @@
 									{prop
 										{prop human}
 									}
+									{relation
+										{relation ally}
+									}
 								}
 								{exclude
 									{state
@@ -244,7 +267,7 @@
 									}
 								}
 							}
-							{sort
+							{sort}
 								{type entity}
 								{mode nearest}
 							}
@@ -287,85 +310,7 @@
 					}
 				}
 			}
-			{"conquest_enhanced_mechanics/broken/regroup_fail"
-				{condition
-					{terms
-						{"1.cmp_i"
-							{var "enable_ce_morale_mechanic$"}
-							{op ">"}
-							{value 0}
-						}
-						{"2.entities"
-							{selector
-								{source advanced}
-								{group
-									{select
-										{tag
-											{tag aio_morale_broken}
-										}
-									}
-									{include
-										{tag
-											{tag aio_cmd_lost}
-										}
-										{prop
-											{prop human}
-										}
-									}
-									{exclude
-										{state
-											{state dead}
-										}
-										{state
-											{state user_control}
-										}
-										{tag
-											{tag aio_cmd_linked}
-										}
-										{tag
-											{tag aio_morale_regroup_failed}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				{actions
-					{"delay"
-						{time 20}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_broken}
-									}
-								}
-								{include
-									{tag
-										{tag aio_cmd_lost}
-									}
-								}
-								{exclude
-									{state
-										{state user_control}
-									}
-									{tag
-										{tag aio_cmd_linked}
-									}
-								}
-							}
-						}
-						{tag_add aio_morale_regroup_failed}
-					}
-					{"trigger"
-						{name "conquest_enhanced_mechanics/broken/regroup_fail"}
-					}
-				}
-			}
+
 			{"conquest_enhanced_mechanics/broken/recover"
 				{condition
 					{terms
@@ -486,15 +431,6 @@
 										{tag
 											{tag aio_morale_surrendering}
 										}
-										{tag
-											{tag aio_morale_elite}
-										}
-										{tag
-											{tag aio_steadfast}
-										}
-										{tag
-											{tag aio_cmd_independent}
-										}
 									}
 								}
 							}
@@ -548,15 +484,6 @@
 									}
 									{tag
 										{tag aio_morale_surrendering}
-									}
-									{tag
-										{tag aio_morale_elite}
-									}
-									{tag
-										{tag aio_steadfast}
-									}
-									{tag
-										{tag aio_cmd_independent}
 									}
 								}
 							}

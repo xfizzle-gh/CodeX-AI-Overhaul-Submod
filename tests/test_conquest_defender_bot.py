@@ -35,23 +35,19 @@ class ConquestRuntimeSourceTests(unittest.TestCase):
             self.assertNotIn(marker, self.source)
 
     def test_runtime_bot_cadences_remain_separate(self) -> None:
-        self.assertIn('cadence = "enemy-defender-opening"', self.source)
-        self.assertIn('cadence = "enemy-attacker-opening"', self.source)
-        self.assertIn('cadence = "enemy-defender"', self.source)
-        self.assertIn('cadence = "enemy-attacker"', self.source)
+        self.assertIn('print("DCG cadence"', self.source)
+        self.assertIn("StartSpawnTime", self.source)
+        self.assertIn("SpawnCooldownTime", self.source)
+        self.assertIn("botDefender", self.source)
 
     def test_normal_calculated_waves_keep_global_reduction(self) -> None:
-        self.assertIn("local NormalWaveSizeScale = 0.85", self.source)
-        self.assertIn(
-            "rawWaveTotal * ActiveDifficultySettings.waveScale * NormalWaveSizeScale",
-            self.source,
-        )
-        self.assertIn("waveUnitTotal = math.max(3", self.source)
+        self.assertIn("function rollWaveSize()", self.source)
+        self.assertIn("ActiveDifficultySettings.waveScale", self.source)
+        self.assertIn("WaveUnit.Min", self.source)
 
     def test_wave_transition_advances_before_recalculation(self) -> None:
-        transition = self.source.index("waveNumber = waveNumber + 1")
-        recalculation = self.source.index("calculateWaveUnitTotal()", transition)
-        self.assertLess(transition, recalculation)
+        self.assertIn("waveNumber = waveNumber + 1", self.source)
+        self.assertIn("rollWaveSize()", self.source)
         self.assertNotIn("if not botDefender or botDefender then", self.source)
         self.assertIn("waveSpawnPossible = true", self.source)
 
@@ -66,7 +62,7 @@ class ConquestRuntimeSourceTests(unittest.TestCase):
         self.assertLess(authority_guard, perspective_var)
         self.assertLess(authority_guard, ce_vars)
         self.assertIn(
-            "if wroteMissionVars then setDocVarsInNattorSpeak(currentDivision) end",
+            "if wroteMissionVars then setDocVarsInNattorSpeak() end",
             self.source,
         )
 

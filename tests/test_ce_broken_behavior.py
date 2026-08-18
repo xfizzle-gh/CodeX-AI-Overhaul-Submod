@@ -31,8 +31,13 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         human = HUMAN.read_text(encoding="utf-8")
         done = human.split('{on "recovered_from_broken"', 1)[1].split('{on "', 1)[0]
         self.assertIn('{tags add "aio_morale_panic"}', done)
-        self.assertIn('{tags remove "aio_morale_owned"}', done)
+        self.assertIn("aio_cmd_linked", done)
+        self.assertNotIn('{tags remove "aio_morale_owned"}', done)
         self.assertIn('{call "recovering_from_panic"}', done)
+        steady = human.split('{on "recovered_from_shaken"', 1)[1].split('{on "', 1)[0]
+        self.assertIn('{tags remove "aio_morale_owned"}', steady)
+        self.assertIn("aio_morale_watch_regroup", human)
+        self.assertIn("{relation ally}", BEH.read_text(encoding="utf-8"))
 
     def test_surrender_requires_broken_and_failed_regroup(self) -> None:
         text = BEH.read_text(encoding="utf-8")
@@ -40,6 +45,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("aio_morale_broken", surr)
         self.assertIn("aio_morale_regroup_failed", surr)
         self.assertNotIn("aio_morale_panic", surr.split("{actions", 1)[0])
+        apply = HUMAN.read_text(encoding="utf-8").split('{on "aio_morale_surrender"', 1)[1]
+        self.assertIn("{if rand", apply)
         self.assertNotIn("{delete}", text)
         self.assertNotIn('{player "0"}', text)
         self.assertNotIn("{control AI}", text)

@@ -2959,6 +2959,9 @@
 										{tag
 											{tag repairing}
 										}
+										{tag
+											{tag aio_morale_owned}
+										}
 										{state
 											{state inactive}
 										}
@@ -4806,6 +4809,9 @@
 										{tag
 											{tag repairing}
 										}
+										{tag
+											{tag aio_morale_owned}
+										}
 										{state
 											{state inactive}
 										}
@@ -5411,6 +5417,9 @@
 										}
 										{tag
 											{tag repairing}
+										}
+										{tag
+											{tag aio_morale_owned}
 										}
 										{state
 											{state inactive}
@@ -6999,6 +7008,9 @@
 										}
 										{tag
 											{tag repairing}
+										}
+										{tag
+											{tag aio_morale_owned}
 										}
 										{tag
 											{tag _lua_ignore}
