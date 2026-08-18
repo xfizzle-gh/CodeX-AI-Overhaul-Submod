@@ -76,7 +76,6 @@
 			{"ce_morale_diag_recover"}
 			{"ce_morale_diag_recover_panic"}
 			{"ce_morale_diag_recover_clear"}
-			{"ce_morale_diag_recover_broken"}
 			{"ce_morale_diag_suppressed_state"}
 			{"ce_morale_diag_broken"}
 			{"ce_morale_diag_retreat"}

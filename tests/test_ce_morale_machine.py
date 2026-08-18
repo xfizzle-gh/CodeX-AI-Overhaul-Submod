@@ -23,34 +23,24 @@ class CeMoraleMachineTests(unittest.TestCase):
         self.assertIn("observe_ai", text)
         self.assertIn("shaken_entry", text)
         self.assertIn("escalate_panic", text)
-        self.assertIn("escalate_broken", text)
         self.assertIn("start_recover", text)
-        self.assertIn("broken=", lua)
-        self.assertIn("recover_broken=", lua)
 
     def test_fe_recovery_handlers_exist(self) -> None:
         human = HUMAN.read_text(encoding="utf-8")
         self.assertIn('{on "recovering_from_shaken"', human)
         self.assertIn('{on "recovering_from_panic"', human)
-        self.assertIn('{on "recovering_from_broken"', human)
         self.assertIn('{on "recovered_from_shaken"', human)
         self.assertIn('{on "recovered_from_panic"', human)
-        self.assertIn('{on "recovered_from_broken"', human)
         self.assertIn("{delay 20", human)
         self.assertIn('{tags remove "aio_morale_recovering"}', human)
         panic_done = human.split('{on "recovered_from_panic"', 1)[1].split('{on "', 1)[0]
         self.assertIn('{tags add "aio_morale_shaken"}', panic_done)
         self.assertNotIn('{tags add "aio_morale_did_recover"}', panic_done)
-        broken_done = human.split('{on "recovered_from_broken"', 1)[1].split('{on "', 1)[0]
-        self.assertIn('{tags add "aio_morale_panic"}', broken_done)
-        self.assertNotIn('{tags add "aio_morale_did_recover"}', broken_done)
         machine = MACHINE.read_text(encoding="utf-8")
         self.assertIn("{effect recovering_from_shaken}", machine)
         self.assertIn("{effect recovering_from_panic}", machine)
-        self.assertIn("{effect recovering_from_broken}", machine)
         self.assertIn("{state suppressed}", machine)
         self.assertIn("aio_morale_recovering", machine)
-        self.assertIn('{tags remove "aio_morale_recovering"}', human)
         effect = machine.split("{effect aio_morale_just_shaken}", 1)[0]
         effect = effect[effect.rfind('{"effect"'):]
         self.assertIn("{state inactive}", effect)
@@ -69,19 +59,14 @@ class CeMoraleMachineTests(unittest.TestCase):
         self.assertIn("{tag_remove aio_morale_recovering}", cancel)
         self.assertIn("{state suppressed}", cancel)
 
-    def test_pr_c_excludes_movement_and_surrender(self) -> None:
+    def test_pr_c_excludes_later_phases(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")
-        self.assertIn("aio_morale_broken", text)
-        self.assertIn("{name aio_morale_broken}", MOD.read_text(encoding="utf-8"))
+        self.assertNotIn("aio_morale_broken", text)
         self.assertNotIn("aio_morale_retreating", text)
         self.assertNotIn("aio_morale_surrendering", text)
-        self.assertNotIn("aio_morale_owned", text)
-        self.assertNotIn("advance_ratio", text)
-        self.assertNotIn("ai_move", text)
-        self.assertNotIn('{player "0"}', text)
-        self.assertNotIn("{delete}", text)
-        lua = LUA.read_text(encoding="utf-8")
-        self.assertNotIn("CE_MORALE_RECOVER", lua)
+        self.assertNotIn("{name aio_morale_broken}", MOD.read_text(encoding="utf-8"))
+        self.assertNotIn("escalate_broken", text)
+        self.assertNotIn("recovering_from_broken", HUMAN.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
