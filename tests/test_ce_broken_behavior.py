@@ -114,6 +114,30 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("enable_ce_morale_autodemo", lua.split("function StartCeMoraleProbeLog()", 1)[1][:400])
         self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/white_flag.def").is_file())
 
+    def test_surrender_evacuates_to_own_entry(self) -> None:
+        beh = BEH.read_text(encoding="utf-8")
+        lua = CONQ.read_text(encoding="utf-8")
+        evac = beh.split("broken/surrender_evacuate", 1)[1].split("broken/surrender_arrive", 1)[0]
+        self.assertIn("{tag aio_morale_surrender_evacuating}", evac)
+        self.assertIn("{tag aio_morale_surrendering}", evac)
+        self.assertIn("{state dead}", evac)
+        self.assertIn("{state inactive}", evac)
+        self.assertIn("{state user_control}", evac)
+        self.assertIn("{tag player}", evac)
+        self.assertIn("{action move}", evac)
+        self.assertIn('{waypoint "attack_support_entry_a"}', evac)
+        self.assertIn('{waypoint "attack_support_entry_b"}', evac)
+        self.assertIn("enemy_spawnside$", evac)
+        self.assertNotIn("{able", evac)
+        self.assertNotIn("fight", evac)
+        self.assertIn("{weapon_prepare off}", evac)
+        arrive = beh.split("broken/surrender_arrive", 1)[1].split("broken/surrender_expire", 1)[0]
+        self.assertIn('{"delete"', arrive)
+        self.assertIn("{tag spawn_a}", arrive)
+        self.assertIn("{tag spawn_b}", arrive)
+        self.assertIn("aio_morale_surrendering", lua)
+        self.assertIn("aio_morale_surrender_evacuating", lua)
+
     def test_effect_selectors_exclude_dead_inactive(self) -> None:
         parts = BEH.read_text(encoding="utf-8").split('{"effect"')
         self.assertGreater(len(parts), 1)
@@ -139,6 +163,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "aio_morale_surrender_fx",
             "aio_morale_surrender_presenting",
             "aio_morale_surrender_expire",
+            "aio_morale_surrender_evacuating",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
 

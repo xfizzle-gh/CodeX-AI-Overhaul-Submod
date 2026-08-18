@@ -906,6 +906,424 @@
 					}
 				}
 			}
+			{"conquest_enhanced_mechanics/broken/surrender_evacuate"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_surrender_fx}
+										}
+									}
+									{include
+										{tag
+											{tag aio_morale_surrendering}
+										}
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag player}
+										}
+										{tag
+											{tag aio_morale_surrender_evacuating}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_fx}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+								}
+							}
+						}
+						{tag_add aio_morale_surrender_evacuating}
+					}
+					{"delay"
+						{time 2}
+					}
+					{"actor_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{drop "orders sensor senseless"}
+						{fire_mode hold}
+						{move_mode free}
+						{weapon_prepare off}
+						{ai_move
+							{mode enable}
+						}
+					}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+							{"action"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_surrender_evacuating}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{state
+												{state user_control}
+											}
+											{tag
+												{tag player}
+											}
+										}
+									}
+								}
+								{drop "orders sensor senseless"}
+								{action move}
+								{waypoint "attack_support_entry_a"}
+							}
+						}
+						{"default"
+							{"action"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_surrender_evacuating}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{state
+												{state user_control}
+											}
+											{tag
+												{tag player}
+											}
+										}
+									}
+								}
+								{drop "orders sensor senseless"}
+								{action move}
+								{waypoint "attack_support_entry_b"}
+							}
+						}
+					}
+					{"delay"
+						{time 2}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/surrender_evacuate"}
+					}
+				}
+			}
+			{"conquest_enhanced_mechanics/broken/surrender_arrive"
+				{condition
+					{expression "1 & 2 & ((3 & 4) | (5 & 6))"}
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_surrender_evacuating}
+										}
+									}
+									{include
+										{tag
+											{tag aio_morale_surrendering}
+										}
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag player}
+										}
+									}
+								}
+							}
+						}
+						{"3.cmp_i"
+							{var "enemy_spawnside$"}
+							{op "=="}
+							{value 1}
+						}
+						{"4.near"
+							{units
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_surrender_evacuating}
+										}
+									}
+									{include
+										{tag
+											{tag aio_morale_surrendering}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag player}
+										}
+									}
+								}
+							}
+							{near_to
+								{ignore_captured_by_user 0}
+								{tag spawn_a}
+							}
+							{distance 200}
+						}
+						{"5.cmp_i"
+							{var "enemy_spawnside$"}
+							{op "=="}
+							{value 2}
+						}
+						{"6.near"
+							{units
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_surrender_evacuating}
+										}
+									}
+									{include
+										{tag
+											{tag aio_morale_surrendering}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag player}
+										}
+									}
+								}
+							}
+							{near_to
+								{ignore_captured_by_user 0}
+								{tag spawn_b}
+							}
+							{distance 200}
+						}
+					}
+				}
+				{actions
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+							{"delete"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_surrender_evacuating}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{zone
+												{zone "attack_support_entry_a"}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{state
+												{state user_control}
+											}
+											{tag
+												{tag player}
+											}
+										}
+									}
+								}
+							}
+						}
+						{"default"
+							{"delete"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_surrender_evacuating}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{zone
+												{zone "attack_support_entry_b"}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{state
+												{state user_control}
+											}
+											{tag
+												{tag player}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					{"delay"
+						{time 2}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/surrender_arrive"}
+					}
+				}
+			}
 			{"conquest_enhanced_mechanics/broken/surrender_expire"
 				{condition
 					{terms
@@ -1063,6 +1481,9 @@
 										{tag
 											{tag aio_morale_surrender_presenting}
 										}
+										{tag
+											{tag aio_morale_surrender_evacuating}
+										}
 									}
 									{include
 										{state
@@ -1092,6 +1513,9 @@
 										}
 										{tag
 											{tag aio_morale_surrender_presenting}
+										}
+										{tag
+											{tag aio_morale_surrender_evacuating}
 										}
 									}
 									{include
@@ -1470,6 +1894,36 @@
 							}
 						}
 						{tag_remove aio_morale_surrender_expire}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+								}
+								{include
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_surrender_evacuating}
 					}
 					{"delay"
 						{time 0.5}
