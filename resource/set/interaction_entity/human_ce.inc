@@ -404,7 +404,15 @@
 		{tags remove "ai_tank_crew"}
 		{tags remove "inf_need_to_attack"}
 		
-		{tags remove "ignore_recrew"}	
+		{tags remove "ignore_recrew"}
+		{tags remove "aio_morale_broken"}
+		{tags remove "aio_morale_owned"}
+		{tags remove "aio_morale_regrouping"}
+		{tags remove "aio_morale_regroup_failed"}
+		{tags remove "aio_morale_moving_to_rally"}
+		{tags remove "aio_morale_surrendering"}
+		{tags remove "aio_morale_surrender_cand"}
+		{tags remove "aio_morale_watching_regroup"}
 		{view stop "beacon_fx"}
 	}
 

@@ -17,6 +17,15 @@ class CeBrokenBehaviorTests(unittest.TestCase):
     def test_stack_and_lua_yield(self) -> None:
         self.assertIn("ce_broken_behavior_triggers.inc", DCG.read_text(encoding="utf-8"))
         self.assertIn("aio_morale_owned", CONQ.read_text(encoding="utf-8"))
+        lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
+        self.assertIn("retreat=", lua)
+        self.assertIn("observe_surrender", BEH.read_text(encoding="utf-8"))
+        die = HUMAN.read_text(encoding="utf-8").split('{on "die"', 1)[1].split("{on ", 1)[0]
+        self.assertIn('{tags remove "aio_morale_broken"}', die)
+        hold = BEH.read_text(encoding="utf-8").split("{drop \"orders sensor senseless\"}", 1)[0]
+        hold = hold[hold.rfind('{"actor_state"'):]
+        self.assertIn("{state dead}", hold)
+        self.assertIn("{state inactive}", hold)
         self.assertIn("aio_morale_owned", WAVES.read_text(encoding="utf-8"))
         dcg = (ROOT / "resource/map/multi/dcg_script.inc").read_text(encoding="utf-8")
         tune = dcg.split("cmp_def_1_tune", 1)[1].split("cmp_def_2_tune", 1)[0]

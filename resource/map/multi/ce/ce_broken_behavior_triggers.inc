@@ -61,6 +61,12 @@
 								}
 								{exclude
 									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
 										{state user_control}
 									}
 									{tag
@@ -125,6 +131,14 @@
 										{tag aio_morale_broken}
 									}
 								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
 							}
 						}
 						{tag_add aio_morale_regrouping}
@@ -144,6 +158,12 @@
 									}
 								}
 								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
 									{state
 										{state user_control}
 									}
@@ -228,6 +248,9 @@
 											{state dead}
 										}
 										{state
+											{state inactive}
+										}
+										{state
 											{state user_control}
 										}
 										{tag
@@ -260,6 +283,9 @@
 								{exclude
 									{state
 										{state dead}
+									}
+									{state
+										{state inactive}
 									}
 									{state
 										{state user_control}
@@ -547,6 +573,12 @@
 								}
 								{exclude
 									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
 										{state user_control}
 									}
 									{tag
@@ -569,16 +601,55 @@
 						}
 						{tag_remove aio_morale_surrender_cand}
 					}
+					{"delay"
+						{time 2}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/surrender"}
+					}
+				}
+			}
+			{"conquest_enhanced_mechanics/broken/observe_surrender"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_surrendering}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
 					{"set_i"
 						{var "ce_morale_diag_surrender$"}
 						{op "="}
 						{value 1}
 					}
 					{"delay"
-						{time 2}
+						{time 1}
 					}
 					{"trigger"
-						{name "conquest_enhanced_mechanics/broken/surrender"}
+						{name "conquest_enhanced_mechanics/broken/observe_surrender"}
 					}
 				}
 			}
@@ -592,6 +663,15 @@
 									{select
 										{tag
 											{tag aio_morale_owned}
+										}
+										{tag
+											{tag aio_morale_broken}
+										}
+										{tag
+											{tag aio_morale_surrendering}
+										}
+										{tag
+											{tag aio_morale_surrender_cand}
 										}
 									}
 									{include
@@ -613,6 +693,24 @@
 									{tag
 										{tag aio_morale_owned}
 									}
+									{tag
+										{tag aio_morale_broken}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{tag
+										{tag aio_morale_surrender_cand}
+									}
+									{tag
+										{tag aio_morale_regrouping}
+									}
+									{tag
+										{tag aio_morale_regroup_failed}
+									}
+									{tag
+										{tag aio_morale_moving_to_rally}
+									}
 								}
 								{include
 									{state
@@ -622,6 +720,96 @@
 							}
 						}
 						{tag_remove aio_morale_owned}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_broken}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_surrendering}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_cand}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_surrender_cand}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_regrouping}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_regrouping}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_regroup_failed}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_regroup_failed}
 					}
 					{"delay"
 						{time 2}
