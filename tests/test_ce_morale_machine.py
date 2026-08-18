@@ -16,37 +16,44 @@ class CeMoraleMachineTests(unittest.TestCase):
         self.assertIn("ce_morale_machine_triggers.inc", DCG.read_text(encoding="utf-8"))
         lua = LUA.read_text(encoding="utf-8")
         self.assertIn("CE_MORALE_SYS", lua)
-        self.assertIn("recover=", lua)
         self.assertIn("recover_panic=", lua)
-        self.assertIn("RECOVER_FAIL", lua)
         self.assertIn("RECOVER_PANIC_FAIL", lua)
 
-    def test_pr_c_is_shaken_panic_and_full_recovery(self) -> None:
+    def test_pressure_and_panic_bind_matched_actor(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")
-        self.assertIn("pressure_see_enemy", text)
-        self.assertIn("see_enemy", text)
-        self.assertIn("observe_suppressed_state", text)
-        self.assertIn("escalate_panic", text)
-        self.assertIn("recover_shaken", text)
-        self.assertIn("recover_panic", text)
-        self.assertIn("ce_morale_diag_recover_panic$", text)
-        self.assertIn("sys_autodemo", text)
-        self.assertIn("ce_morale_diag_shaken$", text)
-        self.assertIn("{state user_control}", text)
+        pressure = text.split("pressure_contact", 1)[1].split("expire_just_shaken", 1)[0]
+        self.assertIn('{"tag pair"}', pressure)
+        self.assertIn('{"for selector" aio_morale_saw_enemy}', pressure)
+        self.assertIn("{tag aio_morale_saw_enemy}", pressure)
+        self.assertNotIn("{state user_control}", pressure)
+        escalate = text.split("escalate_panic", 1)[1].split("recover_panic", 1)[0]
+        self.assertIn('{"tag pair"}', escalate)
+        self.assertIn('{"for selector" aio_morale_saw_panic}', escalate)
+        self.assertIn("{tag aio_morale_saw_panic}", escalate)
+        self.assertIn("aio_morale_just_shaken", escalate)
+        self.assertIn("aio_morale_recent_pressure", escalate)
+
+    def test_recovery_latches_after_transition_and_requires_pressure_expiry(self) -> None:
+        text = MACHINE.read_text(encoding="utf-8")
+        recover_panic = text.split("recover_panic", 1)[1].split("recover_shaken", 1)[0]
+        self.assertIn("aio_morale_recent_pressure", recover_panic)
+        self.assertLess(
+            recover_panic.find("{tag_remove aio_morale_panic}"),
+            recover_panic.find("ce_morale_diag_recover_panic$"),
+        )
+        recover_shaken = text.split('{"conquest_enhanced_mechanics/morale/recover_shaken"', 1)[1]
+        self.assertIn("aio_morale_recent_pressure", recover_shaken)
+        self.assertLess(
+            recover_shaken.find("{tag_remove aio_morale_shaken}"),
+            recover_shaken.find("ce_morale_diag_recover$"),
+        )
+
+    def test_pr_c_excludes_later_phases(self) -> None:
+        text = MACHINE.read_text(encoding="utf-8")
         self.assertNotIn("aio_morale_broken", text)
         self.assertNotIn("aio_morale_retreating", text)
         self.assertNotIn("aio_morale_surrendering", text)
-        self.assertNotIn("aio_cmd_", text)
-        panic_idx = text.find("recover_panic")
-        shaken_idx = text.find("recover_shaken")
-        self.assertGreater(shaken_idx, 0)
-        self.assertGreater(panic_idx, 0)
-
-    def test_modifiers_are_shaken_and_panic_only(self) -> None:
-        text = MOD.read_text(encoding="utf-8")
-        self.assertIn("{name aio_morale_shaken}", text)
-        self.assertIn("{name aio_morale_panic}", text)
-        self.assertNotIn("aio_morale_broken", text)
+        self.assertNotIn("{name aio_morale_broken}", MOD.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
