@@ -50,15 +50,17 @@ class CeMoraleMachineTests(unittest.TestCase):
         recover_fx = recover_fx[recover_fx.rfind('{"effect"'):]
         self.assertIn("{state inactive}", recover_fx)
 
-    def test_pressure_is_suppressed_and_cancels_recovery(self) -> None:
+    def test_pressure_is_suppressed_and_start_recover_matches_fe(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")
         entry = text.split("shaken_entry", 1)[1].split("escalate_panic", 1)[0]
         self.assertIn("{state suppressed}", entry)
         self.assertNotIn("see_actors", entry)
         self.assertNotIn("gamezone", text)
-        cancel = text.split("refresh_cancel_recover", 1)[1].split("start_recover", 1)[0]
-        self.assertIn("{tag_remove aio_morale_recovering}", cancel)
-        self.assertIn("{state suppressed}", cancel)
+        self.assertNotIn("refresh_cancel_recover", text)
+        recover = text.split("start_recover", 1)[1].split("observe_recover", 1)[0]
+        self.assertIn("{effect recovering_from_shaken}", recover)
+        self.assertIn("{effect recovering_from_panic}", recover)
+        self.assertNotIn("{state suppressed}", recover)
 
     def test_pr_c_excludes_later_phases(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")

@@ -443,85 +443,6 @@
 					}
 				}
 			}
-			{"conquest_enhanced_mechanics/morale/refresh_cancel_recover"
-				{condition
-					{terms
-						{"1.cmp_i"
-							{var "enable_ce_morale_mechanic$"}
-							{op ">"}
-							{value 0}
-						}
-						{"2.entities"
-							{selector
-								{source advanced}
-								{group
-									{select
-										{prop
-											{prop human}
-										}
-									}
-									{include
-										{state
-											{state suppressed}
-										}
-										{tag
-											{tag aio_morale_recovering}
-										}
-									}
-									{exclude
-										{state
-											{state dead}
-										}
-										{state
-											{state inactive}
-										}
-										{state
-											{state linked}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				{actions
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{prop
-										{prop human}
-									}
-								}
-								{include
-									{state
-										{state suppressed}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{state
-										{state linked}
-									}
-								}
-							}
-						}
-						{tag_remove aio_morale_recovering}
-					}
-					{"delay"
-						{time 1}
-					}
-					{"trigger"
-						{name "conquest_enhanced_mechanics/morale/refresh_cancel_recover"}
-					}
-				}
-			}
 			{"conquest_enhanced_mechanics/morale/start_recover"
 				{condition
 					{terms
@@ -544,22 +465,19 @@
 											{prop human}
 										}
 									}
-									{exclude
-										{state
-											{state suppressed}
-										}
-										{state
-											{state dead}
-										}
-										{state
-											{state inactive}
-										}
-										{state
-											{state linked}
-										}
-										{tag
-											{tag aio_morale_recovering_from_shaken}
-										}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
+									{tag
+										{tag aio_morale_recovering_from_shaken}
+									}
 									}
 								}
 								{group
@@ -573,22 +491,19 @@
 											{prop human}
 										}
 									}
-									{exclude
-										{state
-											{state suppressed}
-										}
-										{state
-											{state dead}
-										}
-										{state
-											{state inactive}
-										}
-										{state
-											{state linked}
-										}
-										{tag
-											{tag aio_morale_recovering_from_panic}
-										}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
+									{tag
+										{tag aio_morale_recovering_from_panic}
+									}
 									}
 								}
 							}
@@ -611,9 +526,6 @@
 									}
 								}
 								{exclude
-									{state
-										{state suppressed}
-									}
 									{state
 										{state dead}
 									}
@@ -647,9 +559,6 @@
 								}
 								{exclude
 									{state
-										{state suppressed}
-									}
-									{state
 										{state dead}
 									}
 									{state
@@ -667,7 +576,7 @@
 						{effect recovering_from_panic}
 					}
 					{"delay"
-						{time 1}
+						{time 0.1}
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/morale/start_recover"}
