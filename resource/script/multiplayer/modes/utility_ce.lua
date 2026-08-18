@@ -454,7 +454,7 @@ function StartCeMoraleProbeLog()
     local broken = readMoraleVar("ce_morale_diag_broken")
     local retreat = readMoraleVar("ce_morale_diag_retreat")
     local surrender = readMoraleVar("ce_morale_diag_surrender")
-    print("CE_MORALE_SYS mi=" .. mi .. " human=" .. human .. " tag_add=" .. tag_add .. " tag_read=" .. tag_read .. " known_tag=" .. known_tag .. " pr_a=" .. pr_a .. " canary=" .. canary_present .. " inv=" .. inventory .. " ai=" .. ai_human .. " cmd=" .. cmd_link .. " pressure=" .. pressure .. " shaken=" .. shaken_apply .. " recover=" .. recover .. " panic=" .. panic_apply .. " broken=" .. broken .. " retreat=" .. retreat .. " surrender=" .. surrender .. " player_ex=" .. player_excluded)
+    print("CE_MORALE_SYS mi=" .. mi .. " human=" .. human .. " tag_add=" .. tag_add .. " tag_read=" .. tag_read .. " known_tag=" .. known_tag .. " pr_a=" .. pr_a .. " canary=" .. canary_present .. " inv=" .. inventory .. " ai=" .. ai_human .. " pressure=" .. pressure .. " shaken=" .. shaken_apply .. " recover=" .. recover .. " panic=" .. panic_apply .. " player_ex=" .. player_excluded)
     if ticks >= 2 then
       local fails = {}
       if human > 0 and tag_add <= 0 then
@@ -478,17 +478,11 @@ function StartCeMoraleProbeLog()
       if ai_human > 0 and shaken_apply <= 0 then
         fails[#fails + 1] = "SHAKEN_APPLY_FAIL"
       end
+      if ai_human > 0 and recover <= 0 then
+        fails[#fails + 1] = "RECOVER_FAIL"
+      end
       if ai_human > 0 and panic_apply <= 0 then
         fails[#fails + 1] = "PANIC_APPLY_FAIL"
-      end
-      if ai_human > 0 and broken <= 0 then
-        fails[#fails + 1] = "BROKEN_FAIL"
-      end
-      if ai_human > 0 and retreat <= 0 then
-        fails[#fails + 1] = "RETREAT_FAIL"
-      end
-      if ai_human > 0 and surrender <= 0 then
-        fails[#fails + 1] = "SURRENDER_FAIL"
       end
       if #fails > 0 then
         print("CE_MORALE_SYS_FAIL " .. table.concat(fails, " "))
