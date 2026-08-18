@@ -2,10 +2,10 @@
 
 Stacked on #118. No Broken, retreat, surrender, or command.
 
-`CE_MORALE_SYS mi=1 human=1 tag_add=1 tag_read=1 known_tag=1 pr_a=1 canary=1 inv=1 ai=1 pressure=1 suppressed=0 shaken=1 recover=1 recover_panic=1 panic=1 player_ex=1`
+`CE_MORALE_SYS mi=1 human=1 tag_add=1 tag_read=1 known_tag=1 pr_a=1 canary=1 inv=1 ai=1 pressure=1 suppressed=1 shaken=1 recover=1 recover_panic=1 panic=1 player_ex=1`
 
-- Combat pressure is a proven `see_actors` + `tag pair` proxy, not a proven suppression signal.
-- Only the matched soldier is Shaken or promoted to Panic.
-- One contact cannot instantly Steady → Panic (`just_shaken` hold).
-- Recovery requires per-actor `recent_pressure` expiry and latches only after the tag transition.
-- Players may be Shaken/Panic. Autodemo still uses one AI human.
+- Production pressure is native `{state suppressed}` (observed in Conquest `game.log`).
+- Only suppressed soldiers are Shaken or promoted to Panic.
+- Per-actor age tags tick together, oldest first. No serialized per-actor sleep.
+- Recovery requires pressure expiry and latches after the tag transition.
+- Players may be Shaken/Panic.

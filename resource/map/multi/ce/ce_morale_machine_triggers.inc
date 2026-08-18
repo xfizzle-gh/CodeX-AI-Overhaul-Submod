@@ -1,7 +1,7 @@
 ; PR C: Steady -> Shaken -> Panic, then Panic -> Shaken -> Steady.
-; see_actors+tag pair is a combat-pressure proxy, not a proven suppression signal.
-; Players may be Shaken/Panic. No Broken/retreat/surrender/command.
-			{"conquest_enhanced_mechanics/morale/observe_suppressed_state"
+; Production pressure is native {state suppressed}, proven in Conquest game.log.
+; Age tags tick everyone together, oldest first. Players may be Shaken/Panic.
+			{"conquest_enhanced_mechanics/morale/pressure_suppressed"
 				{condition
 					{terms
 						{"1.cmp_i"
@@ -22,44 +22,6 @@
 										{state
 											{state suppressed}
 										}
-									}
-								}
-							}
-						}
-					}
-				}
-				{actions
-					{"set_i"
-						{var "ce_morale_diag_suppressed_state$"}
-						{op "="}
-						{value 1}
-					}
-					{"delay"
-						{time 2}
-					}
-					{"trigger"
-						{name "conquest_enhanced_mechanics/morale/observe_suppressed_state"}
-					}
-				}
-			}
-			{"conquest_enhanced_mechanics/morale/pressure_contact"
-				{condition
-					{terms
-						{"1.cmp_i"
-							{var "enable_ce_morale_mechanic$"}
-							{op ">"}
-							{value 0}
-						}
-						{"2.see_actors"
-							{selector
-								{source advanced}
-								{group
-									{select
-										{prop
-											{prop human}
-										}
-									}
-									{include
 										{state
 											{state operatable}
 										}
@@ -74,19 +36,6 @@
 									}
 								}
 							}
-							{enemy
-								{type human}
-								{state "not dead"}
-							}
-							{distance
-								{mode near_than}
-								{meters 50}
-							}
-							{detection located}
-							{tag
-								{"tag pair"}
-								{"for selector" aio_morale_saw_enemy}
-							}
 						}
 					}
 				}
@@ -97,77 +46,228 @@
 						{value 1}
 					}
 					{"set_i"
+						{var "ce_morale_diag_suppressed_state$"}
+						{op "="}
+						{value 1}
+					}
+					{"set_i"
 						{var "ce_morale_diag_shaken$"}
 						{op "="}
 						{value 1}
 					}
 					{"entity_state"
 						{selector
-							{tag aio_morale_saw_enemy}
-							{type human}
-							{state operatable}
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+									{state
+										{state operatable}
+									}
+								}
+								{exclude
+									{tag
+										{tag aio_morale_panic}
+									}
+								}
+							}
 						}
 						{tag_add aio_morale_shaken}
 					}
 					{"entity_state"
 						{selector
-							{tag aio_morale_saw_enemy}
-							{type human}
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+								{exclude
+									{tag
+										{tag aio_morale_panic}
+									}
+								}
+							}
 						}
 						{tag_add aio_morale_recent_pressure}
 					}
 					{"entity_state"
 						{selector
-							{tag aio_morale_saw_enemy}
-							{type human}
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+								{exclude
+									{tag
+										{tag aio_morale_panic}
+									}
+								}
+							}
 						}
 						{tag_add aio_morale_just_shaken}
 					}
 					{"entity_state"
 						{selector
-							{tag aio_morale_saw_enemy}
-							{type human}
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
 						}
-						{tag_remove aio_morale_saw_enemy}
+						{tag_remove aio_morale_p1}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_p2}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_p3}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_add aio_morale_p0}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_j1}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_j2}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_add aio_morale_j0}
 					}
 					{"delay"
-						{time 3}
+						{time 2}
 					}
 					{"trigger"
-						{name "conquest_enhanced_mechanics/morale/pressure_contact"}
+						{name "conquest_enhanced_mechanics/morale/pressure_suppressed"}
 					}
 				}
 			}
-			{"conquest_enhanced_mechanics/morale/expire_just_shaken"
+			{"conquest_enhanced_mechanics/morale/age_tick"
 				{condition
 					{terms
 						{"1.cmp_i"
 							{var "enable_ce_morale_mechanic$"}
 							{op ">"}
 							{value 0}
-						}
-						{"2.entities"
-							{selector
-								{source advanced}
-								{group
-									{select
-										{tag
-											{tag aio_morale_just_shaken}
-										}
-									}
-									{include
-										{prop
-											{prop human}
-										}
-									}
-									{exclude
-										{tag
-											{tag aio_morale_just_shaken_busy}
-										}
-									}
-								}
-								{amount 1}
-							}
 						}
 					}
 				}
@@ -178,7 +278,7 @@
 							{group
 								{select
 									{tag
-										{tag aio_morale_just_shaken}
+										{tag aio_morale_p3}
 									}
 								}
 								{include
@@ -187,17 +287,13 @@
 									}
 								}
 								{exclude
-									{tag
-										{tag aio_morale_just_shaken_busy}
+									{state
+										{state suppressed}
 									}
 								}
 							}
-							{amount 1}
 						}
-						{tag_add aio_morale_just_shaken_busy}
-					}
-					{"delay"
-						{time 6}
+						{tag_remove aio_morale_recent_pressure}
 					}
 					{"entity_state"
 						{selector
@@ -205,7 +301,7 @@
 							{group
 								{select
 									{tag
-										{tag aio_morale_just_shaken_busy}
+										{tag aio_morale_p3}
 									}
 								}
 								{include
@@ -213,10 +309,14 @@
 										{prop human}
 									}
 								}
+								{exclude
+									{state
+										{state suppressed}
+									}
+								}
 							}
-							{amount 1}
 						}
-						{tag_remove aio_morale_just_shaken}
+						{tag_remove aio_morale_p3}
 					}
 					{"entity_state"
 						{selector
@@ -224,61 +324,21 @@
 							{group
 								{select
 									{tag
-										{tag aio_morale_just_shaken_busy}
+										{tag aio_morale_p3}
 									}
 								}
 								{include
 									{prop
 										{prop human}
 									}
-								}
-							}
-							{amount 1}
-						}
-						{tag_remove aio_morale_just_shaken_busy}
-					}
-					{"delay"
-						{time 0.1}
-					}
-					{"trigger"
-						{name "conquest_enhanced_mechanics/morale/expire_just_shaken"}
-					}
-				}
-			}
-			{"conquest_enhanced_mechanics/morale/expire_pressure"
-				{condition
-					{terms
-						{"1.cmp_i"
-							{var "enable_ce_morale_mechanic$"}
-							{op ">"}
-							{value 0}
-						}
-						{"2.entities"
-							{selector
-								{source advanced}
-								{group
-									{select
-										{tag
-											{tag aio_morale_recent_pressure}
-										}
-									}
-									{include
-										{prop
-											{prop human}
-										}
-									}
-									{exclude
-										{tag
-											{tag aio_morale_pressure_busy}
-										}
+									{state
+										{state suppressed}
 									}
 								}
-								{amount 1}
 							}
 						}
+						{tag_remove aio_morale_p3}
 					}
-				}
-				{actions
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -292,105 +352,117 @@
 									{prop
 										{prop human}
 									}
+									{state
+										{state suppressed}
+									}
 								}
 								{exclude
 									{tag
-										{tag aio_morale_pressure_busy}
+										{tag aio_morale_p0}
+									}
+									{tag
+										{tag aio_morale_p1}
+									}
+									{tag
+										{tag aio_morale_p2}
+									}
+									{tag
+										{tag aio_morale_p3}
 									}
 								}
 							}
-							{amount 1}
 						}
-						{tag_add aio_morale_pressure_busy}
+						{tag_add aio_morale_p0}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_p2}
+							{type human}
+						}
+						{tag_add aio_morale_p3}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_p2}
+							{type human}
+						}
+						{tag_remove aio_morale_p2}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_p1}
+							{type human}
+						}
+						{tag_add aio_morale_p2}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_p1}
+							{type human}
+						}
+						{tag_remove aio_morale_p1}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_p0}
+							{type human}
+						}
+						{tag_add aio_morale_p1}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_p0}
+							{type human}
+						}
+						{tag_remove aio_morale_p0}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_j2}
+							{type human}
+						}
+						{tag_remove aio_morale_just_shaken}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_j2}
+							{type human}
+						}
+						{tag_remove aio_morale_j2}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_j1}
+							{type human}
+						}
+						{tag_add aio_morale_j2}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_j1}
+							{type human}
+						}
+						{tag_remove aio_morale_j1}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_j0}
+							{type human}
+						}
+						{tag_add aio_morale_j1}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_j0}
+							{type human}
+						}
+						{tag_remove aio_morale_j0}
 					}
 					{"delay"
-						{time 5}
-					}
-					{"switch"
-						{"case"
-							{condition
-								{type see_actors}
-								{selector
-									{tag aio_morale_pressure_busy}
-									{type human}
-									{state operatable}
-								}
-								{enemy
-									{type human}
-									{state "not dead"}
-								}
-								{distance
-									{mode near_than}
-									{meters 50}
-								}
-								{detection located}
-							}
-							{"entity_state"
-								{selector
-									{source advanced}
-									{group
-										{select
-											{tag
-												{tag aio_morale_pressure_busy}
-											}
-										}
-										{include
-											{prop
-												{prop human}
-											}
-										}
-									}
-									{amount 1}
-								}
-								{tag_remove aio_morale_pressure_busy}
-							}
-						}
-						{"default"
-							{"entity_state"
-								{selector
-									{source advanced}
-									{group
-										{select
-											{tag
-												{tag aio_morale_pressure_busy}
-											}
-										}
-										{include
-											{prop
-												{prop human}
-											}
-										}
-									}
-									{amount 1}
-								}
-								{tag_remove aio_morale_recent_pressure}
-							}
-							{"entity_state"
-								{selector
-									{source advanced}
-									{group
-										{select
-											{tag
-												{tag aio_morale_pressure_busy}
-											}
-										}
-										{include
-											{prop
-												{prop human}
-											}
-										}
-									}
-									{amount 1}
-								}
-								{tag_remove aio_morale_pressure_busy}
-							}
-						}
-					}
-					{"delay"
-						{time 0.1}
+						{time 2}
 					}
 					{"trigger"
-						{name "conquest_enhanced_mechanics/morale/expire_pressure"}
+						{name "conquest_enhanced_mechanics/morale/age_tick"}
 					}
 				}
 			}
@@ -402,18 +474,21 @@
 							{op ">"}
 							{value 0}
 						}
-						{"2.see_actors"
+						{"2.entities"
 							{selector
 								{source advanced}
 								{group
 									{select
-										{tag
-											{tag aio_morale_shaken}
+										{prop
+											{prop human}
 										}
 									}
 									{include
-										{prop
-											{prop human}
+										{state
+											{state suppressed}
+										}
+										{tag
+											{tag aio_morale_shaken}
 										}
 										{tag
 											{tag aio_morale_recent_pressure}
@@ -432,19 +507,6 @@
 									}
 								}
 							}
-							{enemy
-								{type human}
-								{state "not dead"}
-							}
-							{distance
-								{mode near_than}
-								{meters 50}
-							}
-							{detection located}
-							{tag
-								{"tag pair"}
-								{"for selector" aio_morale_saw_panic}
-							}
 						}
 					}
 				}
@@ -456,25 +518,53 @@
 					}
 					{"entity_state"
 						{selector
-							{tag aio_morale_saw_panic}
-							{type human}
-							{state operatable}
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+									{tag
+										{tag aio_morale_shaken}
+									}
+									{tag
+										{tag aio_morale_recent_pressure}
+									}
+								}
+								{exclude
+									{tag
+										{tag aio_morale_just_shaken}
+									}
+									{tag
+										{tag aio_morale_panic}
+									}
+								}
+							}
 						}
 						{tag_add aio_morale_panic}
 					}
 					{"entity_state"
 						{selector
-							{tag aio_morale_saw_panic}
-							{type human}
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_panic}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+							}
 						}
 						{tag_remove aio_morale_shaken}
-					}
-					{"entity_state"
-						{selector
-							{tag aio_morale_saw_panic}
-							{type human}
-						}
-						{tag_remove aio_morale_saw_panic}
 					}
 					{"if"
 						{condition
@@ -491,7 +581,7 @@
 						}
 					}
 					{"delay"
-						{time 4}
+						{time 3}
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/morale/escalate_panic"}
@@ -830,19 +920,8 @@
 						{condition
 							{type entities}
 							{selector
-								{source advanced}
-								{group
-									{select
-										{tag
-											{tag aio_morale_shaken}
-										}
-									}
-									{exclude
-										{state
-											{state user_control}
-										}
-									}
-								}
+								{tag aio_morale_autodemo_actor}
+								{type human}
 							}
 						}
 						{"set_i"
@@ -856,39 +935,15 @@
 					}
 					{"entity_state"
 						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_shaken}
-									}
-								}
-								{exclude
-									{state
-										{state user_control}
-									}
-								}
-							}
-							{amount 1}
+							{tag aio_morale_autodemo_actor}
+							{type human}
 						}
 						{tag_add aio_morale_panic}
 					}
 					{"entity_state"
 						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_panic}
-									}
-								}
-								{exclude
-									{state
-										{state user_control}
-									}
-								}
-							}
-							{amount 1}
+							{tag aio_morale_autodemo_actor}
+							{type human}
 						}
 						{tag_remove aio_morale_shaken}
 					}
@@ -911,44 +966,15 @@
 					}
 					{"entity_state"
 						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_panic}
-									}
-								}
-								{exclude
-									{state
-										{state user_control}
-									}
-								}
-							}
-							{amount 1}
+							{tag aio_morale_autodemo_actor}
+							{type human}
 						}
 						{tag_add aio_morale_shaken}
 					}
 					{"entity_state"
 						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_shaken}
-									}
-								}
-								{include
-									{tag
-										{tag aio_morale_panic}
-									}
-								}
-								{exclude
-									{state
-										{state user_control}
-									}
-								}
-							}
-							{amount 1}
+							{tag aio_morale_autodemo_actor}
+							{type human}
 						}
 						{tag_remove aio_morale_panic}
 					}
@@ -960,15 +986,17 @@
 								{group
 									{select
 										{tag
+											{tag aio_morale_autodemo_actor}
+										}
+									}
+									{include
+										{tag
 											{tag aio_morale_shaken}
 										}
 									}
 									{exclude
 										{tag
 											{tag aio_morale_panic}
-										}
-										{state
-											{state user_control}
 										}
 									}
 								}
@@ -985,23 +1013,8 @@
 					}
 					{"entity_state"
 						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_shaken}
-									}
-								}
-								{exclude
-									{state
-										{state user_control}
-									}
-									{tag
-										{tag aio_morale_panic}
-									}
-								}
-							}
-							{amount 1}
+							{tag aio_morale_autodemo_actor}
+							{type human}
 						}
 						{tag_remove aio_morale_shaken}
 					}

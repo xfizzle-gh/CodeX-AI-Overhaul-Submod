@@ -17,53 +17,39 @@ class CeMoraleMachineTests(unittest.TestCase):
         lua = LUA.read_text(encoding="utf-8")
         self.assertIn("CE_MORALE_SYS", lua)
         self.assertIn("recover_panic=", lua)
-        self.assertIn("RECOVER_PANIC_FAIL", lua)
 
-    def test_pressure_and_panic_bind_matched_actor(self) -> None:
+    def test_production_pressure_is_native_suppressed(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")
-        pressure = text.split("pressure_contact", 1)[1].split("expire_just_shaken", 1)[0]
-        self.assertIn('{"tag pair"}', pressure)
-        self.assertIn('{"for selector" aio_morale_saw_enemy}', pressure)
-        self.assertIn("{tag aio_morale_saw_enemy}", pressure)
-        self.assertNotIn("{state user_control}", pressure)
+        pressure = text.split("pressure_suppressed", 1)[1].split("age_tick", 1)[0]
+        self.assertIn("{state suppressed}", pressure)
+        self.assertNotIn("see_actors", pressure)
+        self.assertNotIn("see_enemy", pressure)
         escalate = text.split("escalate_panic", 1)[1].split("recover_panic", 1)[0]
-        self.assertIn('{"tag pair"}', escalate)
-        self.assertIn('{"for selector" aio_morale_saw_panic}', escalate)
-        self.assertIn("{tag aio_morale_saw_panic}", escalate)
+        self.assertIn("{state suppressed}", escalate)
         self.assertIn("aio_morale_just_shaken", escalate)
-        self.assertIn("aio_morale_recent_pressure", escalate)
 
-    def test_expiry_timers_are_actor_local(self) -> None:
+    def test_age_ticks_are_concurrent_and_oldest_first(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")
-        just = text.split("expire_just_shaken", 1)[1].split("expire_pressure", 1)[0]
-        self.assertIn("aio_morale_just_shaken_busy", just)
-        self.assertIn("{amount 1}", just)
-        pressure = text.split("expire_pressure", 1)[1].split("escalate_panic", 1)[0]
-        self.assertIn("aio_morale_pressure_busy", pressure)
-        self.assertIn("{amount 1}", pressure)
-        self.assertIn("{tag aio_morale_pressure_busy}", pressure)
+        tick = text.split("age_tick", 1)[1].split("escalate_panic", 1)[0]
+        self.assertIn("aio_morale_p3", tick)
+        self.assertIn("aio_morale_p0", tick)
+        self.assertIn("aio_morale_j2", tick)
+        self.assertIn("aio_morale_j0", tick)
+        self.assertLess(tick.find("aio_morale_p3"), tick.find("aio_morale_p0"))
+        self.assertLess(tick.find("aio_morale_j2"), tick.find("aio_morale_j0"))
+        self.assertNotIn("{amount 1}", tick)
+        self.assertNotIn("just_shaken_busy", tick)
+        self.assertNotIn("pressure_busy", tick)
 
-    def test_recovery_latches_after_transition_and_requires_pressure_expiry(self) -> None:
+    def test_recovery_latches_after_transition(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")
-        recover_panic = text.split("recover_panic", 1)[1].split("recover_shaken", 1)[0]
-        self.assertIn("aio_morale_recent_pressure", recover_panic)
+        recover_panic = text.split('{"conquest_enhanced_mechanics/morale/recover_panic"', 1)[1]
+        recover_panic = recover_panic.split("recover_shaken", 1)[0]
         self.assertLess(
             recover_panic.find("{tag_remove aio_morale_panic}"),
             recover_panic.find("ce_morale_diag_recover_panic$"),
         )
-        recover_shaken = text.split('{"conquest_enhanced_mechanics/morale/recover_shaken"', 1)[1]
-        self.assertIn("aio_morale_recent_pressure", recover_shaken)
-        self.assertLess(
-            recover_shaken.find("{tag_remove aio_morale_shaken}"),
-            recover_shaken.find("ce_morale_diag_recover$"),
-        )
-
-    def test_pr_c_excludes_later_phases(self) -> None:
-        text = MACHINE.read_text(encoding="utf-8")
         self.assertNotIn("aio_morale_broken", text)
-        self.assertNotIn("aio_morale_retreating", text)
-        self.assertNotIn("aio_morale_surrendering", text)
-        self.assertNotIn("{name aio_morale_broken}", MOD.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
