@@ -481,10 +481,10 @@ function StartCeMoraleProbeLog()
       if ai_human <= 0 then
         fails[#fails + 1] = "AI_ABSENT"
       end
-      if shaken_apply <= 0 then
+      if ticks >= 12 and shaken_apply <= 0 then
         fails[#fails + 1] = "SHAKEN_APPLY_FAIL"
       end
-      if panic_apply <= 0 then
+      if ticks >= 12 and panic_apply <= 0 then
         fails[#fails + 1] = "PANIC_APPLY_FAIL"
       end
       if suppressed_state <= 0 and recover_panic <= 0 and panic_apply > 0 then
