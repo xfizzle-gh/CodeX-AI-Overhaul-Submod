@@ -439,6 +439,150 @@
 						}
 						{tag_add aio_morale_p0}
 					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_rp0}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_rp1}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_rp2}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_rp3}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_rs0}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_rs1}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_rs2}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_rs3}
+					}
 					{"delay"
 						{time 2}
 					}
@@ -644,6 +788,319 @@
 						}
 						{tag_remove aio_morale_j0}
 					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_rp3}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+									{tag
+										{tag aio_morale_panic}
+									}
+								}
+								{exclude
+									{state
+										{state suppressed}
+									}
+									{tag
+										{tag aio_morale_recent_pressure}
+									}
+								}
+							}
+						}
+						{tag_add aio_morale_shaken}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_rp3}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_panic}
+									}
+									{tag
+										{tag aio_morale_shaken}
+									}
+								}
+								{exclude
+									{state
+										{state suppressed}
+									}
+								}
+							}
+						}
+						{tag_add aio_morale_recovered_panic}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_recovered_panic}
+							{type human}
+						}
+						{tag_remove aio_morale_panic}
+					}
+					{"if"
+						{condition
+							{type entities}
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_recovered_panic}
+										}
+									}
+									{exclude
+										{state
+											{state suppressed}
+										}
+									}
+								}
+							}
+						}
+						{"set_i"
+							{var "ce_morale_diag_recover_panic$"}
+							{op "="}
+							{value 1}
+						}
+					}
+					{"if"
+						{condition
+							{type entities}
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_recovered_panic}
+										}
+									}
+									{exclude
+										{state
+											{state suppressed}
+										}
+									}
+								}
+							}
+						}
+						{"set_i"
+							{var "ce_morale_diag_recover$"}
+							{op "="}
+							{value 1}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_recovered_panic}
+							{type human}
+						}
+						{tag_remove aio_morale_recovered_panic}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rp3}
+							{type human}
+						}
+						{tag_remove aio_morale_rp3}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rp2}
+							{type human}
+						}
+						{tag_add aio_morale_rp3}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rp2}
+							{type human}
+						}
+						{tag_remove aio_morale_rp2}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rp1}
+							{type human}
+						}
+						{tag_add aio_morale_rp2}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rp1}
+							{type human}
+						}
+						{tag_remove aio_morale_rp1}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rp0}
+							{type human}
+						}
+						{tag_add aio_morale_rp1}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rp0}
+							{type human}
+						}
+						{tag_remove aio_morale_rp0}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_rs3}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+									{tag
+										{tag aio_morale_shaken}
+									}
+								}
+								{exclude
+									{state
+										{state suppressed}
+									}
+									{tag
+										{tag aio_morale_panic}
+									}
+									{tag
+										{tag aio_morale_recent_pressure}
+									}
+								}
+							}
+						}
+						{tag_add aio_morale_recovered_shaken}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_recovered_shaken}
+							{type human}
+						}
+						{tag_remove aio_morale_shaken}
+					}
+					{"if"
+						{condition
+							{type entities}
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_recovered_shaken}
+										}
+									}
+									{exclude
+										{state
+											{state suppressed}
+										}
+									}
+								}
+							}
+						}
+						{"set_i"
+							{var "ce_morale_diag_recover$"}
+							{op "="}
+							{value 1}
+						}
+					}
+					{"if"
+						{condition
+							{type entities}
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_recovered_shaken}
+										}
+									}
+									{exclude
+										{state
+											{state suppressed}
+										}
+									}
+								}
+							}
+						}
+						{"set_i"
+							{var "ce_morale_diag_recover_clear$"}
+							{op "="}
+							{value 1}
+						}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_recovered_shaken}
+							{type human}
+						}
+						{tag_remove aio_morale_recovered_shaken}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rs3}
+							{type human}
+						}
+						{tag_remove aio_morale_rs3}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rs2}
+							{type human}
+						}
+						{tag_add aio_morale_rs3}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rs2}
+							{type human}
+						}
+						{tag_remove aio_morale_rs2}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rs1}
+							{type human}
+						}
+						{tag_add aio_morale_rs2}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rs1}
+							{type human}
+						}
+						{tag_remove aio_morale_rs1}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rs0}
+							{type human}
+						}
+						{tag_add aio_morale_rs1}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_morale_rs0}
+							{type human}
+						}
+						{tag_remove aio_morale_rs0}
+					}
 					{"delay"
 						{time 2}
 					}
@@ -774,7 +1231,7 @@
 					}
 				}
 			}
-			{"conquest_enhanced_mechanics/morale/recover_panic"
+			{"conquest_enhanced_mechanics/morale/recover_arm_panic"
 				{condition
 					{terms
 						{"1.cmp_i"
@@ -800,11 +1257,23 @@
 										}
 									}
 									{exclude
+										{state
+											{state suppressed}
+										}
 										{tag
 											{tag aio_morale_recent_pressure}
 										}
-										{state
-											{state suppressed}
+										{tag
+											{tag aio_morale_rp0}
+										}
+										{tag
+											{tag aio_morale_rp1}
+										}
+										{tag
+											{tag aio_morale_rp2}
+										}
+										{tag
+											{tag aio_morale_rp3}
 										}
 									}
 								}
@@ -813,9 +1282,6 @@
 					}
 				}
 				{actions
-					{"delay"
-						{time 8}
-					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -831,102 +1297,38 @@
 									}
 								}
 								{exclude
-									{tag
-										{tag aio_morale_recent_pressure}
-									}
 									{state
 										{state suppressed}
 									}
-								}
-							}
-						}
-						{tag_add aio_morale_shaken}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_panic}
-									}
-								}
-								{include
-									{tag
-										{tag aio_morale_shaken}
-									}
-								}
-								{exclude
 									{tag
 										{tag aio_morale_recent_pressure}
 									}
-								}
-							}
-						}
-						{tag_add aio_morale_recovered_panic}
-					}
-					{"entity_state"
-						{selector
-							{tag aio_morale_recovered_panic}
-							{type human}
-						}
-						{tag_remove aio_morale_panic}
-					}
-					{"if"
-						{condition
-							{type entities}
-							{selector
-								{source advanced}
-								{group
-									{select
-										{tag
-											{tag aio_morale_recovered_panic}
-										}
+									{tag
+										{tag aio_morale_rp0}
 									}
-									{exclude
-										{state
-											{state suppressed}
-										}
+									{tag
+										{tag aio_morale_rp1}
+									}
+									{tag
+										{tag aio_morale_rp2}
+									}
+									{tag
+										{tag aio_morale_rp3}
 									}
 								}
 							}
 						}
-						{"set_i"
-							{var "ce_morale_diag_recover_panic$"}
-							{op "="}
-							{value 1}
-						}
-					}
-					{"if"
-						{condition
-							{type entities}
-							{selector
-								{tag aio_morale_recovered_panic}
-								{type human}
-							}
-						}
-						{"set_i"
-							{var "ce_morale_diag_recover$"}
-							{op "="}
-							{value 1}
-						}
-					}
-					{"entity_state"
-						{selector
-							{tag aio_morale_recovered_panic}
-							{type human}
-						}
-						{tag_remove aio_morale_recovered_panic}
+						{tag_add aio_morale_rp0}
 					}
 					{"delay"
 						{time 2}
 					}
 					{"trigger"
-						{name "conquest_enhanced_mechanics/morale/recover_panic"}
+						{name "conquest_enhanced_mechanics/morale/recover_arm_panic"}
 					}
 				}
 			}
-			{"conquest_enhanced_mechanics/morale/recover_shaken"
+			{"conquest_enhanced_mechanics/morale/recover_arm_shaken"
 				{condition
 					{terms
 						{"1.cmp_i"
@@ -952,6 +1354,9 @@
 										}
 									}
 									{exclude
+										{state
+											{state suppressed}
+										}
 										{tag
 											{tag aio_morale_panic}
 										}
@@ -961,8 +1366,17 @@
 										{tag
 											{tag aio_morale_just_shaken}
 										}
-										{state
-											{state suppressed}
+										{tag
+											{tag aio_morale_rs0}
+										}
+										{tag
+											{tag aio_morale_rs1}
+										}
+										{tag
+											{tag aio_morale_rs2}
+										}
+										{tag
+											{tag aio_morale_rs3}
 										}
 									}
 								}
@@ -971,9 +1385,6 @@
 					}
 				}
 				{actions
-					{"delay"
-						{time 8}
-					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -989,89 +1400,40 @@
 									}
 								}
 								{exclude
+									{state
+										{state suppressed}
+									}
 									{tag
 										{tag aio_morale_panic}
 									}
 									{tag
 										{tag aio_morale_recent_pressure}
 									}
-									{state
-										{state suppressed}
+									{tag
+										{tag aio_morale_just_shaken}
+									}
+									{tag
+										{tag aio_morale_rs0}
+									}
+									{tag
+										{tag aio_morale_rs1}
+									}
+									{tag
+										{tag aio_morale_rs2}
+									}
+									{tag
+										{tag aio_morale_rs3}
 									}
 								}
 							}
 						}
-						{tag_add aio_morale_recovered_shaken}
-					}
-					{"entity_state"
-						{selector
-							{tag aio_morale_recovered_shaken}
-							{type human}
-						}
-						{tag_remove aio_morale_shaken}
-					}
-					{"if"
-						{condition
-							{type entities}
-							{selector
-								{source advanced}
-								{group
-									{select
-										{tag
-											{tag aio_morale_recovered_shaken}
-										}
-									}
-									{exclude
-										{state
-											{state suppressed}
-										}
-									}
-								}
-							}
-						}
-						{"set_i"
-							{var "ce_morale_diag_recover$"}
-							{op "="}
-							{value 1}
-						}
-					}
-					{"if"
-						{condition
-							{type entities}
-							{selector
-								{source advanced}
-								{group
-									{select
-										{tag
-											{tag aio_morale_recovered_shaken}
-										}
-									}
-									{exclude
-										{state
-											{state suppressed}
-										}
-									}
-								}
-							}
-						}
-						{"set_i"
-							{var "ce_morale_diag_recover_clear$"}
-							{op "="}
-							{value 1}
-						}
-					}
-					{"entity_state"
-						{selector
-							{tag aio_morale_recovered_shaken}
-							{type human}
-						}
-						{tag_remove aio_morale_recovered_shaken}
+						{tag_add aio_morale_rs0}
 					}
 					{"delay"
-						{time 4}
+						{time 2}
 					}
 					{"trigger"
-						{name "conquest_enhanced_mechanics/morale/recover_shaken"}
+						{name "conquest_enhanced_mechanics/morale/recover_arm_shaken"}
 					}
 				}
 			}
