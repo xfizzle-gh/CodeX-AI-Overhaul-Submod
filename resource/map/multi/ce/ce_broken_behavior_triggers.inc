@@ -1,5 +1,6 @@
 ; F0: native retreat_ratio is not how FE/Old Boy move Broken units. Rally move is the authority.
 ; Actor-scoped ratios are assist only. Writers must exclude aio_morale_owned. No player seizure.
+; Surrender pose/drop/white flag/35s cleanup adapted from Old Boy Command Structure (walk_giveup_1, inventory drop, white_flag).
 			{"conquest_enhanced_mechanics/broken/acquire"
 				{condition
 					{terms
@@ -636,6 +637,219 @@
 					}
 				}
 			}
+			{"conquest_enhanced_mechanics/broken/surrender_present"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_surrendering}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag player}
+										}
+										{tag
+											{tag aio_morale_surrender_fx}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
+					{"inventory"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{include
+									{with_item
+										{type using}
+										{item "weapon"}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{action drop}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"inventory"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{include
+									{with_item
+										{type using}
+										{item "weapon"}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{action drop}
+					}
+					{"animation"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrender_fx}
+									}
+								}
+							}
+						}
+						{collage walk_giveup_1}
+						{cicledelay 0}
+						{delay 0}
+						{totalTime 99999}
+						{flags loop}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrender_fx}
+									}
+								}
+							}
+						}
+						{effect start_white_flag}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{tag_add aio_morale_surrender_fx}
+					}
+					{"delay"
+						{time 1}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/surrender_present"}
+					}
+				}
+			}
 			{"conquest_enhanced_mechanics/broken/observe_surrender"
 				{condition
 					{terms
@@ -703,6 +917,9 @@
 										{tag
 											{tag aio_morale_watching_regroup}
 										}
+										{tag
+											{tag aio_morale_surrender_fx}
+										}
 									}
 									{include
 										{state
@@ -726,6 +943,9 @@
 										}
 										{tag
 											{tag aio_morale_watching_regroup}
+										}
+										{tag
+											{tag aio_morale_surrender_fx}
 										}
 									}
 									{include

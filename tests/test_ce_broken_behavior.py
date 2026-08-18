@@ -82,10 +82,26 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{control AI}", text)
 
     def test_one_surrender_authority(self) -> None:
-        self.assertEqual(
-            BEH.read_text(encoding="utf-8").count("broken/surrender"),
-            2,
-        )
+        text = BEH.read_text(encoding="utf-8")
+        self.assertEqual(text.count('{"conquest_enhanced_mechanics/broken/surrender"'), 1)
+        self.assertEqual(text.count('{name "conquest_enhanced_mechanics/broken/surrender"}'), 1)
+
+    def test_surrender_presentation_and_cleanup(self) -> None:
+        beh = BEH.read_text(encoding="utf-8")
+        human = HUMAN.read_text(encoding="utf-8")
+        lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
+        self.assertIn("{collage walk_giveup_1}", beh)
+        self.assertIn("{action drop}", beh)
+        self.assertIn("{effect start_white_flag}", beh)
+        self.assertIn('{on "start_white_flag"', human)
+        self.assertIn("{delay 35", human)
+        self.assertIn('{call "delete"}', human)
+        apply = human.split('{on "aio_morale_surrender_apply"', 1)[1]
+        self.assertLess(apply.find('{call "start_white_flag"}'), apply.find("{delay 35"))
+        self.assertNotIn('{player "0"}', beh)
+        self.assertNotIn("{control AI}", beh)
+        self.assertIn("enable_ce_morale_autodemo", lua.split("function StartCeMoraleProbeLog()", 1)[1][:400])
+        self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/white_flag.def").is_file())
 
     def test_effect_selectors_exclude_dead_inactive(self) -> None:
         parts = BEH.read_text(encoding="utf-8").split('{"effect"')

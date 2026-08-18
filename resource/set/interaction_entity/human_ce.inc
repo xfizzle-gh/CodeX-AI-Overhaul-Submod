@@ -412,8 +412,10 @@
 		{tags remove "aio_morale_moving_to_rally"}
 		{tags remove "aio_morale_surrendering"}
 		{tags remove "aio_morale_surrender_cand"}
+		{tags remove "aio_morale_surrender_fx"}
 		{tags remove "aio_morale_watching_regroup"}
 		{view stop "beacon_fx"}
+		{view pause "white_flag"}
 	}
 
 	{on bullet_hit
@@ -746,5 +748,21 @@
 		{tags remove "aio_morale_regrouping"}
 		{able "select" 0}
 		{able "fight" 0}
+		{call "start_white_flag"}
+		{delay 35
+			{if tagged "aio_morale_surrendering"
+				{if not dead
+					{call "stop_white_flag"}
+					{call "delete"}
+				}
+			}
+		}
+	}
+	{on "start_white_flag"
+		{add_view "white_flag" "white_flag" "head"}
+		{view start "white_flag"}
+	}
+	{on "stop_white_flag"
+		{view pause "white_flag"}
 	}
 }
