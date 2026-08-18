@@ -173,6 +173,7 @@ function SetCEMissionVariables(botDefender)
   BotApi.Scene:SetVar("ce_morale_diag_recover", 0)
   BotApi.Scene:SetVar("ce_morale_diag_recover_panic", 0)
   BotApi.Scene:SetVar("ce_morale_diag_recover_clear", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_recover_broken", 0)
   BotApi.Scene:SetVar("ce_morale_diag_suppressed_state", 0)
   BotApi.Scene:SetVar("ce_morale_diag_broken", 0)
   BotApi.Scene:SetVar("ce_morale_diag_retreat", 0)
@@ -460,7 +461,8 @@ function StartCeMoraleProbeLog()
     local retreat = readMoraleVar("ce_morale_diag_retreat")
     local surrender = readMoraleVar("ce_morale_diag_surrender")
     local recover_clear = readMoraleVar("ce_morale_diag_recover_clear")
-    print("CE_MORALE_SYS mi=" .. mi .. " human=" .. human .. " tag_add=" .. tag_add .. " tag_read=" .. tag_read .. " known_tag=" .. known_tag .. " pr_a=" .. pr_a .. " canary=" .. canary_present .. " inv=" .. inventory .. " ai=" .. ai_human .. " pressure=" .. pressure .. " suppressed=" .. suppressed_state .. " shaken=" .. shaken_apply .. " recover=" .. recover .. " recover_panic=" .. recover_panic .. " recover_clear=" .. recover_clear .. " panic=" .. panic_apply .. " player_ex=" .. player_excluded)
+    local recover_broken = readMoraleVar("ce_morale_diag_recover_broken")
+    print("CE_MORALE_SYS mi=" .. mi .. " human=" .. human .. " tag_add=" .. tag_add .. " tag_read=" .. tag_read .. " known_tag=" .. known_tag .. " pr_a=" .. pr_a .. " canary=" .. canary_present .. " inv=" .. inventory .. " ai=" .. ai_human .. " pressure=" .. pressure .. " suppressed=" .. suppressed_state .. " shaken=" .. shaken_apply .. " recover=" .. recover .. " recover_panic=" .. recover_panic .. " recover_clear=" .. recover_clear .. " panic=" .. panic_apply .. " player_ex=" .. player_excluded .. " broken=" .. broken .. " recover_broken=" .. recover_broken)
     if ticks >= 2 then
       local fails = {}
       if human > 0 and tag_add <= 0 then

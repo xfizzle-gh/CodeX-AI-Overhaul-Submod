@@ -126,6 +126,9 @@
 										{tag
 											{tag aio_morale_panic}
 										}
+										{tag
+											{tag aio_morale_broken}
+										}
 									}
 								}
 							}
@@ -180,6 +183,9 @@
 									}
 									{tag
 										{tag aio_morale_panic}
+									}
+									{tag
+										{tag aio_morale_broken}
 									}
 								}
 							}
@@ -310,6 +316,9 @@
 										}
 										{tag
 											{tag aio_morale_panic}
+										}
+										{tag
+											{tag aio_morale_broken}
 										}
 									}
 								}
@@ -459,11 +468,249 @@
 							{value 1}
 						}
 					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_panic}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+									{zone
+										{zone "gamezone"}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
+									{tag
+										{tag aio_morale_just_panic}
+									}
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+							}
+						}
+						{effect aio_morale_just_panic}
+					}
 					{"delay"
 						{time 3}
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/morale/escalate_panic"}
+					}
+				}
+			}
+			{"conquest_enhanced_mechanics/morale/escalate_broken"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{prop
+											{prop human}
+										}
+									}
+									{include
+										{state
+											{state suppressed}
+										}
+										{tag
+											{tag aio_morale_panic}
+										}
+										{zone
+											{zone "gamezone"}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
+										}
+										{tag
+											{tag aio_morale_just_panic}
+										}
+										{tag
+											{tag aio_morale_broken}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
+									}
+								}
+								{include
+									{state
+										{state suppressed}
+									}
+									{tag
+										{tag aio_morale_panic}
+									}
+									{zone
+										{zone "gamezone"}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
+									{tag
+										{tag aio_morale_just_panic}
+									}
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+							}
+						}
+						{tag_add aio_morale_broken}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+									{zone
+										{zone "gamezone"}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_panic}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+									{zone
+										{zone "gamezone"}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_recovering}
+					}
+					{"if"
+						{condition
+							{type entities}
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_broken}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
+										}
+									}
+								}
+							}
+						}
+						{"set_i"
+							{var "ce_morale_diag_broken$"}
+							{op "="}
+							{value 1}
+						}
+					}
+					{"delay"
+						{time 3}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/morale/escalate_broken"}
 					}
 				}
 			}
@@ -593,6 +840,12 @@
 										{tag
 											{tag aio_morale_recovering_from_shaken}
 										}
+										{tag
+											{tag aio_morale_panic}
+										}
+										{tag
+											{tag aio_morale_broken}
+										}
 									}
 								}
 								{group
@@ -624,6 +877,41 @@
 										}
 										{tag
 											{tag aio_morale_recovering_from_panic}
+										}
+										{tag
+											{tag aio_morale_broken}
+										}
+									}
+								}
+								{group
+									{select
+										{tag
+											{tag aio_morale_broken}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+										{zone
+											{zone "gamezone"}
+										}
+									}
+									{exclude
+										{state
+											{state suppressed}
+										}
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
+										}
+										{tag
+											{tag aio_morale_recovering_from_broken}
 										}
 									}
 								}
@@ -708,6 +996,44 @@
 						}
 						{effect recovering_from_panic}
 					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+									{zone
+										{zone "gamezone"}
+									}
+								}
+								{exclude
+									{state
+										{state suppressed}
+									}
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
+									{tag
+										{tag aio_morale_recovering_from_broken}
+									}
+								}
+							}
+						}
+						{effect recovering_from_broken}
+					}
 					{"delay"
 						{time 1}
 					}
@@ -740,6 +1066,9 @@
 										{state
 											{state inactive}
 										}
+										{state
+											{state linked}
+										}
 									}
 								}
 								{group
@@ -754,6 +1083,27 @@
 										}
 										{state
 											{state inactive}
+										}
+										{state
+											{state linked}
+										}
+									}
+								}
+								{group
+									{select
+										{tag
+											{tag aio_morale_did_recover_broken}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
 										}
 									}
 								}
@@ -785,6 +1135,9 @@
 										{state
 											{state inactive}
 										}
+										{state
+											{state linked}
+										}
 									}
 								}
 							}
@@ -813,12 +1166,46 @@
 										{state
 											{state inactive}
 										}
+										{state
+											{state linked}
+										}
 									}
 								}
 							}
 						}
 						{"set_i"
 							{var "ce_morale_diag_recover_clear$"}
+							{op "="}
+							{value 1}
+						}
+					}
+					{"if"
+						{condition
+							{type entities}
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_did_recover_broken}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
+										}
+									}
+								}
+							}
+						}
+						{"set_i"
+							{var "ce_morale_diag_recover_broken$"}
 							{op "="}
 							{value 1}
 						}
