@@ -100,6 +100,17 @@ class MoraleBreedMetadataTests(unittest.TestCase):
         cls.rel = {path.relative_to(BREED_ROOT).as_posix(): path for path in cls.sets}
         cls.legacy = load_legacy_allowlist()
 
+    def test_hidden_marker_definitions_exist(self) -> None:
+        stuff = ROOT / "resource/set/stuff/special"
+        for item in TOKEN_TO_ITEM.values():
+            path = stuff / item
+            self.assertTrue(path.is_file(), path)
+            text = path.read_text(encoding="utf-8")
+            self.assertIn('{entity "secret_doc_bag2"}', text)
+            self.assertIn('{fsm "stuff"}', text)
+            self.assertIn("{size 1 1}", text)
+        self.assertEqual(len(TOKEN_TO_ITEM), 10)
+
     def test_report_and_tsv_exist(self) -> None:
         self.assertTrue(REPORT.is_file())
         self.assertTrue(TSV.is_file())

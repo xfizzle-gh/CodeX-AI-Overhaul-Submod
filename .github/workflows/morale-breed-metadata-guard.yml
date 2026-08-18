@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "resource/set/breed/**"
+      - "resource/set/stuff/special/aio_marker_*"
       - "docs/morale_command_classification.md"
       - "docs/morale_command_classification.tsv"
       - "docs/morale_command_phase0_audit.md"
@@ -15,6 +16,7 @@ on:
       - main
     paths:
       - "resource/set/breed/**"
+      - "resource/set/stuff/special/aio_marker_*"
       - "docs/morale_command_classification.md"
       - "docs/morale_command_classification.tsv"
       - "docs/morale_command_phase0_audit.md"
