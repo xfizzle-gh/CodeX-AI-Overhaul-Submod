@@ -72,6 +72,9 @@
 			{"ce_morale_diag_player_hit"}
 			{"ce_morale_diag_ai_human"}
 			{"ce_morale_diag_cmd_link"}
+			{"ce_morale_diag_cmd_lost"}
+			{"ce_morale_diag_cmd_shock"}
+			{"ce_morale_diag_cmd_encourage"}
 			{"ce_morale_diag_pressure"}
 			{"ce_morale_diag_recover"}
 			{"ce_morale_diag_recover_panic"}

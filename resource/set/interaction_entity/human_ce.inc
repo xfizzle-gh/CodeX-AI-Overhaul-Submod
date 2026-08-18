@@ -465,4 +465,22 @@
 			{tags remove "aio_morale_just_shaken"}
 		}
 	}
+	{on "aio_cmd_encouraged"
+		{delay 0.1
+			{tags remove "aio_morale_panic"}
+			{tags remove "aio_morale_shaken"}
+			{tags remove "aio_morale_recovering"}
+			{tags add "aio_cmd_encouraged"}
+			{tags add "aio_morale_did_recover"}
+			{delay 20
+				{tags remove "aio_cmd_encouraged"}
+			}
+		}
+	}
+	{on "aio_cmd_shock"
+		{tags add "aio_cmd_shock"}
+		{delay 10
+			{tags remove "aio_cmd_shock"}
+		}
+	}
 }

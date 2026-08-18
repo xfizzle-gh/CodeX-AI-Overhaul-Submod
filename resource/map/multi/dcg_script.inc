@@ -16,6 +16,7 @@
 (include "/map/multi/ce/ce_morale_probe_report.inc")
 (include "/map/multi/ce/ce_morale_diag_triggers.inc")
 (include "/map/multi/ce/ce_morale_machine_triggers.inc")
+(include "/map/multi/ce/ce_command_cohesion_triggers.inc")
 
 (include "/map/blow_panels_trigger.inc")
 (include "/map/nikral's trigger.mi")
