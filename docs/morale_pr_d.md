@@ -1,12 +1,21 @@
-# PR D — command / cohesion
+# PR D/E — command, cohesion, resistance
 
-Stacked on `main` after A/B/C. Tags only. No movement seizure, no surrender.
+Fixes vs first #120 head: link is a heartbeat, Weak/Lost come from missing a nearby commander, Discipline resists instead of skipping recovery, commander corpses shock once.
 
-- linked <50 m from junior/primary/senior
-- weak >55 m
-- lost >80 m
-- commanders and independent count as linked
-- Discipline 25 m → `aio_cmd_encouraged` (clears Shaken/Panic)
-- dead commander <30 m → `aio_cmd_shock` for 10 s
+## Command
 
-`CE_MORALE_SYS` adds `cmd_link= cmd_lost= cmd_shock= cmd_encourage=`
+- Pulse: living junior/primary/senior within 50 m → `aio_cmd_linked`
+- Pulse: within 80 m → `aio_cmd_in_range`
+- Recompute: miss two pulses → drop link. In-range but not linked → weak. No in-range → lost
+- Commanders and independent stay linked
+- `see_actors {enemy}` is FE/Old Boy grammar for the other party
+
+## Resistance (existing machine)
+
+- Steadfast / encouraged: do not enter Shaken or escalate to Panic
+- just_shaken hold: lost 3s, low 4s, regular 6s, linked/trained 8s, elite 10s
+- Shaken recover: elite 10s, trained 14s, regular 20s, low 24s
+- Panic recover: elite 12s, trained 16s, regular 20s, low 24s
+- Live veterancy: probe only (`vet_live=`). Not used for math unless the probe reads 1
+
+No movement seizure. No surrender.

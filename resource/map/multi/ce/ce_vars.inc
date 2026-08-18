@@ -75,6 +75,7 @@
 			{"ce_morale_diag_cmd_lost"}
 			{"ce_morale_diag_cmd_shock"}
 			{"ce_morale_diag_cmd_encourage"}
+			{"ce_morale_diag_vet_live"}
 			{"ce_morale_diag_pressure"}
 			{"ce_morale_diag_recover"}
 			{"ce_morale_diag_recover_panic"}

@@ -172,6 +172,7 @@ function SetCEMissionVariables(botDefender)
   BotApi.Scene:SetVar("ce_morale_diag_cmd_lost", 0)
   BotApi.Scene:SetVar("ce_morale_diag_cmd_shock", 0)
   BotApi.Scene:SetVar("ce_morale_diag_cmd_encourage", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_vet_live", 0)
   BotApi.Scene:SetVar("ce_morale_diag_pressure", 0)
   BotApi.Scene:SetVar("ce_morale_diag_recover", 0)
   BotApi.Scene:SetVar("ce_morale_diag_recover_panic", 0)
@@ -466,7 +467,8 @@ function StartCeMoraleProbeLog()
     local cmd_lost = readMoraleVar("ce_morale_diag_cmd_lost")
     local cmd_shock = readMoraleVar("ce_morale_diag_cmd_shock")
     local cmd_encourage = readMoraleVar("ce_morale_diag_cmd_encourage")
-    print("CE_MORALE_SYS mi=" .. mi .. " human=" .. human .. " tag_add=" .. tag_add .. " tag_read=" .. tag_read .. " known_tag=" .. known_tag .. " pr_a=" .. pr_a .. " canary=" .. canary_present .. " inv=" .. inventory .. " ai=" .. ai_human .. " pressure=" .. pressure .. " suppressed=" .. suppressed_state .. " shaken=" .. shaken_apply .. " recover=" .. recover .. " recover_panic=" .. recover_panic .. " recover_clear=" .. recover_clear .. " panic=" .. panic_apply .. " player_ex=" .. player_excluded .. " cmd_link=" .. cmd_link .. " cmd_lost=" .. cmd_lost .. " cmd_shock=" .. cmd_shock .. " cmd_encourage=" .. cmd_encourage)
+    local vet_live = readMoraleVar("ce_morale_diag_vet_live")
+    print("CE_MORALE_SYS mi=" .. mi .. " human=" .. human .. " tag_add=" .. tag_add .. " tag_read=" .. tag_read .. " known_tag=" .. known_tag .. " pr_a=" .. pr_a .. " canary=" .. canary_present .. " inv=" .. inventory .. " ai=" .. ai_human .. " pressure=" .. pressure .. " suppressed=" .. suppressed_state .. " shaken=" .. shaken_apply .. " recover=" .. recover .. " recover_panic=" .. recover_panic .. " recover_clear=" .. recover_clear .. " panic=" .. panic_apply .. " player_ex=" .. player_excluded .. " cmd_link=" .. cmd_link .. " cmd_lost=" .. cmd_lost .. " cmd_shock=" .. cmd_shock .. " cmd_encourage=" .. cmd_encourage .. " vet_live=" .. vet_live)
     if ticks >= 2 then
       local fails = {}
       if human > 0 and tag_add <= 0 then
