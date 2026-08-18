@@ -434,6 +434,7 @@
 	{on "recovered_from_panic"
 		{delay 0.1
 			{tags remove "aio_morale_panic"}
+			{tags remove "aio_morale_recovering"}
 			{tags remove "aio_morale_recovering_from_panic"}
 			{tags add "aio_morale_did_recover_panic"}
 			{tags add "aio_morale_did_recover"}

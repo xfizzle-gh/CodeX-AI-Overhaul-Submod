@@ -38,6 +38,15 @@ class CeMoraleMachineTests(unittest.TestCase):
         self.assertIn("{effect recovering_from_panic}", machine)
         self.assertIn("{state suppressed}", machine)
         self.assertIn("aio_morale_recovering", machine)
+        self.assertIn('{tags remove "aio_morale_recovering"}', human)
+        effect = machine.split("{effect aio_morale_just_shaken}", 1)[0]
+        effect = effect[effect.rfind('{"effect"'):]
+        self.assertIn("{state inactive}", effect)
+        self.assertIn("{state linked}", effect)
+        self.assertIn("{state dead}", effect)
+        recover_fx = machine.split("{effect recovering_from_shaken}", 1)[0]
+        recover_fx = recover_fx[recover_fx.rfind('{"effect"'):]
+        self.assertIn("{state inactive}", recover_fx)
 
     def test_pressure_is_suppressed_and_cancels_recovery(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")

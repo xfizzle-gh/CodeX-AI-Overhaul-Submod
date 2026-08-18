@@ -1,4 +1,5 @@
 ; PR C: FE-style Shaken/Panic + per-actor entity recovery. Trigger is {state suppressed}.
+; All selectors exclude dead/inactive/linked. Do not use operatable as the live filter.
 			{"conquest_enhanced_mechanics/morale/observe_ai"
 				{condition
 					{terms
@@ -27,6 +28,17 @@
 											{prop human}
 										}
 									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
+										}
+									}
 								}
 								{group
 									{select
@@ -35,6 +47,15 @@
 										}
 									}
 									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
+										}
 										{state
 											{state user_control}
 										}
@@ -85,13 +106,19 @@
 										{state
 											{state suppressed}
 										}
-										{state
-											{state operatable}
+										{zone
+											{zone "gamezone"}
 										}
 									}
 									{exclude
 										{state
 											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
 										}
 										{tag
 											{tag aio_morale_shaken}
@@ -134,11 +161,20 @@
 									{state
 										{state suppressed}
 									}
-									{state
-										{state operatable}
+									{zone
+										{zone "gamezone"}
 									}
 								}
 								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
 									{tag
 										{tag aio_morale_shaken}
 									}
@@ -163,6 +199,20 @@
 									{state
 										{state suppressed}
 									}
+									{zone
+										{zone "gamezone"}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
 								}
 							}
 						}
@@ -184,8 +234,20 @@
 									{tag
 										{tag aio_morale_shaken}
 									}
+									{zone
+										{zone "gamezone"}
+									}
 								}
 								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
 									{tag
 										{tag aio_morale_just_shaken}
 									}
@@ -229,11 +291,20 @@
 										{tag
 											{tag aio_morale_shaken}
 										}
-										{state
-											{state operatable}
+										{zone
+											{zone "gamezone"}
 										}
 									}
 									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
+										}
 										{tag
 											{tag aio_morale_just_shaken}
 										}
@@ -263,8 +334,20 @@
 									{tag
 										{tag aio_morale_shaken}
 									}
+									{zone
+										{zone "gamezone"}
+									}
 								}
 								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
 									{tag
 										{tag aio_morale_just_shaken}
 									}
@@ -289,6 +372,20 @@
 									{prop
 										{prop human}
 									}
+									{zone
+										{zone "gamezone"}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
 								}
 							}
 						}
@@ -303,6 +400,25 @@
 										{tag aio_morale_panic}
 									}
 								}
+								{include
+									{prop
+										{prop human}
+									}
+									{zone
+										{zone "gamezone"}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
+									}
+								}
 							}
 						}
 						{tag_remove aio_morale_recovering}
@@ -311,8 +427,30 @@
 						{condition
 							{type entities}
 							{selector
-								{tag aio_morale_panic}
-								{type human}
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_panic}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
+										}
+									}
+								}
 							}
 						}
 						{"set_i"
@@ -353,6 +491,20 @@
 										{tag
 											{tag aio_morale_recovering}
 										}
+										{zone
+											{zone "gamezone"}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
+										}
 									}
 								}
 							}
@@ -372,6 +524,20 @@
 								{include
 									{state
 										{state suppressed}
+									}
+									{zone
+										{zone "gamezone"}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
 									}
 								}
 							}
@@ -407,6 +573,9 @@
 										{prop
 											{prop human}
 										}
+										{zone
+											{zone "gamezone"}
+										}
 									}
 									{exclude
 										{state
@@ -414,6 +583,12 @@
 										}
 										{state
 											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
 										}
 										{tag
 											{tag aio_morale_recovering_from_shaken}
@@ -430,6 +605,9 @@
 										{prop
 											{prop human}
 										}
+										{zone
+											{zone "gamezone"}
+										}
 									}
 									{exclude
 										{state
@@ -437,6 +615,12 @@
 										}
 										{state
 											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state linked}
 										}
 										{tag
 											{tag aio_morale_recovering_from_panic}
@@ -461,10 +645,22 @@
 									{prop
 										{prop human}
 									}
+									{zone
+										{zone "gamezone"}
+									}
 								}
 								{exclude
 									{state
 										{state suppressed}
+									}
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
 									}
 									{tag
 										{tag aio_morale_recovering_from_shaken}
@@ -487,10 +683,22 @@
 									{prop
 										{prop human}
 									}
+									{zone
+										{zone "gamezone"}
+									}
 								}
 								{exclude
 									{state
 										{state suppressed}
+									}
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state linked}
 									}
 									{tag
 										{tag aio_morale_recovering_from_panic}
@@ -525,11 +733,27 @@
 											{tag aio_morale_did_recover}
 										}
 									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+									}
 								}
 								{group
 									{select
 										{tag
 											{tag aio_morale_did_recover_panic}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
 										}
 									}
 								}
@@ -547,7 +771,22 @@
 						{condition
 							{type entities}
 							{selector
-								{tag aio_morale_did_recover_panic}
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_did_recover_panic}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+									}
+								}
 							}
 						}
 						{"set_i"
@@ -560,7 +799,22 @@
 						{condition
 							{type entities}
 							{selector
-								{tag aio_morale_did_recover}
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_did_recover}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+									}
+								}
 							}
 						}
 						{"set_i"
