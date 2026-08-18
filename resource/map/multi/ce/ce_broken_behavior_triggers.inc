@@ -24,7 +24,7 @@
 									}
 									{exclude
 										{state
-											{state "dead inactive"}
+											{state dead}
 										}
 										{state
 											{state inactive}
@@ -61,7 +61,7 @@
 								}
 								{exclude
 									{state
-										{state "dead inactive"}
+										{state dead}
 									}
 									{state
 										{state inactive}
@@ -136,7 +136,7 @@
 								}
 								{exclude
 									{state
-										{state "dead inactive"}
+										{state dead}
 									}
 									{state
 										{state inactive}
@@ -162,7 +162,7 @@
 								}
 								{exclude
 									{state
-										{state "dead inactive"}
+										{state dead}
 									}
 									{state
 										{state inactive}
@@ -254,7 +254,7 @@
 									}
 									{exclude
 										{state
-											{state "dead inactive"}
+											{state dead}
 										}
 										{state
 											{state inactive}
@@ -291,7 +291,7 @@
 								}
 								{exclude
 									{state
-										{state "dead inactive"}
+										{state dead}
 									}
 									{state
 										{state inactive}
@@ -331,7 +331,7 @@
 								}
 								{exclude
 									{state
-										{state "dead inactive"}
+										{state dead}
 									}
 									{state
 										{state inactive}
@@ -418,7 +418,7 @@
 											{state suppressed}
 										}
 										{state
-											{state "dead inactive"}
+											{state dead}
 										}
 										{tag
 											{tag aio_morale_recovering_from_broken}
@@ -503,7 +503,7 @@
 									}
 									{exclude
 										{state
-											{state "dead inactive"}
+											{state dead}
 										}
 										{state
 											{state user_control}
@@ -527,7 +527,7 @@
 									}
 									{exclude
 										{state
-											{state "dead inactive"}
+											{state dead}
 										}
 										{state
 											{state inactive}
@@ -600,7 +600,7 @@
 								}
 								{exclude
 									{state
-										{state "dead inactive"}
+										{state dead}
 									}
 									{state
 										{state inactive}
@@ -655,7 +655,7 @@
 									}
 									{exclude
 										{state
-											{state "dead inactive"}
+											{state dead}
 										}
 										{state
 											{state inactive}
@@ -706,7 +706,31 @@
 									}
 									{include
 										{state
-											{state "dead inactive"}
+											{state dead}
+										}
+									}
+								}
+								{group
+									{select
+										{tag
+											{tag aio_morale_owned}
+										}
+										{tag
+											{tag aio_morale_broken}
+										}
+										{tag
+											{tag aio_morale_surrendering}
+										}
+										{tag
+											{tag aio_morale_surrender_cand}
+										}
+										{tag
+											{tag aio_morale_watching_regroup}
+										}
+									}
+									{include
+										{state
+											{state inactive}
 										}
 									}
 								}
@@ -744,7 +768,37 @@
 								}
 								{include
 									{state
-										{state "dead inactive"}
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_owned}
+									}
+									{tag
+										{tag aio_morale_broken}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{tag
+										{tag aio_morale_surrender_cand}
+									}
+									{tag
+										{tag aio_morale_regrouping}
+									}
+									{tag
+										{tag aio_morale_regroup_failed}
+									}
+									{tag
+										{tag aio_morale_moving_to_rally}
+									}
+								}
+								{include
+									{state
+										{state inactive}
 									}
 								}
 							}
@@ -762,7 +816,19 @@
 								}
 								{include
 									{state
-										{state "dead inactive"}
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{include
+									{state
+										{state inactive}
 									}
 								}
 							}
@@ -780,7 +846,19 @@
 								}
 								{include
 									{state
-										{state "dead inactive"}
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{include
+									{state
+										{state inactive}
 									}
 								}
 							}
@@ -798,7 +876,19 @@
 								}
 								{include
 									{state
-										{state "dead inactive"}
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_cand}
+									}
+								}
+								{include
+									{state
+										{state inactive}
 									}
 								}
 							}
@@ -816,7 +906,19 @@
 								}
 								{include
 									{state
-										{state "dead inactive"}
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_regrouping}
+									}
+								}
+								{include
+									{state
+										{state inactive}
 									}
 								}
 							}
@@ -834,7 +936,19 @@
 								}
 								{include
 									{state
-										{state "dead inactive"}
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_regroup_failed}
+									}
+								}
+								{include
+									{state
+										{state inactive}
 									}
 								}
 							}
@@ -852,7 +966,19 @@
 								}
 								{include
 									{state
-										{state "dead inactive"}
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_moving_to_rally}
+									}
+								}
+								{include
+									{state
+										{state inactive}
 									}
 								}
 							}
@@ -870,7 +996,19 @@
 								}
 								{include
 									{state
-										{state "dead inactive"}
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_watching_regroup}
+									}
+								}
+								{include
+									{state
+										{state inactive}
 									}
 								}
 							}
@@ -878,7 +1016,7 @@
 						{tag_remove aio_morale_watching_regroup}
 					}
 					{"delay"
-						{time 2}
+						{time 0.5}
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/broken/cleanup_dead"}

@@ -97,7 +97,9 @@ class CeBrokenBehaviorTests(unittest.TestCase):
 
     def test_cleanup_strips_inactive_broken_tags(self) -> None:
         cleanup = BEH.read_text(encoding="utf-8").split("broken/cleanup_dead", 1)[1]
-        self.assertIn('{state "dead inactive"}', cleanup)
+        self.assertNotIn('{state "dead inactive"}', cleanup)
+        self.assertIn("{state dead}", cleanup)
+        self.assertIn("{state inactive}", cleanup)
         for tag in (
             "aio_morale_owned",
             "aio_morale_broken",
@@ -109,6 +111,16 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "aio_morale_watching_regroup",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
+
+    def test_actor_state_selectors_exclude_dead_and_inactive(self) -> None:
+        text = BEH.read_text(encoding="utf-8")
+        self.assertNotIn('{state "dead inactive"}', text)
+        parts = text.split('{"actor_state"')
+        self.assertGreater(len(parts), 1)
+        for part in parts[1:]:
+            block = part.split('{"', 1)[0]
+            self.assertIn("{state dead}", block)
+            self.assertIn("{state inactive}", block)
 
 
 if __name__ == "__main__":
