@@ -156,6 +156,9 @@
 	enableCommunicationsCutMechanics = 0
 	enableSabotageMechanics = 0
 	enableAiAbandonMechanics = 0
+	enableCeMoraleMechanic = 1.0
+	enableCeMoraleDebug = 1.0
+	enableCeMoraleAutodemo = 0
 -- =============================== Logging DO NOT MODIFY =======================================
 	require([[/conquest_configuration/bot.mod_configuration]])
 

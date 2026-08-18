@@ -1,0 +1,81 @@
+name: CE morale runtime guard
+
+on:
+  pull_request:
+    paths:
+      - "resource/map/multi/ce/ce_morale_classification_triggers.inc"
+      - "resource/map/multi/ce/ce_morale_probe_report.inc"
+      - "resource/map/multi/ce/ce_morale_diag_triggers.inc"
+      - "resource/map/multi/ce/ce_morale_marker_apply_triggers.inc"
+      - "resource/set/stuff/special/aio_marker_*"
+      - "resource/map/multi/ce/ce_triggers.inc"
+      - "resource/map/multi/ce/morale_system.mod"
+      - "resource/map/multi/ce/ce_morale_helpers.inc"
+      - "resource/map/multi/dcg_script.inc"
+      - "resource/map/multi/ce/ce_vars.inc"
+      - "resource/script/multiplayer/modes/utility_ce.lua"
+      - "resource/conquest_configuration/bot.conquest_configuration.lua"
+      - "resource/map/multi/dcg_[cwa71]_*/campaign_capture_the_flag.mi"
+      - "resource/set/stuff/special/aio_morale_marker"
+      - "resource/set/breed/mp/rusa/2022s/lud_rifleman.set"
+      - "resource/set/breed/mp/rusa/era2022/lud_rifleman.set"
+      - "resource/set/breed/mp/rusa/2022s/rus90_recon.set"
+      - "resource/set/breed/mp/rusa/era2022/rus90_recon.set"
+      - "resource/set/breed/mp/ukr/era2022/ukr_rifleman.set"
+      - "resource/set/breed/mp/ukr/2022s/ter_rifleman.set"
+      - "resource/set/breed/mp/ukr/era2022/ter_rifleman.set"
+      - "resource/set/breed/mp/ukr/era1960/ter_rifleman.set"
+      - "tests/test_ce_morale_runtime.py"
+      - "tests/test_ce_morale_probe_report.py"
+      - "tests/test_ce_morale_arch_diag.py"
+      - "tests/test_morale_breed_metadata.py"
+      - ".github/workflows/ce-morale-runtime-guard.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "resource/map/multi/ce/ce_morale_classification_triggers.inc"
+      - "resource/map/multi/ce/ce_morale_probe_report.inc"
+      - "resource/map/multi/ce/ce_morale_diag_triggers.inc"
+      - "resource/map/multi/ce/ce_morale_marker_apply_triggers.inc"
+      - "resource/set/stuff/special/aio_marker_*"
+      - "resource/map/multi/ce/ce_triggers.inc"
+      - "resource/map/multi/ce/morale_system.mod"
+      - "resource/map/multi/ce/ce_morale_helpers.inc"
+      - "resource/map/multi/dcg_script.inc"
+      - "resource/map/multi/ce/ce_vars.inc"
+      - "resource/script/multiplayer/modes/utility_ce.lua"
+      - "resource/conquest_configuration/bot.conquest_configuration.lua"
+      - "resource/map/multi/dcg_[cwa71]_*/campaign_capture_the_flag.mi"
+      - "resource/set/stuff/special/aio_morale_marker"
+      - "resource/set/breed/mp/rusa/2022s/lud_rifleman.set"
+      - "resource/set/breed/mp/rusa/era2022/lud_rifleman.set"
+      - "resource/set/breed/mp/rusa/2022s/rus90_recon.set"
+      - "resource/set/breed/mp/rusa/era2022/rus90_recon.set"
+      - "resource/set/breed/mp/ukr/era2022/ukr_rifleman.set"
+      - "resource/set/breed/mp/ukr/2022s/ter_rifleman.set"
+      - "resource/set/breed/mp/ukr/era2022/ter_rifleman.set"
+      - "resource/set/breed/mp/ukr/era1960/ter_rifleman.set"
+      - "tests/test_ce_morale_runtime.py"
+      - "tests/test_ce_morale_probe_report.py"
+      - "tests/test_ce_morale_arch_diag.py"
+      - "tests/test_morale_breed_metadata.py"
+      - ".github/workflows/ce-morale-runtime-guard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Run full 19-test morale set
+        run: python -m unittest tests/test_ce_morale_runtime.py tests/test_ce_morale_probe_report.py tests/test_ce_morale_arch_diag.py tests/test_morale_breed_metadata.py

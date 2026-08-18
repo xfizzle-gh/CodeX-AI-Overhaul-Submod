@@ -29,6 +29,8 @@
 		{item "rgd5 grenade" 2}
 		{item "rdg2 grenade" 0.25 0.5}
 		{item "aio_marker_morale_low"}
+		{item "secret_doc_bag2"}
+		{item "aio_morale_marker"}
 		{in_hands 0}
 	}
 }
