@@ -34,26 +34,47 @@ class ConquestRuntimeSourceTests(unittest.TestCase):
         for marker in forbidden:
             self.assertNotIn(marker, self.source)
 
-    def test_runtime_bot_cadences_remain_separate(self) -> None:
-        self.assertIn('cadence = "enemy-defender-opening"', self.source)
-        self.assertIn('cadence = "enemy-attacker-opening"', self.source)
-        self.assertIn('cadence = "enemy-defender"', self.source)
-        self.assertIn('cadence = "enemy-attacker"', self.source)
+    def test_current_attacker_and_defender_cadence_remain_role_separated(self) -> None:
+        # The old string-label cadence assertions were stale on main. Current runtime
+        # expresses the separation through role-specific start times and ApplyWaveCadence.
+        self.assertIn("DefenseMin = 0 * 60 * 1000", self.source)
+        self.assertIn("DefenseMax = 0 * 60 * 1000", self.source)
+        self.assertIn("AttackMin = 1 * 1000", self.source)
+        self.assertIn("AttackMax = 1 * 1000", self.source)
+        start = self.source.index("local function ApplyWaveCadence()")
+        end = self.source.index("function OnGameStart()", start)
+        cadence = self.source[start:end]
+        self.assertGreaterEqual(cadence.count("if botDefender then"), 2)
+        self.assertIn("WaveUnitOverride.DefendMin", cadence)
+        self.assertIn("WaveUnitOverride.AttackMin", cadence)
+        self.assertIn("DCGWaveOffOverwrite.DefenseMinWaveOff", cadence)
+        self.assertIn("DCGWaveOffOverwrite.AttackMinWaveOff", cadence)
 
-    def test_normal_calculated_waves_keep_global_reduction(self) -> None:
-        self.assertIn("local NormalWaveSizeScale = 0.85", self.source)
-        self.assertIn(
-            "rawWaveTotal * ActiveDifficultySettings.waveScale * NormalWaveSizeScale",
-            self.source,
-        )
-        self.assertIn("waveUnitTotal = math.max(3", self.source)
+    def test_current_wave_size_uses_difficulty_scaled_roll(self) -> None:
+        # main no longer carries the old NormalWaveSizeScale constant. The canonical
+        # reduction/scale is now rollWaveSize() over the active WaveUnit range.
+        start = self.source.index("local function rollWaveSize()")
+        end = self.source.index("local function setDocVarsInNattorSpeak()", start)
+        roll = self.source[start:end]
+        self.assertIn("math.random(WaveUnit.Min, WaveUnit.Max)", roll)
+        self.assertIn("ActiveDifficultySettings.waveScale", roll)
+        self.assertIn("math.max(1, math.floor(raw * scale + 0.5))", roll)
 
-    def test_wave_transition_advances_before_recalculation(self) -> None:
-        transition = self.source.index("waveNumber = waveNumber + 1")
-        recalculation = self.source.index("calculateWaveUnitTotal()", transition)
-        self.assertLess(transition, recalculation)
+    def test_wave_transition_recalculates_once_and_advances_once(self) -> None:
+        start = self.source.index("function WaveAttack()")
+        end = self.source.index("function WaveUnitCounter()", start)
+        wave = self.source[start:end]
+        self.assertIn("if waveUnitCount >= waveUnitTotal then", wave)
+        self.assertEqual(wave.count("waveUnitTotal = rollWaveSize()"), 2)
+        completed_wave = wave.index("if waveUnitCount >= waveUnitTotal then")
+        recalculation = wave.index("waveUnitTotal = rollWaveSize()", completed_wave)
+        transition = wave.index("waveNumber = waveNumber + 1", completed_wave)
+        publish = wave.index('BotApi.Scene:SetVar("wave_number", waveNumber)', transition)
+        self.assertLess(recalculation, transition)
+        self.assertLess(transition, publish)
+        self.assertEqual(wave.count("waveNumber = waveNumber + 1"), 1)
         self.assertNotIn("if not botDefender or botDefender then", self.source)
-        self.assertIn("waveSpawnPossible = true", self.source)
+        self.assertIn("waveSpawnPossible = true", wave)
 
     def test_only_mission_authority_writes_perspective_vars(self) -> None:
         authority_guard = self.source.index(
@@ -65,8 +86,9 @@ class ConquestRuntimeSourceTests(unittest.TestCase):
         ce_vars = self.source.index("SetCEMissionVariables(botDefender)", authority_guard)
         self.assertLess(authority_guard, perspective_var)
         self.assertLess(authority_guard, ce_vars)
+        # setDocVarsInNattorSpeak no longer accepts currentDivision on main.
         self.assertIn(
-            "if wroteMissionVars then setDocVarsInNattorSpeak(currentDivision) end",
+            "if wroteMissionVars then\n\t\tsetDocVarsInNattorSpeak()",
             self.source,
         )
 
