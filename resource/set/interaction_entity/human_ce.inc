@@ -703,24 +703,24 @@
 				{if not tagged "aio_morale_surrendering"
 					{if tagged "aio_morale_broken"
 						{if tagged "aio_morale_regroup_failed"
-							{if tagged "aio_morale_low"
-								{if rand 0.7
+							{if tagged "aio_steadfast"
+								{if rand 0.05
 									{call "aio_morale_surrender_apply"}
 								}
-							else tagged "aio_morale_trained"
-								{if rand 0.25
+							else tagged "aio_cmd_independent"
+								{if rand 0.08
 									{call "aio_morale_surrender_apply"}
 								}
 							else tagged "aio_morale_elite"
 								{if rand 0.08
 									{call "aio_morale_surrender_apply"}
 								}
-							else tagged "aio_steadfast"
-								{if rand 0.05
+							else tagged "aio_morale_low"
+								{if rand 0.7
 									{call "aio_morale_surrender_apply"}
 								}
-							else tagged "aio_cmd_independent"
-								{if rand 0.08
+							else tagged "aio_morale_trained"
+								{if rand 0.25
 									{call "aio_morale_surrender_apply"}
 								}
 							else

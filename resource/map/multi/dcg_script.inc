@@ -3541,14 +3541,7 @@
 							}
 							{"actor_state"
 								{selector
-									{ignore_captured_by_user 0}
-									{amount 6
-									}
-									{tag cmp_def}
-									{zone "fpc1"}
-									{type human}
-									{state "not dead"}
-								}
+									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc1"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3563,14 +3556,7 @@
 							}
 							{"actor_state"
 								{selector
-									{ignore_captured_by_user 0}
-									{amount 4
-									}
-									{tag cmp_def}
-									{zone "fpc1"}
-									{type human}
-									{state "not dead"}
-								}
+									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc1"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3676,14 +3662,7 @@
 							}
 							{"actor_state"
 								{selector
-									{ignore_captured_by_user 0}
-									{amount 6
-									}
-									{tag cmp_def}
-									{zone "fpc2"}
-									{type human}
-									{state "not dead"}
-								}
+									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc2"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3698,14 +3677,7 @@
 							}
 							{"actor_state"
 								{selector
-									{ignore_captured_by_user 0}
-									{amount 4
-									}
-									{tag cmp_def}
-									{zone "fpc2"}
-									{type human}
-									{state "not dead"}
-								}
+									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc2"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3811,14 +3783,7 @@
 							}
 							{"actor_state"
 								{selector
-									{ignore_captured_by_user 0}
-									{amount 6
-									}
-									{tag cmp_def}
-									{zone "fpc3"}
-									{type human}
-									{state "not dead"}
-								}
+									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc3"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3833,14 +3798,7 @@
 							}
 							{"actor_state"
 								{selector
-									{ignore_captured_by_user 0}
-									{amount 4
-									}
-									{tag cmp_def}
-									{zone "fpc3"}
-									{type human}
-									{state "not dead"}
-								}
+									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc3"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3946,14 +3904,7 @@
 							}
 							{"actor_state"
 								{selector
-									{ignore_captured_by_user 0}
-									{amount 6
-									}
-									{tag cmp_def}
-									{zone "fpc4"}
-									{type human}
-									{state "not dead"}
-								}
+									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc4"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3968,14 +3919,7 @@
 							}
 							{"actor_state"
 								{selector
-									{ignore_captured_by_user 0}
-									{amount 4
-									}
-									{tag cmp_def}
-									{zone "fpc4"}
-									{type human}
-									{state "not dead"}
-								}
+									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc4"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -4081,14 +4025,7 @@
 							}
 							{"actor_state"
 								{selector
-									{ignore_captured_by_user 0}
-									{amount 6
-									}
-									{tag cmp_def}
-									{zone "fpc5"}
-									{type human}
-									{state "not dead"}
-								}
+									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc5"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -4103,14 +4040,7 @@
 							}
 							{"actor_state"
 								{selector
-									{ignore_captured_by_user 0}
-									{amount 4
-									}
-									{tag cmp_def}
-									{zone "fpc5"}
-									{type human}
-									{state "not dead"}
-								}
+									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc5"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -4342,10 +4272,28 @@
 					}
 					{"actor_state"
 						{selector
+							{source advanced}
 							{ignore_captured_by_user 0}
-							{tag rnd_def}
-							{type human}
-							{state "not dead"}
+							{group
+								{select
+									{tag
+										{tag rnd_def}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_morale_owned}
+									}
+								}
+							}
 						}
 						{move_mode zone}
 						{move_radius 45}
@@ -21473,6 +21421,9 @@
 										{exclude
 											{tag
 												{tag _lua_mi}
+											}
+											{tag
+												{tag aio_morale_owned}
 											}
 										}
 									}

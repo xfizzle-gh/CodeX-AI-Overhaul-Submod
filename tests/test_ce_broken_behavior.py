@@ -18,6 +18,9 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("ce_broken_behavior_triggers.inc", DCG.read_text(encoding="utf-8"))
         self.assertIn("aio_morale_owned", CONQ.read_text(encoding="utf-8"))
         self.assertIn("aio_morale_owned", WAVES.read_text(encoding="utf-8"))
+        dcg = (ROOT / "resource/map/multi/dcg_script.inc").read_text(encoding="utf-8")
+        tune = dcg.split("cmp_def_1_tune", 1)[1].split("cmp_def_2_tune", 1)[0]
+        self.assertIn("aio_morale_owned", tune)
 
     def test_player_excluded_from_broken_and_surrender(self) -> None:
         text = BEH.read_text(encoding="utf-8") + MACHINE.read_text(encoding="utf-8")
@@ -37,7 +40,16 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         steady = human.split('{on "recovered_from_shaken"', 1)[1].split('{on "', 1)[0]
         self.assertIn('{tags remove "aio_morale_owned"}', steady)
         self.assertIn("aio_morale_watch_regroup", human)
-        self.assertIn("{relation ally}", BEH.read_text(encoding="utf-8"))
+        beh = BEH.read_text(encoding="utf-8")
+        self.assertIn("{relation ally}", beh)
+        self.assertIn("{sort", beh)
+        self.assertIn("{mode nearest}", beh.split("{sort", 1)[1].split("{amount", 1)[0])
+        owned_refresh = beh.split("{tag_add aio_morale_regrouping}", 1)[1]
+        owned_refresh = owned_refresh.split("broken/rally", 1)[0]
+        self.assertIn("{tag aio_morale_owned}", owned_refresh)
+        self.assertIn("{drop orders}", beh)
+        first = beh.split("{drop orders}", 1)[0]
+        self.assertIn("{tag aio_morale_owned}", first[-400:])
 
     def test_surrender_requires_broken_and_failed_regroup(self) -> None:
         text = BEH.read_text(encoding="utf-8")
@@ -47,6 +59,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("aio_morale_panic", surr.split("{actions", 1)[0])
         apply = HUMAN.read_text(encoding="utf-8").split('{on "aio_morale_surrender"', 1)[1]
         self.assertIn("{if rand", apply)
+        self.assertLess(apply.find("aio_steadfast"), apply.find("aio_morale_low"))
+        self.assertLess(apply.find("aio_cmd_independent"), apply.find("aio_morale_low"))
         self.assertNotIn("{delete}", text)
         self.assertNotIn('{player "0"}', text)
         self.assertNotIn("{control AI}", text)
