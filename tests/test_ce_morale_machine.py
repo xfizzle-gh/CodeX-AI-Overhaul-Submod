@@ -20,10 +20,17 @@ class CeMoraleMachineTests(unittest.TestCase):
 
     def test_production_pressure_is_native_suppressed(self) -> None:
         text = MACHINE.read_text(encoding="utf-8")
-        pressure = text.split("pressure_suppressed", 1)[1].split("age_tick", 1)[0]
-        self.assertIn("{state suppressed}", pressure)
-        self.assertNotIn("see_actors", pressure)
-        self.assertNotIn("see_enemy", pressure)
+        entry = text.split("shaken_entry", 1)[1].split("refresh_pressure", 1)[0]
+        refresh = text.split("refresh_pressure", 1)[1].split("age_tick", 1)[0]
+        self.assertIn("{state suppressed}", entry)
+        self.assertIn("aio_morale_just_shaken", entry)
+        self.assertIn("aio_morale_j0", entry)
+        self.assertIn("{state suppressed}", refresh)
+        self.assertIn("aio_morale_recent_pressure", refresh)
+        self.assertIn("aio_morale_p0", refresh)
+        self.assertNotIn("aio_morale_just_shaken", refresh)
+        self.assertNotIn("aio_morale_j0", refresh)
+        self.assertNotIn("see_actors", entry)
         escalate = text.split("escalate_panic", 1)[1].split("recover_panic", 1)[0]
         self.assertIn("{state suppressed}", escalate)
         self.assertIn("aio_morale_just_shaken", escalate)
