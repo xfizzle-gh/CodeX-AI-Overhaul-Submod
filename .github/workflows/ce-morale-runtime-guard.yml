@@ -7,6 +7,8 @@ on:
       - "resource/map/multi/ce/ce_morale_probe_report.inc"
       - "resource/map/multi/ce/ce_morale_diag_triggers.inc"
       - "resource/map/multi/ce/ce_morale_marker_apply_triggers.inc"
+      - "resource/map/multi/ce/ce_morale_machine_triggers.inc"
+      - "tests/test_ce_morale_machine.py"
       - "resource/set/stuff/special/aio_marker_*"
       - "resource/map/multi/ce/ce_triggers.inc"
       - "resource/map/multi/ce/morale_system.mod"
@@ -38,6 +40,8 @@ on:
       - "resource/map/multi/ce/ce_morale_probe_report.inc"
       - "resource/map/multi/ce/ce_morale_diag_triggers.inc"
       - "resource/map/multi/ce/ce_morale_marker_apply_triggers.inc"
+      - "resource/map/multi/ce/ce_morale_machine_triggers.inc"
+      - "tests/test_ce_morale_machine.py"
       - "resource/set/stuff/special/aio_marker_*"
       - "resource/map/multi/ce/ce_triggers.inc"
       - "resource/map/multi/ce/morale_system.mod"
@@ -78,4 +82,4 @@ jobs:
           python-version: "3.13"
 
       - name: Run full 19-test morale set
-        run: python -m unittest tests/test_ce_morale_runtime.py tests/test_ce_morale_probe_report.py tests/test_ce_morale_arch_diag.py tests/test_morale_breed_metadata.py
+        run: python -m unittest tests/test_ce_morale_runtime.py tests/test_ce_morale_probe_report.py tests/test_ce_morale_arch_diag.py tests/test_ce_morale_machine.py tests/test_morale_breed_metadata.py

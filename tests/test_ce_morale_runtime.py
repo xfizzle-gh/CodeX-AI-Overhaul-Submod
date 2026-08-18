@@ -35,6 +35,8 @@ class CeMoraleRuntimeGateTests(unittest.TestCase):
         dcg = DCG.read_text(encoding="utf-8")
         self.assertIn('ce_morale_classification_triggers.inc', dcg)
         self.assertIn('ce_morale_marker_apply_triggers.inc', dcg)
+        self.assertIn('ce_morale_machine_triggers.inc', dcg)
+        self.assertIn("CE_MORALE_SYS", LUA.read_text(encoding="utf-8"))
         self.assertIn('{"enable_ce_morale_mechanic"}', VARS.read_text(encoding="utf-8"))
         self.assertIn("enableCeMoraleMechanic", CFG.read_text(encoding="utf-8"))
         self.assertIn("enable_ce_morale_mechanic", LUA.read_text(encoding="utf-8"))

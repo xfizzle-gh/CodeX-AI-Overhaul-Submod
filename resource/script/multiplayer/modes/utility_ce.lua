@@ -167,6 +167,14 @@ function SetCEMissionVariables(botDefender)
   BotApi.Scene:SetVar("ce_morale_diag_shaken", 0)
   BotApi.Scene:SetVar("ce_morale_diag_panic", 0)
   BotApi.Scene:SetVar("ce_morale_diag_player_hit", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_ai_human", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_cmd_link", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_pressure", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_recover", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_broken", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_retreat", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_surrender", 0)
+  BotApi.Scene:SetVar("ce_morale_sys_done", 0)
   StartCeMoraleProbeLog()
 
 
@@ -439,6 +447,14 @@ function StartCeMoraleProbeLog()
       player_excluded = 1
     end
     print("CE_MORALE_ARCH mi=" .. mi .. " human=" .. human .. " tag_add=" .. tag_add .. " tag_read=" .. tag_read .. " known_tag=" .. known_tag .. " pr_a_source=" .. pr_a .. " canary_present=" .. canary_present .. " inventory_canary=" .. inventory .. " shaken=" .. shaken_apply .. " panic=" .. panic_apply .. " player_excluded=" .. player_excluded)
+    local ai_human = readMoraleVar("ce_morale_diag_ai_human")
+    local cmd_link = readMoraleVar("ce_morale_diag_cmd_link")
+    local pressure = readMoraleVar("ce_morale_diag_pressure")
+    local recover = readMoraleVar("ce_morale_diag_recover")
+    local broken = readMoraleVar("ce_morale_diag_broken")
+    local retreat = readMoraleVar("ce_morale_diag_retreat")
+    local surrender = readMoraleVar("ce_morale_diag_surrender")
+    print("CE_MORALE_SYS mi=" .. mi .. " human=" .. human .. " tag_add=" .. tag_add .. " tag_read=" .. tag_read .. " known_tag=" .. known_tag .. " pr_a=" .. pr_a .. " canary=" .. canary_present .. " inv=" .. inventory .. " ai=" .. ai_human .. " cmd=" .. cmd_link .. " pressure=" .. pressure .. " shaken=" .. shaken_apply .. " recover=" .. recover .. " panic=" .. panic_apply .. " broken=" .. broken .. " retreat=" .. retreat .. " surrender=" .. surrender .. " player_ex=" .. player_excluded)
     if ticks >= 2 then
       local fails = {}
       if human > 0 and tag_add <= 0 then
@@ -456,14 +472,26 @@ function StartCeMoraleProbeLog()
       if canary_present > 0 and inventory <= 0 then
         fails[#fails + 1] = "INVENTORY_CANARY_FAIL"
       end
-      if human > 0 and shaken_apply <= 0 then
+      if ai_human <= 0 then
+        fails[#fails + 1] = "AI_ABSENT"
+      end
+      if ai_human > 0 and shaken_apply <= 0 then
         fails[#fails + 1] = "SHAKEN_APPLY_FAIL"
       end
-      if human > 0 and panic_apply <= 0 then
+      if ai_human > 0 and panic_apply <= 0 then
         fails[#fails + 1] = "PANIC_APPLY_FAIL"
       end
+      if ai_human > 0 and broken <= 0 then
+        fails[#fails + 1] = "BROKEN_FAIL"
+      end
+      if ai_human > 0 and retreat <= 0 then
+        fails[#fails + 1] = "RETREAT_FAIL"
+      end
+      if ai_human > 0 and surrender <= 0 then
+        fails[#fails + 1] = "SURRENDER_FAIL"
+      end
       if #fails > 0 then
-        print("CE_MORALE_ARCH_FAIL " .. table.concat(fails, " "))
+        print("CE_MORALE_SYS_FAIL " .. table.concat(fails, " "))
       end
     end
     if ticks < 24 then

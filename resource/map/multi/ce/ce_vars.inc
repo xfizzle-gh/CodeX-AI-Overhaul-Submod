@@ -69,4 +69,12 @@
 			{"ce_morale_diag_inventory_canary"}
 			{"ce_morale_diag_shaken"}
 			{"ce_morale_diag_panic"}
-			{"ce_morale_diag_player_hit"} 
+			{"ce_morale_diag_player_hit"}
+			{"ce_morale_diag_ai_human"}
+			{"ce_morale_diag_cmd_link"}
+			{"ce_morale_diag_pressure"}
+			{"ce_morale_diag_recover"}
+			{"ce_morale_diag_broken"}
+			{"ce_morale_diag_retreat"}
+			{"ce_morale_diag_surrender"}
+			{"ce_morale_sys_done"} 
