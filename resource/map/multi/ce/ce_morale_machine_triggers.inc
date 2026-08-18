@@ -106,9 +106,6 @@
 										{state
 											{state suppressed}
 										}
-										{zone
-											{zone "gamezone"}
-										}
 									}
 									{exclude
 										{state
@@ -161,9 +158,6 @@
 									{state
 										{state suppressed}
 									}
-									{zone
-										{zone "gamezone"}
-									}
 								}
 								{exclude
 									{state
@@ -199,9 +193,6 @@
 									{state
 										{state suppressed}
 									}
-									{zone
-										{zone "gamezone"}
-									}
 								}
 								{exclude
 									{state
@@ -233,9 +224,6 @@
 									}
 									{tag
 										{tag aio_morale_shaken}
-									}
-									{zone
-										{zone "gamezone"}
 									}
 								}
 								{exclude
@@ -291,9 +279,6 @@
 										{tag
 											{tag aio_morale_shaken}
 										}
-										{zone
-											{zone "gamezone"}
-										}
 									}
 									{exclude
 										{state
@@ -334,9 +319,6 @@
 									{tag
 										{tag aio_morale_shaken}
 									}
-									{zone
-										{zone "gamezone"}
-									}
 								}
 								{exclude
 									{state
@@ -372,9 +354,6 @@
 									{prop
 										{prop human}
 									}
-									{zone
-										{zone "gamezone"}
-									}
 								}
 								{exclude
 									{state
@@ -403,9 +382,6 @@
 								{include
 									{prop
 										{prop human}
-									}
-									{zone
-										{zone "gamezone"}
 									}
 								}
 								{exclude
@@ -491,9 +467,6 @@
 										{tag
 											{tag aio_morale_recovering}
 										}
-										{zone
-											{zone "gamezone"}
-										}
 									}
 									{exclude
 										{state
@@ -524,9 +497,6 @@
 								{include
 									{state
 										{state suppressed}
-									}
-									{zone
-										{zone "gamezone"}
 									}
 								}
 								{exclude
@@ -573,9 +543,6 @@
 										{prop
 											{prop human}
 										}
-										{zone
-											{zone "gamezone"}
-										}
 									}
 									{exclude
 										{state
@@ -604,9 +571,6 @@
 									{include
 										{prop
 											{prop human}
-										}
-										{zone
-											{zone "gamezone"}
 										}
 									}
 									{exclude
@@ -645,9 +609,6 @@
 									{prop
 										{prop human}
 									}
-									{zone
-										{zone "gamezone"}
-									}
 								}
 								{exclude
 									{state
@@ -682,9 +643,6 @@
 								{include
 									{prop
 										{prop human}
-									}
-									{zone
-										{zone "gamezone"}
 									}
 								}
 								{exclude

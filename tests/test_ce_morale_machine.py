@@ -55,6 +55,7 @@ class CeMoraleMachineTests(unittest.TestCase):
         entry = text.split("shaken_entry", 1)[1].split("escalate_panic", 1)[0]
         self.assertIn("{state suppressed}", entry)
         self.assertNotIn("see_actors", entry)
+        self.assertNotIn("gamezone", text)
         cancel = text.split("refresh_cancel_recover", 1)[1].split("start_recover", 1)[0]
         self.assertIn("{tag_remove aio_morale_recovering}", cancel)
         self.assertIn("{state suppressed}", cancel)
