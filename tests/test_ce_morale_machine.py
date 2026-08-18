@@ -35,6 +35,7 @@ class CeMoraleMachineTests(unittest.TestCase):
         self.assertIn('{tags remove "aio_morale_recovering"}', human)
         panic_done = human.split('{on "recovered_from_panic"', 1)[1].split('{on "', 1)[0]
         self.assertIn('{tags add "aio_morale_shaken"}', panic_done)
+        self.assertIn('{call "recovering_from_shaken"}', panic_done)
         self.assertNotIn('{tags add "aio_morale_did_recover"}', panic_done)
         machine = MACHINE.read_text(encoding="utf-8")
         self.assertIn("{effect recovering_from_shaken}", machine)

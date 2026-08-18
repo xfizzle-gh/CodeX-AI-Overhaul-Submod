@@ -267,6 +267,9 @@
 										{tag
 											{tag aio_morale_panic}
 										}
+										{tag
+											{tag aio_morale_recovering}
+										}
 									}
 								}
 							}
@@ -306,6 +309,9 @@
 									}
 									{tag
 										{tag aio_morale_panic}
+									}
+									{tag
+										{tag aio_morale_recovering}
 									}
 								}
 							}

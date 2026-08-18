@@ -443,6 +443,8 @@
 			{tags remove "aio_morale_recovering_from_panic"}
 			{tags add "aio_morale_shaken"}
 			{tags add "aio_morale_did_recover_panic"}
+			{call "aio_morale_just_shaken"}
+			{call "recovering_from_shaken"}
 		}
 	}
 	{on "recovering_from_panic"
