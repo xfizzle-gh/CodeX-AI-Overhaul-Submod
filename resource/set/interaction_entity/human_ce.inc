@@ -471,6 +471,15 @@
 					}
 					{tags remove "aio_morale_recovering_from_shaken"}
 				}
+			else tagged "aio_cmd_shock"
+				{delay 28
+					{if not tagged "aio_morale_panic"
+						{if tagged "aio_morale_recovering"
+							{call "recovered_from_shaken"}
+						}
+					}
+					{tags remove "aio_morale_recovering_from_shaken"}
+				}
 			else tagged "aio_cmd_lost"
 				{delay 28
 					{if not tagged "aio_morale_panic"
@@ -551,6 +560,13 @@
 					}
 					{tags remove "aio_morale_recovering_from_panic"}
 				}
+			else tagged "aio_cmd_shock"
+				{delay 28
+					{if tagged "aio_morale_recovering"
+						{call "recovered_from_panic"}
+					}
+					{tags remove "aio_morale_recovering_from_panic"}
+				}
 			else tagged "aio_cmd_lost"
 				{delay 28
 					{if tagged "aio_morale_recovering"
@@ -577,7 +593,11 @@
 	}
 	{on "aio_morale_just_shaken"
 		{tags add "aio_morale_just_shaken"}
-		{if tagged "aio_steadfast"
+		{if tagged "aio_cmd_shock"
+			{delay 2
+				{tags remove "aio_morale_just_shaken"}
+			}
+		else tagged "aio_steadfast"
 			{delay 12
 				{tags remove "aio_morale_just_shaken"}
 			}

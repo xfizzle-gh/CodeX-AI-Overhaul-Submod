@@ -68,6 +68,9 @@ class CeCommandCohesionTests(unittest.TestCase):
         self.assertIn("aio_steadfast", shaken)
         self.assertIn("{delay 16", shaken)
         self.assertIn("{delay 28", shaken)
+        hold = human.split('{on "aio_morale_just_shaken"', 1)[1].split('{on "', 1)[0]
+        self.assertIn("aio_cmd_shock", hold)
+        self.assertIn("{delay 2", hold)
 
     def test_quality_tuning_exists(self) -> None:
         human = HUMAN.read_text(encoding="utf-8")

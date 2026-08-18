@@ -13,8 +13,8 @@ Fixes vs first #120 head: link is a heartbeat, Weak/Lost come from missing a nea
 ## Resistance (existing machine)
 
 - Everyone can Shaken. Encouraged blocks Panic escalate only. Steadfast is longer hold + faster recover, not immunity.
-- just_shaken hold: steadfast 12s, elite 10s, linked/trained 8s, regular 6s, low 4s, lost 3s
-- Recover: encouraged/steadfast 8/10, elite 10/12, trained 14/16, linked 16/16, regular 20/20, low 24/24, lost 28/28
+- just_shaken hold: steadfast 12s, elite 10s, linked/trained 8s, regular 6s, low 4s, lost 3s, shock 2s
+- Recover: encouraged/steadfast 8/10, elite 10/12, trained 14/16, linked 16/16, regular 20/20, low 24/24, lost/shock 28/28
 - Live veterancy: probe only (`vet_live=`). Not used for math unless the probe reads 1
 
 No movement seizure. No surrender.
