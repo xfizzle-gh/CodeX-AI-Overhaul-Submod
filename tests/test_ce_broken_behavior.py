@@ -154,6 +154,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{tag def_sup_src}", evac)
         self.assertGreaterEqual(evac.count("{action move}"), 4)
         self.assertEqual(evac.count('{"actor_state"'), 1)
+        self.assertIn("{time 5}", evac)
         arrive = beh.split("broken/surrender_arrive", 1)[1].split("broken/surrender_expire", 1)[0]
         self.assertIn('{"delete"', arrive)
         self.assertIn("aio_morale_surrender_at_egress", arrive)

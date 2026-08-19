@@ -958,7 +958,7 @@
 						{tag_add aio_morale_surrender_evacuating}
 					}
 					{"delay"
-						{time 2}
+						{time 5}
 					}
 					{"actor_state"
 						{selector
