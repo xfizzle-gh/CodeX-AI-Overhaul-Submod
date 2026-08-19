@@ -1,7 +1,7 @@
 ; F0: native retreat_ratio is not how FE/Old Boy move Broken units. Rally move is the authority.
 ; Actor-scoped ratios are assist only. Writers must exclude aio_morale_owned. No player seizure.
-; Surrender pose/drop/white flag/60s cleanup: Old Boy walk_giveup_1 + inventory drop + white_flag;
-; FE radio_calling_surrender.mi stand_giveup_2 final pose (no player-0). Delete uses Old Boy {"delete"{selector}}.
+; Surrender pose/drop/white flag/60s cleanup: Old Boy walk_giveup_1 loop (no kneel collage exists).
+; stand_giveup_2 is a one-shot and does not hold on Code:X. Delete uses Old Boy {"delete"{selector}}.
 			{"conquest_enhanced_mechanics/broken/acquire"
 				{condition
 					{terms
@@ -819,43 +819,11 @@
 								}
 							}
 						}
+						{drop orders}
 						{collage walk_giveup_1}
 						{cicledelay 0}
 						{delay 0}
-						{totalTime 1.5}
-					}
-					{"delay"
-						{time 1.2}
-					}
-					{"animation"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_surrender_presenting}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{state
-										{state user_control}
-									}
-									{tag
-										{tag player}
-									}
-								}
-							}
-						}
-						{collage stand_giveup_2}
-						{speed 0.5}
-						{cicledelay 12000}
-						{delay 0}
+						{totalTime 99999}
 						{flags loop}
 					}
 					{"entity_state"
