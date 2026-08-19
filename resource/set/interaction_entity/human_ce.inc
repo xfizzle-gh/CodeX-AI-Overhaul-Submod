@@ -415,6 +415,8 @@
 		{tags remove "aio_morale_surrender_fx"}
 		{tags remove "aio_morale_surrender_presenting"}
 		{tags remove "aio_morale_surrender_expire"}
+		{tags remove "aio_morale_surrender_evacuating"}
+		{tags remove "aio_morale_surrender_at_egress"}
 		{tags remove "aio_morale_watching_regroup"}
 		{tags remove "aio_icon_refresh"}
 		{tags remove "aio_cmd_had_command"}

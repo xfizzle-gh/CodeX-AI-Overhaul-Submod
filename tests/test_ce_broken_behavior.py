@@ -103,7 +103,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 60"))
         self.assertEqual(human.count('{call "start_white_flag"}'), 1)
         self.assertNotIn("{effect start_white_flag}", beh)
-        present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_expire", 1)[0]
+        present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]
         self.assertIn("{tag_add aio_morale_surrender_presenting}", present)
         self.assertLess(present.find("{tag_add aio_morale_surrender_presenting}"), present.find("{action drop}"))
         self.assertLess(present.find("{action drop}"), present.find("{collage walk_giveup_1}"))
@@ -135,30 +135,32 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{min 0.3}", flag)
         self.assertIn('{add_view "aio_cmd_junior"', human)
 
-    def test_surrender_stays_stationary(self) -> None:
+    def test_surrender_evacuates_to_own_entry(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
         lua = CONQ.read_text(encoding="utf-8")
-        self.assertNotIn("aio_morale_surrender_evacuating", beh)
-        self.assertNotIn("aio_morale_surrender_at_egress", beh)
-        self.assertNotIn("surrender_evacuate", beh)
-        self.assertNotIn("surrender_arrive", beh)
         self.assertNotIn("surrender_hold", beh)
-        surr = beh.split("broken/surrender\"", 1)[1].split("broken/surrender_present", 1)[0]
-        self.assertIn("{move_mode hold}", surr)
-        self.assertIn("{fire_mode hold}", surr)
-        self.assertIn("{weapon_prepare off}", surr)
-        self.assertIn("{mode disable}", surr)
-        self.assertEqual(surr.count('{"actor_state"'), 1)
-        present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_expire", 1)[0]
-        self.assertNotIn('{"actor_state"', present)
-        self.assertIn("{collage walk_giveup_1}", present)
-        self.assertIn("{flags loop}", present)
-        self.assertIn("{totalTime 99999}", present)
-        self.assertNotIn("{action move}", beh.split("broken/surrender\"", 1)[1])
-        self.assertNotIn("attack_support_entry_", beh.split("broken/surrender\"", 1)[1])
-        self.assertNotIn("enemy_spawnside$", beh.split("broken/surrender\"", 1)[1])
+        evac = beh.split("broken/surrender_evacuate", 1)[1].split("broken/surrender_arrive", 1)[0]
+        self.assertIn("{tag aio_morale_surrender_evacuating}", evac)
+        self.assertIn("{tag aio_morale_surrendering}", evac)
+        self.assertIn("{state dead}", evac)
+        self.assertIn("{state inactive}", evac)
+        self.assertIn("{move_mode free}", evac)
+        self.assertIn("{mode enable}", evac)
+        self.assertIn("{action move}", evac)
+        self.assertIn('{waypoint "attack_support_entry_a"}', evac)
+        self.assertIn('{waypoint "attack_support_entry_b"}', evac)
+        self.assertIn("enemy_spawnside$", evac)
+        self.assertIn("{tag _user_ally}", evac)
+        self.assertIn("{tag def_sup_src}", evac)
+        self.assertGreaterEqual(evac.count("{action move}"), 4)
+        self.assertEqual(evac.count('{"actor_state"'), 1)
+        arrive = beh.split("broken/surrender_arrive", 1)[1].split("broken/surrender_expire", 1)[0]
+        self.assertIn('{"delete"', arrive)
+        self.assertIn("aio_morale_surrender_at_egress", arrive)
+        self.assertIn("{tag spawn_a}", arrive)
+        self.assertIn("{tag spawn_b}", arrive)
         self.assertIn("aio_morale_surrendering", lua)
-        self.assertNotIn("aio_morale_surrender_evacuating", lua)
+        self.assertIn("aio_morale_surrender_evacuating", lua)
 
     def test_effect_selectors_exclude_dead_inactive(self) -> None:
         parts = BEH.read_text(encoding="utf-8").split('{"effect"')
@@ -185,6 +187,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "aio_morale_surrender_fx",
             "aio_morale_surrender_presenting",
             "aio_morale_surrender_expire",
+            "aio_morale_surrender_evacuating",
+            "aio_morale_surrender_at_egress",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
 

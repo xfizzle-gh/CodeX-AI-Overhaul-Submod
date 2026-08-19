@@ -176,7 +176,7 @@ local function orderSquad(squad)
 	local sc = scene()
 	if sc and sc.IsSquadTagged then
 		local ok, owned = pcall(function()
-			return sc:IsSquadTagged(squad, "aio_morale_owned") or sc:IsSquadTagged(squad, "aio_morale_surrendering") or sc:IsSquadTagged(squad, "_lua_mi") or sc:IsSquadTagged(squad, "repairing")
+			return sc:IsSquadTagged(squad, "aio_morale_owned") or sc:IsSquadTagged(squad, "aio_morale_surrendering") or sc:IsSquadTagged(squad, "aio_morale_surrender_evacuating") or sc:IsSquadTagged(squad, "_lua_mi") or sc:IsSquadTagged(squad, "repairing")
 		end)
 		if ok and owned then return end
 	end
