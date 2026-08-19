@@ -8,6 +8,13 @@
 -- Mission participation is gated in MI by support_mission_enabled$. This controller publishes
 -- its own routed Team A playerId as the attack-support owner and issues squad orders.
 --
+-- TRANSPORT POLICY: player-side allied support is IFV-only for troop transport. The MI
+-- package contains two independent legacy truck paths: command-19 motorized waves and the
+-- later normal_transport_* patrol block gated by transport_as_done$. It also contains old
+-- Humvee compositions. This controller hard-disables all three truck/Humvee paths for the
+-- whole attack mission while leaving attack_support_ifv_left$ untouched.
+-- Do not remove this guard unless those branches are physically removed from the MI source.
+--
 -- This slot also carries the ENGINE-STATE MIRROR. Every MIRROR_QUANTS quants it writes
 -- one game.log line per wave engine - attack_support, enemy_defense (plus its garrison
 -- anchors), defense_support, enemy_attack - and the resolved faction_support_army$.
@@ -61,6 +68,27 @@ local function readVar(name)
 	return tostring(v)
 end
 
+local function setVar(name, value)
+	local sc = scene()
+	if not sc or not sc.SetVar then return false end
+	local ok = pcall(function() sc:SetVar(name, value) end)
+	return ok
+end
+
+local function enforceIfvOnlyTransport()
+	-- These are attack-support-only gates. Keep enemy transports and unrelated
+	-- vehicle support untouched. Reassert every Quant because stale/live MI overlays
+	-- may initialize legacy state after Lua GameStart.
+	setVar("attack_support_motor_left", 0)
+	setVar("attack_support_hmmwv_left", 0)
+	setVar("attack_support_motor_test", 0)
+	-- Separate from command 19: attack_support_waves.inc also has a four-faction
+	-- normal_transport_* patrol that claims the same truck packages whenever this
+	-- one-shot gate is 0. Native 2026-08-16 evidence proved that path can deploy a
+	-- RUSA Ural while motor_left and wave_cmd both read 0.
+	setVar("transport_as_done", 1)
+end
+
 local function positiveId(primary, fallback)
 	primary = tonumber(primary or 0) or 0
 	fallback = tonumber(fallback or 0) or 0
@@ -90,7 +118,8 @@ local function mirrorMotor()
 	emit("motor_left", readVar("attack_support_motor_left"),
 		"wave_cmd", readVar("attack_support_wave_cmd"),
 		"test", readVar("attack_support_motor_test"),
-		"test_done", readVar("attack_support_motor_test_done"))
+		"test_done", readVar("attack_support_motor_test_done"),
+		"normal_transport_done", readVar("transport_as_done"))
 	emit("place_defense", readVar("defense_support_place"),
 		"pad", readVar("defense_support_entry_rr"),
 		"stage", readVar("defense_support_stage"))
@@ -238,11 +267,12 @@ local function onGameStart()
 	state.ordered = {}
 	state.identityPublished = false
 	state.attackMission = nil
+	enforceIfvOnlyTransport()
 	local id = identity()
 	log("game_start", "playerId", id.playerId, "attacking", tostring(id.attacking), "army", id.army)
 	publishIdentity(id, false)
 	if id.attacking == true then
-		log("mode", "mi_wave_delivery", "lua_spawn", "disabled_av_safe")
+		log("mode", "mi_wave_delivery", "transport", "ifv_only", "lua_spawn", "disabled_av_safe")
 	elseif id.attacking == false then
 		log("mode", "idle_not_attacking")
 	else
@@ -252,6 +282,7 @@ end
 
 local function onQuant()
 	state.quant = state.quant + 1
+	enforceIfvOnlyTransport()
 	if not state.identityPublished and state.attackMission ~= false then
 		publishIdentity(identity(), true)
 	end
@@ -288,13 +319,14 @@ end
 
 local id0 = identity()
 log("module_loaded", "playerId", id0.playerId, "team", id0.team, "attacking", tostring(id0.attacking))
+enforceIfvOnlyTransport()
 
 local ev = events()
 if ev and ev.Subscribe then
 	ev:Subscribe(ev.GameStart, safeEvent("GameStart", onGameStart))
 	ev:Subscribe(ev.Quant, safeEvent("Quant", onQuant))
 	ev:Subscribe(ev.GameEnd, safeEvent("GameEnd", onGameEnd))
-	log("armed", "identity_orders_mi_waves")
+	log("armed", "identity_orders_mi_waves_ifv_only")
 else
 	log("not_armed", "BotApi.Events_missing")
 end

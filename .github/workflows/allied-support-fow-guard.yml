@@ -9,6 +9,7 @@ on:
       - "resource/map/multi/enemy_defense_support.inc"
       - "resource/map/multi/enemy_attack_support.inc"
       - "tests/test_allied_support_shared_fow.py"
+      - "tests/test_attack_support_ifv_transport_policy.py"
       - ".github/workflows/allied-support-fow-guard.yml"
   push:
     branches:
@@ -21,6 +22,7 @@ on:
       - "resource/map/multi/enemy_defense_support.inc"
       - "resource/map/multi/enemy_attack_support.inc"
       - "tests/test_allied_support_shared_fow.py"
+      - "tests/test_attack_support_ifv_transport_policy.py"
       - ".github/workflows/allied-support-fow-guard.yml"
 
 permissions:
@@ -39,4 +41,6 @@ jobs:
           python-version: "3.13"
 
       - name: Run Allied Support FoW and Gate regression tests
-        run: python -m unittest tests/test_allied_support_shared_fow.py
+        run: |
+          python -m unittest tests/test_allied_support_shared_fow.py
+          python -m unittest tests/test_attack_support_ifv_transport_policy.py
