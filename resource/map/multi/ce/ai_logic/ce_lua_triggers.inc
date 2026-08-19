@@ -3163,6 +3163,11 @@
 											{state user_control}
 										}
 									}
+									{exclude
+										{tag
+											{tag aio_morale_surrendering}
+										}
+									}
 								}
 								{group
 									{select
@@ -3173,6 +3178,11 @@
 									{include
 										{state
 											{state operatable}
+										}
+									}
+									{exclude
+										{tag
+											{tag aio_morale_surrendering}
 										}
 									}
 								}

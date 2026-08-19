@@ -395,29 +395,55 @@ local function readMoraleVar(name)
   return tonumber(value) or 0
 end
 
+local function countSquadsTagged(tag)
+  local n = 0
+  local ok, squads = pcall(function()
+    return BotApi.Scene.Squads
+  end)
+  if ok and type(squads) == "table" then
+    for _, squad in pairs(squads) do
+      local tok, tagged = pcall(function()
+        return BotApi.Scene:IsSquadTagged(squad, tag)
+      end)
+      if tok and tagged then
+        n = n + 1
+      end
+    end
+  end
+  return n
+end
+
 local function startMoraleEventWatch()
   local seenRetreat = false
   local seenSurrender = false
+  local lastPow = -1
   local function watch()
     if not seenRetreat and readMoraleVar("ce_morale_diag_retreat") > 0 then
       seenRetreat = true
       print("CE_MORALE_EVENT retreat")
     end
-    if not seenSurrender and readMoraleVar("ce_morale_diag_surrender") > 0 then
+    local pow = countSquadsTagged("aio_morale_surrendering")
+    if pow > 0 then
+      BotApi.Scene:SetVar("ce_morale_diag_surrender", 1)
+      if pow ~= lastPow then
+        print("CE_POW alive=1 surrendering=" .. pow .. " targeted=0")
+        lastPow = pow
+      end
+    elseif lastPow > 0 then
+      print("CE_POW alive=0 surrendering=0 targeted=0")
+      lastPow = 0
+    end
+    if not seenSurrender and (readMoraleVar("ce_morale_diag_surrender") > 0 or pow > 0) then
       seenSurrender = true
       print("CE_MORALE_EVENT surrender")
     end
-    if not (seenRetreat and seenSurrender) then
-      BotApi.Events:SetQuantTimer(watch, 2000)
-    end
+    BotApi.Events:SetQuantTimer(watch, 2000)
   end
   BotApi.Events:SetQuantTimer(watch, 2000)
 end
 
 function StartCeMoraleProbeLog()
-  if readMoraleVar("enable_ce_morale_debug") > 0 or readMoraleVar("enable_ce_morale_autodemo") > 0 then
-    startMoraleEventWatch()
-  end
+  startMoraleEventWatch()
   if readMoraleVar("enable_ce_morale_autodemo") <= 0 then
     return
   end
