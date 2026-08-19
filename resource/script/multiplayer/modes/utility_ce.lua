@@ -413,6 +413,7 @@ local function countSquadsTagged(tag)
   return n
 end
 
+-- Diagnostic-only 2s watcher for native POW tests. Re-gate or remove before production merge.
 local function startMoraleEventWatch()
   local seenRetreat = false
   local seenSurrender = false
@@ -426,11 +427,11 @@ local function startMoraleEventWatch()
     if pow > 0 then
       BotApi.Scene:SetVar("ce_morale_diag_surrender", 1)
       if pow ~= lastPow then
-        print("CE_POW alive=1 surrendering=" .. pow .. " targeted=0")
+        print("CE_POW alive=1 surrendering=" .. pow)
         lastPow = pow
       end
     elseif lastPow > 0 then
-      print("CE_POW alive=0 surrendering=0 targeted=0")
+      print("CE_POW alive=0 surrendering=0")
       lastPow = 0
     end
     if not seenSurrender and (readMoraleVar("ce_morale_diag_surrender") > 0 or pow > 0) then

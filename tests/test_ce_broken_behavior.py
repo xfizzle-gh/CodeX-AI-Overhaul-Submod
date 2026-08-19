@@ -107,15 +107,48 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn('{player "0"}', rec)
         self.assertNotIn("{control AI}", rec)
 
+    def _enemy_before_distance(self, text: str) -> str:
+        start = text.find("{enemy")
+        self.assertGreater(start, -1, "missing {enemy")
+        end = text.find("{distance", start)
+        self.assertGreater(end, start, "missing {distance after {enemy")
+        return text[start:end]
+
     def test_scripted_attack_excludes_surrendering(self) -> None:
-        unhold = (ROOT / "resource/map/multi/ce/ai_logic/ce_lua_triggers.inc").read_text(encoding="utf-8")
-        block = unhold.split("ai/ai_unhold", 1)[1].split("ai/tank_alt_fight", 1)[0]
-        enemy = block.split("{enemy", 1)[1].split("{distance", 1)[0]
-        self.assertIn("aio_morale_surrendering", enemy)
-        self.assertIn("_user_ally", enemy)
+        ce = (ROOT / "resource/map/multi/ce/ai_logic/ce_lua_triggers.inc").read_text(encoding="utf-8")
+        unhold = ce.split("ai/ai_unhold", 1)[1].split("ai/tank_alt_fight", 1)[0]
+        first = unhold.split('{"1.see_actors"', 1)[1].split('{"2.see_actors"', 1)[0]
+        second = unhold.split('{"2.see_actors"', 1)[1]
+        self.assertIn("aio_morale_surrendering", self._enemy_before_distance(first))
+        self.assertIn("aio_morale_surrendering", self._enemy_before_distance(second))
+        self.assertIn("_user_ally", first)
+        td = ce.split("ai/td_attack_see_actors", 1)[1].split("{distance", 1)[0]
+        self.assertIn("aio_morale_surrendering", td.split("{enemy", 1)[1])
+        codex = (ROOT / "resource/map/multi/codex_ai_combat.inc").read_text(encoding="utf-8")
+        c100 = codex.split("{meters 100}", 1)[0].rsplit("{enemy", 1)[1]
+        c125 = codex.split("{meters 125}", 1)[0].rsplit("{enemy", 1)[1]
+        self.assertIn("aio_morale_surrendering", c100)
+        self.assertIn("aio_morale_surrendering", c125)
+        dcg = DCG.read_text(encoding="utf-8")
+        for grenade in ("m67", "m26", "rgd5"):
+            block = dcg.split("dcg/betterai/grenade/inf/" + grenade, 1)[1].split("{distance", 1)[0]
+            self.assertIn("aio_morale_surrendering", block.split("{enemy", 1)[1])
+        d55 = dcg.split("{meters 55}", 1)[0].rsplit("{enemy", 1)[1]
+        d66 = dcg.split("{meters 66}", 1)[0].rsplit("{enemy", 1)[1]
+        self.assertIn("aio_morale_surrendering", d55)
+        self.assertIn("aio_morale_surrendering", d66)
         lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
-        self.assertIn("CE_POW", lua)
-        self.assertIn("aio_morale_surrendering", lua)
+        self.assertIn("CE_POW alive=1 surrendering=", lua)
+        self.assertIn("CE_POW alive=0 surrendering=0", lua)
+        self.assertNotIn("targeted=", lua)
+        self.assertIn("Diagnostic-only 2s watcher", lua)
+        for rel in (
+            "resource/map/multi/ce/ai_logic/ce_lua_triggers.inc",
+            "resource/map/multi/codex_ai_combat.inc",
+            "resource/map/multi/dcg_script.inc",
+        ):
+            text = (ROOT / rel).read_text(encoding="utf-8")
+            self.assertEqual(text.count("{"), text.count("}"), rel)
 
     def test_one_surrender_authority(self) -> None:
         text = BEH.read_text(encoding="utf-8")

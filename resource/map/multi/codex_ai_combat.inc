@@ -1317,6 +1317,7 @@
 									}
 								}
 							}
+							}
 							{distance
 								{mode near_than}
 								{meters 100}
@@ -1390,6 +1391,7 @@
 										{tag aio_morale_surrendering}
 									}
 								}
+							}
 							}
 							{distance
 								{mode near_than}
