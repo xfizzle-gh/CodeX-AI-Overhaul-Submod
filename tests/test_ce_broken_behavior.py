@@ -81,8 +81,9 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{"for selector" aio_morale_surrender_cand}', text)
         self.assertIn("{time 0.2}", surr)
         self.assertNotIn("{delete}", text)
-        self.assertNotIn('{player "0"}', text)
-        self.assertNotIn("{control AI}", text)
+        apply_only = HUMAN.read_text(encoding="utf-8").split('{on "aio_morale_surrender_apply"', 1)[1].split('{on "', 1)[0]
+        self.assertNotIn('{player "0"}', apply_only)
+        self.assertNotIn("{control AI}", apply_only)
 
     def test_command_reacquire_clears_failed_regroup(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
@@ -140,8 +141,9 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{drop orders}", present)
         self.assertIn("{tag_remove aio_morale_surrender_presenting}", present)
         self.assertGreaterEqual(present.count("{tag aio_morale_surrender_presenting}"), 4)
-        self.assertNotIn('{player "0"}', beh)
-        self.assertNotIn("{control AI}", beh)
+        self.assertIn('{player "0"}', present)
+        self.assertIn("{control AI}", present)
+        self.assertIn("{operation set}", present)
         self.assertIn("enable_ce_morale_autodemo", lua.split("function StartCeMoraleProbeLog()", 1)[1][:400])
         self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/white_flag.def").is_file())
         self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/no_comd.def").is_file())
