@@ -95,12 +95,13 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{action drop}", beh)
         self.assertIn('{"delete"', beh)
         self.assertIn('{on "start_white_flag"', human)
-        self.assertIn("{delay 80", human)
+        self.assertIn("{delay 75", human)
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1]
+        self.assertNotIn("{delay 80", apply)
         self.assertNotIn("{delay 60", apply)
         self.assertIn('{tags add "aio_morale_surrender_expire"}', human)
         self.assertNotIn('{call "delete"}', human)
-        self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 80"))
+        self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 75"))
         self.assertEqual(human.count('{call "start_white_flag"}'), 1)
         self.assertNotIn("{effect start_white_flag}", beh)
         present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]
@@ -135,15 +136,23 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{min 0.3}", flag)
         self.assertIn('{add_view "aio_cmd_junior"', human)
 
-    def test_surrender_evacuates_to_own_entry(self) -> None:
+    def test_surrender_evacuates_to_captor_entry(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
         lua = CONQ.read_text(encoding="utf-8")
+        ctf = (ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set").read_text(encoding="utf-8")
+        self.assertRegex(ctf, r"\{scoreFinal\s+8500\}")
+        self.assertNotRegex(ctf, r"\{scoreFinal\s+9000\}")
+        self.assertIn("points_table_player=0/0.000,0.33/3.750,0.50/4.500,0.66/5.600,1.00/7.500", ctf)
+        self.assertIn("points_table_ai=0/0.000,0.33/3.750,0.50/4.500,0.66/5.600,1.00/7.500", ctf)
+        self.assertIn("kill_score_multiplier=6.00", ctf)
         self.assertNotIn("surrender_hold", beh)
-        evac = beh.split("broken/surrender_evacuate", 1)[1].split("broken/surrender_arrive", 1)[0]
+        evac = beh.split("broken/surrender_evacuate", 1)[1].split("broken/surrender_arrive_a", 1)[0]
         self.assertIn("{tag aio_morale_surrender_evacuating}", evac)
         self.assertIn("{tag aio_morale_surrendering}", evac)
         self.assertIn("{state dead}", evac)
         self.assertIn("{state inactive}", evac)
+        self.assertIn("{state user_control}", evac)
+        self.assertIn("{tag player}", evac)
         self.assertIn("{move_mode free}", evac)
         self.assertIn("{mode enable}", evac)
         self.assertIn("{action move}", evac)
@@ -155,13 +164,34 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertGreaterEqual(evac.count("{action move}"), 4)
         self.assertEqual(evac.count('{"actor_state"'), 1)
         self.assertIn("{time 5}", evac)
-        arrive = beh.split("broken/surrender_arrive", 1)[1].split("broken/surrender_expire", 1)[0]
-        self.assertIn('{"delete"', arrive)
-        self.assertIn("aio_morale_surrender_at_egress", arrive)
-        self.assertIn("{tag spawn_a}", arrive)
-        self.assertIn("{tag spawn_b}", arrive)
+        self.assertNotIn('{var "enemy_spawnside$"} {op "=="} {value 0}', evac)
+        s1 = evac.split("{value 1}", 1)[1].split("{value 2}", 1)[0]
+        s1_wp = [line for line in s1.splitlines() if "attack_support_entry" in line]
+        self.assertEqual(len(s1_wp), 2)
+        self.assertIn("entry_a", s1_wp[0])
+        self.assertIn("entry_b", s1_wp[1])
+        self.assertIn("aio_morale_surrender_to_a", s1)
+        self.assertIn("aio_morale_surrender_to_b", s1)
+        s2 = evac.split("{value 2}", 1)[1]
+        s2_wp = [line for line in s2.splitlines() if "attack_support_entry" in line]
+        self.assertEqual(len(s2_wp), 2)
+        self.assertIn("entry_b", s2_wp[0])
+        self.assertIn("entry_a", s2_wp[1])
+        arrive_a = beh.split("broken/surrender_arrive_a", 1)[1].split("broken/surrender_arrive_b", 1)[0]
+        arrive_b = beh.split("broken/surrender_arrive_b", 1)[1].split("broken/surrender_expire", 1)[0]
+        self.assertIn('{"delete"', arrive_a)
+        self.assertIn('{"delete"', arrive_b)
+        self.assertIn("aio_morale_surrender_at_egress", arrive_a)
+        self.assertIn("{tag spawn_a}", arrive_a)
+        self.assertNotIn("{tag spawn_b}", arrive_a)
+        self.assertIn("{tag aio_morale_surrender_to_a}", arrive_a)
+        self.assertIn("{tag spawn_b}", arrive_b)
+        self.assertNotIn("{tag spawn_a}", arrive_b)
+        self.assertIn("{tag aio_morale_surrender_to_b}", arrive_b)
         self.assertIn("aio_morale_surrendering", lua)
         self.assertIn("aio_morale_surrender_evacuating", lua)
+        self.assertNotIn("{stat_notify", beh)
+        self.assertEqual(HUMAN.read_text(encoding="utf-8").count("{stat_notify"), 0)
 
     def test_effect_selectors_exclude_dead_inactive(self) -> None:
         parts = BEH.read_text(encoding="utf-8").split('{"effect"')
@@ -190,6 +220,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "aio_morale_surrender_expire",
             "aio_morale_surrender_evacuating",
             "aio_morale_surrender_at_egress",
+            "aio_morale_surrender_to_a",
+            "aio_morale_surrender_to_b",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
 
