@@ -2232,7 +2232,7 @@
 				{actions
 					{"set_i" {var "defense_support_air_test_done$"} {op "="} {value 1}}
 					{"set_i" {var "support_announce$"} {op "="} {value 1}}
-					{"set_i" {var "defense_support_air_left$"} {op "="} {value 2}}
+					{"set_i" {var "defense_support_air_left$"} {op "="} {value 1}}
 					{"delay" {time 30}}
 					("ds_resolve_army")
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 18}}
@@ -2254,7 +2254,7 @@
 				{actions
 					{"set_i" {var "defense_support_garrison_done$"} {op "="} {value 1}}
 					{"set_i" {var "support_announce$"} {op "="} {value 1}}
-					{"set_i" {var "defense_support_air_left$"} {op "="} {value 2}}
+					{"set_i" {var "defense_support_air_left$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}
 					; DAY-2 TEST default ON (shared toggle). Set value 0 for production-only air rolls.
 					{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}
@@ -2343,7 +2343,7 @@
 				}
 				{actions
 					{"set_i" {var "defense_support_armed$"} {op "="} {value 1}}
-					{"set_i" {var "defense_support_air_left$"} {op "="} {value 2}}
+					{"set_i" {var "defense_support_air_left$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}
 					{"set_i" {var "support_announce$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_busy$"} {op "="} {value 1}}
@@ -2355,32 +2355,32 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
-							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 8}}
+							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 2}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L3, 8 WAVES"}}
+									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L3, 4 WAVES"}}
 								}
 								{"default"}
 							}
 						}
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
-							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 6}}
+							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 1}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L2, 6 WAVES"}}
+									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L2, 3 WAVES"}}
 								}
 								{"default"}
 							}
 						}
 						{"default"
-							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 4}}
+							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 1}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L1, 4 WAVES"}}
+									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L1, 1 WAVE"}}
 								}
 								{"default"}
 							}

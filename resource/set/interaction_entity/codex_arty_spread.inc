@@ -21,7 +21,7 @@
 	{on "codex_force_drop"
 		{if not user_control
 			{tags remove "place1_busy"}
-			{call "drop_paratrooper"}
+			{call "drop_paratroopers"}
 			{delay 0.5
 				{call "drop_desant1"}
 			}
@@ -34,7 +34,7 @@
 	{on "codex_force_drop"
 		{if not user_control
 			{tags remove "place1_busy"}
-			{call "drop_paratrooper"}
+			{call "drop_paratroopers"}
 			{delay 0.5
 				{call "drop_desant1"}
 			}
@@ -47,7 +47,7 @@
 	{on "codex_force_drop"
 		{if not user_control
 			{tags remove "place1_busy"}
-			{call "drop_paratrooper"}
+			{call "drop_paratroopers"}
 			{delay 0.5
 				{call "drop_desant1"}
 			}
@@ -60,7 +60,7 @@
 	{on "codex_force_drop"
 		{if not user_control
 			{tags remove "place1_busy"}
-			{call "drop_paratrooper"}
+			{call "drop_paratroopers"}
 			{delay 0.5
 				{call "drop_desant1"}
 			}
@@ -69,6 +69,44 @@
 }
 
 {"il-76td_bmd2"
+	("codex_drop_plane_spawn")
+	{on "codex_force_drop"
+		{if not user_control
+			{tags add "place1_busy"}
+			{tags remove "dont_drop"}
+			{tags remove "cargo_open"}
+			{call "open_cargo"}
+			{delay 1.5
+				{ani_play "vehicle1_out" callback}
+				{call "drop_desant1"}
+			}
+			{delay 3
+				{call "drop_desant2"}
+			}
+		}
+	}
+}
+
+{"il-76td_bmd2_ai"
+	("codex_drop_plane_spawn")
+	{on "codex_force_drop"
+		{if not user_control
+			{tags add "place1_busy"}
+			{tags remove "dont_drop"}
+			{tags remove "cargo_open"}
+			{call "open_cargo"}
+			{delay 1.5
+				{ani_play "vehicle1_out" callback}
+				{call "drop_desant1"}
+			}
+			{delay 3
+				{call "drop_desant2"}
+			}
+		}
+	}
+}
+
+{"c130_lav25_ai"
 	("codex_drop_plane_spawn")
 	{on "codex_force_drop"
 		{if not user_control
@@ -112,11 +150,8 @@
 			{tags add "fired"}
 			{start_sound "weapon/shot/ambient_cannon"}
 			(define "rnd_art_bomb"
-				{delay %delay
-					{start_sound "weapon/shot/mortar/whistle"}
-					{delay 1
-						{spawn "artillery_single_105" random_position 800}
-					}
+				{delay %delay 0.5
+					{spawn "artillery_single_105_dummy" random_position 1600}
 				}
 			)
 			("rnd_art_bomb" delay(1.5))
@@ -146,11 +181,8 @@
 			{tags add "fired"}
 			{start_sound "weapon/shot/ambient_cannon"}
 			(define "rnd_art_bomb"
-				{delay %delay
-					{start_sound "weapon/shot/mortar/whistle"}
-					{delay 1
-						{spawn "artillery_single_150" random_position 800}
-					}
+				{delay %delay 0.5
+					{spawn "artillery_single_150_dummy" random_position 1600}
 				}
 			)
 			("rnd_art_bomb" delay(1.5))
@@ -172,11 +204,8 @@
 			{tags add "fired"}
 			{start_sound "weapon/shot/ambient_cannon"}
 			(define "rnd_smk"
-				{delay %delay
-					{start_sound "weapon/shot/mortar/whistle"}
-					{delay 1
-						{spawn "artillery_single_smoke" random_position 1600}
-					}
+				{delay %delay 0.5
+					{spawn "artillery_single_smoke_dummy" random_position 150 offset 0 -1500 0}
 				}
 			)
 			("rnd_smk" delay(1))
@@ -187,6 +216,29 @@
 			("rnd_smk" delay(8))
 			("rnd_smk" delay(9.5))
 			("rnd_smk" delay(11))
+			{hide 16}
+		}
+	}
+}
+
+{"codex_smoke_6b"
+	{on spawn
+		{if not tagged "fired"
+			{tags add "fired"}
+			{start_sound "weapon/shot/ambient_cannon"}
+			(define "rnd_smk_b"
+				{delay %delay 0.5
+					{spawn "artillery_single_smoke_dummy" random_position 150 offset 0 1500 0}
+				}
+			)
+			("rnd_smk_b" delay(1))
+			("rnd_smk_b" delay(2))
+			("rnd_smk_b" delay(3.5))
+			("rnd_smk_b" delay(5))
+			("rnd_smk_b" delay(6.5))
+			("rnd_smk_b" delay(8))
+			("rnd_smk_b" delay(9.5))
+			("rnd_smk_b" delay(11))
 			{hide 16}
 		}
 	}
@@ -231,13 +283,13 @@
 		{if not tagged "fired"
 			{tags add "fired"}
 			{delay 1
-				{spawn "artillery_single_150" random_position 900}
+				{spawn "artillery_single_150_dummy" random_position 1800}
 			}
 			{delay 15
-				{spawn "artillery_single_150" random_position 900}
+				{spawn "artillery_single_150_dummy" random_position 1800}
 			}
 			{delay 29
-				{spawn "artillery_single_150" random_position 900}
+				{spawn "artillery_single_150_dummy" random_position 1800}
 			}
 			{hide 36}
 		}
