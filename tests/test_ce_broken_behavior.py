@@ -95,12 +95,12 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{action drop}", beh)
         self.assertIn('{"delete"', beh)
         self.assertIn('{on "start_white_flag"', human)
-        self.assertIn("{delay 60", human)
-        self.assertNotIn("{delay 35", human)
+        self.assertIn("{delay 80", human)
+        apply = human.split('{on "aio_morale_surrender_apply"', 1)[1]
+        self.assertNotIn("{delay 60", apply)
         self.assertIn('{tags add "aio_morale_surrender_expire"}', human)
         self.assertNotIn('{call "delete"}', human)
-        apply = human.split('{on "aio_morale_surrender_apply"', 1)[1]
-        self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 60"))
+        self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 80"))
         self.assertEqual(human.count('{call "start_white_flag"}'), 1)
         self.assertNotIn("{effect start_white_flag}", beh)
         present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]

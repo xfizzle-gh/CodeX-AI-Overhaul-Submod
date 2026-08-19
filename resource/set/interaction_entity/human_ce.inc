@@ -758,7 +758,7 @@
 		{able "select" 0}
 		{able "fight" 0}
 		{call "aio_morale_refresh_icons"}
-		{delay 60
+		{delay 80
 			{if tagged "aio_morale_surrendering"
 				{if not dead
 					{call "stop_white_flag"}
