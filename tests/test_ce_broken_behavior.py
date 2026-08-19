@@ -192,6 +192,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{player "0"}', present)
         self.assertIn("{control AI}", present)
         self.assertEqual(present.count("{operation set}"), 1)
+        self.assertEqual(beh.count("{control AI}"), 1)
+        self.assertEqual(beh.count('{player "0"}'), 1)
         self.assertIn("enable_ce_morale_autodemo", lua.split("function StartCeMoraleProbeLog()", 1)[1][:400])
         self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/white_flag.def").is_file())
         self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/no_comd.def").is_file())
