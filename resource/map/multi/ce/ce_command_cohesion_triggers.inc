@@ -100,6 +100,41 @@
 									}
 								}
 								{include
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_add aio_cmd_had_command}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_junior}
+									}
+									{tag
+										{tag aio_cmd_primary}
+									}
+									{tag
+										{tag aio_cmd_senior}
+									}
+									{tag
+										{tag aio_cmd_independent}
+									}
+								}
+								{include
 									{tag
 										{tag aio_cmd_lost}
 									}
@@ -287,6 +322,27 @@
 							}
 						}
 						{tag_add aio_cmd_linked}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_seen}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_add aio_cmd_had_command}
 					}
 					{"entity_state"
 						{selector
@@ -698,6 +754,11 @@
 								{select
 									{prop
 										{prop human}
+									}
+								}
+								{include
+									{tag
+										{tag aio_cmd_had_command}
 									}
 								}
 								{exclude

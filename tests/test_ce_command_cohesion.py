@@ -108,6 +108,11 @@ class CeCommandCohesionTests(unittest.TestCase):
         lost_fx = lost_fx[lost_fx.rfind('{"effect"'):]
         self.assertIn("aio_icon_refresh", lost_fx)
         self.assertNotIn("{tag aio_cmd_lost}", lost_fx)
+        human = HUMAN.read_text(encoding="utf-8")
+        refresh = human.split('{on "aio_morale_refresh_icons"', 1)[1].split('{on "', 1)[0]
+        lost_icon = refresh.split('tagged "aio_cmd_lost"', 1)[1]
+        self.assertIn('tagged "aio_cmd_had_command"', lost_icon.split("else tagged", 1)[0] if "else tagged" in lost_icon else lost_icon)
+        self.assertIn("{tag_add aio_cmd_had_command}", text)
 
 
 if __name__ == "__main__":

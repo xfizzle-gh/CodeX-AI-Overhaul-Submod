@@ -119,7 +119,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/aio_morale_panic.def").is_file())
         self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/aio_morale_broken.def").is_file())
         self.assertIn('{on "aio_morale_refresh_icons"', human)
-        self.assertIn('{add_view "no_comd" "no_comd" "head"}', human)
+        self.assertIn('{add_view "aio_cmd_lost" "aio_cmd_lost" "head"}', human)
+        self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/aio_cmd_lost.def").is_file())
         self.assertIn('{add_view "aio_cmd_junior"', human)
 
     def test_surrender_stays_stationary(self) -> None:

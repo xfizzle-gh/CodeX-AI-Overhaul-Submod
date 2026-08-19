@@ -417,6 +417,7 @@
 		{tags remove "aio_morale_surrender_expire"}
 		{tags remove "aio_morale_watching_regroup"}
 		{tags remove "aio_icon_refresh"}
+		{tags remove "aio_cmd_had_command"}
 		{view stop "beacon_fx"}
 		{call "aio_morale_stop_icons"}
 	}
@@ -767,6 +768,7 @@
 	{on "aio_morale_stop_icons"
 		{view pause "white_flag"}
 		{view pause "no_comd"}
+		{view pause "aio_cmd_lost"}
 		{view pause "aio_morale_panic"}
 		{view pause "aio_morale_broken"}
 		{view pause "aio_cmd_junior"}
@@ -782,7 +784,9 @@
 		else tagged "aio_morale_panic"
 			{call "start_aio_morale_panic"}
 		else tagged "aio_cmd_lost"
-			{call "start_no_comd"}
+			{if tagged "aio_cmd_had_command"
+				{call "start_no_comd"}
+			}
 		else tagged "aio_cmd_senior"
 			{call "start_aio_cmd_senior"}
 		else tagged "aio_cmd_primary"
@@ -804,9 +808,9 @@
 	{on "start_no_comd"
 		{if not tagged "aio_icon_no_comd"
 			{tags add "aio_icon_no_comd"}
-			{add_view "no_comd" "no_comd" "head"}
+			{add_view "aio_cmd_lost" "aio_cmd_lost" "head"}
 		}
-		{view start "no_comd"}
+		{view start "aio_cmd_lost"}
 	}
 	{on "start_aio_morale_panic"
 		{if not tagged "aio_icon_panic"
