@@ -95,11 +95,12 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{action drop}", beh)
         self.assertIn('{"delete"', beh)
         self.assertIn('{on "start_white_flag"', human)
-        self.assertIn("{delay 35", human)
+        self.assertIn("{delay 60", human)
+        self.assertNotIn("{delay 35", human)
         self.assertIn('{tags add "aio_morale_surrender_expire"}', human)
         self.assertNotIn('{call "delete"}', human)
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1]
-        self.assertLess(apply.find('{call "start_white_flag"}'), apply.find("{delay 35"))
+        self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 60"))
         self.assertEqual(human.count('{call "start_white_flag"}'), 1)
         self.assertNotIn("{effect start_white_flag}", beh)
         present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_expire", 1)[0]
@@ -113,44 +114,36 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{control AI}", beh)
         self.assertIn("enable_ce_morale_autodemo", lua.split("function StartCeMoraleProbeLog()", 1)[1][:400])
         self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/white_flag.def").is_file())
+        self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/no_comd.def").is_file())
+        self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/aio_cmd_junior.def").is_file())
+        self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/aio_morale_panic.def").is_file())
+        self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/aio_morale_broken.def").is_file())
+        self.assertIn('{on "aio_morale_refresh_icons"', human)
+        self.assertIn('{add_view "no_comd" "no_comd" "head"}', human)
+        self.assertIn('{add_view "aio_cmd_junior"', human)
 
-    def test_surrender_evacuates_to_own_entry(self) -> None:
+    def test_surrender_stays_stationary(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
         lua = CONQ.read_text(encoding="utf-8")
-        evac = beh.split("broken/surrender_evacuate", 1)[1].split("broken/surrender_arrive", 1)[0]
-        self.assertIn("{tag aio_morale_surrender_evacuating}", evac)
-        self.assertIn("{tag aio_morale_surrendering}", evac)
-        self.assertIn("{state dead}", evac)
-        self.assertIn("{state inactive}", evac)
-        self.assertIn("{state user_control}", evac)
-        self.assertIn("{tag player}", evac)
-        self.assertIn("{action move}", evac)
-        self.assertIn('{waypoint "attack_support_entry_a"}', evac)
-        self.assertIn('{waypoint "attack_support_entry_b"}', evac)
-        self.assertIn("enemy_spawnside$", evac)
-        self.assertIn("{tag _user_ally}", evac)
-        self.assertIn("{tag def_sup_src}", evac)
-        self.assertIn('{op "=="}', evac)
-        self.assertIn("{value 1}", evac)
-        self.assertIn("{value 2}", evac)
-        self.assertGreaterEqual(evac.count("{action move}"), 4)
-        ally_a = evac.split('{waypoint "attack_support_entry_b"}', 1)[0]
-        self.assertIn("{tag _user_ally}", ally_a)
-        enemy_a = evac.split('{waypoint "attack_support_entry_a"}', 1)[1]
-        self.assertIn("{tag _user_ally}", evac.split('{waypoint "attack_support_entry_a"}', 1)[0][-800:])
-        self.assertNotIn("{able", evac)
-        self.assertNotIn("fight", evac)
-        self.assertIn("{weapon_prepare off}", evac)
-        arrive = beh.split("broken/surrender_arrive", 1)[1].split("broken/surrender_expire", 1)[0]
-        self.assertIn('{"delete"', arrive)
-        self.assertIn("aio_morale_surrender_at_egress", arrive)
-        self.assertIn("{tag spawn_a}", arrive)
-        self.assertIn("{tag spawn_b}", arrive)
-        self.assertIn('{"for selector" aio_morale_surrender_at_egress}', arrive)
-        self.assertNotIn('{zone "attack_support_entry_a"}', arrive)
-        self.assertNotIn('{zone "attack_support_entry_b"}', arrive)
+        self.assertNotIn("aio_morale_surrender_evacuating", beh)
+        self.assertNotIn("aio_morale_surrender_at_egress", beh)
+        self.assertNotIn("surrender_evacuate", beh)
+        self.assertNotIn("surrender_arrive", beh)
+        hold = beh.split("broken/surrender_hold", 1)[1].split("broken/surrender_expire", 1)[0]
+        self.assertIn("{tag aio_morale_surrendering}", hold)
+        self.assertIn("{state dead}", hold)
+        self.assertIn("{state inactive}", hold)
+        self.assertIn("{state user_control}", hold)
+        self.assertIn("{tag player}", hold)
+        self.assertIn("{move_mode hold}", hold)
+        self.assertIn("{fire_mode hold}", hold)
+        self.assertIn("{weapon_prepare off}", hold)
+        self.assertIn("{mode disable}", hold)
+        self.assertNotIn("{action move}", hold)
+        self.assertNotIn("attack_support_entry_", hold)
+        self.assertNotIn("enemy_spawnside$", hold)
         self.assertIn("aio_morale_surrendering", lua)
-        self.assertIn("aio_morale_surrender_evacuating", lua)
+        self.assertNotIn("aio_morale_surrender_evacuating", lua)
 
     def test_effect_selectors_exclude_dead_inactive(self) -> None:
         parts = BEH.read_text(encoding="utf-8").split('{"effect"')
@@ -177,8 +170,6 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "aio_morale_surrender_fx",
             "aio_morale_surrender_presenting",
             "aio_morale_surrender_expire",
-            "aio_morale_surrender_evacuating",
-            "aio_morale_surrender_at_egress",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
 

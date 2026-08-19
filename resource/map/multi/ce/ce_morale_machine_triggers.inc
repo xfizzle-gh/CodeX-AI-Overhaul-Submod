@@ -362,6 +362,27 @@
 						}
 						{tag_add aio_morale_panic}
 					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_panic}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_refresh_icons}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -546,6 +567,27 @@
 							}
 						}
 						{tag_add aio_morale_broken}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_refresh_icons}
 					}
 					{"entity_state"
 						{selector

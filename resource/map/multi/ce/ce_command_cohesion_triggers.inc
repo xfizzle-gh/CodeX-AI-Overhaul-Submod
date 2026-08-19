@@ -81,6 +81,27 @@
 						}
 						{tag_add aio_cmd_linked}
 					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_linked}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_refresh_icons}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -222,6 +243,27 @@
 							}
 						}
 						{tag_add aio_cmd_linked}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_linked}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_refresh_icons}
 					}
 					{"entity_state"
 						{selector
@@ -558,6 +600,27 @@
 							}
 						}
 						{tag_add aio_cmd_lost}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_lost}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_refresh_icons}
 					}
 					{"entity_state"
 						{selector
