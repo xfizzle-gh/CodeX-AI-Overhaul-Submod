@@ -1303,13 +1303,17 @@
 											{tag _user}
 										}
 									}
-									{include
-										{state
-											{state operatable}
-										}
-										{state
-											{state user_control}
-										}
+								{include
+									{state
+										{state operatable}
+									}
+									{state
+										{state user_control}
+									}
+								}
+								{exclude
+									{tag
+										{tag aio_morale_surrendering}
 									}
 								}
 							}
@@ -1373,13 +1377,17 @@
 											{tag _user}
 										}
 									}
-									{include
-										{state
-											{state operatable}
-										}
-										{state
-											{state user_control}
-										}
+								{include
+									{state
+										{state operatable}
+									}
+									{state
+										{state user_control}
+									}
+								}
+								{exclude
+									{tag
+										{tag aio_morale_surrendering}
 									}
 								}
 							}

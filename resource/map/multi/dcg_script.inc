@@ -15202,6 +15202,11 @@
 											{state user_control}
 										}
 									}
+									{exclude
+										{tag
+											{tag aio_morale_surrendering}
+										}
+									}
 								}
 							}
 							{distance
