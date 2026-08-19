@@ -758,6 +758,7 @@
 		{tags remove "aio_morale_regrouping"}
 		{able "select" 0}
 		{able "fight" 0}
+		{able "neutral" 1}
 		{call "aio_morale_refresh_icons"}
 		{delay 75
 			{if tagged "aio_morale_surrendering"

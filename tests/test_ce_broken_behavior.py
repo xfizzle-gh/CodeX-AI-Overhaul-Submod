@@ -166,6 +166,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{on "start_white_flag"', human)
         self.assertIn("{delay 75", human)
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1]
+        self.assertIn('{able "neutral" 1}', apply)
+        self.assertNotIn('{player "0"}', apply)
         self.assertNotIn("{delay 80", apply)
         self.assertNotIn("{delay 60", apply)
         self.assertIn('{tags add "aio_morale_surrender_expire"}', human)
