@@ -444,7 +444,9 @@ local function startMoraleEventWatch()
 end
 
 function StartCeMoraleProbeLog()
-  startMoraleEventWatch()
+  if readMoraleVar("enable_ce_morale_debug") > 0 or readMoraleVar("enable_ce_morale_autodemo") > 0 then
+    startMoraleEventWatch()
+  end
   if readMoraleVar("enable_ce_morale_autodemo") <= 0 then
     return
   end
