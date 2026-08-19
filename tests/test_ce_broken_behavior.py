@@ -165,7 +165,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{action drop}", beh)
         self.assertIn('{"delete"', beh)
         self.assertIn('{on "start_white_flag"', human)
-        self.assertIn("{delay 75", human)
+        self.assertIn("{delay 103", human)
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1]
         self.assertNotIn('{able "neutral" 1}', apply)
         self.assertNotIn('{player "0"}', apply)
@@ -173,7 +173,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{delay 60", apply)
         self.assertIn('{tags add "aio_morale_surrender_expire"}', human)
         self.assertNotIn('{call "delete"}', human)
-        self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 75"))
+        self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 103"))
         self.assertEqual(human.count('{call "start_white_flag"}'), 1)
         self.assertNotIn("{effect start_white_flag}", beh)
         present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]
@@ -237,7 +237,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{tag def_sup_src}", evac)
         self.assertGreaterEqual(evac.count("{action move}"), 4)
         self.assertEqual(evac.count('{"actor_state"'), 1)
-        self.assertIn("{time 5}", evac)
+        self.assertIn("{time 3}", evac)
+        self.assertNotIn("{time 5}", evac)
         self.assertNotIn('{var "enemy_spawnside$"} {op "=="} {value 0}', evac)
         s1 = evac.split("{value 1}", 1)[1].split("{value 2}", 1)[0]
         s1_wp = [line for line in s1.splitlines() if "attack_support_entry" in line]

@@ -1,6 +1,6 @@
 ; F0: native retreat_ratio is not how FE/Old Boy move Broken units. Rally move is the authority.
 ; Actor-scoped ratios are assist only. Writers must exclude aio_morale_owned. No player seizure.
-; Surrender: drop + looping walk_giveup_1, then flee to captor entry. 75s delete fail-closed.
+; Surrender: drop + looping walk_giveup_1, then flee to captor entry. 3s pose + 100s run.
 ; Ally/support invert. Spawnside 0 issues no move. No repeating actor_state.
 			{"conquest_enhanced_mechanics/broken/acquire"
 				{condition
@@ -1136,7 +1136,7 @@
 						{tag_add aio_morale_surrender_evacuating}
 					}
 					{"delay"
-						{time 5}
+						{time 3}
 					}
 					{"actor_state"
 						{selector
