@@ -7,8 +7,8 @@
 			}
 			{scale 1
 				{peak
-					{min 0.091}
-					{max 0.091}
+					{min 0.045}
+					{max 0.045}
 				}
 			}
 			{light 1

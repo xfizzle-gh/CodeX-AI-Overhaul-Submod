@@ -125,7 +125,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{add_view "aio_cmd_lost" "aio_cmd_lost" "head"}', human)
         self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/aio_cmd_lost.def").is_file())
         rank = (ROOT / "resource/entity/fx/human_markers_fx/aio_cmd_junior.def").read_text(encoding="utf-8")
-        self.assertIn("{min 0.091}", rank)
+        self.assertIn("{min 0.045}", rank)
         self.assertIn("{offset 0 0 0}", rank)
         self.assertNotIn("{halo}", rank)
         lost = (ROOT / "resource/entity/fx/human_markers_fx/aio_cmd_lost.def").read_text(encoding="utf-8")
