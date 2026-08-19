@@ -18,6 +18,9 @@
 			{"prep_inform"}
 			{"arty_prep_open"}
 			{"arty_prep_wave"}
+			{"arty_intensity"}
+			{"campaign_day"}
+			{"campaign_stage"}
 			{"arty_smoke"}
 			{"arty_wave_slot"}
 			{"arty_f1"}
@@ -25,6 +28,7 @@
 			{"arty_f3"}
 			{"arty_f4"}
 			{"arty_f5"}
+			{"arty_spare"}
 			{"arty_counter_cd"}
 			{"arty_ambient"}
 			{"codex_para"}

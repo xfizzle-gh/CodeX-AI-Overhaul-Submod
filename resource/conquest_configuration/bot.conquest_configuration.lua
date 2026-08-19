@@ -59,18 +59,18 @@
 	-- Time from last purchase AI will wait before attempting to buy a new unit.
 	DCGWaveOffOverwrite = {
 		-- Time between each wave when bot is attacking
-		AttackMinWaveOff = 3.0 * 60000,
-		AttackMaxWaveOff = 5.0 * 60000,
+		AttackMinWaveOff = 2.75 * 60000,
+		AttackMaxWaveOff = 4.75 * 60000,
      	-- Time between each wave when bot is defending
-     	DefenseMinWaveOff = 3.5 * 60000, 
-     	DefenseMaxWaveOff = 5.0 * 60000,
+     	DefenseMinWaveOff = 3.25 * 60000,
+     	DefenseMaxWaveOff = 4.75 * 60000,
      }
 
     -- Number of possible units than can be in a wave attack in conquest
 	WaveUnitOverride = {
 	    -- Bot is attacker
 	    AttackMin = 6,
-	    AttackMax = 12,
+	    AttackMax = 9,
 	    -- Bot is defender
 	    DefendMin = 3,
 	    DefendMax = 7,
@@ -92,9 +92,9 @@
 				perFlag = 1
 			},
 			infantry = {
-				x2_cloneClount = 1,
-				perFlag = 4,
-				max_ai_defender_at_flag = 3
+				x2_cloneClount = 0,
+				perFlag = 2,
+				max_ai_defender_at_flag = 2
 
 			},
 			challengeMaps = {
@@ -103,16 +103,16 @@
 				perFlag = 1
 				},
 				infantry = {
-					x2_cloneClount = 1,
-					perFlag = 4,
-					max_ai_defender_at_flag = 3
+					x2_cloneClount = 0,
+					perFlag = 2,
+					max_ai_defender_at_flag = 2
 				},
 			},
 			difficultyModifier = {
 				heroic = -2,
 				hard = -1,
 				normal = 0,
-				easy = 2,
+				easy = 0,
 			}
 		}, 
 		-- Bot is defender

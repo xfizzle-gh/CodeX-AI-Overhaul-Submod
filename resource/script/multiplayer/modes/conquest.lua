@@ -20,8 +20,8 @@ StartSpawnTime = {
 
 -- Time from last purchase AI will wait before attempting to buy a new unit.
 SpawnCooldownTime = {
-    DCGWaveOffMin = 2.5 * 60000,
-    DCGWaveOffMax = 4 * 60000,
+    DCGWaveOffMin = 2.25 * 60000,
+    DCGWaveOffMax = 3.75 * 60000,
     DCGMin = 2 * 1000,
     DCGMax = 5 * 1000,
 }
@@ -285,6 +285,7 @@ end
 local function requestOpeningArty()
 	if usedOpeningArty then return end
 	usedOpeningArty = true
+	BotApi.Scene:SetVar("arty_intensity", 1)
 	local n = publishLiveArtyFlags()
 	if n < 1 then n = 1 end
 	BotApi.Scene:SetVar("arty_prep_open", n)
@@ -304,9 +305,7 @@ local function requestWaveArty(wave)
 	local slot = (#slots > 0) and slots[math.random(#slots)] or 1
 	BotApi.Scene:SetVar("arty_wave_slot", slot)
 	BotApi.Scene:SetVar("arty_prep_wave", w)
-	if not botDefender then
-		BotApi.Scene:SetVar("arty_smoke", 1)
-	end
+	BotApi.Scene:SetVar("arty_smoke", 1)
 	if printDebug then print("DCG arty_prep_wave requested", w, "slot", slot) end
 end
 
@@ -345,10 +344,14 @@ local function spawnParaDrop(kind, tries)
 		if live[i] ~= 1 then quiet[#quiet + 1] = i end
 	end
 	local lz
-	if #quiet > 0 then
-		lz = quiet[math.random(#quiet)]
+	local liveSlots = {}
+	for i = 1, 5 do
+		if live[i] == 1 then liveSlots[#liveSlots + 1] = i end
+	end
+	if #liveSlots > 0 then
+		lz = liveSlots[math.random(#liveSlots)]
 	else
-		lz = 5 + math.random(1, 4)
+		lz = 6 + math.random(1, 3)
 	end
 	BotApi.Scene:SetVar("codex_para_lz", lz)
 	BotApi.Scene:SetVar("codex_para_kind", paraKind)
@@ -358,16 +361,6 @@ end
 
 local paraScheduled = false
 local function scheduleParaDrops()
-	if paraScheduled then return end
-	if not isMissionAuthority or not isMissionAuthority() then return end
-	paraScheduled = true
-	if botDefender then
-		BotApi.Events:SetQuantTimer(function() spawnParaDrop("inf") end, 90000)
-		BotApi.Events:SetQuantTimer(function() spawnParaDrop("veh") end, 180000)
-	else
-		BotApi.Events:SetQuantTimer(function() spawnParaDrop("inf") end, 40000)
-		BotApi.Events:SetQuantTimer(function() spawnParaDrop("veh") end, 150000)
-	end
 end
 
 function WaveAttack()

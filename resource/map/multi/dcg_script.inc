@@ -3546,7 +3546,7 @@
 								{move_radius 20}
 								{ai
 									{advance_ratio 1}
-									{retreat_ratio 0} ; --Adjusted 5 > 0 for xFizzle's tweaks
+									{retreat_ratio 5}
 								}
 							}
 						}
@@ -3561,7 +3561,7 @@
 								{move_radius 20}
 								{ai
 									{advance_ratio 1}
-									{retreat_ratio 0} ; --Adjusted 5 > 0 for xFizzle's tweaks
+									{retreat_ratio 5}
 								}
 							}
 						}
@@ -3667,7 +3667,7 @@
 								{move_radius 20}
 								{ai
 									{advance_ratio 1}
-									{retreat_ratio 0} ; --Adjusted 5 > 0 for xFizzle's tweaks
+									{retreat_ratio 5}
 								}
 							}
 						}
@@ -3682,7 +3682,7 @@
 								{move_radius 20}
 								{ai
 									{advance_ratio 1}
-									{retreat_ratio 0} ; --Adjusted 5 > 0 for xFizzle's tweaks
+									{retreat_ratio 5}
 								}
 							}
 						}
@@ -3788,7 +3788,7 @@
 								{move_radius 20}
 								{ai
 									{advance_ratio 1}
-									{retreat_ratio 0} ; --Adjusted 5 > 0 for xFizzle's tweaks
+									{retreat_ratio 5}
 								}
 							}
 						}
@@ -3803,7 +3803,7 @@
 								{move_radius 20}
 								{ai
 									{advance_ratio 1}
-									{retreat_ratio 0} ; --Adjusted 5 > 0 for xFizzle's tweaks
+									{retreat_ratio 5}
 								}
 							}
 						}
@@ -3909,7 +3909,7 @@
 								{move_radius 20}
 								{ai
 									{advance_ratio 1}
-									{retreat_ratio 0} ; --Adjusted 5 > 0 for xFizzle's tweaks
+									{retreat_ratio 5}
 								}
 							}
 						}
@@ -3924,7 +3924,7 @@
 								{move_radius 20}
 								{ai
 									{advance_ratio 1}
-									{retreat_ratio 0} ; --Adjusted 5 > 0 for xFizzle's tweaks
+									{retreat_ratio 5}
 								}
 							}
 						}
@@ -4030,7 +4030,7 @@
 								{move_radius 20}
 								{ai
 									{advance_ratio 1}
-									{retreat_ratio 0} ; --Adjusted 5 > 0 for xFizzle's tweaks
+									{retreat_ratio 5}
 								}
 							}
 						}
@@ -4045,7 +4045,7 @@
 								{move_radius 20}
 								{ai
 									{advance_ratio 1}
-									{retreat_ratio 0} ; --Adjusted 5 > 0 for xFizzle's tweaks
+									{retreat_ratio 5}
 								}
 							}
 						}
@@ -4299,7 +4299,7 @@
 						{move_radius 45}
 						{ai
 							{advance_ratio 1}
-							{retreat_ratio 0} ; --Adjusted 5 > 0 for xFizzle's tweaks
+							{retreat_ratio 5}
 						}
 					}
 					{"delay"
@@ -21439,7 +21439,7 @@
 								}
 								{ai
 									{advance_ratio 2}
-									{retreat_ratio 0} ; --Adjusted 5 > 0 for xFizzle's tweaks
+									{retreat_ratio 5}
 								}
 							}
 							{"delay"

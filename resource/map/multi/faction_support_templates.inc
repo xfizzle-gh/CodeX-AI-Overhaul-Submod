@@ -2582,7 +2582,7 @@
 ; PLA IFVs (zbl08 etc.) still put pax in group "crew"; this SX2190 troop truck does not.
 ; Ids 0xb3a0-0xb3cb, MIDs 9740-9783, y=-36600.
 ; ----- ALLY RUSA MOTORIZED (ural) -----
-	{Entity "ural" 0xb3a0
+	{Entity "bmp2_rus" 0xb3a0
 		{Position -9000 -36600}
 		{Player 0}
 		{MID 9740}
@@ -2650,7 +2650,7 @@
 	}
 
 ; ----- ALLY UKR MOTORIZED (ural_vsu) -----
-	{Entity "ural_vsu" 0xb3ab
+	{Entity "bmp2_ukr" 0xb3ab
 		{Position -8800 -36600}
 		{Player 0}
 		{MID 9751}
@@ -2718,7 +2718,7 @@
 	}
 
 ; ----- ALLY NATO MOTORIZED (fmtv) -----
-	{Entity "fmtv" 0xb3b6
+	{Entity "m2a3" 0xb3b6
 		{Position -8600 -36600}
 		{Player 0}
 		{MID 9762}
@@ -2787,7 +2787,7 @@
 
 
 ; ----- ALLY PRC MOTORIZED (shaanxi_sx2190_passenger) -----
-	{Entity "shaanxi_sx2190_passenger" 0xb3c1
+	{Entity "zbl08" 0xb3c1
 		{Position -8400 -36600}
 		{Player 0}
 		{MID 9773}
@@ -2898,7 +2898,7 @@
 
 ; BEGIN ENEMY NORMAL TRANSPORT PACKAGES
 ; ----- ENEMY NORMAL RUSA TRANSPORT -----
-{Entity "ural" 0xb600
+{Entity "bmp2_rus" 0xb600
 		{Position -9000 -36600}
 		{Player 0}
 		{MID 10000}
@@ -2965,7 +2965,7 @@
 		{Able "-select"}
 	}
 ; ----- ENEMY NORMAL UKR TRANSPORT -----
-{Entity "ural_vsu" 0xb60b
+{Entity "bmp2_ukr" 0xb60b
 		{Position -8800 -36600}
 		{Player 0}
 		{MID 10011}
@@ -3032,7 +3032,7 @@
 		{Able "-select"}
 	}
 ; ----- ENEMY NORMAL NATO TRANSPORT -----
-{Entity "fmtv" 0xb616
+{Entity "m2a3" 0xb616
 		{Position -8600 -36600}
 		{Player 0}
 		{MID 10022}
@@ -3099,7 +3099,7 @@
 		{Able "-select"}
 	}
 ; ----- ENEMY NORMAL PRC TRANSPORT -----
-{Entity "shaanxi_sx2190_passenger" 0xb621
+{Entity "zbl08" 0xb621
 		{Position -8400 -36600}
 		{Player 0}
 		{MID 10033}

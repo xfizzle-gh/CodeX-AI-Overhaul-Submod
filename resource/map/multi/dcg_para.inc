@@ -70,7 +70,7 @@
 					{"delay" {time 12}}
 					{"effect"
 						{selector {tag codex_para_plane}}
-						{effect drop_paratrooper}
+						{effect drop_paratroopers}
 					}
 					{"delay" {time 0.3}}
 					{"effect"
