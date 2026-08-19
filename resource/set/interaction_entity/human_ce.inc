@@ -416,6 +416,7 @@
 		{tags remove "aio_morale_surrender_presenting"}
 		{tags remove "aio_morale_surrender_expire"}
 		{tags remove "aio_morale_watching_regroup"}
+		{tags remove "aio_icon_refresh"}
 		{view stop "beacon_fx"}
 		{call "aio_morale_stop_icons"}
 	}

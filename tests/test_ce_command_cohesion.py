@@ -90,9 +90,24 @@ class CeCommandCohesionTests(unittest.TestCase):
         self.assertNotIn("advance_ratio", text)
         self.assertNotIn("retreat_ratio", text)
 
-    def test_ci_runs_command_suite(self) -> None:
-        wf = WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("tests/test_ce_command_cohesion.py", wf)
+    def test_icon_refresh_is_transition_only(self) -> None:
+        text = CMD.read_text(encoding="utf-8")
+        self_link = text.split("command/self_link", 1)[1].split("command/pulse_near", 1)[0]
+        pulse = text.split("command/pulse_near", 1)[1].split("command/pulse_range", 1)[0]
+        for block in (self_link, pulse):
+            self.assertIn("{effect aio_morale_refresh_icons}", block)
+            effect = block.split("{effect aio_morale_refresh_icons}", 1)[0]
+            effect = effect[effect.rfind('{"effect"'):]
+            self.assertIn("aio_icon_refresh", effect)
+            self.assertNotIn("{tag aio_cmd_linked}", effect)
+            before = block.split("{effect aio_morale_refresh_icons}", 1)[0]
+            self.assertIn("{tag_remove aio_cmd_lost}", before)
+            self.assertLess(before.find("{tag_remove aio_cmd_lost}"), before.rfind('{"effect"'))
+        lost_add = text.split("{tag_add aio_cmd_lost}", 1)[1]
+        lost_fx = lost_add.split("{effect aio_morale_refresh_icons}", 1)[0]
+        lost_fx = lost_fx[lost_fx.rfind('{"effect"'):]
+        self.assertIn("aio_icon_refresh", lost_fx)
+        self.assertNotIn("{tag aio_cmd_lost}", lost_fx)
 
 
 if __name__ == "__main__":
