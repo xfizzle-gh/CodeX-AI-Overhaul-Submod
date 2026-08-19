@@ -121,6 +121,15 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{on "aio_morale_refresh_icons"', human)
         self.assertIn('{add_view "aio_cmd_lost" "aio_cmd_lost" "head"}', human)
         self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/aio_cmd_lost.def").is_file())
+        rank = (ROOT / "resource/entity/fx/human_markers_fx/aio_cmd_junior.def").read_text(encoding="utf-8")
+        self.assertIn("{min 0.091}", rank)
+        self.assertIn("{offset 0 0 0}", rank)
+        self.assertNotIn("{halo}", rank)
+        lost = (ROOT / "resource/entity/fx/human_markers_fx/aio_cmd_lost.def").read_text(encoding="utf-8")
+        self.assertIn("{min 0.12}", lost)
+        flag = (ROOT / "resource/entity/fx/human_markers_fx/white_flag.def").read_text(encoding="utf-8")
+        self.assertIn("{min 0.14}", flag)
+        self.assertNotIn("{min 0.3}", flag)
         self.assertIn('{add_view "aio_cmd_junior"', human)
 
     def test_surrender_stays_stationary(self) -> None:
