@@ -478,6 +478,141 @@
 					}
 				}
 			}
+			{"conquest_enhanced_mechanics/broken/reacquire"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_broken}
+										}
+									}
+									{include
+										{tag
+											{tag aio_cmd_linked}
+										}
+										{tag
+											{tag aio_morale_regroup_failed}
+										}
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag player}
+										}
+										{tag
+											{tag aio_morale_surrendering}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{include
+									{tag
+										{tag aio_cmd_linked}
+									}
+									{tag
+										{tag aio_morale_regroup_failed}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_regroup_failed}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_cand}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_broken}
+									}
+									{tag
+										{tag aio_cmd_linked}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_surrender_cand}
+					}
+					{"delay"
+						{time 1}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/reacquire"}
+					}
+				}
+			}
 			{"conquest_enhanced_mechanics/broken/surrender"
 				{condition
 					{terms
@@ -513,20 +648,23 @@
 										{tag
 											{tag player}
 										}
-										{tag
-											{tag aio_morale_surrendering}
-										}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{tag
+										{tag aio_cmd_linked}
 									}
 								}
 							}
-							{enemy
-								{source advanced}
-								{group
-									{select
-										{prop
-											{prop human}
-										}
+						}
+						{enemy
+							{source advanced}
+							{group
+								{select
+									{prop
+										{prop human}
 									}
+								}
 									{exclude
 										{state
 											{state dead}
@@ -582,6 +720,9 @@
 								}
 								{tag
 									{tag aio_morale_surrendering}
+								}
+								{tag
+									{tag aio_cmd_linked}
 								}
 							}
 							}

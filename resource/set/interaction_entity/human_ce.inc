@@ -721,7 +721,8 @@
 			{if not tagged "aio_morale_surrendering"
 				{if tagged "aio_morale_broken"
 					{if tagged "aio_morale_regroup_failed"
-						{if tagged "aio_steadfast"
+						{if tagged "aio_cmd_linked"
+						else tagged "aio_steadfast"
 							{if rand 0.05
 								{call "aio_morale_surrender_apply"}
 							}

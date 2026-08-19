@@ -70,16 +70,42 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("aio_morale_broken", surr)
         self.assertIn("aio_morale_regroup_failed", surr)
         self.assertNotIn("aio_morale_panic", surr.split("{actions", 1)[0])
-        apply = HUMAN.read_text(encoding="utf-8").split('{on "aio_morale_surrender"', 1)[1]
-        self.assertIn("{if rand", apply)
+        apply = HUMAN.read_text(encoding="utf-8").split('{on "aio_morale_surrender"', 1)[1].split('{on "aio_morale_surrender_apply"', 1)[0]
+        self.assertIn('{if tagged "aio_cmd_linked"', apply)
+        self.assertLess(apply.find('{if tagged "aio_cmd_linked"'), apply.find("{if rand"))
         self.assertLess(apply.find("aio_steadfast"), apply.find("aio_morale_low"))
         self.assertLess(apply.find("aio_cmd_independent"), apply.find("aio_morale_low"))
+        cond = text.split("broken/surrender", 1)[1].split("{actions", 1)[0]
+        self.assertIn("aio_cmd_linked", cond)
         self.assertIn("aio_morale_surrender_cand", text)
         self.assertIn('{"for selector" aio_morale_surrender_cand}', text)
         self.assertIn("{time 0.2}", surr)
         self.assertNotIn("{delete}", text)
         self.assertNotIn('{player "0"}', text)
         self.assertNotIn("{control AI}", text)
+
+    def test_command_reacquire_clears_failed_regroup(self) -> None:
+        beh = BEH.read_text(encoding="utf-8")
+        human = HUMAN.read_text(encoding="utf-8")
+        rec = beh.split("broken/reacquire", 1)[1].split("broken/surrender", 1)[0]
+        self.assertIn("aio_morale_broken", rec)
+        self.assertIn("aio_cmd_linked", rec)
+        self.assertIn("aio_morale_regroup_failed", rec)
+        self.assertIn("tag_remove aio_morale_regroup_failed", rec)
+        self.assertIn("tag_remove aio_morale_surrender_cand", rec)
+        self.assertIn("aio_morale_surrendering", rec)
+        self.assertIn("{state user_control}", rec)
+        self.assertIn("{tag player}", rec)
+        self.assertNotIn("{effect recovering_from_broken}", rec)
+        recover = beh.split("broken/recover", 1)[1].split("broken/reacquire", 1)[0]
+        self.assertIn("{effect recovering_from_broken}", recover)
+        self.assertIn("aio_morale_recovering_from_broken", recover)
+        self.assertIn("aio_morale_surrendering", recover)
+        self.assertEqual(beh.count("{effect recovering_from_broken}"), 1)
+        self.assertEqual(human.count('{on "recovering_from_broken"'), 1)
+        self.assertEqual(human.count('{on "aio_morale_surrender_apply"'), 1)
+        self.assertNotIn('{player "0"}', rec)
+        self.assertNotIn("{control AI}", rec)
 
     def test_one_surrender_authority(self) -> None:
         text = BEH.read_text(encoding="utf-8")
