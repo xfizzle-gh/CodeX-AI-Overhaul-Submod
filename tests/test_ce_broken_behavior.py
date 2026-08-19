@@ -133,6 +133,11 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{op "=="}', evac)
         self.assertIn("{value 1}", evac)
         self.assertIn("{value 2}", evac)
+        self.assertGreaterEqual(evac.count("{action move}"), 4)
+        ally_a = evac.split('{waypoint "attack_support_entry_b"}', 1)[0]
+        self.assertIn("{tag _user_ally}", ally_a)
+        enemy_a = evac.split('{waypoint "attack_support_entry_a"}', 1)[1]
+        self.assertIn("{tag _user_ally}", evac.split('{waypoint "attack_support_entry_a"}', 1)[0][-800:])
         self.assertNotIn("{able", evac)
         self.assertNotIn("fight", evac)
         self.assertIn("{weapon_prepare off}", evac)

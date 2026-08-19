@@ -1032,8 +1032,8 @@
 					}
 					{"switch"
 						{"case"
-							{condition
-								{type entities}
+							{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+							{"action"
 								{selector
 									{source advanced}
 									{group
@@ -1044,7 +1044,24 @@
 										}
 										{include
 											{tag
+												{tag aio_morale_surrendering}
+											}
+											{tag
 												{tag _user_ally}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{state
+												{state user_control}
+											}
+											{tag
+												{tag player}
 											}
 										}
 									}
@@ -1056,165 +1073,180 @@
 										}
 										{include
 											{tag
+												{tag aio_morale_surrendering}
+											}
+											{tag
+												{tag def_sup_src}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{state
+												{state user_control}
+											}
+											{tag
+												{tag player}
+											}
+										}
+									}
+								}
+								{drop "orders sensor senseless"}
+								{action move}
+								{waypoint "attack_support_entry_b"}
+							}
+							{"action"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_surrender_evacuating}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{state
+												{state user_control}
+											}
+											{tag
+												{tag player}
+											}
+											{tag
+												{tag _user_ally}
+											}
+											{tag
 												{tag def_sup_src}
 											}
 										}
 									}
 								}
-							}
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
-									{"action"
-										{selector
-											{source advanced}
-											{group
-												{select
-													{tag
-														{tag aio_morale_surrender_evacuating}
-													}
-												}
-												{include
-													{tag
-														{tag aio_morale_surrendering}
-													}
-												}
-												{exclude
-													{state
-														{state dead}
-													}
-													{state
-														{state inactive}
-													}
-													{state
-														{state user_control}
-													}
-													{tag
-														{tag player}
-													}
-												}
-											}
-										}
-										{drop "orders sensor senseless"}
-										{action move}
-										{waypoint "attack_support_entry_b"}
-									}
-								}
-								{"case"
-									{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
-									{"action"
-										{selector
-											{source advanced}
-											{group
-												{select
-													{tag
-														{tag aio_morale_surrender_evacuating}
-													}
-												}
-												{include
-													{tag
-														{tag aio_morale_surrendering}
-													}
-												}
-												{exclude
-													{state
-														{state dead}
-													}
-													{state
-														{state inactive}
-													}
-													{state
-														{state user_control}
-													}
-													{tag
-														{tag player}
-													}
-												}
-											}
-										}
-										{drop "orders sensor senseless"}
-										{action move}
-										{waypoint "attack_support_entry_a"}
-									}
-								}
+								{drop "orders sensor senseless"}
+								{action move}
+								{waypoint "attack_support_entry_a"}
 							}
 						}
-						{"default"
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
-									{"action"
-										{selector
-											{source advanced}
-											{group
-												{select
-													{tag
-														{tag aio_morale_surrender_evacuating}
-													}
-												}
-												{include
-													{tag
-														{tag aio_morale_surrendering}
-													}
-												}
-												{exclude
-													{state
-														{state dead}
-													}
-													{state
-														{state inactive}
-													}
-													{state
-														{state user_control}
-													}
-													{tag
-														{tag player}
-													}
-												}
+						{"case"
+							{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+							{"action"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_surrender_evacuating}
 											}
 										}
-										{drop "orders sensor senseless"}
-										{action move}
-										{waypoint "attack_support_entry_a"}
-									}
-								}
-								{"case"
-									{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
-									{"action"
-										{selector
-											{source advanced}
-											{group
-												{select
-													{tag
-														{tag aio_morale_surrender_evacuating}
-													}
-												}
-												{include
-													{tag
-														{tag aio_morale_surrendering}
-													}
-												}
-												{exclude
-													{state
-														{state dead}
-													}
-													{state
-														{state inactive}
-													}
-													{state
-														{state user_control}
-													}
-													{tag
-														{tag player}
-													}
-												}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{tag
+												{tag _user_ally}
 											}
 										}
-										{drop "orders sensor senseless"}
-										{action move}
-										{waypoint "attack_support_entry_b"}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{state
+												{state user_control}
+											}
+											{tag
+												{tag player}
+											}
+										}
+									}
+									{group
+										{select
+											{tag
+												{tag aio_morale_surrender_evacuating}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{tag
+												{tag def_sup_src}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{state
+												{state user_control}
+											}
+											{tag
+												{tag player}
+											}
+										}
 									}
 								}
+								{drop "orders sensor senseless"}
+								{action move}
+								{waypoint "attack_support_entry_a"}
+							}
+							{"action"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_surrender_evacuating}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{state
+												{state user_control}
+											}
+											{tag
+												{tag player}
+											}
+											{tag
+												{tag _user_ally}
+											}
+											{tag
+												{tag def_sup_src}
+											}
+										}
+									}
+								}
+								{drop "orders sensor senseless"}
+								{action move}
+								{waypoint "attack_support_entry_b"}
 							}
 						}
 					}
