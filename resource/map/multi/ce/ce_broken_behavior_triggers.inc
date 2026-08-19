@@ -860,6 +860,43 @@
 						}
 						{tag_add aio_morale_surrender_presenting}
 					}
+					{"player"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{drop "orders sensor senseless"}
+						{operation set}
+						{player "0"}
+					}
 					{"inventory"
 						{selector
 							{source advanced}
