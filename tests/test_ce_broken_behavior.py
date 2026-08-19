@@ -82,10 +82,86 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{control AI}", text)
 
     def test_one_surrender_authority(self) -> None:
-        self.assertEqual(
-            BEH.read_text(encoding="utf-8").count("broken/surrender"),
-            2,
-        )
+        text = BEH.read_text(encoding="utf-8")
+        self.assertEqual(text.count('{"conquest_enhanced_mechanics/broken/surrender"'), 1)
+        self.assertEqual(text.count('{name "conquest_enhanced_mechanics/broken/surrender"}'), 1)
+
+    def test_surrender_presentation_and_cleanup(self) -> None:
+        beh = BEH.read_text(encoding="utf-8")
+        human = HUMAN.read_text(encoding="utf-8")
+        lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
+        self.assertIn("{collage walk_giveup_1}", beh)
+        self.assertNotIn("{collage stand_giveup_2}", beh)
+        self.assertIn("{action drop}", beh)
+        self.assertIn('{"delete"', beh)
+        self.assertIn('{on "start_white_flag"', human)
+        self.assertIn("{delay 80", human)
+        apply = human.split('{on "aio_morale_surrender_apply"', 1)[1]
+        self.assertNotIn("{delay 60", apply)
+        self.assertIn('{tags add "aio_morale_surrender_expire"}', human)
+        self.assertNotIn('{call "delete"}', human)
+        self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 80"))
+        self.assertEqual(human.count('{call "start_white_flag"}'), 1)
+        self.assertNotIn("{effect start_white_flag}", beh)
+        present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]
+        self.assertIn("{tag_add aio_morale_surrender_presenting}", present)
+        self.assertLess(present.find("{tag_add aio_morale_surrender_presenting}"), present.find("{action drop}"))
+        self.assertLess(present.find("{action drop}"), present.find("{collage walk_giveup_1}"))
+        self.assertLess(present.find("{collage walk_giveup_1}"), present.find("{tag_add aio_morale_surrender_fx}"))
+        self.assertIn("{totalTime 99999}", present)
+        self.assertIn("{flags loop}", present)
+        self.assertIn("{drop orders}", present)
+        self.assertIn("{tag_remove aio_morale_surrender_presenting}", present)
+        self.assertGreaterEqual(present.count("{tag aio_morale_surrender_presenting}"), 4)
+        self.assertNotIn('{player "0"}', beh)
+        self.assertNotIn("{control AI}", beh)
+        self.assertIn("enable_ce_morale_autodemo", lua.split("function StartCeMoraleProbeLog()", 1)[1][:400])
+        self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/white_flag.def").is_file())
+        self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/no_comd.def").is_file())
+        self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/aio_cmd_junior.def").is_file())
+        self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/aio_morale_panic.def").is_file())
+        self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/aio_morale_broken.def").is_file())
+        self.assertIn('{on "aio_morale_refresh_icons"', human)
+        self.assertIn('{add_view "aio_cmd_lost" "aio_cmd_lost" "head"}', human)
+        self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/aio_cmd_lost.def").is_file())
+        rank = (ROOT / "resource/entity/fx/human_markers_fx/aio_cmd_junior.def").read_text(encoding="utf-8")
+        self.assertIn("{min 0.045}", rank)
+        self.assertIn("{offset 0 0 0}", rank)
+        self.assertNotIn("{halo}", rank)
+        lost = (ROOT / "resource/entity/fx/human_markers_fx/aio_cmd_lost.def").read_text(encoding="utf-8")
+        self.assertIn("{min 0.20}", lost)
+        flag = (ROOT / "resource/entity/fx/human_markers_fx/white_flag.def").read_text(encoding="utf-8")
+        self.assertIn("{min 0.14}", flag)
+        self.assertNotIn("{min 0.3}", flag)
+        self.assertIn('{add_view "aio_cmd_junior"', human)
+
+    def test_surrender_evacuates_to_own_entry(self) -> None:
+        beh = BEH.read_text(encoding="utf-8")
+        lua = CONQ.read_text(encoding="utf-8")
+        self.assertNotIn("surrender_hold", beh)
+        evac = beh.split("broken/surrender_evacuate", 1)[1].split("broken/surrender_arrive", 1)[0]
+        self.assertIn("{tag aio_morale_surrender_evacuating}", evac)
+        self.assertIn("{tag aio_morale_surrendering}", evac)
+        self.assertIn("{state dead}", evac)
+        self.assertIn("{state inactive}", evac)
+        self.assertIn("{move_mode free}", evac)
+        self.assertIn("{mode enable}", evac)
+        self.assertIn("{action move}", evac)
+        self.assertIn('{waypoint "attack_support_entry_a"}', evac)
+        self.assertIn('{waypoint "attack_support_entry_b"}', evac)
+        self.assertIn("enemy_spawnside$", evac)
+        self.assertIn("{tag _user_ally}", evac)
+        self.assertIn("{tag def_sup_src}", evac)
+        self.assertGreaterEqual(evac.count("{action move}"), 4)
+        self.assertEqual(evac.count('{"actor_state"'), 1)
+        self.assertIn("{time 5}", evac)
+        arrive = beh.split("broken/surrender_arrive", 1)[1].split("broken/surrender_expire", 1)[0]
+        self.assertIn('{"delete"', arrive)
+        self.assertIn("aio_morale_surrender_at_egress", arrive)
+        self.assertIn("{tag spawn_a}", arrive)
+        self.assertIn("{tag spawn_b}", arrive)
+        self.assertIn("aio_morale_surrendering", lua)
+        self.assertIn("aio_morale_surrender_evacuating", lua)
 
     def test_effect_selectors_exclude_dead_inactive(self) -> None:
         parts = BEH.read_text(encoding="utf-8").split('{"effect"')
@@ -109,6 +185,11 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "aio_morale_surrender_cand",
             "aio_morale_surrendering",
             "aio_morale_watching_regroup",
+            "aio_morale_surrender_fx",
+            "aio_morale_surrender_presenting",
+            "aio_morale_surrender_expire",
+            "aio_morale_surrender_evacuating",
+            "aio_morale_surrender_at_egress",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
 

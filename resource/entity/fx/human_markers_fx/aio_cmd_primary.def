@@ -1,0 +1,24 @@
+{game_entity
+	{#+ spriteview
+		{sprite "aio_cmd_primary"
+			{timer
+				{mode play loop }
+				{duration 9999}
+			}
+			{scale 1
+				{peak
+					{min 0.0675}
+					{max 0.0675}
+				}
+			}
+			{light 1
+				{linear
+					{min 0.5}
+					{max 0.5}
+				}
+			}
+		}
+		{offset 0 0 0}
+		{autovisible}
+	}
+}

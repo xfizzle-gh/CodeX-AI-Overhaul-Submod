@@ -405,6 +405,27 @@
 						}
 						{tag_add aio_cmd_junior}
 					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_junior}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_refresh_icons}
+					}
 					{"delay"
 						{time 0.1}
 					}
@@ -493,6 +514,27 @@
 						}
 						{tag_add aio_cmd_primary}
 					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_primary}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_refresh_icons}
+					}
 					{"delay"
 						{time 0.1}
 					}
@@ -580,6 +622,27 @@
 							}
 						}
 						{tag_add aio_cmd_senior}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_senior}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_refresh_icons}
 					}
 					{"delay"
 						{time 0.1}

@@ -415,12 +415,15 @@ local function startMoraleEventWatch()
 end
 
 function StartCeMoraleProbeLog()
-  startMoraleEventWatch()
+  if readMoraleVar("enable_ce_morale_debug") > 0 or readMoraleVar("enable_ce_morale_autodemo") > 0 then
+    startMoraleEventWatch()
+  end
   if readMoraleVar("enable_ce_morale_autodemo") <= 0 then
     return
   end
   print("CE_MORALE_PROBE armed waiting")
   local ticks = 0
+  local printedFail = false
   local function tick()
     ticks = ticks + 1
     local source = readMoraleVar("ce_morale_source_tag_seen")
@@ -521,7 +524,8 @@ function StartCeMoraleProbeLog()
       if suppressed_state <= 0 and recover_clear <= 0 and shaken_apply > 0 then
         fails[#fails + 1] = "RECOVER_FAIL"
       end
-      if #fails > 0 then
+      if #fails > 0 and not printedFail then
+        printedFail = true
         print("CE_MORALE_SYS_FAIL " .. table.concat(fails, " "))
       end
     end
