@@ -26,7 +26,8 @@ Editor prototype only. Production surrender still uses the original soldier unti
 | `{on "aio_pow_retire" {delete}}` on `human_ce.inc` | Custom `{on "..."}` with bare `{delete}` is unproven. `human_ce.inc` is globally included from `entity.set`. |
 | Hide + `{inactive on}` as “gone” | Leaves a duplicate actor. |
 | Tag-live handshake then delete | Insufficient. Retire requires the 5 m near pose-live condition, then vanilla `{"delete"}`. |
-| `{player "0"}` / `{control AI}` / `{able "neutral"}` | Abandoned. Player-0 family AV in `scene.quant.bullets`. |
+| `{control AI}` on a POW | Not part of Old Boy's captive path. Body-recovery only. Do not add. |
+| `{able "neutral"}` | Already failed native targeting. |
 | Runtime `{behaviour}` / targetClass / breed setter | No supported setter in audited script surfaces. |
 | Living-actor breed query, IE spawn-at-human | Not found. |
 | Runtime copy of health / facing / player / squad | Not found. Template is authored `{Player 2}`. |
@@ -43,7 +44,29 @@ Generator may map all eligible combat breeds. Checked-in `resource/set/breed/gen
 
 Do not leave a `{Human "generated_pow/..." ...}` include after deleting that breed.
 
-## Editor sequence
+## Player 0 research correction (2026-08-20)
+
+Old Boy's POW path is **not** `{player "0"}` + `{control AI}`. The captive lifecycle is:
+
+1. combat human starts Player 1 (`pw` captive)
+2. `start_white_flag`
+3. runtime `{"player"} {operation set} {player "0"}`
+4. remove `enemy`
+5. drop the weapon in hands
+6. apply `stand_giveup_1`
+
+Owner isolation on `d7fa808`: **P1->P0 alone PASS**. Live reassignment is projectile/death-safe. The `311ef20` AV did not reproduce this sequence; it tested our added combination.
+
+Civilian-mirror Editor prototype stays **parked** while this diagnostic runs. Production surrender (`ce_broken_behavior_triggers.inc` / `aio_morale_surrender_apply`) stays off Player 0.
+
+Editor-only file: `ce_pow_oldboy_captive_editor.inc` (not in `ce_triggers.inc` / `dcg_script.inc`).
+
+1. Open Editor. Place one Player-1 `mp/nato/2022s/nato_rifleman`, tag `aio_pow_ob_src`.
+2. After 2 s the five-step sequence runs.
+3. Deliberately shoot the actor. PASS = no AV + sequence applied. If AV, reduce one state at a time.
+4. No Conquest. Do not include the civilian-mirror Editor files for this test.
+
+## Editor civilian-mirror sequence (parked)
 
 1. Open `call_to_arms_ed.exe`. `page_scene_editor` must launch.
 2. Include `ce_pow_replace_editor_templates.inc` in the mission entity block and `ce_pow_replace_editor.inc` in the trigger block. Not from `ce_triggers.inc` / `dcg_script.inc`.

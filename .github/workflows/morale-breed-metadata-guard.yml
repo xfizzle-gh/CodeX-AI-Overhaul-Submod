@@ -19,6 +19,8 @@ on:
       - "docs/pow_mirror_transfer.md"
       - "resource/map/multi/ce/ce_pow_replace_editor.inc"
       - "resource/map/multi/ce/ce_pow_replace_editor_templates.inc"
+      - "resource/map/multi/ce/ce_pow_oldboy_captive_editor.inc"
+      - "tests/test_ce_pow_oldboy_captive.py"
       - ".github/workflows/morale-breed-metadata-guard.yml"
   push:
     branches:
@@ -40,6 +42,8 @@ on:
       - "docs/pow_mirror_transfer.md"
       - "resource/map/multi/ce/ce_pow_replace_editor.inc"
       - "resource/map/multi/ce/ce_pow_replace_editor_templates.inc"
+      - "resource/map/multi/ce/ce_pow_oldboy_captive_editor.inc"
+      - "tests/test_ce_pow_oldboy_captive.py"
       - ".github/workflows/morale-breed-metadata-guard.yml"
 
 permissions:
@@ -58,4 +62,4 @@ jobs:
           python-version: "3.13"
 
       - name: Run repo-local morale metadata guard
-        run: python -m unittest tests/test_morale_breed_metadata.py tests/test_generate_pow_mirrors.py tests/test_aio_iso_civilian_behaviour.py
+        run: python -m unittest tests/test_morale_breed_metadata.py tests/test_generate_pow_mirrors.py tests/test_aio_iso_civilian_behaviour.py tests/test_ce_pow_oldboy_captive.py
