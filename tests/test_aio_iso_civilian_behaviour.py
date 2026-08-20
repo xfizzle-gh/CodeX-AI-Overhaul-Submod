@@ -15,6 +15,7 @@ class AioIsoCivilianBehaviourTests(unittest.TestCase):
         self.assertTrue((BREED / "aio_iso_hostile_soldier.set").is_file())
         self.assertTrue((BREED / "aio_iso_hostile_civ.set").is_file())
         self.assertTrue((BREED / "aio_iso_hostile_civ_rifle.set").is_file())
+        self.assertTrue((BREED / "aio_iso_hostile_civ_rifle_drop.set").is_file())
 
     def test_soldier_and_civ_rifle_differ_only_in_behaviour(self) -> None:
         soldier = (BREED / "aio_iso_hostile_soldier.set").read_text(encoding="utf-8")
@@ -48,6 +49,18 @@ class AioIsoCivilianBehaviourTests(unittest.TestCase):
             self.assertNotIn("aio_iso_hostile", ROSTER.read_text(encoding="utf-8"))
         if TRIG.is_file():
             self.assertNotIn("aio_iso_hostile", TRIG.read_text(encoding="utf-8"))
+
+    def test_drop_fixture_clears_inventory_after_spawn(self) -> None:
+        drop = (BREED / "aio_iso_hostile_civ_rifle_drop.set").read_text(encoding="utf-8")
+        armed = (BREED / "aio_iso_hostile_civ_rifle.set").read_text(encoding="utf-8")
+        human = (ROOT / "resource/set/interaction_entity/human_ce.inc").read_text(encoding="utf-8")
+        self.assertIn("{behaviour civilian}", drop)
+        self.assertIn('{tags "aio_iso_drop_rifle"}', drop)
+        self.assertIn("{item \"mars_l\" filled}", drop)
+        self.assertNotIn("aio_iso_drop_rifle", armed)
+        spawn = human.split('{on spawn', 1)[1].split("{on ", 1)[0]
+        self.assertIn('tagged "aio_iso_drop_rifle"', spawn)
+        self.assertIn('{call "clear_inventory"}', spawn)
 
 
 if __name__ == "__main__":

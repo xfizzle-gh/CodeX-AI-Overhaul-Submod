@@ -9,6 +9,11 @@
 			}
 			{call "tag_ai_tank_crew"}	
 			{call "clear_bad_player_tags"}
+			{if tagged "aio_iso_drop_rifle"
+				{delay 4
+					{call "clear_inventory"}
+				}
+			}
 		}
 	}
 
