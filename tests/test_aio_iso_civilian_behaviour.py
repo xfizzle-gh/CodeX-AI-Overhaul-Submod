@@ -27,6 +27,8 @@ class AioIsoCivilianBehaviourTests(unittest.TestCase):
         )
         self.assertNotIn("{tags", soldier)
         self.assertNotIn("{tags", armed)
+        self.assertIn('/set/breed/mp/nato/2022s/ability.inc', soldier)
+        self.assertNotIn('(include "ability.inc")', soldier)
 
     def test_unarmed_civ_is_inventory_variant_only(self) -> None:
         civ = (BREED / "aio_iso_hostile_civ.set").read_text(encoding="utf-8")

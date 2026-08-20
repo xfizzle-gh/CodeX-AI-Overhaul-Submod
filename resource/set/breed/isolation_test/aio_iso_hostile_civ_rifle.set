@@ -10,13 +10,13 @@
 		{body "nrf_vest_1"}
 	}
 	{perks
-		(include "ability.inc")
+		(include "/set/breed/mp/nato/2022s/ability.inc")
 		("skill_rank_3")
 		("ildu")
 		("rifle_rank_4")
 	}
 	{veterancy
-		(include "ability.inc")
+		(include "/set/breed/mp/nato/2022s/ability.inc")
 		("veterancy_lvl_0")
 	}
 	{inventory
