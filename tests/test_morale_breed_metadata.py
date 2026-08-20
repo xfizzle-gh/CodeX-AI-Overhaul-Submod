@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BREED_ROOT = ROOT / "resource/set/breed"
 ISO_SUBTREE = "isolation_test"
+GENERATED_SUBTREE = "generated_pow"
 REPORT = ROOT / "docs/morale_command_classification.md"
 TSV = ROOT / "docs/morale_command_classification.tsv"
 PHASE0 = ROOT / "docs/morale_command_phase0_audit.md"
@@ -98,7 +99,9 @@ class MoraleBreedMetadataTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.sets = sorted(
-            path for path in BREED_ROOT.rglob("*.set") if ISO_SUBTREE not in path.parts
+            path
+            for path in BREED_ROOT.rglob("*.set")
+            if ISO_SUBTREE not in path.parts and GENERATED_SUBTREE not in path.parts
         )
         cls.rel = {path.relative_to(BREED_ROOT).as_posix(): path for path in cls.sets}
         cls.legacy = load_legacy_allowlist()
@@ -140,6 +143,7 @@ class MoraleBreedMetadataTests(unittest.TestCase):
         for path in iso_sets:
             self.assertNotIn(path.relative_to(BREED_ROOT).as_posix(), self.rel)
         self.assertTrue(all(ISO_SUBTREE not in Path(rel).parts for rel in self.rel))
+        self.assertTrue(all(GENERATED_SUBTREE not in Path(rel).parts for rel in self.rel))
 
     def test_every_overlay_has_exactly_one_morale_profile(self) -> None:
         self.assertEqual(len(self.sets), 2091)

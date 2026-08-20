@@ -4,11 +4,11 @@
 	{portrait nrf}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "aio_iso_drop_rifle"}
+	{tags "soldier"}
 	{nationality nato}
 	{armors
 		{head us_highcut_2}
-		{body "nrf_vest_1"}
+		{body "nrf_vest_1"}		
 	}
 	{perks
 		(include "/set/breed/mp/nato/2022s/ability.inc")
@@ -19,10 +19,5 @@
 	{veterancy
 		(include "/set/breed/mp/nato/2022s/ability.inc")
 		("veterancy_lvl_0")
-	}
-	{inventory
-		{item "mars_l" filled}
-		{item "m16a2 ammo" 240}
-		{in_hands 0}
 	}
 }

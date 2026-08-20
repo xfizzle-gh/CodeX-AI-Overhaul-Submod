@@ -10,6 +10,11 @@ on:
       - "docs/morale_command_phase0_audit.md"
       - "docs/morale_legacy_visual_allowlist.txt"
       - "tests/test_morale_breed_metadata.py"
+      - "tests/test_generate_pow_mirrors.py"
+      - "tests/test_aio_iso_civilian_behaviour.py"
+      - "tools/generate_pow_mirrors.py"
+      - "docs/pow_mirror_mapping.tsv"
+      - "docs/pow_mirror_skip.tsv"
       - ".github/workflows/morale-breed-metadata-guard.yml"
   push:
     branches:
@@ -22,6 +27,11 @@ on:
       - "docs/morale_command_phase0_audit.md"
       - "docs/morale_legacy_visual_allowlist.txt"
       - "tests/test_morale_breed_metadata.py"
+      - "tests/test_generate_pow_mirrors.py"
+      - "tests/test_aio_iso_civilian_behaviour.py"
+      - "tools/generate_pow_mirrors.py"
+      - "docs/pow_mirror_mapping.tsv"
+      - "docs/pow_mirror_skip.tsv"
       - ".github/workflows/morale-breed-metadata-guard.yml"
 
 permissions:
@@ -40,4 +50,4 @@ jobs:
           python-version: "3.13"
 
       - name: Run repo-local morale metadata guard
-        run: python -m unittest tests/test_morale_breed_metadata.py
+        run: python -m unittest tests/test_morale_breed_metadata.py tests/test_generate_pow_mirrors.py tests/test_aio_iso_civilian_behaviour.py
