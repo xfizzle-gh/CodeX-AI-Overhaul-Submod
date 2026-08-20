@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -52,7 +53,14 @@ class GeneratePowMirrorsTests(unittest.TestCase):
             out = gpm.transform(source, text)
             self.assertIn("{behaviour civilian}", out, source)
             self.assertNotIn("{behaviour soldier}", out, source)
-            self.assertNotIn("{inventory", out, source)
+            self.assertIsNone(re.search(r'\{tags\s+"[^"]*\bsoldier\b', out), source)
+            inv = gpm.find_block(out, "inventory")
+            if inv is not None:
+                inner = out[inv[0] : inv[1]]
+                for line in inner.splitlines():
+                    if line.strip().startswith("{item"):
+                        self.assertFalse(gpm.is_combat_item(line), source)
+                        self.assertFalse(gpm.is_diagnostic_item(line), source)
             self.assertEqual(mirror, f"generated_pow/{source}")
 
     def test_committed_nato_mirror_matches_generator(self) -> None:
@@ -65,8 +73,16 @@ class GeneratePowMirrorsTests(unittest.TestCase):
             out += "\n"
         self.assertEqual(actual, out)
         self.assertIn("{behaviour civilian}", actual)
-        self.assertNotIn("{inventory", actual)
+        self.assertNotIn("{behaviour soldier}", actual)
+        self.assertNotIn('{tags "soldier"}', actual)
         self.assertNotIn("mars_l", actual)
+        self.assertNotIn("m26 grenade", actual)
+        self.assertNotIn("m16a2 ammo", actual)
+        self.assertNotIn("aio_marker_morale_regular", actual)
+        self.assertIn('{item "backpack_eagleaiii"}', actual)
+        self.assertIn('{item "bandage_usa" 4.5 0.5}', actual)
+        self.assertIn('{item "shovel_csa"}', actual)
+        self.assertIn("{in_hands 0}", actual)
         self.assertIn('{skin "nrf_1"}', actual)
         self.assertIn('{body "nrf_vest_1"}', actual)
         self.assertIn('(include "/set/breed/mp/nato/2022s/ability.inc")', actual)
@@ -124,16 +140,20 @@ class EditorPowReplaceTests(unittest.TestCase):
         self.assertIn('{"placement"', text)
         self.assertNotIn("{clone}", text)
         self.assertNotIn("{clone_places}", text)
-        self.assertNotIn('{"delete"', text)
         self.assertNotIn("{stat_notify", text)
         self.assertNotIn('{player "0"}', text)
         self.assertNotIn("{control AI}", text)
-        self.assertIn("{tag_add hidden}", text)
-        self.assertIn("{inactive on}", text)
+        self.assertNotIn("{tag_add hidden}", text)
+        self.assertNotIn("{inactive on}", text)
+        self.assertIn("{effect aio_pow_retire}", text)
         self.assertIn("aio_pow_need_replace", text)
         self.assertIn("aio_pow_replace_src", text)
         self.assertIn("{effect aio_morale_surrender_apply}", text)
         self.assertIn("aio_pow_walk", text)
+        retire = human.read_text(encoding="utf-8").split('{on "aio_pow_retire"', 1)[1].split("{on ", 1)[0]
+        self.assertIn("{delete}", retire)
+        self.assertNotIn("{stat_notify", retire)
+        self.assertNotIn('{call "delete"}', retire)
         self.assertIn('{Human "generated_pow/mp/nato/2022s/nato_rifleman"', tpl)
         self.assertIn("{Player 2}", tpl)
         self.assertNotIn("{Player 0}", tpl)

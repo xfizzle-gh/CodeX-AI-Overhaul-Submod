@@ -4,7 +4,7 @@
 	{portrait nrf}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier"}
+	
 	{nationality nato}
 	{armors
 		{head us_highcut_2}
@@ -19,5 +19,11 @@
 	{veterancy
 		(include "/set/breed/mp/nato/2022s/ability.inc")
 		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "backpack_eagleaiii"}
+		{item "bandage_usa" 4.5 0.5}
+        {item "shovel_csa"}
+		{in_hands 0}
 	}
 }

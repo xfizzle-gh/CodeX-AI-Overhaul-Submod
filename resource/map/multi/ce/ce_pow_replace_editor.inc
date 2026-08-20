@@ -4,7 +4,8 @@
 ; Gate: tag the source human aio_pow_replace_src. Apply stamps aio_pow_need_replace.
 ; Force commit: this file effects aio_morale_surrender_apply on that tag after 3s.
 ;
-; Proven: {"placement"} MOVE (no clone); hide via tag_add hidden + inactive on;
+; Proven: {"placement"} MOVE (no clone); retire original via {effect aio_pow_retire}
+; which uses the entity {delete} primitive (not {on "delete"} / stat_notify die);
 ; {"effect" aio_morale_surrender_apply} on the replacement.
 ; Missing: living-actor breed query; IE spawn-at-human; copy health/facing/player/squad.
 ; {target} on a tagged human is FE-shaped; pose/heading is Editor-unproven.
@@ -240,7 +241,7 @@
 					{"delay"
 						{time 0.05}
 					}
-					{"entity_state"
+					{"effect"
 						{selector
 							{source advanced}
 							{group
@@ -262,9 +263,7 @@
 								}
 							}
 						}
-						{tag_add hidden}
-						{tag_add aio_pow_hidden}
-						{inactive on}
+						{effect aio_pow_retire}
 					}
 					{"entity_state"
 						{selector

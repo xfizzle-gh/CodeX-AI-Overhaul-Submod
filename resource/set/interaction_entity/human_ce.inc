@@ -771,6 +771,9 @@
 			}
 		}
 	}
+	{on "aio_pow_retire"
+		{delete}
+	}
 	{on "aio_morale_stop_icons"
 		{view pause "white_flag"}
 		{view pause "no_comd"}
