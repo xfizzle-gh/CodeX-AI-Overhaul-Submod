@@ -254,6 +254,8 @@ def collect_item_classes(root: Path | None = None) -> list[tuple[str, str, int]]
         inner = text[block[0] : block[1]]
         for span in ITEM_SPAN_RE.findall(inner):
             name = item_name(span)
+            if not name:
+                continue
             counts[name] = counts.get(name, 0) + 1
     return [
         (name, item_class(name), counts[name])

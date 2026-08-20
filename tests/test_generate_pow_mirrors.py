@@ -124,6 +124,7 @@ class GeneratePowMirrorsTests(unittest.TestCase):
         self.assertTrue(stripped)
         self.assertTrue(all(gpm.KEEP_RE.search(name) is None for name in stripped))
         self.assertEqual(len(rows), len(by_name))
+        self.assertNotIn("", by_name)
 
     def test_tmp_collect_is_deterministic(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -168,6 +169,16 @@ class EditorPowReplaceTests(unittest.TestCase):
         self.assertNotIn("{tag_add hidden}", text)
         self.assertNotIn("{inactive on}", text)
         self.assertIn("{effect aio_pow_retire}", text)
+        _head, rest = text.split('{"editor_pow_replace/replace"', 1)
+        move, retire = rest.split('{"editor_pow_replace/retire"', 1)
+        self.assertIn('{"placement"', move)
+        self.assertNotIn("{effect aio_pow_retire}", move)
+        self.assertIn("{tag_add aio_pow_civ}", move)
+        cond, actions = retire.split("{actions", 1)
+        self.assertIn("{tag aio_pow_civ}", cond)
+        self.assertLess(cond.find("{tag aio_pow_civ}"), cond.find("{tag aio_pow_replacing}"))
+        self.assertIn("{effect aio_pow_retire}", actions)
+        self.assertNotIn('{"placement"', actions)
         self.assertIn("aio_pow_need_replace", text)
         self.assertIn("aio_pow_replace_src", text)
         self.assertIn("{effect aio_morale_surrender_apply}", text)

@@ -4,9 +4,9 @@
 ; Gate: tag the source human aio_pow_replace_src. Apply stamps aio_pow_need_replace.
 ; Force commit: this file effects aio_morale_surrender_apply on that tag after 3s.
 ;
-; Proven: {"placement"} MOVE (no clone); retire original via {effect aio_pow_retire}
-; which uses the entity {delete} primitive (not {on "delete"} / stat_notify die);
-; {"effect" aio_morale_surrender_apply} on the replacement.
+; Proven: {"placement"} MOVE (no clone); reveal the mirror first; retire original
+; only after {entities aio_pow_civ} is live (handshake). {effect aio_pow_retire}
+; uses the entity {delete} primitive (not {on "delete"} / stat_notify die).
 ; Missing: living-actor breed query; IE spawn-at-human; copy health/facing/player/squad.
 ; {target} on a tagged human is FE-shaped; pose/heading is Editor-unproven.
 ; #129 camp is not on this branch. Walk waypoint aio_pow_walk proves scripted move.
@@ -241,6 +241,97 @@
 					{"delay"
 						{time 0.05}
 					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_tpl}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_remove hidden}
+						{tag_add aio_pow_civ}
+						{tag_remove aio_pow_tpl}
+						{inactive off}
+					}
+					{"delay"
+						{time 1}
+					}
+					{"trigger"
+						{name "editor_pow_replace/replace"}
+					}
+				}
+			}
+			{"editor_pow_replace/retire"
+				{condition
+					{terms
+						{"1.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_pow_civ}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{tag
+											{tag hidden}
+										}
+									}
+								}
+							}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_pow_replacing}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{tag
+											{tag aio_pow_civ}
+										}
+										{tag
+											{tag aio_pow_tpl}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
 					{"effect"
 						{selector
 							{source advanced}
@@ -264,27 +355,6 @@
 							}
 						}
 						{effect aio_pow_retire}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_tpl}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-								}
-							}
-						}
-						{tag_remove hidden}
-						{tag_add aio_pow_civ}
-						{tag_remove aio_pow_tpl}
-						{inactive off}
 					}
 					{"delay"
 						{time 0.05}
@@ -376,7 +446,7 @@
 						{time 1}
 					}
 					{"trigger"
-						{name "editor_pow_replace/replace"}
+						{name "editor_pow_replace/retire"}
 					}
 				}
 			}
