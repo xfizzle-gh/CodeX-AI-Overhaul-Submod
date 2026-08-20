@@ -20,6 +20,7 @@ on:
       - "resource/map/multi/ce/ce_pow_replace_editor.inc"
       - "resource/map/multi/ce/ce_pow_replace_editor_templates.inc"
       - "resource/map/multi/ce/ce_pow_oldboy_captive_editor.inc"
+      - "resource/set/interaction_entity/human_ce.inc"
       - "tests/test_ce_pow_oldboy_captive.py"
       - ".github/workflows/morale-breed-metadata-guard.yml"
   push:
@@ -43,6 +44,7 @@ on:
       - "resource/map/multi/ce/ce_pow_replace_editor.inc"
       - "resource/map/multi/ce/ce_pow_replace_editor_templates.inc"
       - "resource/map/multi/ce/ce_pow_oldboy_captive_editor.inc"
+      - "resource/set/interaction_entity/human_ce.inc"
       - "tests/test_ce_pow_oldboy_captive.py"
       - ".github/workflows/morale-breed-metadata-guard.yml"
 

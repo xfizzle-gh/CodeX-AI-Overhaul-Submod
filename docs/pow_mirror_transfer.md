@@ -55,16 +55,18 @@ Old Boy's POW path is **not** `{player "0"}` + `{control AI}`. The captive lifec
 5. drop the weapon in hands
 6. apply `stand_giveup_1`
 
-Owner isolation on `d7fa808`: **P1->P0 alone PASS**. Live reassignment is projectile/death-safe. The `311ef20` AV did not reproduce this sequence; it tested our added combination.
+Owner isolation: **P1->P0 alone PASS** (Run A). **Run B PASS** (Old Boy five-step sequence, shot/killed, no AV). Player 0 itself is not the crash seam. The old crashing heads added extra state: `fight 0`, `select 0`, hold-fire/weapon-prep, `{control AI}`, scripted evacuation.
 
-Civilian-mirror Editor prototype stays **parked** while this diagnostic runs. Production surrender (`ce_broken_behavior_triggers.inc` / `aio_morale_surrender_apply`) stays off Player 0.
+**Run C (current):** Run B plus only `{effect aio_pow_ob_fight_off}` → `{able "fight" 0}`. Same grammar as production `aio_morale_surrender_apply`. No `select 0`, `{control AI}`, hold-fire/weapon-prep, or evacuation.
+
+Civilian-mirror Editor prototype stays **parked**. Production surrender (`ce_broken_behavior_triggers.inc` / `aio_morale_surrender_apply`) stays off Player 0.
 
 Editor-only file: `ce_pow_oldboy_captive_editor.inc` (not in `ce_triggers.inc` / `dcg_script.inc`).
 
 1. Open Editor. Place one Player-1 `mp/nato/2022s/nato_rifleman`, tag `aio_pow_ob_src`.
-2. After 2 s the five-step sequence runs.
-3. Deliberately shoot the actor. PASS = no AV + sequence applied. If AV, reduce one state at a time.
-4. No Conquest. Do not include the civilian-mirror Editor files for this test.
+2. After 2 s Run B runs, then fight 0.
+3. Deliberately shoot the actor. PASS = no AV. If AV, preserve dump; `fight 0` is the first isolated crash boundary.
+4. No Conquest. Do not include the civilian-mirror Editor files.
 
 ## Editor civilian-mirror sequence (parked)
 

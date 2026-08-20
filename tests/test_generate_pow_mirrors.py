@@ -207,6 +207,9 @@ class EditorPowReplaceTests(unittest.TestCase):
         self.assertNotIn("aio_pow_replace_src", human)
         self.assertNotIn("aio_pow_need_replace", apply)
         self.assertNotIn("{delete}", human)
+        fight = human.split('{on "aio_pow_ob_fight_off"', 1)[1].split("{on ", 1)[0]
+        self.assertIn('{able "fight" 0}', fight)
+        self.assertNotIn("{delete}", fight)
         self.assertNotIn('{player "0"}', apply)
         self.assertNotIn("{control AI}", apply)
         self.assertIn("Real (in-repo or native-tested)", transfer)

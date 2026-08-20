@@ -757,6 +757,9 @@
 			}
 		}
 	}
+	{on "aio_pow_ob_fight_off"
+		{able "fight" 0}
+	}
 	{on "aio_morale_surrender_apply"
 		{tags add "aio_morale_surrendering"}
 		{tags remove "aio_morale_broken"}

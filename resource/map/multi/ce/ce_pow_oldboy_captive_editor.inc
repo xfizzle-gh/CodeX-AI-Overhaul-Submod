@@ -9,8 +9,9 @@
 ;   4. {"inventory"} {action drop} of the weapon in hands
 ;   5. {"animation"} {collage stand_giveup_1}
 ;
-; P1->P0 alone already PASS on d7fa808. This file is the next bounded test.
-; No {control AI}, able neutral, morale/POW/camp tags, fight/select, or clone.
+; Run A PASS: P1->P0 alone. Run B PASS: this Old Boy sequence.
+; Run C: Run B plus only {effect aio_pow_ob_fight_off} -> {able "fight" 0}.
+; No {control AI}, select 0, hold-fire/weapon-prep, evacuation, or clone.
 ;
 ; Setup: include this file in the trigger block. Place one Player-1
 ; mp/nato/2022s/nato_rifleman, tag aio_pow_ob_src. After 2s the sequence runs.
@@ -216,6 +217,38 @@
 							}
 						}
 						{collage stand_giveup_1}
+					}
+					{"delay"
+						{time 0.05}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_ob_src}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_ob_done}
+									}
+								}
+							}
+						}
+						{effect aio_pow_ob_fight_off}
 					}
 					{"entity_state"
 						{selector
