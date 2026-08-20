@@ -16,6 +16,9 @@ on:
       - "docs/pow_mirror_mapping.tsv"
       - "docs/pow_mirror_skip.tsv"
       - "docs/pow_mirror_item_classes.tsv"
+      - "docs/pow_mirror_transfer.md"
+      - "resource/map/multi/ce/ce_pow_replace_editor.inc"
+      - "resource/map/multi/ce/ce_pow_replace_editor_templates.inc"
       - ".github/workflows/morale-breed-metadata-guard.yml"
   push:
     branches:
@@ -34,6 +37,9 @@ on:
       - "docs/pow_mirror_mapping.tsv"
       - "docs/pow_mirror_skip.tsv"
       - "docs/pow_mirror_item_classes.tsv"
+      - "docs/pow_mirror_transfer.md"
+      - "resource/map/multi/ce/ce_pow_replace_editor.inc"
+      - "resource/map/multi/ce/ce_pow_replace_editor_templates.inc"
       - ".github/workflows/morale-breed-metadata-guard.yml"
 
 permissions:

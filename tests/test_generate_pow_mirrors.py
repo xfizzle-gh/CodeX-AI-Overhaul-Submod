@@ -66,32 +66,39 @@ class GeneratePowMirrorsTests(unittest.TestCase):
                     self.assertIsNotNone(gpm.KEEP_RE.search(name), f"{source} {name}")
             self.assertEqual(mirror, f"generated_pow/{source}")
 
-    def test_nato_mirror_transform_stays_out_of_live_tree(self) -> None:
+    def test_committed_nato_mirror_matches_generator(self) -> None:
         text = (gpm.BREED_ROOT / NATO).read_text(encoding="utf-8")
         out = gpm.transform(NATO, text)
         dest = gpm.BREED_ROOT / f"generated_pow/{NATO}"
-        self.assertFalse(dest.is_file())
-        live_gen = gpm.BREED_ROOT / "generated_pow"
-        live_sets = list(live_gen.rglob("*.set")) if live_gen.exists() else []
-        self.assertEqual(live_sets, [])
-        self.assertIn("{behaviour civilian}", out)
-        self.assertNotIn("{behaviour soldier}", out)
-        self.assertNotIn('{tags "soldier"}', out)
-        self.assertNotIn("mars_l", out)
-        self.assertNotIn("m26 grenade", out)
-        self.assertNotIn("m16a2 ammo", out)
-        self.assertNotIn("aio_marker_morale_regular", out)
-        self.assertIn('{item "backpack_eagleaiii"}', out)
-        self.assertIn('{item "bandage_usa" 4.5 0.5}', out)
-        self.assertIn('{item "shovel_csa"}', out)
-        self.assertNotIn("{in_hands", out)
+        self.assertEqual(gpm.WRITE_RELS, frozenset({NATO}))
+        self.assertTrue(dest.is_file())
+        actual = dest.read_text(encoding="utf-8")
+        if not out.endswith("\n"):
+            out += "\n"
+        self.assertEqual(actual, out)
+        live_sets = [
+            path.relative_to(gpm.BREED_ROOT).as_posix()
+            for path in (gpm.BREED_ROOT / "generated_pow").rglob("*.set")
+        ]
+        self.assertEqual(live_sets, [f"generated_pow/{NATO}"])
+        self.assertIn("{behaviour civilian}", actual)
+        self.assertNotIn("{behaviour soldier}", actual)
+        self.assertNotIn('{tags "soldier"}', actual)
+        self.assertNotIn("mars_l", actual)
+        self.assertNotIn("m26 grenade", actual)
+        self.assertNotIn("m16a2 ammo", actual)
+        self.assertNotIn("aio_marker_morale_regular", actual)
+        self.assertIn('{item "backpack_eagleaiii"}', actual)
+        self.assertIn('{item "bandage_usa" 4.5 0.5}', actual)
+        self.assertIn('{item "shovel_csa"}', actual)
+        self.assertNotIn("{in_hands", actual)
         self.assertEqual(gpm.item_class("backpack_eagleaiii"), "keep")
         self.assertEqual(gpm.item_class("mars_l"), "strip")
         self.assertEqual(gpm.item_class("ak74"), "strip")
-        self.assertIn('{skin "nrf_1"}', out)
-        self.assertIn('{body "nrf_vest_1"}', out)
-        self.assertIn('(include "/set/breed/mp/nato/2022s/ability.inc")', out)
-        self.assertNotIn('(include "ability.inc")', out)
+        self.assertIn('{skin "nrf_1"}', actual)
+        self.assertIn('{body "nrf_vest_1"}', actual)
+        self.assertIn('(include "/set/breed/mp/nato/2022s/ability.inc")', actual)
+        self.assertNotIn('(include "ability.inc")', actual)
         self.assertFalse((gpm.BREED_ROOT / f"generated_pow/{ISO}").is_file())
 
     def test_ineligible_fixtures_fail_closed(self) -> None:
@@ -145,16 +152,87 @@ class GeneratePowMirrorsTests(unittest.TestCase):
             self.assertEqual(first[0][0], NATO)
 
 
+HUMAN_REF_RE = re.compile(r'\{Human\s+"([^"]+)"')
+
+
 class EditorPowReplaceTests(unittest.TestCase):
-    def test_editor_pow_resources_removed_for_startup_isolation(self) -> None:
+    def test_editor_only_surrender_commit_move(self) -> None:
+        trig = ROOT / "resource/map/multi/ce/ce_triggers.inc"
+        dcg = ROOT / "resource/map/multi/dcg_script.inc"
+        editor = ROOT / "resource/map/multi/ce/ce_pow_replace_editor.inc"
+        templates = ROOT / "resource/map/multi/ce/ce_pow_replace_editor_templates.inc"
         human = (ROOT / "resource/set/interaction_entity/human_ce.inc").read_text(encoding="utf-8")
-        self.assertFalse((ROOT / "resource/map/multi/ce/ce_pow_replace_editor.inc").is_file())
-        self.assertFalse((ROOT / "resource/map/multi/ce/ce_pow_replace_editor_templates.inc").is_file())
-        self.assertFalse((ROOT / "resource/set/breed/generated_pow").exists())
+        transfer = (ROOT / "docs/pow_mirror_transfer.md").read_text(encoding="utf-8")
+        self.assertTrue(editor.is_file())
+        self.assertTrue(templates.is_file())
+        text = editor.read_text(encoding="utf-8")
+        body = "\n".join(line for line in text.splitlines() if not line.lstrip().startswith(";"))
+        tpl = templates.read_text(encoding="utf-8")
+        apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split('{on "', 1)[0]
+        self.assertNotIn("ce_pow_replace_editor", trig.read_text(encoding="utf-8"))
+        self.assertNotIn("ce_pow_replace_editor", dcg.read_text(encoding="utf-8"))
+        self.assertIn('{"placement"', body)
+        self.assertNotIn("{clone}", body)
+        self.assertNotIn("{clone_places}", body)
+        self.assertNotIn("{stat_notify", body)
+        self.assertNotIn('{player "0"}', body)
+        self.assertNotIn("{control AI}", body)
+        self.assertNotIn("{able \"neutral\"}", body)
+        self.assertNotIn("{tag_add hidden}", body)
+        self.assertNotIn("{inactive on}", body)
+        self.assertNotIn("aio_pow_retire", body)
+        self.assertNotIn("{effect delete}", body)
+        _head, rest = text.split('{"editor_pow_replace/replace"', 1)
+        move, retire = rest.split('{"editor_pow_replace/retire"', 1)
+        self.assertIn('{"placement"', move)
+        self.assertNotIn('{"delete"', move)
+        self.assertIn("{tag_add aio_pow_civ}", move)
+        self.assertIn("{tag_add aio_pow_need_replace}", text)
+        cond, actions = retire.split("{actions", 1)
+        self.assertIn('{"1.near"', cond)
+        self.assertIn("{near_to", cond)
+        self.assertIn("{distance 5}", cond)
+        self.assertLess(cond.find("{tag aio_pow_civ}"), cond.find("{tag aio_pow_replacing}"))
+        self.assertIn('{"delete"', actions)
+        self.assertNotIn('{"placement"', actions)
+        self.assertIn("aio_pow_need_replace", text)
+        self.assertIn("aio_pow_replace_src", text)
+        self.assertIn("{effect aio_morale_surrender_apply}", text)
+        self.assertIn("aio_pow_walk", text)
+        self.assertIn('{Human "generated_pow/mp/nato/2022s/nato_rifleman"', tpl)
+        self.assertIn("{Player 2}", tpl)
+        self.assertNotIn("{Player 0}", tpl)
+        self.assertIn('"hidden"', tpl)
         self.assertNotIn("aio_pow_retire", human)
         self.assertNotIn("aio_pow_replace_src", human)
-        self.assertNotIn("aio_pow_need_replace", human)
+        self.assertNotIn("aio_pow_need_replace", apply)
         self.assertNotIn("{delete}", human)
+        self.assertNotIn('{player "0"}', apply)
+        self.assertNotIn("{control AI}", apply)
+        self.assertIn("Real (in-repo or native-tested)", transfer)
+        self.assertIn('{"delete"}', transfer)
+        self.assertIn("Invented or abandoned", transfer)
+        self.assertIn("aio_pow_retire", transfer)
+
+    def test_human_includes_only_reference_existing_breeds(self) -> None:
+        missing: list[str] = []
+        for path in (ROOT / "resource").rglob("*"):
+            if not path.is_file() or path.suffix not in {".inc", ".set", ".mi"}:
+                continue
+            text = path.read_text(encoding="utf-8", errors="replace")
+            for breed in HUMAN_REF_RE.findall(text):
+                if not breed.startswith("generated_pow/"):
+                    continue
+                dest = ROOT / "resource/set/breed" / f"{breed}.set"
+                if not dest.is_file():
+                    missing.append(f"{path.relative_to(ROOT).as_posix()} -> {breed}")
+        self.assertEqual(missing, [])
+        self.assertNotIn("{on \"aio_pow_retire\"", human_ce_text())
+        self.assertFalse(re.search(r'\{on "[^"]+"\s*\{delete\}', human_ce_text()))
+
+
+def human_ce_text() -> str:
+    return (ROOT / "resource/set/interaction_entity/human_ce.inc").read_text(encoding="utf-8")
 
 
 if __name__ == "__main__":

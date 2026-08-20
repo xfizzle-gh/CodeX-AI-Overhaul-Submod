@@ -16,8 +16,8 @@ MAPPING = ROOT / "docs/pow_mirror_mapping.tsv"
 SKIP = ROOT / "docs/pow_mirror_skip.tsv"
 ITEM_CLASSES = ROOT / "docs/pow_mirror_item_classes.tsv"
 # Editor auto-scans resource/set/breed/** (isolation fixtures already loaded).
-# Never emit generated_pow into that live tree.
-WRITE_RELS = frozenset()
+# Checked-in live generated_pow must stay at this one prototype, or empty.
+WRITE_RELS = frozenset({"mp/nato/2022s/nato_rifleman.set"})
 
 BEHAVIOUR_RE = re.compile(r"\{behaviour\s+\"?(\w+)\"?\}")
 INCLUDE_RE = re.compile(r'\(include\s+"([^"]+)"\)')
@@ -281,11 +281,9 @@ def write_mirrors(rows: list[tuple[str, str, str]], *, only_committed: bool) -> 
     for source, mirror, _scope in rows:
         if only_committed and source not in WRITE_RELS:
             continue
-        dest = BREED_ROOT / mirror
-        if GENERATED_DIR in dest.relative_to(BREED_ROOT).parts:
-            continue
         src = BREED_ROOT / source
         text = transform(source, src.read_text(encoding="utf-8", errors="replace"))
+        dest = BREED_ROOT / mirror
         dest.parent.mkdir(parents=True, exist_ok=True)
         nl = detect_nl(text)
         if not text.endswith(nl):
@@ -293,6 +291,19 @@ def write_mirrors(rows: list[tuple[str, str, str]], *, only_committed: bool) -> 
         dest.write_bytes(text.encode("utf-8"))
         written.append(dest)
     return written
+
+
+def live_mirror_rels() -> list[str]:
+    live_gen = BREED_ROOT / GENERATED_DIR
+    if not live_gen.exists():
+        return []
+    return sorted(
+        path.relative_to(BREED_ROOT).as_posix() for path in live_gen.rglob("*.set")
+    )
+
+
+def committed_mirror_rels() -> set[str]:
+    return {mirror_rel(source) for source in WRITE_RELS}
 
 
 def check() -> int:
@@ -307,13 +318,25 @@ def check() -> int:
         errors.append("stale skip tsv")
     if not ITEM_CLASSES.is_file() or ITEM_CLASSES.read_text(encoding="utf-8") != class_text:
         errors.append("stale item class tsv")
-    live_gen = BREED_ROOT / GENERATED_DIR
-    if live_gen.exists():
-        live_sets = sorted(live_gen.rglob("*.set"))
-        errors.extend(
-            f"live breed tree must not contain generated_pow {path.relative_to(BREED_ROOT).as_posix()}"
-            for path in live_sets
-        )
+    allowed = committed_mirror_rels()
+    live = set(live_mirror_rels())
+    for extra in sorted(live - allowed):
+        errors.append(f"live breed tree extra generated_pow {extra}")
+    for missing in sorted(allowed - live):
+        errors.append(f"missing committed mirror {missing}")
+    by_mirror = {mirror: source for source, mirror, _scope in mapped}
+    for mirror in sorted(live & allowed):
+        source = by_mirror.get(mirror)
+        if source is None:
+            errors.append(f"committed mirror not in mapping {mirror}")
+            continue
+        expected = transform(source, (BREED_ROOT / source).read_text(encoding="utf-8", errors="replace"))
+        actual = (BREED_ROOT / mirror).read_text(encoding="utf-8", errors="replace")
+        exp_nl = detect_nl(expected)
+        if not expected.endswith(exp_nl):
+            expected += exp_nl
+        if actual != expected:
+            errors.append(f"stale mirror {mirror}")
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1

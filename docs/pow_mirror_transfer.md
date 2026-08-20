@@ -1,0 +1,54 @@
+# POW mirror transfer: real vs invented
+
+Editor prototype only. Production surrender still uses the original soldier until this path is accepted. Isolation `{behaviour civilian}` result is unchanged.
+
+## Real (in-repo or native-tested)
+
+| What | Evidence |
+| --- | --- |
+| `{behaviour civilian}` makes a live hostile human untargetable and projectile-safe | Isolation trio PASS. Armed civilian also ignored. |
+| 1:1 combat-breed → civilian-behaviour unarmed file transform | `tools/generate_pow_mirrors.py`. No runtime behaviour/targetClass/breed setter exists. |
+| `{"placement"}` MOVE without `{clone}` | `ce_functions.inc`, `map_setup/base_map_setup_triggers.inc` |
+| `{target}` on a tagged entity | Same AIO placement blocks (FE-shaped; copies position) |
+| `{"1.near"}` `{units}` `{near_to}` `{distance}` | `ce_player_triggers.inc`, `ce_ai_logic_triggers.inc` |
+| Mission-script `{"delete"}` on a human selector | `ce_map_setup_triggers.inc` extra-defender cull |
+| Vanilla `{on "delete"}` / `{call "delete"}` | `human.inc` only. Not used by this prototype. |
+| `{"effect" aio_morale_surrender_apply}` | Existing `{on "aio_morale_surrender_apply"}` in `human_ce.inc` |
+| `{entity_state}` tags / `{inactive off}` | Existing AIO |
+| `{actor_state}` hold-fire / hold-move / `weapon_prepare off` | Existing surrender presentation |
+| `{action move}` `{waypoint}` | Existing POW walk (`aio_pow_walk` here) |
+| Skin / body / portrait / armors / visual inventory | Copied in the generated breed file, not at runtime |
+
+## Invented or abandoned (do not use)
+
+| What | Why |
+| --- | --- |
+| `{on "aio_pow_retire" {delete}}` on `human_ce.inc` | Custom `{on "..."}` with bare `{delete}` is unproven. `human_ce.inc` is globally included from `entity.set`. |
+| Hide + `{inactive on}` as “gone” | Leaves a duplicate actor. |
+| Tag-live handshake then delete | Insufficient. Retire requires the 5 m near pose-live condition, then vanilla `{"delete"}`. |
+| `{player "0"}` / `{control AI}` / `{able "neutral"}` | Abandoned. Player-0 family AV in `scene.quant.bullets`. |
+| Runtime `{behaviour}` / targetClass / breed setter | No supported setter in audited script surfaces. |
+| Living-actor breed query, IE spawn-at-human | Not found. |
+| Runtime copy of health / facing / player / squad | Not found. Template is authored `{Player 2}`. |
+| `{target}` heading / exact pose | Editor-unproven. Position MOVE is the real transfer. |
+| Generic faction POW proxies | Architecture is 1:1 combat-breed mirrors only. |
+| Isolation `clear_inventory` delay | Drop fixture only. Not the POW disarm path. |
+| Recruiting / trucks / release / interrogation | Out of scope. |
+
+## Live tree rule
+
+Generator may map all eligible combat breeds. Checked-in `resource/set/breed/generated_pow/**` is one prototype:
+
+`generated_pow/mp/nato/2022s/nato_rifleman.set`
+
+Do not leave a `{Human "generated_pow/..." ...}` include after deleting that breed.
+
+## Editor sequence
+
+1. Open `call_to_arms_ed.exe`. `page_scene_editor` must launch.
+2. Include `ce_pow_replace_editor_templates.inc` in the mission entity block and `ce_pow_replace_editor.inc` in the trigger block. Not from `ce_triggers.inc` / `dcg_script.inc`.
+3. Place `mp/nato/2022s/nato_rifleman`, tag `aio_pow_replace_src`. Optional waypoint `aio_pow_walk`.
+4. After 3 s the source gets `aio_morale_surrender_apply`, then `aio_pow_need_replace`.
+5. Parked civilian MOVE to the source. Source is `{"delete"}` only if the civilian is within 5 m.
+6. Civilian gets surrender apply (white-flag / camp tags) and optional walk.
+7. Stop. No Conquest.
