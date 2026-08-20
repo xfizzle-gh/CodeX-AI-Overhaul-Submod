@@ -171,7 +171,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{delay 100", human)
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1]
         self.assertNotIn('{able "select" 0}', apply)
-        self.assertIn('{able "fight" 0}', apply)
+        self.assertNotIn('{able "fight" 0}', apply)
         self.assertNotIn('{able "neutral" 1}', apply)
         self.assertNotIn('{player "0"}', apply)
         self.assertNotIn("{delay 80", apply)

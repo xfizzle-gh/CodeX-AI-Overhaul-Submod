@@ -756,7 +756,6 @@
 		{tags add "aio_morale_surrendering"}
 		{tags remove "aio_morale_broken"}
 		{tags remove "aio_morale_regrouping"}
-		{able "fight" 0}
 		{call "aio_morale_refresh_icons"}
 		{delay 100
 			{if tagged "aio_morale_surrendering"
