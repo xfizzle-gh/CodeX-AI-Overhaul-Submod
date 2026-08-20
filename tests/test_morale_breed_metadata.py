@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BREED_ROOT = ROOT / "resource/set/breed"
+ISO_SUBTREE = "isolation_test"
 REPORT = ROOT / "docs/morale_command_classification.md"
 TSV = ROOT / "docs/morale_command_classification.tsv"
 PHASE0 = ROOT / "docs/morale_command_phase0_audit.md"
@@ -96,7 +97,9 @@ def strip_diag_marker(text: str) -> str:
 class MoraleBreedMetadataTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.sets = sorted(BREED_ROOT.rglob("*.set"))
+        cls.sets = sorted(
+            path for path in BREED_ROOT.rglob("*.set") if ISO_SUBTREE not in path.parts
+        )
         cls.rel = {path.relative_to(BREED_ROOT).as_posix(): path for path in cls.sets}
         cls.legacy = load_legacy_allowlist()
 
@@ -128,6 +131,15 @@ class MoraleBreedMetadataTests(unittest.TestCase):
         missing = sorted(path for path in self.legacy if path not in self.rel)
         self.assertEqual(missing, [])
         self.assertTrue(all("/" in path and path.endswith(".set") for path in self.legacy))
+
+    def test_isolation_test_subtree_excluded_from_overlay_scan(self) -> None:
+        iso = BREED_ROOT / ISO_SUBTREE
+        self.assertTrue(iso.is_dir())
+        iso_sets = sorted(iso.rglob("*.set"))
+        self.assertGreaterEqual(len(iso_sets), 3)
+        for path in iso_sets:
+            self.assertNotIn(path.relative_to(BREED_ROOT).as_posix(), self.rel)
+        self.assertTrue(all(ISO_SUBTREE not in Path(rel).parts for rel in self.rel))
 
     def test_every_overlay_has_exactly_one_morale_profile(self) -> None:
         self.assertEqual(len(self.sets), 2091)

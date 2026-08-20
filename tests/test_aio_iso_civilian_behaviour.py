@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-BREED = ROOT / "resource/set/breed/test"
+BREED = ROOT / "resource/set/breed/isolation_test"
 ROSTER = ROOT / "resource/set/multiplayer/units/only_roster_conquest.set"
 TRIG = ROOT / "resource/map/multi/ce/ce_triggers.inc"
 
@@ -16,26 +16,30 @@ class AioIsoCivilianBehaviourTests(unittest.TestCase):
         self.assertTrue((BREED / "aio_iso_hostile_civ.set").is_file())
         self.assertTrue((BREED / "aio_iso_hostile_civ_rifle.set").is_file())
 
-    def test_only_behaviour_and_inventory_differ(self) -> None:
+    def test_soldier_and_civ_rifle_differ_only_in_behaviour(self) -> None:
         soldier = (BREED / "aio_iso_hostile_soldier.set").read_text(encoding="utf-8")
-        civ = (BREED / "aio_iso_hostile_civ.set").read_text(encoding="utf-8")
         armed = (BREED / "aio_iso_hostile_civ_rifle.set").read_text(encoding="utf-8")
         self.assertIn("{behaviour soldier}", soldier)
-        self.assertIn("{behaviour civilian}", civ)
         self.assertIn("{behaviour civilian}", armed)
-        self.assertIn('{skin "nrf_1"}', soldier)
-        self.assertIn('{skin "nrf_1"}', civ)
-        self.assertIn('{skin "nrf_1"}', armed)
-        self.assertIn("{item \"mars_l\" filled}", soldier)
-        self.assertIn("{item \"mars_l\" filled}", armed)
+        self.assertEqual(
+            soldier.replace("{behaviour soldier}", "{behaviour civilian}", 1),
+            armed,
+        )
+        self.assertNotIn("{tags", soldier)
+        self.assertNotIn("{tags", armed)
+
+    def test_unarmed_civ_is_inventory_variant_only(self) -> None:
+        civ = (BREED / "aio_iso_hostile_civ.set").read_text(encoding="utf-8")
+        armed = (BREED / "aio_iso_hostile_civ_rifle.set").read_text(encoding="utf-8")
+        self.assertIn("{behaviour civilian}", civ)
         self.assertNotIn("mars_l", civ)
-        self.assertNotIn("aio_marker_morale", soldier)
-        self.assertNotIn("aio_marker_morale", civ)
-        self.assertNotIn("aio_marker_morale", armed)
-        self.assertNotIn('{player "0"}', soldier + civ + armed)
-        self.assertNotIn("{control AI}", soldier + civ + armed)
-        self.assertNotIn("ai_ignore", soldier + civ + armed)
-        self.assertNotIn("aio_morale", soldier + civ + armed)
+        self.assertIn("{item \"mars_l\" filled}", armed)
+        blob = civ + armed
+        self.assertNotIn("aio_marker_morale", blob)
+        self.assertNotIn('{player "0"}', blob)
+        self.assertNotIn("{control AI}", blob)
+        self.assertNotIn("ai_ignore", blob)
+        self.assertNotIn("aio_morale", blob)
 
     def test_not_wired_into_conquest_or_ce(self) -> None:
         if ROSTER.is_file():

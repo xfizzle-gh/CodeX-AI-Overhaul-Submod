@@ -4,7 +4,6 @@
 	{portrait nrf}
 	{icon sniper}
 	{icon_priority 2}
-	{tags "soldier"}
 	{nationality nato}
 	{armors
 		{head us_highcut_2}
