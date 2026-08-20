@@ -244,6 +244,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{weapon_prepare off}", evac)
         self.assertNotIn("{move_mode hold}", evac)
         self.assertNotIn("{control AI}", evac)
+        self.assertNotIn('{drop "orders sensor senseless"}', evac)
         self.assertIn("{action move}", evac)
         self.assertIn('{waypoint "attack_support_entry_a"}', evac)
         self.assertIn('{waypoint "attack_support_entry_b"}', evac)

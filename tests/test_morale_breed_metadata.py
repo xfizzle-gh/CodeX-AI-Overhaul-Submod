@@ -139,7 +139,14 @@ class MoraleBreedMetadataTests(unittest.TestCase):
         iso = BREED_ROOT / ISO_SUBTREE
         self.assertTrue(iso.is_dir())
         iso_sets = sorted(iso.rglob("*.set"))
-        self.assertGreaterEqual(len(iso_sets), 3)
+        self.assertEqual(
+            [path.name for path in iso_sets],
+            [
+                "aio_iso_hostile_civ.set",
+                "aio_iso_hostile_civ_rifle.set",
+                "aio_iso_hostile_soldier.set",
+            ],
+        )
         for path in iso_sets:
             self.assertNotIn(path.relative_to(BREED_ROOT).as_posix(), self.rel)
         self.assertTrue(all(ISO_SUBTREE not in Path(rel).parts for rel in self.rel))

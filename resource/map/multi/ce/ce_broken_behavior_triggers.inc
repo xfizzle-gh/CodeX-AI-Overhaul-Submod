@@ -1319,7 +1319,6 @@
 										}
 									}
 								}
-								{drop "orders sensor senseless"}
 								{action move}
 								{waypoint "attack_support_entry_a"}
 							}
@@ -1359,7 +1358,6 @@
 										}
 									}
 								}
-								{drop "orders sensor senseless"}
 								{action move}
 								{waypoint "attack_support_entry_b"}
 							}
@@ -1530,7 +1528,6 @@
 										}
 									}
 								}
-								{drop "orders sensor senseless"}
 								{action move}
 								{waypoint "attack_support_entry_b"}
 							}
@@ -1570,7 +1567,6 @@
 										}
 									}
 								}
-								{drop "orders sensor senseless"}
 								{action move}
 								{waypoint "attack_support_entry_a"}
 							}
