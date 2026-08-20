@@ -51,7 +51,7 @@ class OldBoyProductionSurrenderTests(unittest.TestCase):
         self.assertNotIn("{effect aio_pow_ob_fight_off}", present)
         self.assertNotIn("{control AI}", apply)
         self.assertNotIn('{able "select" 0}', apply)
-        self.assertNotIn('{able "fight" 0}', apply)
+        self.assertIn('{able "fight" 0}', apply)
         self.assertNotIn('{player "0"}', apply)
         self.assertIn('{tags add "aio_morale_surrendering"}', apply)
         self.assertNotIn("{control AI}", beh)

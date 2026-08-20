@@ -18,7 +18,8 @@ Production surrender present uses the proven Old Boy captive 5-step on the live 
 | --- | --- |
 | Civilian-mirror replacement / `generated_pow` | Competing targeting architecture. Pruned. Isolation fixtures remain as evidence. |
 | `{control AI}` on a POW | Not part of Old Boy's captive path. Body-recovery only. |
-| `{able "select" 0}` / `{able "fight" 0}` on the P0 present path | Old CE extras. Production apply no longer sets them. |
+| `{able "select" 0}` on the P0 path | Not isolated. Do not add yet. |
+| `{able "fight" 0}` on present/evac | Keep off those blocks. Apply-only `fight 0` is the first proven-safe extra from the `641d8a9` ignore head. |
 | `{fire_mode hold}` / `{move_mode hold}` / `{weapon_prepare off}` / `{ai_move disable}` / `{drop "orders sensor senseless"}` on the P0 actor | Crash-stack extras from old #128 heads `483387c` / `707f425`. Evac `{action move}` no longer uses drop-sensor. |
 | `{able "neutral"}` | Already failed native targeting. |
 | Authored `{Player 0}` | Old Boy uses runtime `{"player"} {operation set}` only. |
@@ -28,7 +29,7 @@ Production surrender present uses the proven Old Boy captive 5-step on the live 
 
 ## Production lifecycle
 
-At surrender commit, `aio_morale_surrender_apply` only adds `aio_morale_surrendering` (and clears broken/regrouping) plus icon refresh / 100s expire. It does **not** set `fight 0` / `select 0`.
+At surrender commit, `aio_morale_surrender_apply` adds `aio_morale_surrendering` (and clears broken/regrouping), sets `{able "fight" 0}` only, plus icon refresh / 100s expire. It does **not** set `select 0`.
 
 At surrender present, apply **only** the Old Boy 5-step:
 
@@ -48,7 +49,7 @@ Routing tags `aio_morale_surrendering` / `aio_morale_surrender_presenting` / `ai
 - **Run D PASS:** Run B + `weapon_prepare off`, no AV.
 - **Run E PASS:** Run B + `fire_mode hold`, no AV.
 
-Isolation series stopped. Do not resume the one-variable shooting matrix. Remaining extras stay off P0.
+Isolation shooting series stopped. **Conquest FAIL at `b95f3cd`:** five-step only still shows red enemy dots and is gunned down on the evac walk. That does not prove Player 0 failed to stick. `641d8a9` ignored POWs but also had `fight 0` / `select 0` plus the hold/AI-state pile. Next production isolate is apply-only `{able "fight" 0}` (Run C PASS). Do not restack `select 0`, hold-fire, weapon_prepare, drop-sensor, `ai_move`, or `{control AI}`.
 
 Old crashing heads (`483387c` / `707f425`) stacked P0 on top of fight/select/hold-fire/weapon_prepare/drop-sensor/evac/control AI and AVed in `scene.quant.bullets`.
 
