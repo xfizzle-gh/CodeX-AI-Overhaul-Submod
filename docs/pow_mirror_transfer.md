@@ -52,6 +52,17 @@ Isolation series stopped. Do not resume the one-variable shooting matrix. Remain
 
 Old crashing heads (`483387c` / `707f425`) stacked P0 on top of fight/select/hold-fire/weapon_prepare/drop-sensor/evac/control AI and AVed in `scene.quant.bullets`.
 
+## Native Conquest targeting evidence
+
+The ~18:21 Conquest run (surrendering troops remained red and were shot while moving) was on installed workstation head `d7fa808` (civilian-mirror prototype era), **not** on the clean five-step `b95f3cdc`. That run does **not** prove the five-step fails targeting. The earlier attribution to `b95f3cdc` is withdrawn.
+
+Correct next evidence order:
+
+1. Do not rematch `8fd3601` merely to retest apply-only `{able "fight" 0}`.
+2. First install/test **exact** `b95f3cdc` for the clean five-step Conquest targeting result. That baseline has not yet been natively tested in Conquest. Production files after the fight-0 revert match `b95f3cdc`; only this evidence note and its test lock differ.
+3. If exact `b95f3cdc` still remains red / is freshly targeted, then test the smallest remaining targeting candidate, `{able "select" 0}` only, without restoring the old actor-state pile.
+4. Do not test egress/delete until targeting is actually confirmed.
+
 ## Evacuation
 
 Tag-driven evac still runs: `aio_morale_surrender_fx` → `aio_morale_surrender_evacuating` → `{action move}` to captor entry → mission `{"delete"}` at egress. The evac actor_state pile and `{drop "orders sensor senseless"}` on those move branches are stripped.

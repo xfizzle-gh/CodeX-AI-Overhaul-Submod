@@ -85,6 +85,11 @@ class OldBoyProductionSurrenderTests(unittest.TestCase):
         self.assertIn("{volume in_hands}", transfer)
         self.assertIn("end-to-end", transfer)
         self.assertIn("Pruned", transfer)
+        self.assertIn("d7fa808", transfer)
+        self.assertIn("b95f3cdc", transfer)
+        self.assertIn("withdrawn", transfer)
+        self.assertIn("Do not rematch", transfer)
+        self.assertIn('{able "select" 0}', transfer)
 
 
 if __name__ == "__main__":
