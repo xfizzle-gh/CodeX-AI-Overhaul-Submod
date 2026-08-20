@@ -9,6 +9,11 @@
 			}
 			{call "tag_ai_tank_crew"}	
 			{call "clear_bad_player_tags"}
+			{if tagged "aio_iso_drop_rifle"
+				{delay 4
+					{call "clear_inventory"}
+				}
+			}
 		}
 	}
 
@@ -756,9 +761,6 @@
 		{tags add "aio_morale_surrendering"}
 		{tags remove "aio_morale_broken"}
 		{tags remove "aio_morale_regrouping"}
-		{if tagged "aio_pow_replace_src"
-			{tags add "aio_pow_need_replace"}
-		}
 		{able "select" 0}
 		{able "fight" 0}
 		{call "aio_morale_refresh_icons"}

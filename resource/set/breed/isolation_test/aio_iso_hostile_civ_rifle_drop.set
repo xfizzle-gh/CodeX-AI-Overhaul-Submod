@@ -1,0 +1,28 @@
+{breed
+	{behaviour civilian}
+	{skin "nrf_1"}
+	{portrait nrf}
+	{icon sniper}
+	{icon_priority 2}
+	{tags "aio_iso_drop_rifle"}
+	{nationality nato}
+	{armors
+		{head us_highcut_2}
+		{body "nrf_vest_1"}
+	}
+	{perks
+		(include "/set/breed/mp/nato/2022s/ability.inc")
+		("skill_rank_3")
+		("ildu")
+		("rifle_rank_4")
+	}
+	{veterancy
+		(include "/set/breed/mp/nato/2022s/ability.inc")
+		("veterancy_lvl_0")
+	}
+	{inventory
+		{item "mars_l" filled}
+		{item "m16a2 ammo" 240}
+		{in_hands 0}
+	}
+}

@@ -146,56 +146,15 @@ class GeneratePowMirrorsTests(unittest.TestCase):
 
 
 class EditorPowReplaceTests(unittest.TestCase):
-    def test_editor_only_surrender_commit_move(self) -> None:
-        trig = ROOT / "resource/map/multi/ce/ce_triggers.inc"
-        dcg = ROOT / "resource/map/multi/dcg_script.inc"
-        editor = ROOT / "resource/map/multi/ce/ce_pow_replace_editor.inc"
-        templates = ROOT / "resource/map/multi/ce/ce_pow_replace_editor_templates.inc"
-        human = ROOT / "resource/set/interaction_entity/human_ce.inc"
-        self.assertTrue(editor.is_file())
-        self.assertTrue(templates.is_file())
-        text = editor.read_text(encoding="utf-8")
-        tpl = templates.read_text(encoding="utf-8")
-        apply = human.read_text(encoding="utf-8").split('{on "aio_morale_surrender_apply"', 1)[1].split('{on "', 1)[0]
-        self.assertNotIn("ce_pow_replace_editor", trig.read_text(encoding="utf-8"))
-        self.assertNotIn("ce_pow_replace_editor", dcg.read_text(encoding="utf-8"))
-        self.assertIn('{"placement"', text)
-        self.assertNotIn("{clone}", text)
-        self.assertNotIn("{clone_places}", text)
-        self.assertNotIn("{stat_notify", text)
-        self.assertNotIn('{player "0"}', text)
-        self.assertNotIn("{control AI}", text)
-        self.assertNotIn("{tag_add hidden}", text)
-        self.assertNotIn("{inactive on}", text)
-        self.assertIn("{effect aio_pow_retire}", text)
-        _head, rest = text.split('{"editor_pow_replace/replace"', 1)
-        move, retire = rest.split('{"editor_pow_replace/retire"', 1)
-        self.assertIn('{"placement"', move)
-        self.assertNotIn("{effect aio_pow_retire}", move)
-        self.assertIn("{tag_add aio_pow_civ}", move)
-        cond, actions = retire.split("{actions", 1)
-        self.assertIn('{"1.near"', cond)
-        self.assertIn("{near_to", cond)
-        self.assertIn("{distance 5}", cond)
-        self.assertLess(cond.find("{tag aio_pow_civ}"), cond.find("{tag aio_pow_replacing}"))
-        self.assertIn("{effect aio_pow_retire}", actions)
-        self.assertNotIn('{"placement"', actions)
-        self.assertIn("aio_pow_need_replace", text)
-        self.assertIn("aio_pow_replace_src", text)
-        self.assertIn("{effect aio_morale_surrender_apply}", text)
-        self.assertIn("aio_pow_walk", text)
-        human_text = human.read_text(encoding="utf-8")
-        self.assertNotIn('{on "aio_pow_retire"', human_text)
-        self.assertNotIn("{delete}", human_text)
-        self.assertNotIn('{call "delete"}', human_text)
-        self.assertIn('{Human "generated_pow/mp/nato/2022s/nato_rifleman"', tpl)
-        self.assertIn("{Player 2}", tpl)
-        self.assertNotIn("{Player 0}", tpl)
-        self.assertIn('"hidden"', tpl)
-        self.assertIn('tagged "aio_pow_replace_src"', apply)
-        self.assertIn('{tags add "aio_pow_need_replace"}', apply)
-        self.assertNotIn('{player "0"}', apply)
-        self.assertNotIn("{control AI}", apply)
+    def test_editor_pow_resources_removed_for_startup_isolation(self) -> None:
+        human = (ROOT / "resource/set/interaction_entity/human_ce.inc").read_text(encoding="utf-8")
+        self.assertFalse((ROOT / "resource/map/multi/ce/ce_pow_replace_editor.inc").is_file())
+        self.assertFalse((ROOT / "resource/map/multi/ce/ce_pow_replace_editor_templates.inc").is_file())
+        self.assertFalse((ROOT / "resource/set/breed/generated_pow").exists())
+        self.assertNotIn("aio_pow_retire", human)
+        self.assertNotIn("aio_pow_replace_src", human)
+        self.assertNotIn("aio_pow_need_replace", human)
+        self.assertNotIn("{delete}", human)
 
 
 if __name__ == "__main__":
