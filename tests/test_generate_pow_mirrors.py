@@ -54,13 +54,16 @@ class GeneratePowMirrorsTests(unittest.TestCase):
             self.assertIn("{behaviour civilian}", out, source)
             self.assertNotIn("{behaviour soldier}", out, source)
             self.assertIsNone(re.search(r'\{tags\s+"[^"]*\bsoldier\b', out), source)
+            self.assertNotIn("{in_hands", out, source)
             inv = gpm.find_block(out, "inventory")
             if inv is not None:
                 inner = out[inv[0] : inv[1]]
-                for line in inner.splitlines():
-                    if line.strip().startswith("{item"):
-                        self.assertFalse(gpm.is_combat_item(line), source)
-                        self.assertFalse(gpm.is_diagnostic_item(line), source)
+                spans = gpm.ITEM_SPAN_RE.findall(inner)
+                self.assertTrue(spans, source)
+                for span in spans:
+                    name = gpm.item_name(span)
+                    self.assertEqual(gpm.item_class(name), "keep", f"{source} {name}")
+                    self.assertIsNotNone(gpm.KEEP_RE.search(name), f"{source} {name}")
             self.assertEqual(mirror, f"generated_pow/{source}")
 
     def test_committed_nato_mirror_matches_generator(self) -> None:
@@ -82,7 +85,10 @@ class GeneratePowMirrorsTests(unittest.TestCase):
         self.assertIn('{item "backpack_eagleaiii"}', actual)
         self.assertIn('{item "bandage_usa" 4.5 0.5}', actual)
         self.assertIn('{item "shovel_csa"}', actual)
-        self.assertIn("{in_hands 0}", actual)
+        self.assertNotIn("{in_hands", actual)
+        self.assertEqual(gpm.item_class("backpack_eagleaiii"), "keep")
+        self.assertEqual(gpm.item_class("mars_l"), "strip")
+        self.assertEqual(gpm.item_class("ak74"), "strip")
         self.assertIn('{skin "nrf_1"}', actual)
         self.assertIn('{body "nrf_vest_1"}', actual)
         self.assertIn('(include "/set/breed/mp/nato/2022s/ability.inc")', actual)
@@ -102,6 +108,22 @@ class GeneratePowMirrorsTests(unittest.TestCase):
 
     def test_mapping_files_are_fresh(self) -> None:
         self.assertEqual(gpm.check(), 0)
+
+    def test_item_classes_are_allowlist_not_denylist(self) -> None:
+        rows = gpm.collect_item_classes()
+        by_name = {name: klass for name, klass, _count in rows}
+        self.assertEqual(by_name["backpack_eagleaiii"], "keep")
+        self.assertEqual(by_name["mars_l"], "strip")
+        self.assertEqual(by_name["ak74"], "strip")
+        self.assertEqual(by_name["m4a1_v3b"], "strip")
+        self.assertNotIn("keep", {by_name["mars_l"], by_name["ak74"], by_name["m4a1_v3b"]})
+        kept = [name for name, klass, _count in rows if klass == "keep"]
+        self.assertTrue(kept)
+        self.assertTrue(all(gpm.KEEP_RE.search(name) for name in kept))
+        stripped = [name for name, klass, _count in rows if klass == "strip"]
+        self.assertTrue(stripped)
+        self.assertTrue(all(gpm.KEEP_RE.search(name) is None for name in stripped))
+        self.assertEqual(len(rows), len(by_name))
 
     def test_tmp_collect_is_deterministic(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

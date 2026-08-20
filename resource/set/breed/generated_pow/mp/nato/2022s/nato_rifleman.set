@@ -23,7 +23,6 @@
 	{inventory
 		{item "backpack_eagleaiii"}
 		{item "bandage_usa" 4.5 0.5}
-        {item "shovel_csa"}
-		{in_hands 0}
+		{item "shovel_csa"}
 	}
 }

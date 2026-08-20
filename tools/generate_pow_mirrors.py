@@ -14,6 +14,7 @@ GENERATED_DIR = "generated_pow"
 ISO_DIR = "isolation_test"
 MAPPING = ROOT / "docs/pow_mirror_mapping.tsv"
 SKIP = ROOT / "docs/pow_mirror_skip.tsv"
+ITEM_CLASSES = ROOT / "docs/pow_mirror_item_classes.tsv"
 WRITE_RELS = frozenset({"mp/nato/2022s/nato_rifleman.set"})
 
 BEHAVIOUR_RE = re.compile(r"\{behaviour\s+\"?(\w+)\"?\}")
@@ -21,12 +22,18 @@ INCLUDE_RE = re.compile(r'\(include\s+"([^"]+)"\)')
 SKIN_RE = re.compile(r"\{skin\b")
 BREED_RE = re.compile(r"^\s*\{breed\b")
 TAGS_RE = re.compile(r'(\{tags\s+")([^"]*)("\})')
-COMBAT_RE = re.compile(
-    r"\b(filled|filling|weapon|ammo|grenade|explosive|dynamite)\b|\bc4",
+ITEM_SPAN_RE = re.compile(r"\{item\b[^}]*\}")
+ITEM_NAME_RE = re.compile(r'\{item\s+"([^"]*)"')
+KEEP_RE = re.compile(
+    r"backpack|bacpack|bandage|shovel|pickaxe|wirecutters|mine_detector|"
+    r"binocular|glasses|_glass|glass_|sun_glasses|^pla21_glass$|"
+    r"gasmask|bandan|beret|_mask|helmet|"
+    r"vest|kirasa|iotv|itov|abody|_body|^body$|"
+    r"bron_|_bron|6b2|6b45|6b_23|jpc_|lbt_|msv_|modul_m|barmor|"
+    r"ranger_vest|sas_armor|pfm_vest|rmc_vest|gb_vest|ger_vest|ng_vest|"
+    r"mw19_usmc_vest|belt|tent_kit|first_aid|poviazka",
     re.I,
 )
-MINE_RE = re.compile(r"\bmines?\b", re.I)
-DIAG_RE = re.compile(r"aio_marker_|secret_doc", re.I)
 
 
 def detect_nl(text: str) -> str:
@@ -124,14 +131,17 @@ def rewrite_includes(text: str, source_rel: str) -> str:
     return text
 
 
-def is_combat_item(line: str) -> bool:
-    if "mine_detector" in line.lower():
-        return False
-    return COMBAT_RE.search(line) is not None or MINE_RE.search(line) is not None
+def item_name(span: str) -> str:
+    match = ITEM_NAME_RE.search(span)
+    if not match:
+        raise ValueError("item_missing_name")
+    return match.group(1)
 
 
-def is_diagnostic_item(line: str) -> bool:
-    return DIAG_RE.search(line) is not None
+def item_class(name: str) -> str:
+    if KEEP_RE.search(name):
+        return "keep"
+    return "strip"
 
 
 def strip_soldier_tag(text: str) -> str:
@@ -152,17 +162,16 @@ def disarm_inventory(text: str) -> str:
     inner = text[start:end]
     nl = detect_nl(text)
     kept: list[str] = []
-    for line in inner.split(nl):
-        stripped = line.strip()
-        if stripped.startswith("{item"):
-            if is_diagnostic_item(stripped) or is_combat_item(stripped):
-                continue
-            kept.append(line)
-        elif stripped.startswith("{in_hands"):
-            kept.append(line)
+    for span in ITEM_SPAN_RE.findall(inner):
+        name = item_name(span)
+        if item_class(name) != "keep":
+            continue
+        kept.append("\t\t" + span)
     if not kept:
-        indent = "\t"
-        kept = [f"{indent}\t{{in_hands 0}}"]
+        line_nl = detect_nl(text)
+        line_start = text.rfind(line_nl, 0, start)
+        cut = 0 if line_start == -1 else line_start
+        return text[:cut] + text[end:]
     rebuilt = "{inventory" + nl + nl.join(kept) + nl + "\t}"
     return text[:start] + rebuilt + text[end:]
 
@@ -181,14 +190,16 @@ def transform(rel: str, text: str) -> str:
         raise ValueError("soldier_behaviour_remained")
     if re.search(r'\{tags\s+"[^"]*\bsoldier\b', text):
         raise ValueError("soldier_tag_remained")
+    if "{in_hands" in text:
+        raise ValueError("in_hands_remained")
     inv = find_block(text, "inventory")
     if inv is not None:
         inner = text[inv[0] : inv[1]]
-        for line in inner.splitlines():
-            if line.strip().startswith("{item") and (
-                is_combat_item(line) or is_diagnostic_item(line)
-            ):
-                raise ValueError("combat_item_remained")
+        if not ITEM_SPAN_RE.search(inner):
+            raise ValueError("empty_inventory_remained")
+        for span in ITEM_SPAN_RE.findall(inner):
+            if item_class(item_name(span)) != "keep":
+                raise ValueError("unclassified_item_preserved")
     if brace_delta(text) != 0:
         raise ValueError("unbalanced_after_transform")
     return text
@@ -229,6 +240,33 @@ def render_skip(rows: list[tuple[str, str]]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def collect_item_classes(root: Path | None = None) -> list[tuple[str, str, int]]:
+    breed_root = root or BREED_ROOT
+    counts: dict[str, int] = {}
+    for path in iter_set_files(breed_root):
+        rel = path.relative_to(breed_root).as_posix()
+        if excluded_subtree(rel) or ISO_DIR in Path(rel).parts:
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        block = find_block(text, "inventory")
+        if block is None:
+            continue
+        inner = text[block[0] : block[1]]
+        for span in ITEM_SPAN_RE.findall(inner):
+            name = item_name(span)
+            counts[name] = counts.get(name, 0) + 1
+    return [
+        (name, item_class(name), counts[name])
+        for name in sorted(counts, key=lambda item: item.lower())
+    ]
+
+
+def render_item_classes(rows: list[tuple[str, str, int]]) -> str:
+    lines = ["item\tclass\tcount"]
+    lines.extend(f"{name}\t{klass}\t{count}" for name, klass, count in rows)
+    return "\n".join(lines) + "\n"
+
+
 def write_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8", newline="\n")
@@ -255,11 +293,14 @@ def check() -> int:
     mapped, skipped = collect()
     mapping_text = render_mapping(mapped)
     skip_text = render_skip(skipped)
+    class_text = render_item_classes(collect_item_classes())
     errors: list[str] = []
     if not MAPPING.is_file() or MAPPING.read_text(encoding="utf-8") != mapping_text:
         errors.append("stale mapping tsv")
     if not SKIP.is_file() or SKIP.read_text(encoding="utf-8") != skip_text:
         errors.append("stale skip tsv")
+    if not ITEM_CLASSES.is_file() or ITEM_CLASSES.read_text(encoding="utf-8") != class_text:
+        errors.append("stale item class tsv")
     for source, mirror, scope in mapped:
         dest = BREED_ROOT / mirror
         if source in WRITE_RELS and not dest.is_file():
@@ -296,6 +337,7 @@ def main(argv: list[str] | None = None) -> int:
     mapped, skipped = collect()
     write_text(MAPPING, render_mapping(mapped))
     write_text(SKIP, render_skip(skipped))
+    write_text(ITEM_CLASSES, render_item_classes(collect_item_classes()))
     written = write_mirrors(mapped, only_committed=not args.write_all)
     print(f"mapped {len(mapped)} skipped {len(skipped)} wrote {len(written)}")
     return 0

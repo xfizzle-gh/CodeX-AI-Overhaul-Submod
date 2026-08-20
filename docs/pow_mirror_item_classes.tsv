@@ -1,0 +1,678 @@
+item	class	count
+	strip	2
+40mm_grenade ammo	strip	17
+40mm_grenade he ammo	strip	52
+40mm_grenade heat ammo	strip	17
+43mm he ammo	strip	14
+58ammo_basic ammo	strip	35
+5x39 ammo	strip	658
+5X39 ammo	strip	7
+6b2	keep	84
+6b_23_rus_vog	keep	1
+84mmgustaf ammo	strip	7
+84mmgustaf cm ammo	strip	44
+84mmgustaf fg ammo	strip	44
+9m113 atgm	strip	2
+9m32 ammo	strip	12
+9x39 ammo	strip	9
+9x39_1 ammo	strip	2
+abakan	strip	2
+abakan_s	strip	2
+aio_marker_cmd_independent	strip	263
+aio_marker_cmd_junior	strip	98
+aio_marker_cmd_primary	strip	164
+aio_marker_cmd_senior	strip	5
+aio_marker_discipline	strip	5
+aio_marker_morale_elite	strip	194
+aio_marker_morale_low	strip	168
+aio_marker_morale_regular	strip	926
+aio_marker_morale_trained	strip	803
+aio_marker_steadfast	strip	52
+aio_morale_marker	strip	8
+ak-12_mag_v2	strip	2
+ak-12_mag_v4	strip	2
+ak105_v1	strip	21
+ak105_v2	strip	6
+ak12_m1	strip	66
+ak12_m1_holo	strip	55
+ak12_m1_syq	strip	12
+ak12k	strip	26
+ak12k_syq	strip	14
+ak12kgp25	strip	1
+ak4	strip	3
+ak47	strip	8
+ak47  ammo	strip	1
+ak47 akm  ammo	strip	5
+ak47 akm ammo	strip	70
+ak47 ammo	strip	7
+ak47 drum ammo	strip	7
+ak47 steel ammo	strip	8
+ak47_akm	strip	40
+ak5	strip	10
+ak74	strip	154
+ak74m	strip	79
+ak74m1c	strip	14
+ak74m1d	strip	12
+ak74m_a	strip	2
+ak74m_b	strip	1
+ak74m_dd	strip	1
+ak74m_eot	strip	3
+ak74m_pso	strip	38
+ak74m_q	strip	4
+ak74m_t	strip	34
+ak74m_zenitco_v3	strip	8
+ak74m_zenitco_v4	strip	11
+ak74u	strip	195
+akm_kpyk	strip	12
+akm_mod_v3	strip	6
+akm_mod_v4b	strip	6
+akmgp25	strip	3
+akms	strip	38
+akms_s	strip	4
+aks74	strip	62
+aks74_h	strip	2
+aks74gp25	strip	60
+aks74u	strip	3
+aks_74u_h	strip	2
+am17	strip	17
+amb_17	strip	1
+amb_17_1p87	strip	2
+amb_17_g33	strip	1
+amd65	strip	4
+ammo 40mm_grenade	strip	6
+ammo 545 ak74_mag 30mag_v2	strip	2
+ammo 5x39	strip	204
+ammo 5X39	strip	1
+ammo 762x51	strip	3
+ammo 918 pm_ammo mag8	strip	2
+ammo ak47 akm	strip	16
+ammo ak47 steel	strip	22
+ammo asvk-m_ammo	strip	8
+ammo flame_thrower	strip	1
+ammo g28_ammo	strip	3
+ammo g3	strip	3
+ammo licc_ammo	strip	3
+ammo m107_ammo	strip	3
+ammo m107a1_ammo	strip	1
+ammo m16a2	strip	59
+ammo m240_box	strip	3
+ammo qbu10_ammo	strip	2
+ammo rpk_74m_ammo	strip	4
+ammo scar	strip	2
+ammo shotgun	strip	57
+ammo shotguns	strip	65
+ammo svd	strip	5
+ammo vog25 he	strip	2
+ammo xm7_ammo	strip	36
+ammobag_sov	strip	9
+ammobag_usa	strip	3
+anm8_smoke grenade	strip	50
+ar15_urgi	strip	5
+ar15_urgi_v2	strip	5
+arx160_v3	strip	3
+as_val_v1	strip	5
+ash_ammo ammo	strip	2
+asvk-m	strip	8
+at4_m86	strip	5
+at4cs_v1	strip	13
+at4cs_v1 weapon	strip	108
+atrifle_rus ammo	strip	2
+ax-50a4	strip	1
+backpack_90	keep	54
+backpack_bundes	keep	40
+backpack_eagleaiii	keep	33
+bandage_chn	keep	46
+bandage_rus	keep	1441
+bandage_sov	keep	4
+bandage_usa	keep	564
+barmor_fsb_new	keep	1
+bekas-12m_ammo ammo	strip	1
+bekas-12m_v1	strip	63
+benelli_m4	strip	58
+beret_vdv	keep	1
+binocular	keep	95
+binocular_bpos_10x42	keep	2
+c4pn	strip	75
+c8a1	strip	7
+cali_w_pecheneg_1	strip	6
+cali_w_pecheneg_2	strip	11
+cali_w_pecheneg_3	strip	4
+carl_gustaf_m18	strip	2
+carl_gustaf_v1	strip	4
+carl_gustaf_v1 weapon	strip	9
+cz_bren_2	strip	10
+cz_bren_2_holo	strip	1
+cz_bren_2_m68	strip	3
+ddm4v7_v1	strip	2
+ddm4v7_v2	strip	1
+ddm4v7_v3	strip	2
+ddm4v7_v4	strip	1
+dm22 ammo	strip	12
+dm51 grenade	strip	92
+drone_fpv_ammo	strip	133
+drone_recon_ammo	strip	99
+drone_uav_ammo	strip	3
+dsf161 grenade	strip	31
+dza11 weapon	strip	2
+evolys_ammo ammo	strip	1
+fast_backpack	keep	28
+fim-92a_ammo ammo	strip	25
+first_aid_kit_army	keep	2
+flare ammo	strip	1
+flare_usa artillery_105	strip	3
+flare_usa artillery_152	strip	1
+flare_usa artillery_155	strip	5
+flare_usa artillery_203	strip	4
+flare_usa mortar_60	strip	1
+flare_usa mortar_81	strip	1
+fn6a weapon	strip	1
+fn6a_ammo ammo	strip	2
+fn_evolys_v1	strip	1
+fn_licc	strip	2
+fn_licc_holo	strip	1
+fn_mag_v1	strip	4
+fn_scar_epr_v1b	strip	6
+fort600	strip	21
+fpv_at4_ammo	strip	4
+fpv_bomber_ammo	strip	8
+g22	strip	1
+g22_ammo ammo	strip	1
+g27_hgfs	strip	7
+g28	strip	5
+g28_ammo	strip	7
+g28_ammo ammo	strip	13
+g3	strip	4
+g3 ammo	strip	4
+g36_ammo ammo	strip	30
+g36a2_h	strip	11
+g36a3_hg	strip	1
+g36k	strip	15
+g36k_elcan	strip	9
+g36ka4_hg	strip	18
+g95k_holo	strip	8
+gb_backpack_1	keep	36
+gb_vest_1	keep	1
+gb_vest_3	keep	10
+ger_vest_5	keep	1
+ger_vest_6	keep	1
+german_radio	strip	1
+gl06	strip	3
+gm94	strip	14
+gunbag_2b11	strip	4
+gunbag_2b11_ukr	strip	2
+gunbag_2b14	strip	4
+gunbag_2b14_ukr	strip	2
+gunbag_9m113	strip	3
+gunbag_9m133	strip	9
+gunbag_ags	strip	4
+gunbag_ags30	strip	5
+gunbag_hj8	strip	1
+gunbag_kord	strip	3
+gunbag_metis	strip	8
+gunbag_metis_rus	strip	4
+gunbag_metis_rus_tbg	strip	2
+gunbag_milan	strip	2
+gunbag_mk19_ukr	strip	4
+gunbag_nsvt	strip	3
+gunbag_nsvt_ukr	strip	2
+gunbag_pbp172	strip	1
+gunbag_qjz171	strip	1
+gunbag_qjz89	strip	1
+gunbag_sov_9k111	strip	1
+gunbag_sov_9m113	strip	1
+gunbag_sov_9m14	strip	1
+gunbag_sov_9m14_controller	strip	1
+gunbag_sov_9m14_launcher	strip	1
+gunbag_sov_9p132	strip	1
+gunbag_sov_ags17	strip	1
+gunbag_sov_b10	strip	2
+gunbag_sov_bm37	strip	1
+gunbag_sov_dshk	strip	3
+gunbag_sov_dshk_aa	strip	1
+gunbag_sov_pk	strip	1
+gunbag_sov_sg43	strip	1
+gunbag_sov_spg9	strip	9
+gunbag_stgn_ukr	strip	2
+gunbag_ukr_spg9	strip	1
+gunbag_usa_bgm71_tow	strip	11
+gunbag_usa_m120	strip	2
+gunbag_usa_m2	strip	8
+gunbag_usa_m224	strip	1
+gunbag_usa_m252	strip	2
+gunbag_usa_mk19	strip	3
+gustav_m2 weapon	strip	2
+heat_pf98 cm ammo	strip	2
+heat_pf98 fg ammo	strip	2
+hj12e weapon	strip	2
+hk21	strip	1
+hk21_ammo ammo	strip	1
+hk416d5_v1	strip	6
+hk416d5_v2	strip	2
+hk433	strip	4
+hk433_v2	strip	2
+hk69	strip	4
+huskyak74zv2	strip	25
+huskyhk416	strip	5
+igla weapon	strip	7
+igla_S ammo	strip	5
+igla_s ammo	strip	4
+iotv_3	keep	4
+iotv_4	keep	1
+iotv_5	keep	1
+iotv_6	keep	1
+iotv_gen4_1	keep	2
+iotv_gen4_2	keep	1
+itov_1	keep	3
+jav_rock ammo	strip	57
+javelin	strip	2
+javelin weapon	strip	52
+jpc_1	keep	2
+jpc_2	keep	9
+kirasa_bron_2	keep	2
+kirasa_bron_6	keep	3
+kirasa_bron_7	keep	4
+knife_rus	strip	28
+ksp_58	strip	3
+ksp_90b	strip	3
+ksvk	strip	2
+l119a1_aim	strip	7
+l119a2	strip	6
+l119a2_hamr	strip	2
+l129a1	strip	4
+l403	strip	14
+l85a2	strip	38
+l85a3_scope_ag36gp	strip	4
+laser_designator	strip	20
+lbt_6094	keep	1
+m107_ag90	strip	1
+m107_ammo ammo	strip	1
+m107a1	strip	18
+m107a1_ammo ammo	strip	15
+m110a1_v1	strip	12
+m136	strip	15
+m136 weapon	strip	1
+m16a2 ammo	strip	438
+m16a4_v2	strip	9
+m18 grenade	strip	570
+m1911a1	strip	7
+m1911a1 ammo	strip	7
+m240_box ammo	strip	28
+m240_box bag ammo	strip	13
+m240l_a	strip	21
+m249_ammo	strip	2
+m249_ammo ammo	strip	31
+m249_saw_h	strip	26
+m24sws_v1	strip	3
+m250	strip	5
+m250_ammo ammo	strip	7
+m250_holo	strip	2
+m26 grenade	strip	476
+m27_iar	strip	27
+m27_iar_ag	strip	20
+m27_iar_agb	strip	1
+m27_iar_h	strip	3
+m27_iar_hgs	strip	3
+m320gl	strip	22
+m32_mgl_v1	strip	9
+m38	strip	1
+m38_dmr	strip	2
+m39_ammo ammo	strip	18
+m39emr_v2	strip	1
+m3_maaws weapon	strip	23
+m4	strip	1
+m4a1_block_ii_v1	strip	11
+m4a1_block_ii_v3	strip	16
+m4a1_h	strip	9
+m4a1_hg	strip	37
+m4a1_hgs	strip	2
+m4a1_m203	strip	11
+m4a1_mcmr	strip	6
+m4a1_v2d	strip	19
+m4a1_v3b	strip	43
+m4a1_v3c	strip	8
+m4a1_v4b	strip	16
+m72_law	strip	22
+m72a7law	strip	4
+m72a7law weapon	strip	13
+m7_spear	strip	6
+m7_spear_holo	strip	22
+m7_spear_lvpo	strip	15
+m7_spear_xm157	strip	9
+m84	strip	16
+m84 grenade	strip	14
+makarov	strip	4
+makarov ammo	strip	2
+mars_l	strip	20
+mars_l_elcan	strip	3
+mcx_ammo ammo	strip	13
+mcx_virtus1e	strip	3
+mcx_virtus4e	strip	10
+metis_hand	strip	10
+mg338	strip	5
+mg3_drum	strip	3
+mg4	strip	3
+mg4_a	strip	2
+mg4_ammo	strip	5
+mg4_ammo ammo	strip	5
+mg5_a	strip	3
+mgun_ger ammo	strip	3
+mine_detector	keep	106
+mk14v3	strip	2
+mk16_mod1	strip	10
+mk16_mod2	strip	6
+mk17_ssr	strip	6
+modul_m_01	keep	1
+modul_m_02	keep	1
+modul_m_03	keep	2
+molotov grenade	strip	16
+molotov_cocktail grenade	strip	21
+mosin	strip	4
+mosin_scope	strip	6
+mp5_ammo ammo	strip	1
+mp5a4e	strip	1
+msv_1	keep	11
+msv_2	keep	18
+msv_3	keep	11
+msv_4	keep	3
+msv_5	keep	2
+msv_vest_1	keep	1
+msv_vest_2	keep	1
+mw19_usmc_vest	keep	8
+nagant_silencer	strip	5
+napashnik	strip	60
+ng_backpack	keep	24
+ng_backpack1	keep	50
+ng_gas	strip	6
+ng_vest	keep	28
+ng_vest2	keep	24
+ng_vest3	keep	15
+ng_vest4	keep	12
+nlaw	strip	34
+osp30	strip	1
+pais_bron_vsu	keep	193
+panzerfaust3 weapon	strip	10
+pf89b weapon	strip	6
+pf98 weapon	strip	4
+pfm_vest_2	keep	2
+pg-29v rpg29 ammo	strip	13
+pg-7v ammo	strip	1
+pg-7v rpg7 ammo	strip	1
+pg-7vl rpg7 ammo	strip	7
+pickaxe	keep	106
+pk	strip	4
+pk_box ammo	strip	104
+pkm	strip	35
+pkp_a	strip	18
+pla21_ammobag	strip	2
+pla21_ammobag_hm	strip	2
+pla21_backpacks	keep	16
+pla21_backpacks_hm	keep	16
+pla21_glass	keep	52
+pla21_vest_3	keep	5
+pm	strip	2
+pmd mine	strip	5
+poviazka_rus	keep	38
+ppsh41_stick	strip	2
+ppsh_stick ammo	strip	2
+ptr ammo	strip	2
+ptrs	strip	2
+qbs09	strip	2
+qbu10	strip	2
+qbu_191	strip	2
+qbu_202	strip	2
+qbz951_longbow_holo	strip	4
+qbz951_longbow_qmk	strip	6
+qbz_191	strip	14
+qbz_191_holo	strip	5
+qbz_191_qmk	strip	2
+qbz_191_syq	strip	2
+qcq_171	strip	4
+qjb201_ammo ammo	strip	2
+qjb_201	strip	2
+qjy201_ammo ammo	strip	2
+qjy_201	strip	2
+qlu11	strip	2
+qlu11_ammo ammo	strip	2
+qlu12_ammo ammo	strip	2
+qlz87	strip	2
+r2_stugna atgm	strip	2
+ranger_vest_1	keep	2
+ranger_vest_3	keep	2
+ranger_vest_4	keep	2
+rdg1_smoke grenade	strip	2
+rdg2 grenade	strip	1118
+rdgm_smoke grenade	strip	136
+red	strip	2
+red_arrow12_rock ammo	strip	2
+reece	strip	2
+revolver_clip ammo	strip	5
+rg6	strip	1
+rgd2 grenade	strip	1
+rgd5 grenade	strip	1143
+rgw90_as	strip	19
+rgw90_as weapon	strip	9
+rgw90_as_he	strip	5
+rifle_rus clip ammo	strip	10
+rkg3 grenade	strip	84
+rkg3t grenade	strip	13
+rmc_vest_1	keep	1
+RMG	strip	2
+rmg	strip	2
+roks_3_flame_thrower	strip	1
+rpd	strip	3
+rpd_drum ammo	strip	3
+rpg2 ammo	strip	5
+rpg2 weapon	strip	4
+rpg22	strip	16
+RPG22	strip	18
+rpg22 weapon	strip	11
+rpg26	strip	1
+RPG26 weapon	strip	5
+rpg26 weapon	strip	14
+RPG26 weapon weapon	strip	78
+RPG27	strip	4
+rpg27	strip	2
+rpg27 weapon	strip	2
+RPG28	strip	4
+rpg28 weapon	strip	6
+RPG28 weapon weapon	strip	2
+rpg29 weapon	strip	11
+rpg29_ammo	strip	2
+rpg40 grenade	strip	1
+rpg7 ammo	strip	31
+rpg7 he ammo	strip	1
+rpg7 tbg	strip	4
+rpg7 weapon	strip	21
+rpg7_og-7v rpg7 ammo	strip	5
+rpg7l ammo	strip	53
+rpg7l he ammo	strip	28
+rpg7l tbg ammo	strip	22
+rpg7l vr	strip	2
+rpg7l vr ammo	strip	36
+rpg7vs weapon	strip	93
+rpg_26 weapon	strip	1
+rpg_29	strip	2
+rpk	strip	4
+rpk16_ammo	strip	2
+rpk16_ammo ammo	strip	3
+rpk74	strip	4
+rpk74_mag ammo	strip	5
+rpk_74m	strip	2
+rpk_74m_ammo	strip	6
+rpk_74m_ammo ammo	strip	3
+rpk_74m_h	strip	2
+rpk_mag	strip	10
+rpk_mag ammo	strip	9
+rpk_v2	strip	19
+rpl_20	strip	3
+RShG_1	strip	4
+RShG_2	strip	20
+rshg_2	strip	1
+RShG_2 weapon	strip	41
+rshg_2 weapon	strip	2
+rus_6b45_body_01	keep	15
+rus_6b45_body_02	keep	13
+rus_6b45_body_03	keep	28
+rus_6b45_body_04	keep	9
+rus_6b45_body_05	keep	13
+rus_afg_sh68	strip	26
+rus_backpack_01	keep	2
+rus_backpack_02	keep	56
+rus_backpack_05	keep	12
+rus_bandan	keep	26
+rus_fsb_abody_1	keep	5
+rus_fsb_abody_12	keep	43
+rus_fsb_abody_12_1	keep	91
+rus_fsb_abody_13	keep	68
+rus_fsb_abody_1_1	keep	9
+rus_fsb_abody_2_0	keep	4
+rus_fsb_abody_3	keep	2
+rus_fsb_abody_3_3	keep	4
+rus_fsb_abody_3_4	keep	8
+rus_fsb_abody_3_5	keep	4
+rus_fsb_abody_6	keep	2
+rus_fsb_glasses_1	keep	4
+rus_fsb_glasses_2	keep	7
+rus_ibt6049_body1	keep	5
+rus_ibt6049_body3	keep	18
+rus_las_designator_stan	strip	1
+rus_nazgul_02	strip	5
+rus_nazgul_03	strip	5
+rus_nazgul_04	strip	7
+rus_rus_sso_gru__abody_12	keep	2
+rus_rus_sso_gru__abody_13	keep	1
+rus_serb_abody_1	keep	2
+rus_serb_abody_3_1	keep	4
+rus_serb_abody_3_4	keep	2
+rus_sso_body_1	keep	12
+rus_sso_body_2	keep	11
+rus_sso_body_3	keep	4
+rus_sso_body_4	keep	12
+rus_wagner_body_1	keep	6
+rus_wagner_body_2	keep	15
+rus_wagner_glasses_1	keep	22
+rus_wagner_glasses_2	keep	30
+rus_wagner_mask_1	keep	19
+rus_wagner_mask_2	keep	4
+sadm	strip	2
+sai_gry_v1	strip	2
+sai_gry_v2	strip	3
+sas_armor1	keep	5
+sas_armor2	keep	4
+satchel_charge_rus	strip	9
+scar ammo	strip	12
+scar_h	strip	2
+secret_doc_bag2	strip	8
+sfg_glass_1	keep	2
+shak12a1d	strip	2
+shmel weapon	strip	33
+Shmel weapon	strip	10
+shovel_csa	keep	868
+shovel_rus	keep	1153
+sidr_shturm_01	strip	24
+sig516_mod2	strip	2
+sks	strip	17
+sks ammo	strip	17
+SMAW cm ammo	strip	2
+smaw cm ammo	strip	7
+SMAW fg ammo	strip	2
+smaw fg ammo	strip	7
+SMAW weapon	strip	2
+smaw weapon	strip	4
+sov_gasmask_gp5	keep	20
+sov_helmet_ssh60_marine	keep	1
+sov_helmet_ssh60_star	keep	5
+spike-sr weapon	strip	1
+sso_bacpack	keep	10
+stechkin	strip	7
+stechkin ammo	strip	7
+stinger weapon	strip	13
+strela-2 weapon	strip	7
+sun_glasses_3	keep	6
+sv98	strip	6
+sv98_ammo ammo	strip	6
+svd	strip	35
+svd ammo	strip	69
+svd_mk1	strip	2
+svdk	strip	8
+svdk_v2	strip	29
+t86 grenade	strip	35
+tbg-29 rpg29 ammo	strip	15
+tent_kit	keep	122
+thor_1	strip	4
+thor_2	strip	2
+tm62_g	strip	3
+tmd_b mine	strip	5
+tr1	strip	5
+tt33	strip	13
+tt33 ammo	strip	13
+tt_308_v1	strip	2
+tt_308_v2	strip	2
+uar15_v1	strip	10
+uar15_v2	strip	17
+uav_dji_air2s_ammo	strip	8
+ukr_backpac1	strip	2
+ukr_backpack_01	keep	199
+ukr_bron_1	keep	13
+ukr_bron_1_azov	keep	1
+ukr_bron_2	keep	12
+ukr_bron_3	keep	4
+ukr_bron_3_azov	keep	7
+ukr_bron_4	keep	7
+ukr_bron_4_azov	keep	4
+ukr_ua_body_a_1	keep	38
+ukr_ua_body_a_1_azov	keep	2
+ukr_ua_body_a_2	keep	57
+ukr_ua_body_au_01	keep	2
+ukr_ua_body_au_02	keep	1
+ukr_ua_body_au_03	keep	2
+ukr_ua_body_b_1	keep	14
+ukr_ua_body_c_1	keep	2
+ukr_ua_body_c_2	keep	26
+ukr_ua_body_c_3	keep	12
+ukr_ua_body_c_4	keep	1
+ukr_ua_body_c_mg	keep	2
+ukr_ua_body_c_mg2	keep	2
+ukr_ua_body_hur_01	keep	4
+ukr_ua_body_hur_02	keep	14
+ukr_ua_body_hur_03	keep	6
+ukr_ua_body_kra_01	keep	6
+ukr_ua_body_kra_02	keep	4
+ukr_ua_body_kra_03	keep	6
+ukr_ua_body_ngu	keep	2
+ukr_ua_body_ngu_01	keep	1
+ukr_ua_body_st_04	keep	1
+ukr_ua_body_st_05	keep	8
+ukr_ua_body_st_06	keep	2
+ukr_ua_body_st_07mg	keep	2
+urgi_m4	strip	16
+us_backpack_1	keep	12
+us_backpack_2	keep	45
+us_backpack_3	keep	41
+us_backpack_4	keep	15
+usmc_desert_belt_2	keep	22
+usmc_desert_belt_3	keep	29
+usmc_desert_belt_5	keep	2
+usmc_desert_belt_6	keep	5
+usmc_desert_glasses_2	keep	16
+usmc_mask_1	keep	22
+usmc_mask_2	keep	16
+usmc_woodland_backpack_1	keep	51
+usmc_woodland_backpack_1_1	keep	5
+usmc_woodland_backpack_2	keep	3
+vest_6b45_smerch_1	keep	31
+vest_usa_m69	keep	8
+vityaz-sn_ammo ammo	strip	4
+vog25 he	strip	2
+vog25 he ammo	strip	61
+vss_vintorez_v1	strip	2
+weapon rpg26	strip	10
+weapon RPG26	strip	8
+weapon rpg26 	strip	12
+weapon rshg_2	strip	2
+wirecutters	keep	106
+wpf89_1 weapon	strip	4
+xm157	strip	6
+xm7	strip	20
+xm7_ammo ammo	strip	42
+zarya	strip	124
