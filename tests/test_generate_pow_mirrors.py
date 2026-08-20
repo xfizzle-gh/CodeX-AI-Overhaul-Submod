@@ -66,33 +66,32 @@ class GeneratePowMirrorsTests(unittest.TestCase):
                     self.assertIsNotNone(gpm.KEEP_RE.search(name), f"{source} {name}")
             self.assertEqual(mirror, f"generated_pow/{source}")
 
-    def test_committed_nato_mirror_matches_generator(self) -> None:
+    def test_nato_mirror_transform_stays_out_of_live_tree(self) -> None:
         text = (gpm.BREED_ROOT / NATO).read_text(encoding="utf-8")
         out = gpm.transform(NATO, text)
         dest = gpm.BREED_ROOT / f"generated_pow/{NATO}"
-        self.assertTrue(dest.is_file())
-        actual = dest.read_text(encoding="utf-8")
-        if not out.endswith("\n"):
-            out += "\n"
-        self.assertEqual(actual, out)
-        self.assertIn("{behaviour civilian}", actual)
-        self.assertNotIn("{behaviour soldier}", actual)
-        self.assertNotIn('{tags "soldier"}', actual)
-        self.assertNotIn("mars_l", actual)
-        self.assertNotIn("m26 grenade", actual)
-        self.assertNotIn("m16a2 ammo", actual)
-        self.assertNotIn("aio_marker_morale_regular", actual)
-        self.assertIn('{item "backpack_eagleaiii"}', actual)
-        self.assertIn('{item "bandage_usa" 4.5 0.5}', actual)
-        self.assertIn('{item "shovel_csa"}', actual)
-        self.assertNotIn("{in_hands", actual)
+        self.assertFalse(dest.is_file())
+        live_gen = gpm.BREED_ROOT / "generated_pow"
+        live_sets = list(live_gen.rglob("*.set")) if live_gen.exists() else []
+        self.assertEqual(live_sets, [])
+        self.assertIn("{behaviour civilian}", out)
+        self.assertNotIn("{behaviour soldier}", out)
+        self.assertNotIn('{tags "soldier"}', out)
+        self.assertNotIn("mars_l", out)
+        self.assertNotIn("m26 grenade", out)
+        self.assertNotIn("m16a2 ammo", out)
+        self.assertNotIn("aio_marker_morale_regular", out)
+        self.assertIn('{item "backpack_eagleaiii"}', out)
+        self.assertIn('{item "bandage_usa" 4.5 0.5}', out)
+        self.assertIn('{item "shovel_csa"}', out)
+        self.assertNotIn("{in_hands", out)
         self.assertEqual(gpm.item_class("backpack_eagleaiii"), "keep")
         self.assertEqual(gpm.item_class("mars_l"), "strip")
         self.assertEqual(gpm.item_class("ak74"), "strip")
-        self.assertIn('{skin "nrf_1"}', actual)
-        self.assertIn('{body "nrf_vest_1"}', actual)
-        self.assertIn('(include "/set/breed/mp/nato/2022s/ability.inc")', actual)
-        self.assertNotIn('(include "ability.inc")', actual)
+        self.assertIn('{skin "nrf_1"}', out)
+        self.assertIn('{body "nrf_vest_1"}', out)
+        self.assertIn('(include "/set/breed/mp/nato/2022s/ability.inc")', out)
+        self.assertNotIn('(include "ability.inc")', out)
         self.assertFalse((gpm.BREED_ROOT / f"generated_pow/{ISO}").is_file())
 
     def test_ineligible_fixtures_fail_closed(self) -> None:
@@ -185,10 +184,10 @@ class EditorPowReplaceTests(unittest.TestCase):
         self.assertIn("aio_pow_replace_src", text)
         self.assertIn("{effect aio_morale_surrender_apply}", text)
         self.assertIn("aio_pow_walk", text)
-        retire = human.read_text(encoding="utf-8").split('{on "aio_pow_retire"', 1)[1].split("{on ", 1)[0]
-        self.assertIn("{delete}", retire)
-        self.assertNotIn("{stat_notify", retire)
-        self.assertNotIn('{call "delete"}', retire)
+        human_text = human.read_text(encoding="utf-8")
+        self.assertNotIn('{on "aio_pow_retire"', human_text)
+        self.assertNotIn("{delete}", human_text)
+        self.assertNotIn('{call "delete"}', human_text)
         self.assertIn('{Human "generated_pow/mp/nato/2022s/nato_rifleman"', tpl)
         self.assertIn("{Player 2}", tpl)
         self.assertNotIn("{Player 0}", tpl)

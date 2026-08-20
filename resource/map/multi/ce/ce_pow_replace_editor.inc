@@ -7,7 +7,7 @@
 ; Proven: {"placement"} MOVE (no clone); reveal; retire only if {"1.near"}
 ; {units aio_pow_civ} {near_to aio_pow_replacing} {distance 5} (ce_player_triggers
 ; / ce_ai_logic grammar). Failed MOVE leaves the original. {effect aio_pow_retire}
-; uses the entity {delete} primitive (not {on "delete"} / stat_notify die).
+; is parked; human_ce no longer compiles an unproven {on "aio_pow_retire"} {delete}.
 ; Missing: living-actor breed query; IE spawn-at-human; copy health/facing/player/squad.
 ; {target} on a tagged human is FE-shaped; pose/heading is Editor-unproven.
 ; #129 camp is not on this branch. Walk waypoint aio_pow_walk proves scripted move.

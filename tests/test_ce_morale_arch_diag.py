@@ -94,7 +94,7 @@ class CeMoraleArchDiagTests(unittest.TestCase):
         marked = [
             path
             for path in (ROOT / "resource/set/breed").rglob("*.set")
-            if "isolation_test" not in path.parts
+            if "isolation_test" not in path.parts and "generated_pow" not in path.parts
             if '{item "aio_morale_marker"}' in path.read_text(encoding="utf-8")
         ]
         self.assertEqual(sorted(marked), sorted(CANARIES))

@@ -15,7 +15,9 @@ ISO_DIR = "isolation_test"
 MAPPING = ROOT / "docs/pow_mirror_mapping.tsv"
 SKIP = ROOT / "docs/pow_mirror_skip.tsv"
 ITEM_CLASSES = ROOT / "docs/pow_mirror_item_classes.tsv"
-WRITE_RELS = frozenset({"mp/nato/2022s/nato_rifleman.set"})
+# Editor auto-scans resource/set/breed/** (isolation fixtures already loaded).
+# Never emit generated_pow into that live tree.
+WRITE_RELS = frozenset()
 
 BEHAVIOUR_RE = re.compile(r"\{behaviour\s+\"?(\w+)\"?\}")
 INCLUDE_RE = re.compile(r'\(include\s+"([^"]+)"\)')
@@ -276,12 +278,14 @@ def write_text(path: Path, text: str) -> None:
 
 def write_mirrors(rows: list[tuple[str, str, str]], *, only_committed: bool) -> list[Path]:
     written: list[Path] = []
-    for source, mirror, scope in rows:
+    for source, mirror, _scope in rows:
         if only_committed and source not in WRITE_RELS:
+            continue
+        dest = BREED_ROOT / mirror
+        if GENERATED_DIR in dest.relative_to(BREED_ROOT).parts:
             continue
         src = BREED_ROOT / source
         text = transform(source, src.read_text(encoding="utf-8", errors="replace"))
-        dest = BREED_ROOT / mirror
         dest.parent.mkdir(parents=True, exist_ok=True)
         nl = detect_nl(text)
         if not text.endswith(nl):
@@ -303,26 +307,13 @@ def check() -> int:
         errors.append("stale skip tsv")
     if not ITEM_CLASSES.is_file() or ITEM_CLASSES.read_text(encoding="utf-8") != class_text:
         errors.append("stale item class tsv")
-    for source, mirror, scope in mapped:
-        dest = BREED_ROOT / mirror
-        if source in WRITE_RELS and not dest.is_file():
-            errors.append(f"missing committed mirror {mirror}")
-            continue
-        if not dest.is_file():
-            continue
-        expected = transform(source, (BREED_ROOT / source).read_text(encoding="utf-8", errors="replace"))
-        actual = dest.read_text(encoding="utf-8", errors="replace")
-        exp_nl = detect_nl(expected)
-        if not expected.endswith(exp_nl):
-            expected += exp_nl
-        if actual != expected:
-            errors.append(f"stale mirror {mirror}")
-    extra = [
-        path
-        for path in (BREED_ROOT / GENERATED_DIR).rglob("*.set")
-        if path.relative_to(BREED_ROOT).as_posix() not in {mirror for _, mirror, _ in mapped}
-    ]
-    errors.extend(f"unexpected mirror {path.relative_to(BREED_ROOT).as_posix()}" for path in extra)
+    live_gen = BREED_ROOT / GENERATED_DIR
+    if live_gen.exists():
+        live_sets = sorted(live_gen.rglob("*.set"))
+        errors.extend(
+            f"live breed tree must not contain generated_pow {path.relative_to(BREED_ROOT).as_posix()}"
+            for path in live_sets
+        )
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
