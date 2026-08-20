@@ -4,8 +4,9 @@
 ; Gate: tag the source human aio_pow_replace_src. Apply stamps aio_pow_need_replace.
 ; Force commit: this file effects aio_morale_surrender_apply on that tag after 3s.
 ;
-; Proven: {"placement"} MOVE (no clone); reveal the mirror first; retire original
-; only after {entities aio_pow_civ} is live (handshake). {effect aio_pow_retire}
+; Proven: {"placement"} MOVE (no clone); reveal; retire only if {"1.near"}
+; {units aio_pow_civ} {near_to aio_pow_replacing} {distance 5} (ce_player_triggers
+; / ce_ai_logic grammar). Failed MOVE leaves the original. {effect aio_pow_retire}
 ; uses the entity {delete} primitive (not {on "delete"} / stat_notify die).
 ; Missing: living-actor breed query; IE spawn-at-human; copy health/facing/player/squad.
 ; {target} on a tagged human is FE-shaped; pose/heading is Editor-unproven.
@@ -273,8 +274,8 @@
 			{"editor_pow_replace/retire"
 				{condition
 					{terms
-						{"1.entities"
-							{selector
+						{"1.near"
+							{units
 								{source advanced}
 								{group
 									{select
@@ -299,10 +300,9 @@
 										}
 									}
 								}
+								{amount 1}
 							}
-						}
-						{"2.entities"
-							{selector
+							{near_to
 								{source advanced}
 								{group
 									{select
@@ -327,7 +327,9 @@
 										}
 									}
 								}
+								{amount 1}
 							}
+							{distance 5}
 						}
 					}
 				}
