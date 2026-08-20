@@ -1,7 +1,9 @@
 ; F0: native retreat_ratio is not how FE/Old Boy move Broken units. Rally move is the authority.
 ; Actor-scoped ratios are assist only. Writers must exclude aio_morale_owned. No player seizure.
-; Surrender: drop + looping walk_giveup_1, then flee to captor entry. 3s pose; 100s max from apply.
-; Ally/support invert. Spawnside 0 issues no move. No repeating actor_state.
+; Surrender present is the Old Boy Player-0 5-step only (start_white_flag,
+; runtime player 0, tag_remove enemy, action drop volume in_hands, stand_giveup_1).
+; Do not restack fight/select, hold-fire/weapon_prepare, control AI, or authored Player 0.
+; Evac stays tag-driven after a 3s pose. 100s max from apply. Ally/support invert.
 			{"conquest_enhanced_mechanics/broken/acquire"
 				{condition
 					{terms
@@ -732,39 +734,6 @@
 					{"delay"
 						{time 0.2}
 					}
-					{"actor_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_surrendering}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{state
-										{state user_control}
-									}
-									{tag
-										{tag player}
-									}
-								}
-							}
-						}
-						{drop "orders sensor senseless"}
-						{fire_mode hold}
-						{move_mode hold}
-						{weapon_prepare off}
-						{ai_move
-							{mode disable}
-						}
-					}
 					{"entity_state"
 						{selector
 							{tag aio_morale_surrender_cand}
@@ -860,7 +829,7 @@
 						}
 						{tag_add aio_morale_surrender_presenting}
 					}
-					{"inventory"
+					{"effect"
 						{selector
 							{source advanced}
 							{group
@@ -870,9 +839,11 @@
 									}
 								}
 								{include
-									{with_item
-										{type using}
-										{item "weapon"}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
 									}
 								}
 								{exclude
@@ -888,18 +859,15 @@
 									{tag
 										{tag player}
 									}
-									{tag
-										{tag aio_morale_surrender_fx}
-									}
 								}
 							}
 						}
-						{action drop}
+						{effect start_white_flag}
 					}
 					{"delay"
-						{time 0.2}
+						{time 0.05}
 					}
-					{"inventory"
+					{"player"
 						{selector
 							{source advanced}
 							{group
@@ -909,9 +877,11 @@
 									}
 								}
 								{include
-									{with_item
-										{type using}
-										{item "weapon"}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
 									}
 								}
 								{exclude
@@ -927,13 +897,91 @@
 									{tag
 										{tag player}
 									}
+								}
+							}
+						}
+						{operation set}
+						{player "0"}
+					}
+					{"delay"
+						{time 0.05}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
 									{tag
-										{tag aio_morale_surrender_fx}
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{tag_remove enemy}
+					}
+					{"delay"
+						{time 0.05}
+					}
+					{"action"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
 									}
 								}
 							}
 						}
 						{action drop}
+						{volume in_hands}
+					}
+					{"delay"
+						{time 0.05}
 					}
 					{"animation"
 						{selector
@@ -944,6 +992,14 @@
 										{tag aio_morale_surrender_presenting}
 									}
 								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
 								{exclude
 									{state
 										{state dead}
@@ -960,12 +1016,7 @@
 								}
 							}
 						}
-						{drop orders}
-						{collage walk_giveup_1}
-						{cicledelay 0}
-						{delay 0}
-						{totalTime 99999}
-						{flags loop}
+						{collage stand_giveup_1}
 					}
 					{"entity_state"
 						{selector
@@ -1100,44 +1151,6 @@
 					}
 					{"delay"
 						{time 3}
-					}
-					{"actor_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_surrender_evacuating}
-									}
-								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{state
-										{state user_control}
-									}
-									{tag
-										{tag player}
-									}
-								}
-							}
-						}
-						{drop "orders sensor senseless"}
-						{fire_mode hold}
-						{move_mode free}
-						{weapon_prepare off}
-						{ai_move
-							{mode enable}
-						}
 					}
 					{"switch"
 						{"case"

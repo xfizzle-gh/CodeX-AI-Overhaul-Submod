@@ -14,64 +14,91 @@ BEH = ROOT / "resource/map/multi/ce/ce_broken_behavior_triggers.inc"
 TRANSFER = ROOT / "docs/pow_mirror_transfer.md"
 
 
+def _uncommented(path: Path) -> str:
+    return "\n".join(
+        line for line in path.read_text(encoding="utf-8").splitlines() if not line.lstrip().startswith(";")
+    )
+
+
 class OldBoyCaptiveEditorTests(unittest.TestCase):
-    def test_opt_in_sequence_is_exactly_old_boy_captive(self) -> None:
+    def test_production_present_is_old_boy_five_step(self) -> None:
+        beh = _uncommented(BEH)
+        present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]
+        human = HUMAN.read_text(encoding="utf-8")
+        apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split('{on "', 1)[0]
+        self.assertIn("{effect start_white_flag}", present)
+        self.assertIn("{operation set}", present)
+        self.assertIn('{player "0"}', present)
+        self.assertIn("{tag_remove enemy}", present)
+        self.assertIn('{"action"', present)
+        self.assertIn("{action drop}", present)
+        self.assertIn("{volume in_hands}", present)
+        self.assertIn("{collage stand_giveup_1}", present)
+        self.assertLess(present.find("{effect start_white_flag}"), present.find('{player "0"}'))
+        self.assertLess(present.find('{player "0"}'), present.find("{tag_remove enemy}"))
+        self.assertLess(present.find("{tag_remove enemy}"), present.find("{volume in_hands}"))
+        self.assertLess(present.find("{volume in_hands}"), present.find("{collage stand_giveup_1}"))
+        self.assertNotIn("{control AI}", present)
+        self.assertNotIn('{able "select" 0}', present)
+        self.assertNotIn('{able "fight" 0}', present)
+        self.assertNotIn("{fire_mode hold}", present)
+        self.assertNotIn("{move_mode hold}", present)
+        self.assertNotIn("{weapon_prepare off}", present)
+        self.assertNotIn('{call "weapon_prepare_off"}', present)
+        self.assertNotIn("{ai_move", present)
+        self.assertNotIn('{drop "orders sensor senseless"}', present)
+        self.assertNotIn("{Player 0}", present)
+        self.assertNotIn("{collage walk_giveup_1}", present)
+        self.assertNotIn('{"inventory"', present)
+        self.assertNotIn("{item \"weapon\"}", present)
+        self.assertNotIn("{effect aio_pow_ob_fight_off}", present)
+        self.assertNotIn("{control AI}", apply)
+        self.assertNotIn('{able "select" 0}', apply)
+        self.assertNotIn('{able "fight" 0}', apply)
+        self.assertNotIn('{player "0"}', apply)
+        self.assertIn('{tags add "aio_morale_surrendering"}', apply)
+        self.assertNotIn("{control AI}", beh)
+        self.assertNotIn("{fire_mode hold}", beh)
+        self.assertNotIn("{weapon_prepare off}", beh)
+        self.assertNotIn("{Player 0}", beh)
+
+    def test_opt_in_diagnostic_stays_unwired(self) -> None:
         self.assertTrue(EDITOR.is_file())
-        raw = EDITOR.read_text(encoding="utf-8")
-        body = "\n".join(line for line in raw.splitlines() if not line.lstrip().startswith(";"))
+        body = _uncommented(EDITOR)
         self.assertNotIn("ce_pow_oldboy_captive_editor", TRIG.read_text(encoding="utf-8"))
         self.assertNotIn("ce_pow_oldboy_captive_editor", DCG.read_text(encoding="utf-8"))
         self.assertIn("{effect start_white_flag}", body)
-        self.assertIn("{operation set}", body)
         self.assertIn('{player "0"}', body)
         self.assertIn("{tag_remove enemy}", body)
-        self.assertIn("{action drop}", body)
-        self.assertIn("{item \"weapon\"}", body)
-        self.assertIn("{type using}", body)
         self.assertIn("{collage stand_giveup_1}", body)
-        self.assertLess(body.find("{effect start_white_flag}"), body.find('{player "0"}'))
-        self.assertLess(body.find('{player "0"}'), body.find("{tag_remove enemy}"))
-        self.assertLess(body.find("{tag_remove enemy}"), body.find("{action drop}"))
-        self.assertLess(body.find("{action drop}"), body.find("{collage stand_giveup_1}"))
-        self.assertLess(body.find("{collage stand_giveup_1}"), body.find("{effect aio_pow_ob_fight_off}"))
-        self.assertEqual(body.count("{effect aio_pow_ob_fight_off}"), 1)
         self.assertNotIn("{control AI}", body)
         self.assertNotIn("{able \"neutral\"}", body)
         self.assertNotIn("{able \"select\" 0}", body)
         self.assertNotIn('{able "fight" 0}', body)
         self.assertNotIn("{fire_mode hold}", body)
         self.assertNotIn("{weapon_prepare off}", body)
-        self.assertNotIn('{call "weapon_prepare_off"}', body)
-        self.assertNotIn("aio_pow_walk", body)
+        self.assertNotIn("aio_morale_surrender", body)
+        self.assertNotIn("generated_pow", body)
         fight = HUMAN.read_text(encoding="utf-8").split(
             '{on "aio_pow_ob_fight_off"', 1
         )[1].split("{on ", 1)[0]
         self.assertIn('{able "fight" 0}', fight)
-        self.assertNotIn('{able "select" 0}', fight)
         self.assertNotIn("{delete}", fight)
         self.assertNotIn("{control AI}", fight)
-        self.assertNotIn("aio_morale_surrender", body)
-        self.assertNotIn("aio_pow_need_replace", body)
-        self.assertNotIn("aio_pow_civ", body)
-        self.assertNotIn("generated_pow", body)
-        self.assertNotIn("{clone}", body)
-        apply = HUMAN.read_text(encoding="utf-8").split(
-            '{on "aio_morale_surrender_apply"', 1
-        )[1].split('{on "', 1)[0]
-        self.assertNotIn('{player "0"}', apply)
-        self.assertNotIn("{control AI}", apply)
-        beh = BEH.read_text(encoding="utf-8")
-        self.assertNotIn('{player "0"}', beh)
-        self.assertNotIn("{control AI}", beh)
-        mirror_body = "\n".join(
-            line
-            for line in MIRROR.read_text(encoding="utf-8").splitlines()
-            if not line.lstrip().startswith(";")
-        )
+        self.assertNotIn("{delete}", HUMAN.read_text(encoding="utf-8"))
+        mirror_body = _uncommented(MIRROR)
         self.assertNotIn('{player "0"}', mirror_body)
+        self.assertNotIn("{control AI}", mirror_body)
         transfer = TRANSFER.read_text(encoding="utf-8")
-        self.assertIn("P1->P0 alone PASS", transfer)
-        self.assertIn("Run C", transfer)
+        self.assertIn("Run A PASS", transfer)
+        self.assertIn("Run B PASS", transfer)
+        self.assertIn("Run C/D/E PASS", transfer)
         self.assertIn("parked", transfer)
         self.assertIn("stand_giveup_1", transfer)
-        self.assertNotIn("{control AI}", apply)
+        self.assertIn("{volume in_hands}", transfer)
+        self.assertIn("aio_morale_surrendering", transfer)
+        self.assertNotIn("{control AI}", HUMAN.read_text(encoding="utf-8"))
+
+
+if __name__ == "__main__":
+    unittest.main()
