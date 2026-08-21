@@ -144,6 +144,11 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("targeted=", lua)
         probe = lua.split("function StartCeMoraleProbeLog()", 1)[1]
         self.assertLess(probe.find("enable_ce_morale_debug"), probe.find("startMoraleEventWatch()"))
+        self.assertLess(probe.find("startPowDiagWatch()"), probe.find("startMoraleEventWatch()"))
+        self.assertIn("CE_POW_DIAG", lua)
+        self.assertIn("aio_pow_d%02d", lua)
+        self.assertIn("sensor=unreadable", lua)
+        self.assertIn("entity=unreadable", lua)
         for rel in (
             "resource/map/multi/ce/ai_logic/ce_lua_triggers.inc",
             "resource/map/multi/codex_ai_combat.inc",
@@ -222,6 +227,45 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{min 0.14}", flag)
         self.assertNotIn("{min 0.3}", flag)
         self.assertIn('{add_view "aio_cmd_junior"', human)
+
+    def test_pow_diag_logs_only_on_production_hooks(self) -> None:
+        beh = BEH.read_text(encoding="utf-8")
+        human = HUMAN.read_text(encoding="utf-8")
+        lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
+        present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]
+        evac = beh.split("broken/surrender_evacuate", 1)[1].split("broken/surrender_arrive_a", 1)[0]
+        arrive_a = beh.split("broken/surrender_arrive_a", 1)[1].split("broken/surrender_arrive_b", 1)[0]
+        expire = beh.split("broken/surrender_expire", 1)[1].split("broken/observe_surrender", 1)[0]
+        apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split('{on "', 1)[0]
+        die = human.split('{on "die"', 1)[1].split("{on ", 1)[0]
+        self.assertIn("surrender_diag_assign", beh)
+        self.assertIn("{tag_add aio_pow_d01}", beh)
+        self.assertIn("{tag_add aio_pow_d16}", beh)
+        self.assertNotIn("{tag_add aio_pow_d17}", beh)
+        self.assertIn('{tags add "aio_pow_evt_apply"}', apply)
+        self.assertIn('{tags add "aio_pow_need_id"}', apply)
+        self.assertIn("{tag_add aio_pow_evt_p0}", present)
+        self.assertIn("{tag_add aio_pow_evt_present_done}", present)
+        self.assertIn("{tag_add aio_pow_evt_evac}", evac)
+        self.assertIn("{tag_add aio_pow_evt_move_a}", evac)
+        self.assertIn("{tag_add aio_pow_evt_move_b}", evac)
+        self.assertIn("{tag_add aio_pow_evt_arrive}", arrive_a)
+        self.assertIn("{tag_add aio_pow_evt_delete}", arrive_a)
+        self.assertIn("{tag_add aio_pow_evt_expire}", expire)
+        self.assertIn("{tag_add aio_pow_evt_delete}", expire)
+        self.assertLess(arrive_a.find("{tag_add aio_pow_evt_delete}"), arrive_a.find('{"delete"'))
+        self.assertLess(expire.find("{tag_add aio_pow_evt_delete}"), expire.find('{"delete"'))
+        self.assertIn('{tags add "aio_pow_evt_die"}', die)
+        self.assertNotIn("{delete}", die)
+        self.assertNotIn('{drop "orders sensor senseless"}', present)
+        self.assertNotIn('{drop "orders sensor senseless"}', evac)
+        self.assertNotIn('{able "select" 0}', beh)
+        self.assertNotIn('{able "fight" 0}', beh)
+        self.assertNotIn("{control AI}", beh)
+        self.assertIn("function startPowDiagWatch()", lua)
+        self.assertIn("CE_POW_DIAG id=%s", lua)
+        probe = lua.split("function StartCeMoraleProbeLog()", 1)[1]
+        self.assertLess(probe.find("startPowDiagWatch()"), probe.find("if readMoraleVar"))
 
     def test_surrender_evacuates_to_captor_entry(self) -> None:
         beh = BEH.read_text(encoding="utf-8")

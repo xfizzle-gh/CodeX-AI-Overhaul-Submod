@@ -71,9 +71,89 @@ Do not infer targeting from those tank events. Target-ignore and damage-safety s
 
 Isolation G shows runtime Player 0 alone is sufficient for native AI ignore, and the five-step keeps that ignore. Direct targeting will not deliver AI-owned damage into P0. The five-step remains **HOLD as production-safe** until AI-owned *collateral* damage is isolated. Production present is unchanged.
 
-F/G Editor files stay unused. The current native isolate is Isolation H.
+F/G/H Editor files stay unused. Isolation H is **cancelled** as the next owner test. Do not ask Paul to run Editor. Next owner test is **one normal Conquest reproduction** (AIO arms ProcDump).
 
-## Isolation H splash mission
+## Conquest CE_POW_DIAG instrumentation
+
+Diagnostic-only. Production P0 / five-step / evac / expire / delete semantics are unchanged except added log tags and `{"set_i"}` counters. No `{able "select" 0}`, `{able "fight" 0}`, hold-fire, `{control AI}`, civilian-mirror, or issue #133 / `preparationTime 480`.
+
+There is no mission `{"log"}` command in this repo. The source-proven `game.log` style is Lua `print()` (`CE_POW`, `CE_MORALE_EVENT`, `CE_POW_DIAG`) in `resource/script/multiplayer/modes/utility_ce.lua`.
+
+`startPowDiagWatch()` is always-on from `StartCeMoraleProbeLog()` (not gated on debug/autodemo). It polls every 1s.
+
+### Stable POW diagnostic ID
+
+On apply, the actor gets `aio_pow_need_id`. Trigger `broken/surrender_diag_assign` stamps one unused tag `aio_pow_d01` … `aio_pow_d16` plus `aio_pow_did`. That ID appears on every `CE_POW_DIAG` line for that actor. Overflow (more than 16 concurrent) is tagged `aio_pow_overflow`.
+
+### Line format
+
+```
+CE_POW_DIAG id=aio_pow_d01 entity=unreadable breed=unreadable orig_player=unreadable curr_player=0_inferred squad=<squad or unreadable> event=<name> t=<os.time or unreadable> clock=<os.clock or unreadable> flags=<tag list or gone> sensor=unreadable last_evt=<int> seq=<int>
+```
+
+Unreadables are explicit. Script cannot read entity hex, breed, original Player slot, or sensor/detect registration. `curr_player=0_inferred` only after the production P0 transfer tag `aio_pow_post_p0`. `squad=` is `BotApi.Scene.Squads` + `IsSquadTagged` (squad-level; two POWs in one squad share squad flag reads).
+
+`event=` values: `watch_armed`, `apply`, `p0`, `present_complete`, `evac_start`, `move_a`, `move_b`, `arrive`, `expire`, `delete`, `die`, `hit`, `state_change`, `seq`, `absent`, `overflow`.
+
+`last_evt` ints: 1 apply, 2 p0, 3 present_complete, 4 evac, 5 move_a, 6 move_b, 7 arrive, 8 expire, 9 delete.
+
+### Hooked production paths (log tags only)
+
+| Event | Hook |
+| --- | --- |
+| surrender apply | `human_ce.inc` `aio_morale_surrender_apply` tags `aio_pow_evt_apply` / `aio_pow_pre_p0` / `aio_pow_need_id` |
+| P0 transfer | after present `{"player"} {player "0"}`: `aio_pow_post_p0` / `aio_pow_evt_p0` |
+| present complete | after five-step + `aio_morale_surrender_fx`: `aio_pow_evt_present_done` |
+| evac start | after `aio_morale_surrender_evacuating`: `aio_pow_evt_evac` |
+| move stages | after `to_a` / `to_b`: `aio_pow_evt_move_a` / `_b` (engine mid-path waypoints are not script-readable) |
+| egress / arrive | before arrive `{"delete"}`: `aio_pow_evt_arrive` then `aio_pow_evt_delete` |
+| expire | apply 100s tag + before expire `{"delete"}`: `aio_pow_evt_expire` then `aio_pow_evt_delete` |
+| delete | `{"set_i"} aio_pow_last_evt$=9` immediately before production `{"delete"}` (no extra delay) |
+| death | existing `{on "die"}` adds `aio_pow_evt_die` if `aio_pow_did` (no `{delete}`) |
+| damage | existing `{on bullet_hit}` adds `aio_pow_evt_hit` once if `aio_pow_did` |
+
+No script-readable sensor / detect / player-registration cleanup command exists. `sensor=unreadable` on every line. Do not add `{drop "orders sensor senseless"}`.
+
+### Grep a victim hex ID after AV
+
+`CE_POW_DIAG` cannot print entity hex. After an AV, take the engine line:
+
+`eActorSensorDetect.cpp:81 No detect time found for unit human[0xHHH:...]`
+
+1. Note the hex (`0xHHH`) and nearby `game.log` timestamp.
+2. `grep -n "CE_POW_DIAG" game.log` (or the session log) and keep the trail for every `id=aio_pow_dNN` still alive or just gone at that timestamp.
+3. `grep -n "0xHHH" game.log` for `deleted` / detect / damage lines on the same tick.
+4. A nearby `deleted` line is correlation only unless that same hex also has `CE_POW_DIAG event=delete` or `event=expire` on the same tick.
+5. `grep CE_POW_DIAG game.log | grep event=delete` / `event=die` / `event=hit` / `event=absent` to see whether the POW trail ended in egress delete, expire delete, death, or vanished without a stamped event.
+
+## Old Boy vs Conquest post-P0 cleanup delta (audit only)
+
+Do **not** silently add Old Boy extras onto production P0. This is a report, not a license to restack drop-sensor / leave-squad / fight / select.
+
+After runtime P0, the in-repo Old Boy captive 5-step (Isolation B / production present) is only:
+
+1. `{effect start_white_flag}`
+2. `{"player"} {operation set} {player "0"}`
+3. `{tag_remove enemy}`
+4. `{"action"} {action drop} {volume in_hands}`
+5. `{collage stand_giveup_1}`
+
+Not on that path: `{control AI}` (body-recovery only), authored `{Player 0}`, `{able "fight" 0}` / `{able "select" 0}`, hold-fire, `weapon_prepare`, `{drop "orders sensor senseless"}`, leave-squad, expire/evac/delete, or any script-visible detect-registration cleanup.
+
+Conquest extras **after** the same 5-step (unchanged by this instrumentation):
+
+- CE routing tags (`aio_morale_surrendering` / `_presenting` / `_fx` / `_evacuating` / `_to_a` / `_to_b` / `_at_egress` / `_expire`)
+- 100s expire → mission `{"delete"}`
+- tag-driven evac `{action move}` to captor entry
+- egress mission `{"delete"}`
+- `{on "die"}` strips CE morale tags (already production)
+- **no** drop-sensor on P0 evac moves (stripped earlier)
+- **no** squad leave
+- **no** detect-registration cleanup
+
+Old Boy source is not vendored (`docs/morale_command_phase0_audit.md`, Workshop `3604287428`). If the native captive path does extra engine-side squad / sensor / player-registration cleanup after P0, it is not exposed as a script command here. The production crash `eActorSensorDetect.cpp:81 No detect time found for unit human[0xHHH:...]` is consistent with leftover detect state after player/squad change, but script cannot read or clear that state. Do not restack `{drop "orders sensor senseless"}` onto production P0 from this delta.
+
+## Isolation H splash mission (cancelled / unused)
 
 Editor-only on `dcg_zeeland_sum`:
 

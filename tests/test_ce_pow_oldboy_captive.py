@@ -64,6 +64,10 @@ class OldBoyProductionSurrenderTests(unittest.TestCase):
         self.assertNotIn("{Player 0}", beh)
         self.assertNotIn('{drop "orders sensor senseless"}', evac)
         self.assertIn("{action move}", evac)
+        self.assertIn("{tag_add aio_pow_evt_p0}", present)
+        self.assertIn("{tag_add aio_pow_evt_present_done}", present)
+        self.assertLess(present.find('{player "0"}'), present.find("{tag_add aio_pow_evt_p0}"))
+        self.assertLess(present.find("{tag_add aio_pow_evt_p0}"), present.find("{tag_remove enemy}"))
 
     def test_parked_mirror_and_diagnostics_are_gone(self) -> None:
         human = HUMAN.read_text(encoding="utf-8")
@@ -96,12 +100,19 @@ class OldBoyProductionSurrenderTests(unittest.TestCase):
         self.assertIn("Isolation F PASS", transfer)
         self.assertIn("Isolation G", transfer)
         self.assertIn("Isolation H", transfer)
+        self.assertIn("cancelled", transfer)
         self.assertIn("AI-owned", transfer)
         self.assertIn("ce_pow_dmg_editor.inc", transfer)
         self.assertIn("aio_p0_runtime_h", transfer)
         self.assertIn("aio_p0_h_dummy_1", transfer)
         self.assertIn("abandon Player 0", transfer)
         self.assertIn("not Conquest rematches", transfer)
+        self.assertIn("CE_POW_DIAG", transfer)
+        self.assertIn("eActorSensorDetect", transfer)
+        self.assertIn("0xHHH", transfer)
+        self.assertIn("Old Boy vs Conquest post-P0 cleanup delta", transfer)
+        self.assertIn("sensor=unreadable", transfer)
+        self.assertIn("one normal Conquest", transfer)
 
 
 class CombinedDamageEditorTests(unittest.TestCase):

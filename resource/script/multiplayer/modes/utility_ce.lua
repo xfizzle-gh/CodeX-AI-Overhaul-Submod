@@ -413,6 +413,252 @@ local function countSquadsTagged(tag)
   return n
 end
 
+-- Diagnostic-only POW trail for Conquest AV correlation. Logs only; does not
+-- change Player-0 / surrender / evac / expire / delete semantics.
+-- Entity hex, breed, original player, and sensor/detect state are not
+-- BotApi-readable; those fields are printed as "unreadable".
+local POW_DIAG_MAX = 16
+local powDiagWatchStarted = false
+local powDiagLastFlags = {}
+local powDiagSeen = {}
+local powDiagLastSeq = -1
+
+local function powDiagIdTag(n)
+  return string.format("aio_pow_d%02d", n)
+end
+
+local function powDiagFindSquad(tag)
+  local ok, squads = pcall(function()
+    return BotApi.Scene.Squads
+  end)
+  if not ok or type(squads) ~= "table" then
+    return "unreadable"
+  end
+  for _, squad in pairs(squads) do
+    local tok, tagged = pcall(function()
+      return BotApi.Scene:IsSquadTagged(squad, tag)
+    end)
+    if tok and tagged then
+      return tostring(squad)
+    end
+  end
+  return nil
+end
+
+local function powDiagSquadHas(squad, tag)
+  if squad == nil or squad == "unreadable" then
+    return false
+  end
+  local tok, tagged = pcall(function()
+    return BotApi.Scene:IsSquadTagged(squad, tag)
+  end)
+  return tok and tagged
+end
+
+local POW_DIAG_FLAG_TAGS = {
+  "aio_pow_need_id",
+  "aio_pow_did",
+  "aio_pow_pre_p0",
+  "aio_pow_post_p0",
+  "aio_pow_overflow",
+  "aio_pow_evt_apply",
+  "aio_pow_evt_p0",
+  "aio_pow_evt_present_done",
+  "aio_pow_evt_evac",
+  "aio_pow_evt_move_a",
+  "aio_pow_evt_move_b",
+  "aio_pow_evt_arrive",
+  "aio_pow_evt_expire",
+  "aio_pow_evt_delete",
+  "aio_pow_evt_die",
+  "aio_pow_evt_hit",
+  "aio_morale_surrendering",
+  "aio_morale_surrender_presenting",
+  "aio_morale_surrender_fx",
+  "aio_morale_surrender_evacuating",
+  "aio_morale_surrender_to_a",
+  "aio_morale_surrender_to_b",
+  "aio_morale_surrender_at_egress",
+  "aio_morale_surrender_expire",
+}
+
+local POW_DIAG_EVENT_PRIORITY = {
+  "aio_pow_evt_delete",
+  "aio_pow_evt_die",
+  "aio_pow_evt_expire",
+  "aio_pow_evt_arrive",
+  "aio_pow_evt_move_b",
+  "aio_pow_evt_move_a",
+  "aio_pow_evt_evac",
+  "aio_pow_evt_present_done",
+  "aio_pow_evt_p0",
+  "aio_pow_evt_hit",
+  "aio_pow_evt_apply",
+}
+
+local POW_DIAG_EVENT_NAME = {
+  aio_pow_evt_delete = "delete",
+  aio_pow_evt_die = "die",
+  aio_pow_evt_expire = "expire",
+  aio_pow_evt_arrive = "arrive",
+  aio_pow_evt_move_b = "move_b",
+  aio_pow_evt_move_a = "move_a",
+  aio_pow_evt_evac = "evac_start",
+  aio_pow_evt_present_done = "present_complete",
+  aio_pow_evt_p0 = "p0",
+  aio_pow_evt_hit = "hit",
+  aio_pow_evt_apply = "apply",
+}
+
+local function powDiagCollectFlags(squad)
+  local flags = {}
+  if squad == nil then
+    return flags
+  end
+  for _, tag in ipairs(POW_DIAG_FLAG_TAGS) do
+    if powDiagSquadHas(squad, tag) then
+      flags[#flags + 1] = tag
+    end
+  end
+  return flags
+end
+
+local function powDiagEventFromFlags(flags, prevFlags)
+  local have = {}
+  for _, tag in ipairs(flags) do
+    have[tag] = true
+  end
+  local prev = {}
+  if type(prevFlags) == "table" then
+    for _, tag in ipairs(prevFlags) do
+      prev[tag] = true
+    end
+  end
+  for _, tag in ipairs(POW_DIAG_EVENT_PRIORITY) do
+    if have[tag] and not prev[tag] then
+      return POW_DIAG_EVENT_NAME[tag]
+    end
+  end
+  for _, tag in ipairs(POW_DIAG_EVENT_PRIORITY) do
+    if have[tag] then
+      return POW_DIAG_EVENT_NAME[tag]
+    end
+  end
+  return "state_change"
+end
+
+local function powDiagCurrPlayer(flags)
+  for _, tag in ipairs(flags) do
+    if tag == "aio_pow_post_p0" then
+      return "0_inferred"
+    end
+  end
+  for _, tag in ipairs(flags) do
+    if tag == "aio_pow_pre_p0" then
+      return "pre_p0_unreadable"
+    end
+  end
+  return "unreadable"
+end
+
+local function powDiagAbsentEvent()
+  local lastEvt = readMoraleVar("aio_pow_last_evt")
+  if lastEvt == 9 then
+    return "delete"
+  elseif lastEvt == 8 then
+    return "expire"
+  elseif lastEvt == 10 then
+    return "die"
+  end
+  return "absent"
+end
+
+local function powDiagPrint(idTag, eventName, squad, flags)
+  local flagStr = "none"
+  if type(flags) == "table" and #flags > 0 then
+    flagStr = table.concat(flags, ",")
+  elseif type(flags) == "string" then
+    flagStr = flags
+  end
+  local t = "unreadable"
+  local clock = "unreadable"
+  local tok, wall = pcall(function()
+    return os.time()
+  end)
+  if tok and wall ~= nil then
+    t = tostring(wall)
+  end
+  local cok, cpu = pcall(function()
+    return os.clock()
+  end)
+  if cok and cpu ~= nil then
+    clock = tostring(cpu)
+  end
+  print(string.format(
+    "CE_POW_DIAG id=%s entity=unreadable breed=unreadable orig_player=unreadable curr_player=%s squad=%s event=%s t=%s clock=%s flags=%s sensor=unreadable last_evt=%s seq=%s",
+    idTag,
+    powDiagCurrPlayer(type(flags) == "table" and flags or {}),
+    squad or "unreadable",
+    eventName,
+    t,
+    clock,
+    flagStr,
+    tostring(readMoraleVar("aio_pow_last_evt")),
+    tostring(readMoraleVar("aio_pow_seq"))
+  ))
+end
+
+local function startPowDiagWatch()
+  if powDiagWatchStarted then
+    return
+  end
+  powDiagWatchStarted = true
+  print("CE_POW_DIAG event=watch_armed entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+  local function watch()
+    local seq = readMoraleVar("aio_pow_seq")
+    if seq ~= powDiagLastSeq then
+      powDiagLastSeq = seq
+      if seq > 0 then
+        local tok, wall = pcall(function()
+          return os.time()
+        end)
+        print(string.format(
+          "CE_POW_DIAG event=seq id=unreadable entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable last_evt=%s seq=%s t=%s",
+          tostring(readMoraleVar("aio_pow_last_evt")),
+          tostring(seq),
+          (tok and wall ~= nil) and tostring(wall) or "unreadable"
+        ))
+      end
+    end
+    for n = 1, POW_DIAG_MAX do
+      local idTag = powDiagIdTag(n)
+      local squad = powDiagFindSquad(idTag)
+      if squad then
+        local flags = powDiagCollectFlags(squad)
+        local sig = squad .. "|" .. table.concat(flags, ",")
+        local prev = powDiagLastFlags[idTag]
+        if sig ~= prev then
+          local eventName = powDiagEventFromFlags(flags, powDiagSeen[idTag])
+          powDiagLastFlags[idTag] = sig
+          powDiagSeen[idTag] = flags
+          powDiagPrint(idTag, eventName, squad, flags)
+        end
+      elseif powDiagLastFlags[idTag] then
+        local eventName = powDiagAbsentEvent()
+        powDiagLastFlags[idTag] = nil
+        powDiagSeen[idTag] = nil
+        powDiagPrint(idTag, eventName, "unreadable", "gone")
+      end
+    end
+    if powDiagFindSquad("aio_pow_overflow") and not powDiagLastFlags.overflow then
+      powDiagLastFlags.overflow = "1"
+      powDiagPrint("aio_pow_overflow", "overflow", powDiagFindSquad("aio_pow_overflow"), {"aio_pow_overflow"})
+    end
+    BotApi.Events:SetQuantTimer(watch, 1000)
+  end
+  BotApi.Events:SetQuantTimer(watch, 1000)
+end
+
 -- Diagnostic-only 2s watcher for native POW tests. Re-gate or remove before production merge.
 local function startMoraleEventWatch()
   local seenRetreat = false
@@ -444,6 +690,7 @@ local function startMoraleEventWatch()
 end
 
 function StartCeMoraleProbeLog()
+  startPowDiagWatch()
   if readMoraleVar("enable_ce_morale_debug") > 0 or readMoraleVar("enable_ce_morale_autodemo") > 0 then
     startMoraleEventWatch()
   end

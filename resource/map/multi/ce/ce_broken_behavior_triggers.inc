@@ -4,6 +4,7 @@
 ; runtime player 0, tag_remove enemy, action drop volume in_hands, stand_giveup_1).
 ; Do not restack fight/select, hold-fire/weapon_prepare, control AI, or authored Player 0.
 ; Evac stays tag-driven after a 3s pose. 100s max from apply. Ally/support invert.
+; Diagnostic CE_POW_DIAG tags/set_i only. Do not change P0/surrender/evac/delete semantics.
 			{"conquest_enhanced_mechanics/broken/acquire"
 				{condition
 					{terms
@@ -748,6 +749,2030 @@
 					}
 				}
 			}
+			{"conquest_enhanced_mechanics/broken/surrender_diag_assign"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_pow_need_id}
+										}
+									}
+									{include
+										{tag
+											{tag aio_morale_surrendering}
+										}
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{tag
+											{tag aio_pow_did}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
+					{"switch"
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d01}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d01}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d02}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d02}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 2}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d03}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d03}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 3}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d04}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d04}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 4}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d05}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d05}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 5}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d06}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d06}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 6}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d07}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d07}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 7}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d08}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d08}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 8}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d09}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d09}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 9}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d10}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d10}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 10}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d11}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d11}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 11}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d12}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d12}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 12}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d13}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d13}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 13}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d14}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d14}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 14}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d15}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d15}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 15}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{tag
+										{tag aio_pow_d16}
+									}
+								}
+								{count
+									{op "=="}
+									{value 0}
+								}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_d16}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_id$"}
+								{op "="}
+								{value 16}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+						{"default"
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_need_id}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_did}
+									}
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+							{amount 1}
+						}
+								{tag_add aio_pow_assigning}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_overflow}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_add aio_pow_did}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_need_id}
+							}
+							{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_assigning}
+									}
+								}
+							}
+						}
+								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+						}
+					}
+					{"delay"
+						{time 0.05}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/surrender_diag_assign"}
+					}
+				}
+			}
 			{"conquest_enhanced_mechanics/broken/surrender_present"
 				{condition
 					{terms
@@ -939,6 +2964,86 @@
 								}
 							}
 						}
+						{tag_add aio_pow_post_p0}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{tag_add aio_pow_evt_p0}
+					}
+					{"set_i"
+						{var "aio_pow_last_evt$"}
+						{op "="}
+						{value 2}
+					}
+					{"set_i"
+						{var "aio_pow_seq$"}
+						{op "+"}
+						{value 1}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
 						{tag_remove enemy}
 					}
 					{"delay"
@@ -1051,6 +3156,42 @@
 							{group
 								{select
 									{tag
+										{tag aio_morale_surrender_fx}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_add aio_pow_evt_present_done}
+					}
+					{"set_i"
+						{var "aio_pow_last_evt$"}
+						{op "="}
+						{value 3}
+					}
+					{"set_i"
+						{var "aio_pow_seq$"}
+						{op "+"}
+						{value 1}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
 										{tag aio_morale_surrender_presenting}
 									}
 								}
@@ -1149,6 +3290,42 @@
 						}
 						{tag_add aio_morale_surrender_evacuating}
 					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_add aio_pow_evt_evac}
+					}
+					{"set_i"
+						{var "aio_pow_last_evt$"}
+						{op "="}
+						{value 4}
+					}
+					{"set_i"
+						{var "aio_pow_seq$"}
+						{op "+"}
+						{value 1}
+					}
 					{"delay"
 						{time 3}
 					}
@@ -1225,6 +3402,45 @@
 									{group
 										{select
 											{tag
+												{tag aio_morale_surrender_to_a}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrender_evacuating}
+											}
+											{tag
+												{tag aio_morale_surrendering}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+										}
+									}
+								}
+								{tag_add aio_pow_evt_move_a}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 5}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+							{"entity_state"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
 												{tag aio_morale_surrender_evacuating}
 											}
 										}
@@ -1256,6 +3472,45 @@
 									}
 								}
 								{tag_add aio_morale_surrender_to_b}
+							}
+							{"entity_state"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_surrender_to_b}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrender_evacuating}
+											}
+											{tag
+												{tag aio_morale_surrendering}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+										}
+									}
+								}
+								{tag_add aio_pow_evt_move_b}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 6}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
 							}
 							{"action"
 								{selector
@@ -1434,6 +3689,45 @@
 									{group
 										{select
 											{tag
+												{tag aio_morale_surrender_to_b}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrender_evacuating}
+											}
+											{tag
+												{tag aio_morale_surrendering}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+										}
+									}
+								}
+								{tag_add aio_pow_evt_move_b}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 6}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
+							}
+							{"entity_state"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
 												{tag aio_morale_surrender_evacuating}
 											}
 										}
@@ -1465,6 +3759,45 @@
 									}
 								}
 								{tag_add aio_morale_surrender_to_a}
+							}
+							{"entity_state"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_surrender_to_a}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrender_evacuating}
+											}
+											{tag
+												{tag aio_morale_surrendering}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+										}
+									}
+								}
+								{tag_add aio_pow_evt_move_a}
+							}
+							{"set_i"
+								{var "aio_pow_last_evt$"}
+								{op "="}
+								{value 5}
+							}
+							{"set_i"
+								{var "aio_pow_seq$"}
+								{op "+"}
+								{value 1}
 							}
 							{"action"
 								{selector
@@ -1647,6 +3980,90 @@
 					}
 				}
 				{actions
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_at_egress}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{tag_add aio_pow_evt_arrive}
+					}
+					{"set_i"
+						{var "aio_pow_last_evt$"}
+						{op "="}
+						{value 7}
+					}
+					{"set_i"
+						{var "aio_pow_seq$"}
+						{op "+"}
+						{value 1}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_at_egress}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{tag_add aio_pow_evt_delete}
+					}
+					{"set_i"
+						{var "aio_pow_last_evt$"}
+						{op "="}
+						{value 9}
+					}
+					{"set_i"
+						{var "aio_pow_seq$"}
+						{op "+"}
+						{value 1}
+					}
 					{"delete"
 						{selector
 							{source advanced}
@@ -1759,6 +4176,90 @@
 					}
 				}
 				{actions
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_at_egress}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{tag_add aio_pow_evt_arrive}
+					}
+					{"set_i"
+						{var "aio_pow_last_evt$"}
+						{op "="}
+						{value 7}
+					}
+					{"set_i"
+						{var "aio_pow_seq$"}
+						{op "+"}
+						{value 1}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_at_egress}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{tag_add aio_pow_evt_delete}
+					}
+					{"set_i"
+						{var "aio_pow_last_evt$"}
+						{op "="}
+						{value 9}
+					}
+					{"set_i"
+						{var "aio_pow_seq$"}
+						{op "+"}
+						{value 1}
+					}
 					{"delete"
 						{selector
 							{source advanced}
@@ -1849,6 +4350,90 @@
 					}
 				}
 				{actions
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_expire}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{tag_add aio_pow_evt_expire}
+					}
+					{"set_i"
+						{var "aio_pow_last_evt$"}
+						{op "="}
+						{value 8}
+					}
+					{"set_i"
+						{var "aio_pow_seq$"}
+						{op "+"}
+						{value 1}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_expire}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{tag_add aio_pow_evt_delete}
+					}
+					{"set_i"
+						{var "aio_pow_last_evt$"}
+						{op "="}
+						{value 9}
+					}
+					{"set_i"
+						{var "aio_pow_seq$"}
+						{op "+"}
+						{value 1}
+					}
 					{"delete"
 						{selector
 							{source advanced}
