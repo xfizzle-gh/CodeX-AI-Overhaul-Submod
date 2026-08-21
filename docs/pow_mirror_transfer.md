@@ -83,7 +83,7 @@ There is no mission `{"log"}` command in this repo. The source-proven `game.log`
 
 ### Stable POW diagnostic ID
 
-On apply, the actor gets `aio_pow_need_id`. Trigger `broken/surrender_diag_assign` stamps one unused tag `aio_pow_d01` … `aio_pow_d16` plus `aio_pow_did`. That ID appears on every `CE_POW_DIAG` line for that actor. Overflow (more than 16 concurrent) is tagged `aio_pow_overflow`.
+On apply, the actor gets `aio_pow_need_id`. Trigger `broken/surrender_diag_assign` stamps `aio_pow_d01` … `aio_pow_d16` plus `aio_pow_did` using the same-file evac `{"switch"}` `{condition {type cmp_i} {var ...} {op "=="} {value N}}` grammar on `aio_pow_next_id$`. Do not use `{type entities}` + `{count {op "=="}}` in that switch — that nest failed map load (`dda_accessorraw.cpp:342`). Overflow (17th+ surrender in the match) is tagged `aio_pow_overflow`. The ID appears on every `CE_POW_DIAG` line for that actor.
 
 ### Line format
 

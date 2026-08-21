@@ -5,6 +5,7 @@
 ; Do not restack fight/select, hold-fire/weapon_prepare, control AI, or authored Player 0.
 ; Evac stays tag-driven after a 3s pose. 100s max from apply. Ally/support invert.
 ; Diagnostic CE_POW_DIAG tags/set_i only. Do not change P0/surrender/evac/delete semantics.
+; ID assign uses evac switch/cmp_i on aio_pow_next_id$. Do not use entities+count in that switch.
 			{"conquest_enhanced_mechanics/broken/acquire"
 				{condition
 					{terms
@@ -793,109 +794,103 @@
 				{actions
 					{"switch"
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d01}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 0}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d01}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
 								{var "aio_pow_last_id$"}
 								{op "="}
+								{value 1}
+							}
+							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
 								{value 1}
 							}
 							{"set_i"
@@ -910,104 +905,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d02}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 1}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d02}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -1016,6 +1000,11 @@
 								{value 2}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -1027,104 +1016,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d03}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 2}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d03}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -1133,6 +1111,11 @@
 								{value 3}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -1144,104 +1127,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d04}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 3}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d04}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -1250,6 +1222,11 @@
 								{value 4}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -1261,104 +1238,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d05}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 4}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d05}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -1367,6 +1333,11 @@
 								{value 5}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -1378,104 +1349,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d06}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 5}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d06}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -1484,6 +1444,11 @@
 								{value 6}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -1495,104 +1460,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d07}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 6}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d07}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -1601,6 +1555,11 @@
 								{value 7}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -1612,104 +1571,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d08}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 7}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d08}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -1718,6 +1666,11 @@
 								{value 8}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -1729,104 +1682,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d09}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 8}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d09}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -1835,6 +1777,11 @@
 								{value 9}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -1846,104 +1793,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d10}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 9}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d10}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -1952,6 +1888,11 @@
 								{value 10}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -1963,104 +1904,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d11}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 10}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d11}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -2069,6 +1999,11 @@
 								{value 11}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -2080,104 +2015,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d12}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 11}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d12}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -2186,6 +2110,11 @@
 								{value 12}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -2197,104 +2126,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d13}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 12}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d13}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -2303,6 +2221,11 @@
 								{value 13}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -2314,104 +2237,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d14}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 13}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d14}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -2420,6 +2332,11 @@
 								{value 14}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -2431,104 +2348,93 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d15}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 14}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d15}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
@@ -2537,6 +2443,11 @@
 								{value 15}
 							}
 							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
+							}
+							{"set_i"
 								{var "aio_pow_last_evt$"}
 								{op "="}
 								{value 1}
@@ -2548,110 +2459,104 @@
 							}
 						}
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{tag
-										{tag aio_pow_d16}
-									}
-								}
-								{count
-									{op "=="}
-									{value 0}
-								}
-							}
+							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 15}}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_d16}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
 							}
 							{"set_i"
 								{var "aio_pow_last_id$"}
 								{op "="}
 								{value 16}
+							}
+							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
 							}
 							{"set_i"
 								{var "aio_pow_last_evt$"}
@@ -2666,92 +2571,97 @@
 						}
 						{"default"
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_need_id}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_need_id}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{tag
+												{tag aio_pow_did}
+											}
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
+									{amount 1}
 								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_pow_did}
-									}
-									{tag
-										{tag aio_pow_assigning}
-									}
-								}
-							}
-							{amount 1}
-						}
 								{tag_add aio_pow_assigning}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_overflow}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_add aio_pow_did}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_need_id}
 							}
 							{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_assigning}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_pow_assigning}
+											}
+										}
 									}
 								}
-							}
-						}
 								{tag_remove aio_pow_assigning}
+							}
+							{"set_i"
+								{var "aio_pow_next_id$"}
+								{op "+"}
+								{value 1}
 							}
 							{"set_i"
 								{var "aio_pow_last_evt$"}

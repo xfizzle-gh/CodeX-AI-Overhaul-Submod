@@ -239,6 +239,11 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split('{on "', 1)[0]
         die = human.split('{on "die"', 1)[1].split("{on ", 1)[0]
         self.assertIn("surrender_diag_assign", beh)
+        assign = beh.split("broken/surrender_diag_assign", 1)[1].split("broken/surrender_present", 1)[0]
+        self.assertNotIn("{count", assign)
+        self.assertNotIn("{type entities}", assign)
+        self.assertIn('{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 0}}', assign)
+        self.assertIn('{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}', beh)
         self.assertIn("{tag_add aio_pow_d01}", beh)
         self.assertIn("{tag_add aio_pow_d16}", beh)
         self.assertNotIn("{tag_add aio_pow_d17}", beh)
