@@ -185,6 +185,7 @@ function SetCEMissionVariables(botDefender)
   BotApi.Scene:SetVar("ce_morale_diag_assign", 0)
   BotApi.Scene:SetVar("ce_morale_diag_p0", 0)
   BotApi.Scene:SetVar("ce_morale_diag_drop", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_impregnable", 0)
   BotApi.Scene:SetVar("ce_morale_diag_delete", 0)
   BotApi.Scene:SetVar("aio_pow_next_id", 0)
   BotApi.Scene:SetVar("aio_pow_seq", 0)
@@ -435,6 +436,7 @@ local function startPowDiagWatch()
   local seenPresent = false
   local seenAssign = false
   local seenP0 = false
+  local seenImpregnable = false
   local seenDrop = false
   local seenDelete = false
   print("CE_POW_DIAG event=watch_armed entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
@@ -450,6 +452,10 @@ local function startPowDiagWatch()
     if not seenP0 and readMoraleVar("ce_morale_diag_p0") > 0 then
       seenP0 = true
       print("CE_POW_DIAG event=p0 entity=unreadable breed=unreadable orig_player=unreadable curr_player=0_inferred squad=unreadable sensor=unreadable")
+    end
+    if not seenImpregnable and readMoraleVar("ce_morale_diag_impregnable") > 0 then
+      seenImpregnable = true
+      print("CE_POW_DIAG event=impregnable entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
     end
     if not seenDrop and readMoraleVar("ce_morale_diag_drop") > 0 then
       seenDrop = true

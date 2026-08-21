@@ -30,15 +30,43 @@ Production surrender present uses the proven Old Boy captive 5-step on the live 
 
 At surrender commit, `aio_morale_surrender_apply` only adds `aio_morale_surrendering` (and clears broken/regrouping) plus icon refresh / 100s expire. It does **not** set `fight 0` / `select 0`.
 
-At surrender present, apply **only** the Old Boy 5-step:
+At surrender present, apply the Old Boy 5-step plus verified `{impregnability harmless}` after P0:
 
 1. `{effect start_white_flag}`
 2. `{"player"} {operation set} {player "0"}`
-3. `{tag_remove enemy}`
-4. `{"action"} {action drop} {volume in_hands}`
-5. `{collage stand_giveup_1}`
+3. `{"entity_state"} {impregnability harmless}` — keep for POW life. Not `{impregnability full}`.
+4. `{tag_remove enemy}`
+5. `{"action"} {action drop} {volume in_hands}`
+6. `{collage stand_giveup_1}`
 
-Routing tags `aio_morale_surrendering` / `aio_morale_surrender_presenting` / `aio_morale_surrender_fx` stay so cleanup and tag-driven evac selectors still match.
+The five Old Boy operations are intact. Harmless sits immediately after P0. Routing tags `aio_morale_surrendering` / `aio_morale_surrender_presenting` / `aio_morale_surrender_fx` stay so cleanup and tag-driven evac selectors still match.
+
+### Verified impregnability syntax
+
+Vanilla / local map entity property (engine token `harmless`), from `resource/map/multi/dcg_zeeland_sum_TEST/map`:
+
+```
+{Impregnability harmless}
+```
+
+Local `{"entity_state"}` command slot (same family, lowercase key) from `resource/map/multi/ce/ce_mechanics_triggers.inc`:
+
+```
+{"entity_state"
+    {selector ...}
+    {impregnability full}
+}
+```
+
+and `ce_player_triggers.inc` / support waves also use `{impregnability disabled}`. This repo has **no** `{impregnability harmless}` on `entity_state` until this overlay. The applied form is the proven command slot + the proven vanilla mode token:
+
+```
+{"entity_state" ... {impregnability harmless}}
+```
+
+`{impregnability full}` (used on `1a5e363`, then reset) is the wrong mode.
+
+Civilian-mirror remains the fallback **only if** this Conquest overlay still 0x158. Do not implement the mirror now.
 
 ## Owner isolation evidence
 
@@ -81,11 +109,11 @@ There is no mission `{"log"}` command in this repo. The source-proven `game.log`
 
 `startPowDiagWatch()` is always-on from `StartCeMoraleProbeLog()` (not gated on debug/autodemo). It polls declared mission vars every 1s. Do **not** use `IsSquadTagged` for this trail — entity-level tags are invisible to that API (`CE_POW alive=1` never printed even when `observe_surrender` set `ce_morale_diag_surrender$`).
 
-Declared vars (same grammar as `ce_morale_diag_surrender` in `ce_vars.inc`): `aio_pow_next_id`, `aio_pow_seq`, `aio_pow_last_evt`, `ce_morale_diag_present`, `ce_morale_diag_assign`, `ce_morale_diag_p0`, `ce_morale_diag_drop`.
+Declared vars (same grammar as `ce_morale_diag_surrender` in `ce_vars.inc`): `aio_pow_next_id`, `aio_pow_seq`, `aio_pow_last_evt`, `ce_morale_diag_present`, `ce_morale_diag_assign`, `ce_morale_diag_p0`, `ce_morale_diag_impregnable`, `ce_morale_diag_drop`.
 
 Unconditional `{"set_i"}` (no entity selector) is the first action of `surrender_present` (`ce_morale_diag_present$=1`) and of sibling `surrender_diag_assign` (`ce_morale_diag_assign$=1`). `ce_morale_diag_p0$=1` is immediately after `{player "0"}`. Overlay `aio_pow_last_evt$` / `aio_pow_seq$` sit **after** drop, not between P0 and drop (undeclared `set_i` there is the hunch for the missed drop on `788397d`). `ce_morale_diag_drop$=1` is immediately after `{action drop}{volume in_hands}`.
 
-Lua prints `CE_POW_DIAG event=present|assign|p0|drop` when those declared vars flip (same flip pattern as `CE_MORALE_EVENT surrender`).
+Lua prints `CE_POW_DIAG event=present|assign|p0|impregnable|drop` when those declared vars flip (same flip pattern as `CE_MORALE_EVENT surrender`). `ce_morale_diag_impregnable$=1` is immediately after the post-P0 `{impregnability harmless}` `entity_state`.
 
 ### Stable POW diagnostic ID
 
@@ -146,8 +174,9 @@ After runtime P0, the in-repo Old Boy captive 5-step (Isolation B / production p
 
 Not on that path: `{control AI}` (body-recovery only), authored `{Player 0}`, `{able "fight" 0}` / `{able "select" 0}`, hold-fire, `weapon_prepare`, `{drop "orders sensor senseless"}`, leave-squad, expire/evac/delete, or any script-visible detect-registration cleanup.
 
-Conquest extras **after** the same 5-step (unchanged by this instrumentation):
+Conquest extras **after** the same 5-step:
 
+- `{"entity_state"} {impregnability harmless}` immediately after P0, kept for POW life
 - CE routing tags (`aio_morale_surrendering` / `_presenting` / `_fx` / `_evacuating` / `_to_a` / `_to_b` / `_at_egress` / `_expire`)
 - 100s expire → mission `{"delete"}`
 - tag-driven evac `{action move}` to captor entry
@@ -183,13 +212,11 @@ Unused tag fixture: `resource/map/multi/ce/ce_pow_dmg_editor.inc`.
 
 ## Evacuation
 
-c47c272 overlay Conquest: present/assign/p0/drop at 00:05:30, then 0x158 `scene.quant.bullets` at 00:05:44 into a standing lingering P0. Evac was arming: `_fx` after the five-step → `surrender_evacuate` → 3s pose → `{action move}` to captor entry.
+`3707e1c` overlay Conquest: pose-then-delete **worked** (present/p0/drop 00:04:28–29, delete 00:04:32). Later 0x158 at 00:10:38 was a **different** crash-tick EVT (“AI: Veteran AKM vs neutral 90 Rifleman”), 366s later, no second `CE_POW_DIAG`. Walk/egress hypothesis is **FAIL**. This is not delete-on-stale-detect of the despawned POW.
 
-That walk is removed. After the 3s pose, `surrender_evacuate` `{delete}`s the POW with the same expire/arrive delete grammar (evacuating + surrendering, exclude dead/inactive/user_control/player). `_to_a` / `_to_b` move arms are gone from evac so they cannot start a walk. 100s expire stays as a backstop. No drop-sensor (Paul forbids it). Delete-without-sensor-clear is a possible new AV risk (`eActorSensorDetect`); this is the testable production delta.
+Real Conquest still AVs when AI bullets hit a live neutral/P0. This overlay restores the real POW lifecycle (3s pose → `{action move}` to `attack_support_entry_a` / `_b`) and applies `{impregnability harmless}` after P0 so crossfire should be a no-op. 100s expire stays as a backstop. No drop-sensor.
 
-`ce_morale_diag_delete$` is declared and set immediately before that delete. Lua prints `CE_POW_DIAG event=delete` on flip.
-
-Later bounded end-to-end native check (not another isolation shooting matrix): surrender → hostile AI ignores → POW walks to the correct captor entry → disappears at egress → no AV → no unintended kill/score/ticket → clean `game.log`.
+Later bounded end-to-end native check: surrender → hostile AI ignores → `CE_POW_DIAG event=impregnable` → POW walks to the correct captor entry → disappears at egress → AI bullets into the live P0 do not 0x158.
 
 ## Evidence fixtures kept
 
