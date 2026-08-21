@@ -407,6 +407,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "aio_morale_surrender_at_egress",
             "aio_morale_surrender_to_a",
             "aio_morale_surrender_to_b",
+            "aio_morale_surrender_to_camp",
+            "prisoner_in_camp",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
 

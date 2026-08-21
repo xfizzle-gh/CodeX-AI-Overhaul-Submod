@@ -5,7 +5,9 @@
 ; inventory drop of the currently-used weapon (9fb440b double drop), stand_giveup_1).
 ; After P0, entity_state {impregnability harmless} (vanilla token from
 ; {Impregnability harmless}; do not use {impregnability full}). Keep for POW life.
-; Evac stays tag-driven after a 3s pose, then {action move} to captor entry.
+; Evac stays tag-driven after a 3s pose, then {action move}. Ordinary POWs
+; retarget to a live {tag aio_pow_camp} collection anchor; otherwise captor-rear
+; waypoint. Ally/support keep waypoint egress. No drop-sensor/fight/select restack.
 ; 100s expire stays as a backstop. Do not restack fight/select/drop-sensor/control AI.
 ; ID assign uses evac switch/cmp_i on aio_pow_next_id$. Do not use entities+count in that switch.
 			{"conquest_enhanced_mechanics/broken/acquire"
@@ -3225,6 +3227,9 @@
 										{tag
 											{tag aio_morale_surrender_evacuating}
 										}
+										{tag
+											{tag prisoner_in_camp}
+										}
 									}
 								}
 							}
@@ -3261,6 +3266,9 @@
 									}
 									{tag
 										{tag aio_morale_surrender_evacuating}
+									}
+									{tag
+										{tag prisoner_in_camp}
 									}
 								}
 							}
@@ -3307,11 +3315,11 @@
 						{time 3}
 					}
 					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
-							{"entity_state"
-								{selector
-									{source advanced}
+							{"case"
+								{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+								{"entity_state"
+									{selector
+										{source advanced}
 									{group
 										{select
 											{tag
@@ -3370,128 +3378,51 @@
 											}
 										}
 									}
+									}
+									{tag_add aio_morale_surrender_to_a}
 								}
-								{tag_add aio_morale_surrender_to_a}
-							}
-							{"entity_state"
-								{selector
-									{source advanced}
-									{group
-										{select
-											{tag
-												{tag aio_morale_surrender_to_a}
+								{"entity_state"
+									{selector
+										{source advanced}
+										{group
+											{select
+												{tag
+													{tag aio_morale_surrender_to_a}
+												}
 											}
-										}
-										{include
-											{tag
-												{tag aio_morale_surrender_evacuating}
+											{include
+												{tag
+													{tag aio_morale_surrender_evacuating}
+												}
+												{tag
+													{tag aio_morale_surrendering}
+												}
 											}
-											{tag
-												{tag aio_morale_surrendering}
-											}
-										}
-										{exclude
-											{state
-												{state dead}
-											}
-											{state
-												{state inactive}
+											{exclude
+												{state
+													{state dead}
+												}
+												{state
+													{state inactive}
+												}
 											}
 										}
 									}
+									{tag_add aio_pow_evt_move_a}
 								}
-								{tag_add aio_pow_evt_move_a}
-							}
-							{"set_i"
-								{var "aio_pow_last_evt$"}
-								{op "="}
-								{value 5}
-							}
-							{"set_i"
-								{var "aio_pow_seq$"}
-								{op "+"}
-								{value 1}
-							}
-							{"entity_state"
-								{selector
-									{source advanced}
-									{group
-										{select
-											{tag
-												{tag aio_morale_surrender_evacuating}
-											}
-										}
-										{include
-											{tag
-												{tag aio_morale_surrendering}
-											}
-										}
-										{exclude
-											{state
-												{state dead}
-											}
-											{state
-												{state inactive}
-											}
-											{state
-												{state user_control}
-											}
-											{tag
-												{tag player}
-											}
-											{tag
-												{tag _user_ally}
-											}
-											{tag
-												{tag def_sup_src}
-											}
-										}
-									}
+								{"set_i"
+									{var "aio_pow_last_evt$"}
+									{op "="}
+									{value 5}
 								}
-								{tag_add aio_morale_surrender_to_b}
-							}
-							{"entity_state"
-								{selector
-									{source advanced}
-									{group
-										{select
-											{tag
-												{tag aio_morale_surrender_to_b}
-											}
-										}
-										{include
-											{tag
-												{tag aio_morale_surrender_evacuating}
-											}
-											{tag
-												{tag aio_morale_surrendering}
-											}
-										}
-										{exclude
-											{state
-												{state dead}
-											}
-											{state
-												{state inactive}
-											}
-										}
-									}
+								{"set_i"
+									{var "aio_pow_seq$"}
+									{op "+"}
+									{value 1}
 								}
-								{tag_add aio_pow_evt_move_b}
-							}
-							{"set_i"
-								{var "aio_pow_last_evt$"}
-								{op "="}
-								{value 6}
-							}
-							{"set_i"
-								{var "aio_pow_seq$"}
-								{op "+"}
-								{value 1}
-							}
-							{"action"
-								{selector
-									{source advanced}
+								{"action"
+									{selector
+										{source advanced}
 									{group
 										{select
 											{tag
@@ -3550,13 +3481,253 @@
 											}
 										}
 									}
+									}
+									{action move}
+									{waypoint "attack_support_entry_a"}
 								}
-								{action move}
-								{waypoint "attack_support_entry_a"}
+								{"switch"
+								{"case"
+									{condition
+										{type entities}
+										{selector
+											{source advanced}
+											{group
+												{select
+													{tag
+														{tag aio_pow_camp}
+													}
+												}
+											}
+										}
+										{count
+											{op ">="}
+											{value 1}
+										}
+									}
+									{"entity_state"
+										{selector
+											{source advanced}
+										{group
+											{select
+												{tag
+													{tag aio_morale_surrender_evacuating}
+												}
+											}
+											{include
+												{tag
+													{tag aio_morale_surrendering}
+												}
+											}
+											{exclude
+												{state
+													{state dead}
+												}
+												{state
+													{state inactive}
+												}
+												{state
+													{state user_control}
+												}
+												{tag
+													{tag player}
+												}
+												{tag
+													{tag _user_ally}
+												}
+												{tag
+													{tag def_sup_src}
+												}
+												{tag
+													{tag prisoner_in_camp}
+												}
+											}
+										}
+										}
+										{tag_add aio_morale_surrender_to_camp}
+									}
+									{"action"
+										{selector
+											{source advanced}
+										{group
+											{select
+												{tag
+													{tag aio_morale_surrender_to_camp}
+												}
+											}
+											{include
+												{tag
+													{tag aio_morale_surrendering}
+												}
+												{tag
+													{tag aio_morale_surrender_evacuating}
+												}
+											}
+											{exclude
+												{state
+													{state dead}
+												}
+												{state
+													{state inactive}
+												}
+												{state
+													{state user_control}
+												}
+												{tag
+													{tag player}
+												}
+												{tag
+													{tag prisoner_in_camp}
+												}
+											}
+										}
+										}
+										{action move}
+										{target
+										{source advanced}
+										{amount 1
+										}
+										{group
+											{select
+												{tag
+													{tag aio_pow_camp}
+												}
+											}
+										}
+										}
+									}
+								}
+								{"case"
+									{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+									{"entity_state"
+										{selector
+											{source advanced}
+										{group
+											{select
+												{tag
+													{tag aio_morale_surrender_evacuating}
+												}
+											}
+											{include
+												{tag
+													{tag aio_morale_surrendering}
+												}
+											}
+											{exclude
+												{state
+													{state dead}
+												}
+												{state
+													{state inactive}
+												}
+												{state
+													{state user_control}
+												}
+												{tag
+													{tag player}
+												}
+												{tag
+													{tag _user_ally}
+												}
+												{tag
+													{tag def_sup_src}
+												}
+												{tag
+													{tag prisoner_in_camp}
+												}
+											}
+										}
+										}
+										{tag_add aio_morale_surrender_to_b}
+									}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select
+													{tag
+														{tag aio_morale_surrender_to_b}
+													}
+												}
+												{include
+													{tag
+														{tag aio_morale_surrender_evacuating}
+													}
+													{tag
+														{tag aio_morale_surrendering}
+													}
+												}
+												{exclude
+													{state
+														{state dead}
+													}
+													{state
+														{state inactive}
+													}
+												}
+											}
+										}
+										{tag_add aio_pow_evt_move_b}
+									}
+									{"set_i"
+										{var "aio_pow_last_evt$"}
+										{op "="}
+										{value 6}
+									}
+									{"set_i"
+										{var "aio_pow_seq$"}
+										{op "+"}
+										{value 1}
+									}
+									{"action"
+										{selector
+											{source advanced}
+										{group
+											{select
+												{tag
+													{tag aio_morale_surrender_evacuating}
+												}
+											}
+											{include
+												{tag
+													{tag aio_morale_surrendering}
+												}
+											}
+											{exclude
+												{state
+													{state dead}
+												}
+												{state
+													{state inactive}
+												}
+												{state
+													{state user_control}
+												}
+												{tag
+													{tag player}
+												}
+												{tag
+													{tag _user_ally}
+												}
+												{tag
+													{tag def_sup_src}
+												}
+												{tag
+													{tag prisoner_in_camp}
+												}
+											}
+										}
+										}
+										{action move}
+										{waypoint "attack_support_entry_b"}
+									}
+								}
+								}
 							}
-							{"action"
-								{selector
-									{source advanced}
+							{"case"
+								{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+								{"entity_state"
+									{selector
+										{source advanced}
 									{group
 										{select
 											{tag
@@ -3566,6 +3737,9 @@
 										{include
 											{tag
 												{tag aio_morale_surrendering}
+											}
+											{tag
+												{tag _user_ally}
 											}
 										}
 										{exclude
@@ -3581,24 +3755,82 @@
 											{tag
 												{tag player}
 											}
+										}
+									}
+									{group
+										{select
 											{tag
-												{tag _user_ally}
+												{tag aio_morale_surrender_evacuating}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
 											}
 											{tag
 												{tag def_sup_src}
 											}
 										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{state
+												{state user_control}
+											}
+											{tag
+												{tag player}
+											}
+										}
 									}
+									}
+									{tag_add aio_morale_surrender_to_b}
 								}
-								{action move}
-								{waypoint "attack_support_entry_b"}
-							}
-						}
-						{"case"
-							{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
-							{"entity_state"
-								{selector
-									{source advanced}
+								{"entity_state"
+									{selector
+										{source advanced}
+										{group
+											{select
+												{tag
+													{tag aio_morale_surrender_to_b}
+												}
+											}
+											{include
+												{tag
+													{tag aio_morale_surrender_evacuating}
+												}
+												{tag
+													{tag aio_morale_surrendering}
+												}
+											}
+											{exclude
+												{state
+													{state dead}
+												}
+												{state
+													{state inactive}
+												}
+											}
+										}
+									}
+									{tag_add aio_pow_evt_move_b}
+								}
+								{"set_i"
+									{var "aio_pow_last_evt$"}
+									{op "="}
+									{value 6}
+								}
+								{"set_i"
+									{var "aio_pow_seq$"}
+									{op "+"}
+									{value 1}
+								}
+								{"action"
+									{selector
+										{source advanced}
 									{group
 										{select
 											{tag
@@ -3657,230 +3889,248 @@
 											}
 										}
 									}
+									}
+									{action move}
+									{waypoint "attack_support_entry_b"}
 								}
-								{tag_add aio_morale_surrender_to_b}
-							}
-							{"entity_state"
-								{selector
-									{source advanced}
-									{group
-										{select
-											{tag
-												{tag aio_morale_surrender_to_b}
+								{"switch"
+								{"case"
+									{condition
+										{type entities}
+										{selector
+											{source advanced}
+											{group
+												{select
+													{tag
+														{tag aio_pow_camp}
+													}
+												}
 											}
 										}
-										{include
-											{tag
-												{tag aio_morale_surrender_evacuating}
+										{count
+											{op ">="}
+											{value 1}
+										}
+									}
+									{"entity_state"
+										{selector
+											{source advanced}
+										{group
+											{select
+												{tag
+													{tag aio_morale_surrender_evacuating}
+												}
 											}
-											{tag
-												{tag aio_morale_surrendering}
+											{include
+												{tag
+													{tag aio_morale_surrendering}
+												}
+											}
+											{exclude
+												{state
+													{state dead}
+												}
+												{state
+													{state inactive}
+												}
+												{state
+													{state user_control}
+												}
+												{tag
+													{tag player}
+												}
+												{tag
+													{tag _user_ally}
+												}
+												{tag
+													{tag def_sup_src}
+												}
+												{tag
+													{tag prisoner_in_camp}
+												}
 											}
 										}
-										{exclude
-											{state
-												{state dead}
+										}
+										{tag_add aio_morale_surrender_to_camp}
+									}
+									{"action"
+										{selector
+											{source advanced}
+										{group
+											{select
+												{tag
+													{tag aio_morale_surrender_to_camp}
+												}
 											}
-											{state
-												{state inactive}
+											{include
+												{tag
+													{tag aio_morale_surrendering}
+												}
+												{tag
+													{tag aio_morale_surrender_evacuating}
+												}
 											}
+											{exclude
+												{state
+													{state dead}
+												}
+												{state
+													{state inactive}
+												}
+												{state
+													{state user_control}
+												}
+												{tag
+													{tag player}
+												}
+												{tag
+													{tag prisoner_in_camp}
+												}
+											}
+										}
+										}
+										{action move}
+										{target
+										{source advanced}
+										{amount 1
+										}
+										{group
+											{select
+												{tag
+													{tag aio_pow_camp}
+												}
+											}
+										}
 										}
 									}
 								}
-								{tag_add aio_pow_evt_move_b}
-							}
-							{"set_i"
-								{var "aio_pow_last_evt$"}
-								{op "="}
-								{value 6}
-							}
-							{"set_i"
-								{var "aio_pow_seq$"}
-								{op "+"}
-								{value 1}
-							}
-							{"entity_state"
-								{selector
-									{source advanced}
-									{group
-										{select
-											{tag
-												{tag aio_morale_surrender_evacuating}
+								{"case"
+									{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+									{"entity_state"
+										{selector
+											{source advanced}
+										{group
+											{select
+												{tag
+													{tag aio_morale_surrender_evacuating}
+												}
+											}
+											{include
+												{tag
+													{tag aio_morale_surrendering}
+												}
+											}
+											{exclude
+												{state
+													{state dead}
+												}
+												{state
+													{state inactive}
+												}
+												{state
+													{state user_control}
+												}
+												{tag
+													{tag player}
+												}
+												{tag
+													{tag _user_ally}
+												}
+												{tag
+													{tag def_sup_src}
+												}
+												{tag
+													{tag prisoner_in_camp}
+												}
 											}
 										}
-										{include
-											{tag
-												{tag aio_morale_surrendering}
+										}
+										{tag_add aio_morale_surrender_to_a}
+									}
+									{"entity_state"
+										{selector
+											{source advanced}
+											{group
+												{select
+													{tag
+														{tag aio_morale_surrender_to_a}
+													}
+												}
+												{include
+													{tag
+														{tag aio_morale_surrender_evacuating}
+													}
+													{tag
+														{tag aio_morale_surrendering}
+													}
+												}
+												{exclude
+													{state
+														{state dead}
+													}
+													{state
+														{state inactive}
+													}
+												}
 											}
 										}
-										{exclude
-											{state
-												{state dead}
+										{tag_add aio_pow_evt_move_a}
+									}
+									{"set_i"
+										{var "aio_pow_last_evt$"}
+										{op "="}
+										{value 5}
+									}
+									{"set_i"
+										{var "aio_pow_seq$"}
+										{op "+"}
+										{value 1}
+									}
+									{"action"
+										{selector
+											{source advanced}
+										{group
+											{select
+												{tag
+													{tag aio_morale_surrender_evacuating}
+												}
 											}
-											{state
-												{state inactive}
+											{include
+												{tag
+													{tag aio_morale_surrendering}
+												}
 											}
-											{state
-												{state user_control}
-											}
-											{tag
-												{tag player}
-											}
-											{tag
-												{tag _user_ally}
-											}
-											{tag
-												{tag def_sup_src}
+											{exclude
+												{state
+													{state dead}
+												}
+												{state
+													{state inactive}
+												}
+												{state
+													{state user_control}
+												}
+												{tag
+													{tag player}
+												}
+												{tag
+													{tag _user_ally}
+												}
+												{tag
+													{tag def_sup_src}
+												}
+												{tag
+													{tag prisoner_in_camp}
+												}
 											}
 										}
+										}
+										{action move}
+										{waypoint "attack_support_entry_a"}
 									}
 								}
-								{tag_add aio_morale_surrender_to_a}
-							}
-							{"entity_state"
-								{selector
-									{source advanced}
-									{group
-										{select
-											{tag
-												{tag aio_morale_surrender_to_a}
-											}
-										}
-										{include
-											{tag
-												{tag aio_morale_surrender_evacuating}
-											}
-											{tag
-												{tag aio_morale_surrendering}
-											}
-										}
-										{exclude
-											{state
-												{state dead}
-											}
-											{state
-												{state inactive}
-											}
-										}
-									}
 								}
-								{tag_add aio_pow_evt_move_a}
 							}
-							{"set_i"
-								{var "aio_pow_last_evt$"}
-								{op "="}
-								{value 5}
-							}
-							{"set_i"
-								{var "aio_pow_seq$"}
-								{op "+"}
-								{value 1}
-							}
-							{"action"
-								{selector
-									{source advanced}
-									{group
-										{select
-											{tag
-												{tag aio_morale_surrender_evacuating}
-											}
-										}
-										{include
-											{tag
-												{tag aio_morale_surrendering}
-											}
-											{tag
-												{tag _user_ally}
-											}
-										}
-										{exclude
-											{state
-												{state dead}
-											}
-											{state
-												{state inactive}
-											}
-											{state
-												{state user_control}
-											}
-											{tag
-												{tag player}
-											}
-										}
-									}
-									{group
-										{select
-											{tag
-												{tag aio_morale_surrender_evacuating}
-											}
-										}
-										{include
-											{tag
-												{tag aio_morale_surrendering}
-											}
-											{tag
-												{tag def_sup_src}
-											}
-										}
-										{exclude
-											{state
-												{state dead}
-											}
-											{state
-												{state inactive}
-											}
-											{state
-												{state user_control}
-											}
-											{tag
-												{tag player}
-											}
-										}
-									}
-								}
-								{action move}
-								{waypoint "attack_support_entry_b"}
-							}
-							{"action"
-								{selector
-									{source advanced}
-									{group
-										{select
-											{tag
-												{tag aio_morale_surrender_evacuating}
-											}
-										}
-										{include
-											{tag
-												{tag aio_morale_surrendering}
-											}
-										}
-										{exclude
-											{state
-												{state dead}
-											}
-											{state
-												{state inactive}
-											}
-											{state
-												{state user_control}
-											}
-											{tag
-												{tag player}
-											}
-											{tag
-												{tag _user_ally}
-											}
-											{tag
-												{tag def_sup_src}
-											}
-										}
-									}
-								}
-								{action move}
-								{waypoint "attack_support_entry_a"}
-							}
-						}
 					}
 					{"delay"
 						{time 2}
@@ -4320,6 +4570,9 @@
 										{tag
 											{tag player}
 										}
+										{tag
+											{tag prisoner_in_camp}
+										}
 									}
 								}
 							}
@@ -4353,6 +4606,9 @@
 									}
 									{tag
 										{tag player}
+									}
+									{tag
+										{tag prisoner_in_camp}
 									}
 								}
 							}
@@ -4396,6 +4652,9 @@
 									{tag
 										{tag player}
 									}
+									{tag
+										{tag prisoner_in_camp}
+									}
 								}
 							}
 						}
@@ -4437,6 +4696,9 @@
 									}
 									{tag
 										{tag player}
+									}
+									{tag
+										{tag prisoner_in_camp}
 									}
 								}
 							}
@@ -5056,6 +5318,66 @@
 							}
 						}
 						{tag_remove aio_morale_surrender_to_b}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+								}
+								{include
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_remove aio_morale_surrender_to_camp}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag prisoner_in_camp}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag prisoner_in_camp}
+									}
+								}
+								{include
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_remove prisoner_in_camp}
 					}
 					{"delay"
 						{time 0.5}
