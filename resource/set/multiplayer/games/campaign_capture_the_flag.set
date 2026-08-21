@@ -10,12 +10,9 @@
 
 {game
 	{order -1}
-	{parameters	"points_table_player=0/0.000,0.33/3.750,0.50/4.500,0.66/5.600,1.00/7.500;points_table_ai=0/0.000,0.33/3.750,0.50/4.500,0.66/5.600,1.00/7.500;flag_capture_time=75;flag_release_time=25;flag_capture_factor=0.9;kill_score_multiplier=6.00"}
-	;for score of 8500 (flag ticks @ full hold; kills add mix via kill_score_multiplier):
-	;30 min 	= 0.500
-	;25 min 	= 0.600
-	;20 min 	= 0.750
-	;15 min 	= 1.000
+	{parameters	"points_table_player=0/0.000,0.33/5.000,0.50/6.000,0.66/8.000,1.00/10.000;points_table_ai=0/0.000,0.33/5.000,0.50/6.000,0.66/8.000,1.00/10.000;flag_capture_time=75;flag_release_time=25;flag_capture_factor=0.9;kill_score_multiplier=6.00"}
+	; integer pts/sec so sub-second ticks cannot floor to 0. 8500 @ 100% hold ~14 min.
+	; kills still mix in. Do not rely on last-kill remainder to land on scoreFinal.
 	{settings
 		{difficulty				multiplayer}
 		{scoreFinal				8500}

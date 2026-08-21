@@ -205,7 +205,7 @@
 			{start_sound "weapon/shot/ambient_cannon"}
 			(define "rnd_smk"
 				{delay %delay 0.5
-					{spawn "artillery_single_smoke_dummy" random_position 150 offset 0 -1500 0}
+					{spawn "artillery_single_smoke_dummy" random_position 4500 offset 0 -1500 0}
 				}
 			)
 			("rnd_smk" delay(1))
@@ -228,7 +228,7 @@
 			{start_sound "weapon/shot/ambient_cannon"}
 			(define "rnd_smk_b"
 				{delay %delay 0.5
-					{spawn "artillery_single_smoke_dummy" random_position 150 offset 0 1500 0}
+					{spawn "artillery_single_smoke_dummy" random_position 4500 offset 0 1500 0}
 				}
 			)
 			("rnd_smk_b" delay(1))

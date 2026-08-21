@@ -259,10 +259,8 @@ local usedOpeningArty = false
 local lastWaveArty = -1
 
 local function flagSlot(name)
-	local n = tostring(name or ""):match("(%d+)$")
-	n = n and tonumber(n) or nil
-	if n and n >= 1 and n <= 5 then return n end
-	return nil
+	local n = tostring(name or ""):match("^f([1-5])$")
+	return n and tonumber(n) or nil
 end
 
 local function publishLiveArtyFlags()
@@ -916,6 +914,30 @@ function OnGameSpawn(args)
 	ScheduleSpawnOrderNudge(squad)
 end
 
+local emptyFieldKickTimer = nil
+local function scheduleEmptyFieldSpawnKick()
+	if emptyFieldKickTimer then return end
+	emptyFieldKickTimer = BotApi.Events:SetQuantTimer(function()
+		emptyFieldKickTimer = nil
+		if botDefender then return end
+		if isMissionAuthority and not isMissionAuthority() then return end
+		local n = 0
+		for _, squad in pairs(BotApi.Scene.Squads or {}) do
+			if BotApi.Scene:IsSquadExists(squad) then
+				n = n + 1
+			end
+		end
+		if n == 0 then
+			waveSpawnPossible = true
+			waveSpawnActive = true
+			if KillSpawnCooldownTimer then KillSpawnCooldownTimer() end
+			if KillSpawnWaitTimer then KillSpawnWaitTimer() end
+			if printDebug then print("DCG empty-field spawn kick") end
+		end
+		scheduleEmptyFieldSpawnKick()
+	end, 45 * 1000)
+end
+
 -- v1.064+: prep phase ended (timer or Skip Preparation). Mission scripts key off prep_inform.
 function OnPrepTimeOver()
 	BotApi.Scene:SetVar("prep_inform", 1)
@@ -930,6 +952,7 @@ function OnPrepTimeOver()
 		if printDebug then print("AI attack released after prep time.") end
 		if SelectAiSpawnStrategy then SelectAiSpawnStrategy() end
 		scheduleParaDrops()
+		scheduleEmptyFieldSpawnKick()
 	end
 end
 

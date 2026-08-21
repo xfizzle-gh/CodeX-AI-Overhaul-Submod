@@ -88,8 +88,18 @@ class ConquestRuntimeSourceTests(unittest.TestCase):
         prep = self.source[start:end]
         self.assertIn('BotApi.Scene:SetVar("prep_inform", 1)', prep)
         self.assertIn("if not botDefender and not ai_attack_started then", prep)
+        self.assertIn("scheduleEmptyFieldSpawnKick()", prep)
         self.assertNotIn("KillSpawnCooldownTimer()", prep)
         self.assertNotIn("SetSpawnCooldownTimer()", prep)
+
+    def test_arty_flag_slots_only_match_capture_points(self) -> None:
+        self.assertIn('tostring(name or ""):match("^f([1-5])$")', self.source)
+        self.assertNotIn('match("(%d+)$")', self.source)
+
+    def test_empty_field_spawn_kick_clears_wave_off(self) -> None:
+        self.assertIn("function scheduleEmptyFieldSpawnKick()", self.source)
+        self.assertIn("DCG empty-field spawn kick", self.source)
+        self.assertIn("KillSpawnCooldownTimer()", self.source)
 
 
 if __name__ == "__main__":

@@ -229,8 +229,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         ctf = (ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set").read_text(encoding="utf-8")
         self.assertRegex(ctf, r"\{scoreFinal\s+8500\}")
         self.assertNotRegex(ctf, r"\{scoreFinal\s+9000\}")
-        self.assertIn("points_table_player=0/0.000,0.33/3.750,0.50/4.500,0.66/5.600,1.00/7.500", ctf)
-        self.assertIn("points_table_ai=0/0.000,0.33/3.750,0.50/4.500,0.66/5.600,1.00/7.500", ctf)
+        self.assertIn("points_table_player=0/0.000,0.33/5.000,0.50/6.000,0.66/8.000,1.00/10.000", ctf)
+        self.assertIn("points_table_ai=0/0.000,0.33/5.000,0.50/6.000,0.66/8.000,1.00/10.000", ctf)
         self.assertIn("kill_score_multiplier=6.00", ctf)
         self.assertNotIn("surrender_hold", beh)
         evac = beh.split("broken/surrender_evacuate", 1)[1].split("broken/surrender_arrive_a", 1)[0]
