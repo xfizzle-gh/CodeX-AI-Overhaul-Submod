@@ -62,6 +62,10 @@
 	{Tags "aio_p0_h_dummy_3" 0x8105}
 	{Tags "aio_p0_h_bystander_ob" 0x8106}
 	{Tags "aio_p0_h_ai" 0x8107}
+	{Link 0x8108 {0x8107 "driver"}}
+	{Link 0x8109 {0x8107 "gunner"}}
+	{Link 0x810a {0x8107 "commander"}}
+	{Link 0x810b {0x8107 "charger"}}
 	{Environment "dynamic_campaign/summer/clear/midday_1"}
 	{Helpers
 		{vars

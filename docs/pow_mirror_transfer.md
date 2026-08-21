@@ -91,7 +91,7 @@ Attack grammar matches G: `{action attack}` from the tank (operatable, exclude u
 
 - splash kills P0-ONLY and crashes ⇒ abandon Player 0
 - P0-ONLY safe, FIVE-STEP crashes ⇒ five-step interaction
-- both P0 splash cases safe ⇒ stop P0 permutations; next is Conquest-only CE tags/evac/delete lifecycle
+- both P0 splash cases safe ⇒ AI ownership/collateral alone is not sufficient; only then one controlled production-state fixture (CE tags / expire / evac / delete timing), not Conquest rematches
 
 Unused tag fixture: `resource/map/multi/ce/ce_pow_dmg_editor.inc`.
 

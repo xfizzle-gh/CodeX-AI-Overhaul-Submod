@@ -101,6 +101,7 @@ class OldBoyProductionSurrenderTests(unittest.TestCase):
         self.assertIn("aio_p0_runtime_h", transfer)
         self.assertIn("aio_p0_h_dummy_1", transfer)
         self.assertIn("abandon Player 0", transfer)
+        self.assertIn("not Conquest rematches", transfer)
 
 
 class CombinedDamageEditorTests(unittest.TestCase):
@@ -200,6 +201,10 @@ class IsolationHSplashMissionTests(unittest.TestCase):
         self.assertIn("{Position 200 12}", mi)
         self.assertIn("{Position 1400 12}", mi)
         self.assertIn("{Position 2600 12}", mi)
+        self.assertIn('{Link 0x8108 {0x8107 "driver"}}', mi)
+        self.assertIn('{Link 0x8109 {0x8107 "gunner"}}', mi)
+        self.assertIn('{Link 0x810a {0x8107 "commander"}}', mi)
+        self.assertIn('{Link 0x810b {0x8107 "charger"}}', mi)
 
     def test_p0_apply_matches_g_and_forbids_extras(self) -> None:
         body = _uncommented(H_INC)
