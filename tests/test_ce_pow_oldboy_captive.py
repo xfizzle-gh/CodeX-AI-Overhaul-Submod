@@ -91,9 +91,12 @@ class OldBoyProductionSurrenderTests(unittest.TestCase):
         self.assertIn("withdrawn", transfer)
         self.assertIn("scene.quant.dmg", transfer)
         self.assertIn("Isolation F PASS", transfer)
+        self.assertIn("Isolation G", transfer)
         self.assertIn("AI-owned", transfer)
         self.assertIn("ce_pow_dmg_editor.inc", transfer)
         self.assertIn("aio_pow_dmg_ctrl", transfer)
+        self.assertIn("aio_pow_dmg_dummy_ctrl", transfer)
+        self.assertIn("splash", transfer)
 
 
 class CombinedDamageEditorTests(unittest.TestCase):
@@ -106,11 +109,23 @@ class CombinedDamageEditorTests(unittest.TestCase):
         self.assertIn("aio_pow_dmg_p0", body)
         self.assertIn("aio_pow_dmg_ob", body)
         self.assertIn("aio_pow_dmg_ai", body)
+        self.assertIn("aio_pow_dmg_dummy_ctrl", body)
+        self.assertIn("aio_pow_dmg_dummy_p0", body)
+        self.assertIn("aio_pow_dmg_dummy_ob", body)
         self.assertIn("{action attack}", body)
         self.assertEqual(body.count("{action attack}"), 3)
         attacks = body.split("{action attack}", 1)[1]
-        self.assertLess(attacks.find("{tag aio_pow_dmg_ctrl}"), attacks.find("{tag aio_pow_dmg_p0}"))
-        self.assertLess(attacks.find("{tag aio_pow_dmg_p0}"), attacks.find("{tag aio_pow_dmg_ob}"))
+        self.assertLess(
+            attacks.find("{tag aio_pow_dmg_dummy_ctrl}"),
+            attacks.find("{tag aio_pow_dmg_dummy_p0}"),
+        )
+        self.assertLess(
+            attacks.find("{tag aio_pow_dmg_dummy_p0}"),
+            attacks.find("{tag aio_pow_dmg_dummy_ob}"),
+        )
+        self.assertNotIn("{tag aio_pow_dmg_ctrl}", attacks)
+        self.assertNotIn("{tag aio_pow_dmg_p0}", attacks)
+        self.assertNotIn("{tag aio_pow_dmg_ob}", attacks)
         self.assertIn("{state user_control}", body)
         self.assertNotIn("aio_morale_surrendering", body)
         self.assertNotIn("aio_morale_surrender_expire", body)

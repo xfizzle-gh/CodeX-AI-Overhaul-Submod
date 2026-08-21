@@ -60,27 +60,33 @@ The ~18:21 Conquest red-dot/shot-while-moving run was on installed `d7fa808`, **
 
 **Isolation F PASS:** owner-controlled T-62 HE hit/killed CONTROL, runtime-P0-only, and exact five-step P0 with no AV. Conquest owner/player damage to P0 POWs was also safe, including a vehicle hit.
 
+**Isolation G:** AI-owned T-62 killed CONTROL and would **not** target runtime-P0-only or the exact five-step P0 (native ignore). Owner then manually killed both P0 subjects, no AV. ProcDump was SetThreadName/startup, not a GoH AV. G does **not** test AI-owned damage into P0. It does show runtime Player 0 alone is enough for native AI ignore, and the five-step retains that ignore.
+
 Two production AVs followed **AI-owned** damage to neutral/P0 POWs: T-62/HE via `scene.quant.dmg`, AI M4/rifle via `scene.quant.bullets`. Both `EXCEPTION_ACCESS_VIOLATION` read `0x00000158`, same RIP class. Nearby `deleted` log lines are correlation only unless the crash victim ID enters delete/expire/egress on the same tick.
 
-Do not infer targeting from those tank events. Target-ignore and damage-safety stay separate gates. Do not add `select 0`. Do not return to Conquest permutations for this isolate.
+Do not infer targeting from those tank events. Target-ignore and damage-safety stay separate gates. Do not add `select 0`. Do not return to Conquest permutations for this isolate. Do not infer an expire/delete race from nearby unrelated `deleted` log lines unless the exact crash-victim entity ID is shown entering that transition on the same tick.
 
-The clean five-step remains **HOLD as production-safe** until AI-owned damage is isolated. Production present is unchanged so Editor subjects match `b95f3cdc`.
+The clean five-step remains **HOLD as production-safe** until AI-owned **collateral** damage is isolated. Production present is unchanged so Editor subjects match `b95f3cdc`.
 
 ## Combined Editor damage fixture
 
 Opt-in only: `resource/map/multi/ce/ce_pow_dmg_editor.inc` (not in `ce_triggers.inc` / `dcg_script.inc`).
 
-F PASS used owner-fired HE. This file now isolates **killer ownership** in one Editor run. Three Player-1 humans plus one AI-owned shooter (`aio_pow_dmg_ai`, not `user_control`; prefer T-62). After victim state settles, source-backed `{action attack}` hits ctrl → p0 → ob.
+F PASS used owner-fired HE. G proved a direct AI `{action attack}` will not fire on P0 subjects. This file now isolates **AI-owned HE splash/collateral**: the same AI T-62 (`aio_pow_dmg_ai`, never `user_control`) `{action attack}`s ordinary targetable dummy humans after P0 states settle. Subjects sit in the blast radius and are never the attack `{target}`.
 
-1. `aio_pow_dmg_ctrl` — normal control, no transfer
-2. `aio_pow_dmg_p0` — runtime P0 only
-3. `aio_pow_dmg_ob` — exact Old Boy five-step
+Stations:
+
+1. `aio_pow_dmg_dummy_ctrl` + `aio_pow_dmg_ctrl` — ordinary control human in blast radius
+2. `aio_pow_dmg_dummy_p0` + `aio_pow_dmg_p0` — runtime P0 only in blast radius
+3. `aio_pow_dmg_dummy_ob` + `aio_pow_dmg_ob` — exact Old Boy five-step in blast radius
+
+Attack order: dummy_ctrl → dummy_p0 → dummy_ob. Place each P0 subject close enough that HE splash damages/kills it.
 
 No CE surrender tags, expire, evac, or delete on these victims. No fight/select/hold/control-AI pile.
 
-- control safe + P0-only AV ⇒ abandon Player 0
-- P0-only safe + five-step AV ⇒ narrow the five-step
-- all three safe under AI-owned damage ⇒ killer ownership alone is not sufficient; next is one production-state fixture (CE tags / expire / evac / delete timing), not more owner Conquest matches
+- ordinary collateral safe + P0-only splash AV ⇒ AI-owned collateral damage into Player 0 is sufficient; abandon Player 0
+- P0-only splash safe + five-step splash AV ⇒ narrow within the five-step
+- both P0 splash cases safe ⇒ AI ownership/collateral alone is not sufficient; only then one production-state fixture (CE tags / expire / evac / delete timing), not more owner Conquest matches
 
 ## Evacuation
 
