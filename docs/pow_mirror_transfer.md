@@ -54,14 +54,27 @@ Old crashing heads (`483387c` / `707f425`) stacked P0 on top of fight/select/hol
 
 ## Native Conquest targeting evidence
 
-The ~18:21 Conquest run (surrendering troops remained red and were shot while moving) was on installed workstation head `d7fa808` (civilian-mirror prototype era), **not** on the clean five-step `b95f3cdc`. That run does **not** prove the five-step fails targeting. The earlier attribution to `b95f3cdc` is withdrawn.
+The ~18:21 Conquest red-dot/shot-while-moving run was on installed `d7fa808`, **not** `b95f3cdc`. That attribution is withdrawn.
 
-Correct next evidence order:
+## Native damage blocker (exact `b95f3cdc`)
 
-1. Do not rematch `8fd3601` merely to retest apply-only `{able "fight" 0}`.
-2. First install/test **exact** `b95f3cdc` for the clean five-step Conquest targeting result. That baseline has not yet been natively tested in Conquest. Production files after the fight-0 revert match `b95f3cdc`; only this evidence note and its test lock differ.
-3. If exact `b95f3cdc` still remains red / is freshly targeted, then test the smallest remaining targeting candidate, `{able "select" 0}` only, without restoring the old actor-state pile.
-4. Do not test egress/delete until targeting is actually confirmed.
+A T-62 killed a neutral/P0 surrendered StormV rifleman. AV: `EXCEPTION_ACCESS_VIOLATION` read `0x00000158`, stack `scene.quant` → `scene.quant.dmg` → `ia:call`. Same near-null offset as the older `scene.quant.bullets` rifle AVs; do not assume a separate root cause. Rifle A–E PASS does **not** make the five-step production-safe under ordinary combat/HE damage.
+
+Do not infer targeting from that tank event. It proves damage/death on a neutral actor, not a fresh target-select. Target-ignore and damage-safety stay separate gates.
+
+The clean five-step P0 path is **rejected as production-safe** until this damage seam is isolated. Production present is unchanged for this diagnostic so the Editor subjects match `b95f3cdc`.
+
+## Combined Editor damage fixture
+
+Opt-in only: `resource/map/multi/ce/ce_pow_dmg_editor.inc` (not in `ce_triggers.inc` / `dcg_script.inc`).
+
+One fixture, three Player-1 humans, same tank/HE sequentially, dump capture:
+
+1. `aio_pow_dmg_ctrl` — normal control, no transfer
+2. `aio_pow_dmg_p0` — runtime P0 only
+3. `aio_pow_dmg_ob` — exact Old Boy five-step
+
+If P0-only already AVs under `scene.quant.dmg`, Player 0 damage registration is the seam. If only the five-step AVs, narrow inside that sequence. No fight/select/hold/control-AI pile. No Conquest. No civilian-mirror changes.
 
 ## Evacuation
 

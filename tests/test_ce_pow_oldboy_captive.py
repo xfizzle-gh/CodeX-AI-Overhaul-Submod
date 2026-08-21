@@ -10,6 +10,7 @@ BEH = ROOT / "resource/map/multi/ce/ce_broken_behavior_triggers.inc"
 TRANSFER = ROOT / "docs/pow_mirror_transfer.md"
 TRIG = ROOT / "resource/map/multi/ce/ce_triggers.inc"
 DCG = ROOT / "resource/map/multi/dcg_script.inc"
+DMG = ROOT / "resource/map/multi/ce/ce_pow_dmg_editor.inc"
 
 
 def _uncommented(path: Path) -> str:
@@ -88,8 +89,45 @@ class OldBoyProductionSurrenderTests(unittest.TestCase):
         self.assertIn("d7fa808", transfer)
         self.assertIn("b95f3cdc", transfer)
         self.assertIn("withdrawn", transfer)
-        self.assertIn("Do not rematch", transfer)
-        self.assertIn('{able "select" 0}', transfer)
+        self.assertIn("scene.quant.dmg", transfer)
+        self.assertIn("ce_pow_dmg_editor.inc", transfer)
+        self.assertIn("aio_pow_dmg_ctrl", transfer)
+
+
+class CombinedDamageEditorTests(unittest.TestCase):
+    def test_combined_fixture_is_opt_in_three_subject(self) -> None:
+        self.assertTrue(DMG.is_file())
+        body = _uncommented(DMG)
+        self.assertNotIn("ce_pow_dmg_editor", TRIG.read_text(encoding="utf-8"))
+        self.assertNotIn("ce_pow_dmg_editor", DCG.read_text(encoding="utf-8"))
+        self.assertIn("aio_pow_dmg_ctrl", body)
+        self.assertIn("aio_pow_dmg_p0", body)
+        self.assertIn("aio_pow_dmg_ob", body)
+        self.assertEqual(body.count('{player "0"}'), 2)
+        self.assertEqual(body.count("{effect start_white_flag}"), 1)
+        self.assertEqual(body.count("{tag_remove enemy}"), 1)
+        self.assertEqual(body.count("{volume in_hands}"), 1)
+        self.assertEqual(body.count("{collage stand_giveup_1}"), 1)
+        self.assertLess(body.find('{player "0"}'), body.find("{effect start_white_flag}"))
+        self.assertLess(body.find("{effect start_white_flag}"), body.find("{tag_remove enemy}"))
+        self.assertLess(body.find("{tag_remove enemy}"), body.find("{volume in_hands}"))
+        self.assertLess(body.find("{volume in_hands}"), body.find("{collage stand_giveup_1}"))
+        extras = (
+            "{control AI}",
+            '{able "select" 0}',
+            '{able "fight" 0}',
+            "{fire_mode hold}",
+            "{weapon_prepare off}",
+            "{move_mode hold}",
+            "{ai_move",
+            '{drop "orders sensor senseless"}',
+            "{Player 0}",
+            "aio_pow_ob_fight_off",
+            "generated_pow",
+            "{delete}",
+        )
+        for extra in extras:
+            self.assertNotIn(extra, body, extra)
 
 
 if __name__ == "__main__":
