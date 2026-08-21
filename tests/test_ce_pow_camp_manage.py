@@ -33,8 +33,12 @@ class CePowCampManageTests(unittest.TestCase):
         self.assertIn("{tag spawn_b}", s2)
         self.assertNotIn("{tag spawn_a}", s2)
         self.assertIn("{tag_add aio_pow_camp_enemy}", s1)
+        self.assertIn("{op \"<=\"}", s1)
+        self.assertIn("{value 1}", s1)
+        self.assertIn("{value 2}", s2)
         arrive = manage.split("surrender_arrive_enemy_camp", 1)[1].split("broken/pow_announce", 1)[0]
         self.assertIn("{tag_add prisoner_in_enemy_camp}", arrive)
+        self.assertIn('{var "ce_morale_diag_held$"}', arrive)
         self.assertIn("{meters 25}", arrive)
         self.assertNotIn("{meters 80}", arrive)
         self.assertNotIn("aio_pow_camp_enemy_ready$", arrive)

@@ -8,7 +8,8 @@
 ; Evac stays tag-driven after a 3s pose, then {action move}. Ordinary POWs
 ; retarget to a live {tag aio_pow_camp} collection anchor; otherwise captor-rear
 ; waypoint. Ally/support keep waypoint egress. No drop-sensor/fight/select restack.
-; 100s expire stays as a backstop. Do not restack fight/select/drop-sensor/control AI.
+; 500s expire stays as a backstop. Walkers / presenting / held skip it.
+; Do not restack fight/select/drop-sensor/control AI.
 ; ID assign uses evac switch/cmp_i on aio_pow_next_id$. Do not use entities+count in that switch.
 			{"conquest_enhanced_mechanics/broken/acquire"
 				{condition
@@ -6421,6 +6422,11 @@
 						{tag_add aio_pow_evt_evac}
 					}
 					{"set_i"
+						{var "ce_morale_diag_evac$"}
+						{op "="}
+						{value 1}
+					}
+					{"set_i"
 						{var "aio_pow_last_evt$"}
 						{op "="}
 						{value 4}
@@ -6435,7 +6441,7 @@
 					}
 					{"switch"
 							{"case"
-								{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+								{condition {type cmp_i} {var "enemy_spawnside$"} {op "<="} {value 1}}
 								{"switch"
 									{"case"
 										{condition
@@ -6551,7 +6557,7 @@
 										}
 									}
 									{"case"
-										{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+										{condition {type cmp_i} {var "enemy_spawnside$"} {op "<="} {value 1}}
 										{"entity_state"
 											{selector
 												{source advanced}
@@ -6797,7 +6803,7 @@
 										}
 									}
 									{"case"
-										{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
+										{condition {type cmp_i} {var "enemy_spawnside$"} {op "<="} {value 1}}
 										{"entity_state"
 											{selector
 												{source advanced}
@@ -7474,6 +7480,18 @@
 										{tag
 											{tag player}
 										}
+										{tag
+											{tag aio_morale_surrender_to_camp}
+										}
+										{tag
+											{tag aio_morale_surrender_to_enemy_camp}
+										}
+										{tag
+											{tag prisoner_in_camp}
+										}
+										{tag
+											{tag prisoner_in_enemy_camp}
+										}
 									}
 								}
 							}
@@ -7527,6 +7545,18 @@
 									{tag
 										{tag player}
 									}
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+									{tag
+										{tag aio_morale_surrender_to_enemy_camp}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
+									}
 								}
 							}
 						}
@@ -7569,6 +7599,18 @@
 									{tag
 										{tag player}
 									}
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+									{tag
+										{tag aio_morale_surrender_to_enemy_camp}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
+									}
 								}
 							}
 						}
@@ -7610,6 +7652,18 @@
 									}
 									{tag
 										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+									{tag
+										{tag aio_morale_surrender_to_enemy_camp}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
 									}
 								}
 							}
@@ -7670,6 +7724,18 @@
 										{tag
 											{tag player}
 										}
+										{tag
+											{tag aio_morale_surrender_to_camp}
+										}
+										{tag
+											{tag aio_morale_surrender_to_enemy_camp}
+										}
+										{tag
+											{tag prisoner_in_camp}
+										}
+										{tag
+											{tag prisoner_in_enemy_camp}
+										}
 									}
 								}
 							}
@@ -7723,6 +7789,18 @@
 									{tag
 										{tag player}
 									}
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+									{tag
+										{tag aio_morale_surrender_to_enemy_camp}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
+									}
 								}
 							}
 						}
@@ -7765,6 +7843,18 @@
 									{tag
 										{tag player}
 									}
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+									{tag
+										{tag aio_morale_surrender_to_enemy_camp}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
+									}
 								}
 							}
 						}
@@ -7806,6 +7896,18 @@
 									}
 									{tag
 										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+									{tag
+										{tag aio_morale_surrender_to_enemy_camp}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
 									}
 								}
 							}
@@ -7869,6 +7971,18 @@
 										{tag
 											{tag prisoner_in_enemy_camp}
 										}
+										{tag
+											{tag aio_morale_surrender_evacuating}
+										}
+										{tag
+											{tag aio_morale_surrender_presenting}
+										}
+										{tag
+											{tag aio_morale_surrender_to_camp}
+										}
+										{tag
+											{tag aio_morale_surrender_to_enemy_camp}
+										}
 									}
 								}
 							}
@@ -7909,10 +8023,27 @@
 									{tag
 										{tag prisoner_in_enemy_camp}
 									}
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+									{tag
+										{tag aio_morale_surrender_to_enemy_camp}
+									}
 								}
 							}
 						}
 						{tag_add aio_pow_evt_expire}
+					}
+					{"set_i"
+						{var "ce_morale_diag_expire$"}
+						{op "="}
+						{value 1}
 					}
 					{"set_i"
 						{var "aio_pow_last_evt$"}
@@ -7956,6 +8087,18 @@
 									}
 									{tag
 										{tag prisoner_in_enemy_camp}
+									}
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+									{tag
+										{tag aio_morale_surrender_to_enemy_camp}
 									}
 								}
 							}
@@ -8004,6 +8147,18 @@
 									}
 									{tag
 										{tag prisoner_in_enemy_camp}
+									}
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+									{tag
+										{tag aio_morale_surrender_to_enemy_camp}
 									}
 								}
 							}

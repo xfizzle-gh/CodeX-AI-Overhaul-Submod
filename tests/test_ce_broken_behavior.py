@@ -150,6 +150,9 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('print("CE_POW_DIAG event=p0', lua)
         self.assertIn('print("CE_POW_DIAG event=drop', lua)
         self.assertIn('print("CE_POW_DIAG event=assign', lua)
+        self.assertIn('print("CE_POW_DIAG event=evac', lua)
+        self.assertIn('print("CE_POW_DIAG event=expire', lua)
+        self.assertIn('print("CE_POW_DIAG event=held', lua)
         self.assertIn('print("CE_POW_DIAG event=delete', lua)
         self.assertIn("sensor=unreadable", lua)
         self.assertIn("entity=unreadable", lua)
@@ -178,7 +181,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{item "weapon"}', beh)
         self.assertIn('{"delete"', beh)
         self.assertIn('{on "start_white_flag"', human)
-        self.assertIn("{delay 100", human)
+        self.assertIn("{delay 500", human)
+        self.assertNotIn("{delay 100", human)
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1]
         self.assertNotIn('{able "select" 0}', apply)
         self.assertNotIn('{able "fight" 0}', apply)
@@ -188,7 +192,11 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{delay 60", apply)
         self.assertIn('{tags add "aio_morale_surrender_expire"}', human)
         self.assertNotIn('{call "delete"}', human)
-        self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 100"))
+        self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 500"))
+        self.assertIn('not tagged "aio_morale_surrender_evacuating"', apply)
+        self.assertIn('not tagged "aio_morale_surrender_presenting"', apply)
+        self.assertIn('not tagged "aio_morale_surrender_to_camp"', apply)
+        self.assertIn('not tagged "aio_morale_surrender_to_enemy_camp"', apply)
         self.assertEqual(human.count('{call "start_white_flag"}'), 1)
         present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]
         self.assertIn("{tag_add aio_morale_surrender_presenting}", present)
@@ -291,6 +299,9 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "ce_morale_diag_p0",
             "ce_morale_diag_impregnable",
             "ce_morale_diag_drop",
+            "ce_morale_diag_evac",
+            "ce_morale_diag_expire",
+            "ce_morale_diag_held",
             "ce_morale_diag_delete",
             "ce_morale_diag_surrender",
         ):
@@ -300,6 +311,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{tag_add aio_pow_evt_p0}", present)
         self.assertIn("{tag_add aio_pow_evt_present_done}", present)
         self.assertIn("{tag_add aio_pow_evt_evac}", evac)
+        self.assertIn('{var "ce_morale_diag_evac$"}', evac)
         self.assertIn("{tag_add aio_pow_evt_move_a}", evac)
         self.assertIn("{tag_add aio_pow_evt_move_b}", evac)
         self.assertNotIn('{"delete"', evac)
@@ -307,6 +319,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{tag_add aio_pow_evt_arrive}", arrive_a)
         self.assertIn("{tag_add aio_pow_evt_delete}", arrive_a)
         self.assertIn("{tag_add aio_pow_evt_expire}", expire)
+        self.assertIn('{var "ce_morale_diag_expire$"}', expire)
         self.assertIn("{tag_add aio_pow_evt_delete}", expire)
         self.assertLess(arrive_a.find("{tag_add aio_pow_evt_delete}"), arrive_a.find('{"delete"'))
         self.assertLess(expire.find("{tag_add aio_pow_evt_delete}"), expire.find('{"delete"'))
@@ -361,6 +374,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{time 5}", evac)
         self.assertNotIn('{"delete"', evac)
         self.assertNotIn('{var "enemy_spawnside$"} {op "=="} {value 0}', evac)
+        self.assertIn('{var "enemy_spawnside$"} {op "<="} {value 1}', evac)
         s1 = evac.split("{value 1}", 1)[1].split("{value 2}", 1)[0]
         s1_wp = [line for line in s1.splitlines() if "attack_support_entry" in line]
         self.assertEqual(len(s1_wp), 2)
@@ -376,6 +390,10 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         expire_del = beh.split("broken/surrender_expire", 1)[1].split("broken/observe_surrender", 1)[0]
         expire_del = expire_del.split('{"delete"', 1)[1].split('{"delay"', 1)[0]
         self.assertIn("{tag aio_morale_surrender_expire}", expire_del)
+        self.assertIn("{tag aio_morale_surrender_evacuating}", expire_del)
+        self.assertIn("{tag aio_morale_surrender_presenting}", expire_del)
+        self.assertIn("{tag aio_morale_surrender_to_camp}", expire_del)
+        self.assertIn("{tag aio_morale_surrender_to_enemy_camp}", expire_del)
         arrive_a = beh.split("broken/surrender_arrive_a", 1)[1].split("broken/surrender_arrive_b", 1)[0]
         arrive_b = beh.split("broken/surrender_arrive_b", 1)[1].split("broken/surrender_expire", 1)[0]
         self.assertIn('{"delete"', arrive_a)
@@ -384,9 +402,16 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{tag spawn_a}", arrive_a)
         self.assertNotIn("{tag spawn_b}", arrive_a)
         self.assertIn("{tag aio_morale_surrender_to_a}", arrive_a)
+        self.assertIn("{tag aio_morale_surrender_to_camp}", arrive_a)
+        self.assertIn("{tag aio_morale_surrender_to_enemy_camp}", arrive_a)
+        self.assertIn("{tag prisoner_in_camp}", arrive_a)
         self.assertIn("{tag spawn_b}", arrive_b)
         self.assertNotIn("{tag spawn_a}", arrive_b)
         self.assertIn("{tag aio_morale_surrender_to_b}", arrive_b)
+        self.assertIn("{tag aio_morale_surrender_to_camp}", arrive_b)
+        arrive_a_del = arrive_a.split('{"delete"', 1)[1]
+        self.assertIn("{tag aio_morale_surrender_to_camp}", arrive_a_del)
+        self.assertIn("{tag aio_morale_surrender_to_enemy_camp}", arrive_a_del)
         self.assertIn("aio_morale_surrendering", lua)
         self.assertIn("aio_morale_surrender_evacuating", lua)
         self.assertNotIn("{stat_notify", beh)

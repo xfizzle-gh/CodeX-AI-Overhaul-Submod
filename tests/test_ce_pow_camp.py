@@ -33,8 +33,10 @@ class CePowCampTests(unittest.TestCase):
         self.assertIn("{tag_add aio_pow_camp}", s2)
         self.assertIn("aio_pow_camp_ready$", s1)
         self.assertIn("enemy_spawnside$", s1)
+        self.assertIn("{op \"<=\"}", s1)
         self.assertIn("{value 1}", s1)
         self.assertIn("{value 2}", s2)
+        self.assertNotIn("{op \"==\"}", s1.split("enemy_spawnside$", 1)[1].split("aio_pow_camp_ready$", 1)[0])
         self.assertNotIn('{"delete"', camp)
         self.assertNotIn('{player "0"}', camp)
         self.assertNotIn("{control AI}", camp)
@@ -82,6 +84,7 @@ class CePowCampTests(unittest.TestCase):
     def test_camp_arrival_holds_without_delete(self) -> None:
         arrive = CAMP.read_text(encoding="utf-8").split("surrender_arrive_camp", 1)[1]
         self.assertIn("{tag_add prisoner_in_camp}", arrive)
+        self.assertIn('{var "ce_morale_diag_held$"}', arrive)
         self.assertIn("{tag aio_pow_camp}", arrive)
         self.assertIn("{meters 25}", arrive)
         self.assertNotIn("{meters 80}", arrive)
@@ -99,9 +102,14 @@ class CePowCampTests(unittest.TestCase):
     def test_expire_and_apply_spare_camped_pows(self) -> None:
         human = HUMAN.read_text(encoding="utf-8")
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split("{on ", 1)[0]
-        self.assertIn("{delay 100", apply)
+        self.assertIn("{delay 500", apply)
+        self.assertNotIn("{delay 100", apply)
         self.assertIn('not tagged "prisoner_in_camp"', apply)
         self.assertIn('not tagged "prisoner_in_enemy_camp"', apply)
+        self.assertIn('not tagged "aio_morale_surrender_evacuating"', apply)
+        self.assertIn('not tagged "aio_morale_surrender_presenting"', apply)
+        self.assertIn('not tagged "aio_morale_surrender_to_camp"', apply)
+        self.assertIn('not tagged "aio_morale_surrender_to_enemy_camp"', apply)
         self.assertNotIn('{able "select" 0}', apply)
         self.assertNotIn('{able "fight" 0}', apply)
         self.assertNotIn('{player "0"}', apply)
@@ -109,6 +117,10 @@ class CePowCampTests(unittest.TestCase):
             "broken/observe_surrender", 1
         )[0]
         self.assertIn("{tag prisoner_in_camp}", expire)
+        self.assertIn("{tag aio_morale_surrender_evacuating}", expire)
+        self.assertIn("{tag aio_morale_surrender_presenting}", expire)
+        self.assertIn("{tag aio_morale_surrender_to_camp}", expire)
+        self.assertIn("{tag aio_morale_surrender_to_enemy_camp}", expire)
         die = human.split('{on "die"', 1)[1].split("{on ", 1)[0]
         self.assertIn('{tags remove "prisoner_in_camp"}', die)
         self.assertIn('{tags remove "aio_morale_surrender_to_camp"}', die)

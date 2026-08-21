@@ -777,14 +777,22 @@
 		{tags remove "aio_morale_broken"}
 		{tags remove "aio_morale_regrouping"}
 		{call "aio_morale_refresh_icons"}
-		{delay 100
+		{delay 500
 			{if tagged "aio_morale_surrendering"
 				{if not tagged "prisoner_in_camp"
 					{if not tagged "prisoner_in_enemy_camp"
-						{if not dead
-							{call "stop_white_flag"}
-							{tags add "aio_morale_surrender_expire"}
-							{tags add "aio_pow_evt_expire"}
+						{if not tagged "aio_morale_surrender_evacuating"
+							{if not tagged "aio_morale_surrender_presenting"
+								{if not tagged "aio_morale_surrender_to_camp"
+									{if not tagged "aio_morale_surrender_to_enemy_camp"
+										{if not dead
+											{call "stop_white_flag"}
+											{tags add "aio_morale_surrender_expire"}
+											{tags add "aio_pow_evt_expire"}
+										}
+									}
+								}
+							}
 						}
 					}
 				}

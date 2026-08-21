@@ -1,6 +1,8 @@
 ; Interim collection: tag captor-rear spawn_a/spawn_b as aio_pow_camp.
 ; Not a visible prison camp. Ordinary POWs walk there if the live tag exists.
-; Ally/support keep waypoint egress. Spawnside 0 never arms the camp.
+; Ally/support keep waypoint egress. Spawnside 0 uses the same mapping as
+; spawnside 1 (Conquest default / bots_spawnside fallback: enemy-on-A,
+; player-rear-B). enemy_spawnside$ <= 1 arms spawn_b; == 2 arms spawn_a.
 ; P0+harmless lifecycle stays in surrender_present; this file only dest+hold.
 			{"conquest_enhanced_mechanics/broken/spawn_pow_camp_s1"
 				{condition
@@ -12,7 +14,7 @@
 						}
 						{"2.cmp_i"
 							{var "enemy_spawnside$"}
-							{op "=="}
+							{op "<="}
 							{value 1}
 						}
 						{"3.cmp_i"
@@ -225,6 +227,11 @@
 							}
 						}
 						{tag_add prisoner_in_camp}
+					}
+					{"set_i"
+						{var "ce_morale_diag_held$"}
+						{op "="}
+						{value 1}
 					}
 					{"entity_state"
 						{selector

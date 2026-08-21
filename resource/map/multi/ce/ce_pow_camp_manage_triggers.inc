@@ -1,5 +1,8 @@
 ; POW camp management: opposite-spawn enemy collection + first-hold talk.
 ; No convert, release, truck, or live count.
+; Spawnside 0 uses the same mapping as spawnside 1 (Conquest default:
+; enemy-on-A): enemy_spawnside$ <= 1 arms spawn_a as aio_pow_camp_enemy;
+; == 2 arms spawn_b. Allied POWs still get a live opposite camp.
 ; P0+harmless lifecycle stays in surrender_present.
 			{"conquest_enhanced_mechanics/broken/spawn_enemy_pow_camp_s1"
 				{condition
@@ -11,7 +14,7 @@
 						}
 						{"2.cmp_i"
 							{var "enemy_spawnside$"}
-							{op "=="}
+							{op "<="}
 							{value 1}
 						}
 						{"3.cmp_i"
@@ -224,6 +227,11 @@
 							}
 						}
 						{tag_add prisoner_in_enemy_camp}
+					}
+					{"set_i"
+						{var "ce_morale_diag_held$"}
+						{op "="}
+						{value 1}
 					}
 					{"entity_state"
 						{selector
