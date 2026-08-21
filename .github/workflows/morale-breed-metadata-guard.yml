@@ -10,6 +10,14 @@ on:
       - "docs/morale_command_phase0_audit.md"
       - "docs/morale_legacy_visual_allowlist.txt"
       - "tests/test_morale_breed_metadata.py"
+      - "tests/test_aio_iso_civilian_behaviour.py"
+      - "docs/pow_mirror_transfer.md"
+      - "resource/set/interaction_entity/human_ce.inc"
+      - "resource/map/multi/ce/ce_broken_behavior_triggers.inc"
+      - "tests/test_ce_pow_oldboy_captive.py"
+      - "resource/map/multi/ce/ce_pow_dmg_editor.inc"
+      - "resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.inc"
+      - "resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.mi"
       - ".github/workflows/morale-breed-metadata-guard.yml"
   push:
     branches:
@@ -22,6 +30,14 @@ on:
       - "docs/morale_command_phase0_audit.md"
       - "docs/morale_legacy_visual_allowlist.txt"
       - "tests/test_morale_breed_metadata.py"
+      - "tests/test_aio_iso_civilian_behaviour.py"
+      - "docs/pow_mirror_transfer.md"
+      - "resource/set/interaction_entity/human_ce.inc"
+      - "resource/map/multi/ce/ce_broken_behavior_triggers.inc"
+      - "tests/test_ce_pow_oldboy_captive.py"
+      - "resource/map/multi/ce/ce_pow_dmg_editor.inc"
+      - "resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.inc"
+      - "resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.mi"
       - ".github/workflows/morale-breed-metadata-guard.yml"
 
 permissions:
@@ -40,4 +56,4 @@ jobs:
           python-version: "3.13"
 
       - name: Run repo-local morale metadata guard
-        run: python -m unittest tests/test_morale_breed_metadata.py
+        run: python -m unittest tests/test_morale_breed_metadata.py tests/test_aio_iso_civilian_behaviour.py tests/test_ce_pow_oldboy_captive.py

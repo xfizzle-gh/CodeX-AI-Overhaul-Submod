@@ -1303,15 +1303,20 @@
 											{tag _user}
 										}
 									}
-									{include
-										{state
-											{state operatable}
-										}
-										{state
-											{state user_control}
-										}
+								{include
+									{state
+										{state operatable}
+									}
+									{state
+										{state user_control}
 									}
 								}
+								{exclude
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+							}
 							}
 							{distance
 								{mode near_than}
@@ -1373,15 +1378,20 @@
 											{tag _user}
 										}
 									}
-									{include
-										{state
-											{state operatable}
-										}
-										{state
-											{state user_control}
-										}
+								{include
+									{state
+										{state operatable}
+									}
+									{state
+										{state user_control}
 									}
 								}
+								{exclude
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+							}
 							}
 							{distance
 								{mode near_than}

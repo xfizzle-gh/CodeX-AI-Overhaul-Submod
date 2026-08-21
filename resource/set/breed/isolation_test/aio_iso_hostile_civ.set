@@ -1,0 +1,20 @@
+{breed
+	{behaviour civilian}
+	{skin "nrf_1"}
+	{portrait nrf}
+	{icon sniper}
+	{icon_priority 2}
+	{nationality nato}
+	{armors
+		{head us_highcut_2}
+		{body "nrf_vest_1"}
+	}
+	{perks
+		(include "/set/breed/mp/nato/2022s/ability.inc")
+		("veterancy_lvl_0")
+	}
+	{veterancy
+		(include "/set/breed/mp/nato/2022s/ability.inc")
+		("veterancy_lvl_0")
+	}
+}
