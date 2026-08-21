@@ -146,7 +146,10 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertLess(probe.find("enable_ce_morale_debug"), probe.find("startMoraleEventWatch()"))
         self.assertLess(probe.find("startPowDiagWatch()"), probe.find("startMoraleEventWatch()"))
         self.assertIn("CE_POW_DIAG", lua)
-        self.assertIn("aio_pow_d%02d", lua)
+        self.assertIn('print("CE_POW_DIAG event=present', lua)
+        self.assertIn('print("CE_POW_DIAG event=p0', lua)
+        self.assertIn('print("CE_POW_DIAG event=drop', lua)
+        self.assertIn('print("CE_POW_DIAG event=assign', lua)
         self.assertIn("sensor=unreadable", lua)
         self.assertIn("entity=unreadable", lua)
         for rel in (
@@ -244,9 +247,31 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{type entities}", assign)
         self.assertIn('{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 0}}', assign)
         self.assertIn('{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}', beh)
+        self.assertLess(assign.find('{var "ce_morale_diag_assign$"}'), assign.find('{"switch"'))
+        self.assertLess(present.find('{var "ce_morale_diag_present$"}'), present.find("{effect start_white_flag}"))
+        self.assertLess(present.find('{player "0"}'), present.find('{var "ce_morale_diag_p0$"}'))
+        self.assertLess(present.find('{var "ce_morale_diag_p0$"}'), present.find("{tag_remove enemy}"))
+        self.assertLess(present.find("{volume in_hands}"), present.find('{var "ce_morale_diag_drop$"}'))
+        self.assertLess(present.find("{volume in_hands}"), present.find('{var "aio_pow_last_evt$"}'))
+        self.assertGreater(present.find('{var "aio_pow_last_evt$"}'), present.find("{volume in_hands}"))
+        gap = present[present.find('{player "0"}'):present.find("{volume in_hands}")]
+        self.assertNotIn('{var "aio_pow_last_evt$"}', gap)
+        self.assertNotIn('{var "aio_pow_seq$"}', gap)
         self.assertIn("{tag_add aio_pow_d01}", beh)
         self.assertIn("{tag_add aio_pow_d16}", beh)
         self.assertNotIn("{tag_add aio_pow_d17}", beh)
+        vars_inc = (ROOT / "resource/map/multi/ce/ce_vars.inc").read_text(encoding="utf-8")
+        for name in (
+            "aio_pow_next_id",
+            "aio_pow_seq",
+            "aio_pow_last_evt",
+            "ce_morale_diag_present",
+            "ce_morale_diag_assign",
+            "ce_morale_diag_p0",
+            "ce_morale_diag_drop",
+            "ce_morale_diag_surrender",
+        ):
+            self.assertIn('{"' + name + '"}', vars_inc)
         self.assertIn('{tags add "aio_pow_evt_apply"}', apply)
         self.assertIn('{tags add "aio_pow_need_id"}', apply)
         self.assertIn("{tag_add aio_pow_evt_p0}", present)
@@ -268,7 +293,9 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn('{able "fight" 0}', beh)
         self.assertNotIn("{control AI}", beh)
         self.assertIn("function startPowDiagWatch()", lua)
-        self.assertIn("CE_POW_DIAG id=%s", lua)
+        self.assertIn('print("CE_POW_DIAG event=present', lua)
+        watch = lua.split("local function startPowDiagWatch()", 1)[1].split("local function startMoraleEventWatch()", 1)[0]
+        self.assertNotIn("IsSquadTagged", watch)
         probe = lua.split("function StartCeMoraleProbeLog()", 1)[1]
         self.assertLess(probe.find("startPowDiagWatch()"), probe.find("if readMoraleVar"))
 

@@ -79,11 +79,17 @@ Diagnostic-only. Production P0 / five-step / evac / expire / delete semantics ar
 
 There is no mission `{"log"}` command in this repo. The source-proven `game.log` style is Lua `print()` (`CE_POW`, `CE_MORALE_EVENT`, `CE_POW_DIAG`) in `resource/script/multiplayer/modes/utility_ce.lua`.
 
-`startPowDiagWatch()` is always-on from `StartCeMoraleProbeLog()` (not gated on debug/autodemo). It polls every 1s.
+`startPowDiagWatch()` is always-on from `StartCeMoraleProbeLog()` (not gated on debug/autodemo). It polls declared mission vars every 1s. Do **not** use `IsSquadTagged` for this trail — entity-level tags are invisible to that API (`CE_POW alive=1` never printed even when `observe_surrender` set `ce_morale_diag_surrender$`).
+
+Declared vars (same grammar as `ce_morale_diag_surrender` in `ce_vars.inc`): `aio_pow_next_id`, `aio_pow_seq`, `aio_pow_last_evt`, `ce_morale_diag_present`, `ce_morale_diag_assign`, `ce_morale_diag_p0`, `ce_morale_diag_drop`.
+
+Unconditional `{"set_i"}` (no entity selector) is the first action of `surrender_present` (`ce_morale_diag_present$=1`) and of sibling `surrender_diag_assign` (`ce_morale_diag_assign$=1`). `ce_morale_diag_p0$=1` is immediately after `{player "0"}`. Overlay `aio_pow_last_evt$` / `aio_pow_seq$` sit **after** drop, not between P0 and drop (undeclared `set_i` there is the hunch for the missed drop on `788397d`). `ce_morale_diag_drop$=1` is immediately after `{action drop}{volume in_hands}`.
+
+Lua prints `CE_POW_DIAG event=present|assign|p0|drop` when those declared vars flip (same flip pattern as `CE_MORALE_EVENT surrender`).
 
 ### Stable POW diagnostic ID
 
-On apply, the actor gets `aio_pow_need_id`. Trigger `broken/surrender_diag_assign` stamps `aio_pow_d01` … `aio_pow_d16` plus `aio_pow_did` using the same-file evac `{"switch"}` `{condition {type cmp_i} {var ...} {op "=="} {value N}}` grammar on `aio_pow_next_id$`. Do not use `{type entities}` + `{count {op "=="}}` in that switch — that nest failed map load (`dda_accessorraw.cpp:342`). Overflow (17th+ surrender in the match) is tagged `aio_pow_overflow`. The ID appears on every `CE_POW_DIAG` line for that actor.
+On apply, the actor gets `aio_pow_need_id`. Trigger `broken/surrender_diag_assign` (sibling of present, not nested inside it) stamps `aio_pow_d01` … `aio_pow_d16` plus `aio_pow_did` using the same-file evac `{"switch"}` `{condition {type cmp_i} {var ...} {op "=="} {value N}}` grammar on declared `aio_pow_next_id$`. Do not use `{type entities}` + `{count {op "=="}}` in that switch — that nest failed map load (`dda_accessorraw.cpp:342`). Overflow (17th+ surrender in the match) is tagged `aio_pow_overflow`.
 
 ### Line format
 
@@ -91,7 +97,7 @@ On apply, the actor gets `aio_pow_need_id`. Trigger `broken/surrender_diag_assig
 CE_POW_DIAG id=aio_pow_d01 entity=unreadable breed=unreadable orig_player=unreadable curr_player=0_inferred squad=<squad or unreadable> event=<name> t=<os.time or unreadable> clock=<os.clock or unreadable> flags=<tag list or gone> sensor=unreadable last_evt=<int> seq=<int>
 ```
 
-Unreadables are explicit. Script cannot read entity hex, breed, original Player slot, or sensor/detect registration. `curr_player=0_inferred` only after the production P0 transfer tag `aio_pow_post_p0`. `squad=` is `BotApi.Scene.Squads` + `IsSquadTagged` (squad-level; two POWs in one squad share squad flag reads).
+Unreadables are explicit. Script cannot read entity hex, breed, original Player slot, or sensor/detect registration. `curr_player=0_inferred` only on `event=p0` after the declared `ce_morale_diag_p0$` flip. Do not use `IsSquadTagged` for this trail.
 
 `event=` values: `watch_armed`, `apply`, `p0`, `present_complete`, `evac_start`, `move_a`, `move_b`, `arrive`, `expire`, `delete`, `die`, `hit`, `state_change`, `seq`, `absent`, `overflow`.
 

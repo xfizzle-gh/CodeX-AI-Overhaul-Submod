@@ -792,6 +792,11 @@
 					}
 				}
 				{actions
+					{"set_i"
+						{var "ce_morale_diag_assign$"}
+						{op "="}
+						{value 1}
+					}
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 0}}
@@ -2731,6 +2736,11 @@
 					}
 				}
 				{actions
+					{"set_i"
+						{var "ce_morale_diag_present$"}
+						{op "="}
+						{value 1}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -2838,6 +2848,11 @@
 						{operation set}
 						{player "0"}
 					}
+					{"set_i"
+						{var "ce_morale_diag_p0$"}
+						{op "="}
+						{value 1}
+					}
 					{"delay"
 						{time 0.05}
 					}
@@ -2910,16 +2925,6 @@
 							}
 						}
 						{tag_add aio_pow_evt_p0}
-					}
-					{"set_i"
-						{var "aio_pow_last_evt$"}
-						{op "="}
-						{value 2}
-					}
-					{"set_i"
-						{var "aio_pow_seq$"}
-						{op "+"}
-						{value 1}
 					}
 					{"entity_state"
 						{selector
@@ -2994,6 +2999,21 @@
 						}
 						{action drop}
 						{volume in_hands}
+					}
+					{"set_i"
+						{var "ce_morale_diag_drop$"}
+						{op "="}
+						{value 1}
+					}
+					{"set_i"
+						{var "aio_pow_last_evt$"}
+						{op "="}
+						{value 2}
+					}
+					{"set_i"
+						{var "aio_pow_seq$"}
+						{op "+"}
+						{value 1}
 					}
 					{"delay"
 						{time 0.05}
