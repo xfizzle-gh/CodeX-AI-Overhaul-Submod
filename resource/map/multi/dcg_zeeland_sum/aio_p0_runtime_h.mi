@@ -1,0 +1,84 @@
+{mission
+	{Human "mp/nato/2022s/nato_rifleman" 0x8101
+		{Position 200 0}
+		{Player 1}
+		{MID 1}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0x8102
+		{Position 200 12}
+		{Player 1}
+		{MID 2}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0x8103
+		{Position 1400 0}
+		{Player 1}
+		{MID 3}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0x8104
+		{Position 1400 12}
+		{Player 1}
+		{MID 4}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0x8105
+		{Position 2600 0}
+		{Player 1}
+		{MID 5}
+	}
+	{Human "mp/nato/2022s/nato_rifleman" 0x8106
+		{Position 2600 12}
+		{Player 1}
+		{MID 6}
+	}
+	{Entity "t62m1_rus" 0x8107
+		{Position 0 0}
+		{xform zl 90}
+		{Player 2}
+		{MID 7}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0x8108
+		{Position -8 4}
+		{Player 2}
+		{MID 8}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman1" 0x8109
+		{Position -8 -4}
+		{Player 2}
+		{MID 9}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman2" 0x810a
+		{Position -16 4}
+		{Player 2}
+		{MID 10}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman3" 0x810b
+		{Position -16 -4}
+		{Player 2}
+		{MID 11}
+	}
+	{Tags "aio_p0_h_dummy_1" 0x8101}
+	{Tags "aio_p0_h_bystander_1" 0x8102}
+	{Tags "aio_p0_h_dummy_2" 0x8103}
+	{Tags "aio_p0_h_bystander_p0" 0x8104}
+	{Tags "aio_p0_h_dummy_3" 0x8105}
+	{Tags "aio_p0_h_bystander_ob" 0x8106}
+	{Tags "aio_p0_h_ai" 0x8107}
+	{Environment "dynamic_campaign/summer/clear/midday_1"}
+	{Helpers
+		{vars
+		}
+		{triggers
+			(include "/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.inc")
+		}
+	}
+	{Players
+		{count 3}
+		{diplomacy
+			1 0 0
+			0 1 0
+			0 0 1
+		}
+	}
+	{Fog 0}
+	{EntityManager {Enabled}
+	}
+}

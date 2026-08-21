@@ -11,6 +11,9 @@ TRANSFER = ROOT / "docs/pow_mirror_transfer.md"
 TRIG = ROOT / "resource/map/multi/ce/ce_triggers.inc"
 DCG = ROOT / "resource/map/multi/dcg_script.inc"
 DMG = ROOT / "resource/map/multi/ce/ce_pow_dmg_editor.inc"
+H_INC = ROOT / "resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.inc"
+H_MI = ROOT / "resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.mi"
+H_INFO = ROOT / "resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.info"
 
 
 def _uncommented(path: Path) -> str:
@@ -92,11 +95,12 @@ class OldBoyProductionSurrenderTests(unittest.TestCase):
         self.assertIn("scene.quant.dmg", transfer)
         self.assertIn("Isolation F PASS", transfer)
         self.assertIn("Isolation G", transfer)
+        self.assertIn("Isolation H", transfer)
         self.assertIn("AI-owned", transfer)
         self.assertIn("ce_pow_dmg_editor.inc", transfer)
-        self.assertIn("aio_pow_dmg_ctrl", transfer)
-        self.assertIn("aio_pow_dmg_dummy_ctrl", transfer)
-        self.assertIn("splash", transfer)
+        self.assertIn("aio_p0_runtime_h", transfer)
+        self.assertIn("aio_p0_h_dummy_1", transfer)
+        self.assertIn("abandon Player 0", transfer)
 
 
 class CombinedDamageEditorTests(unittest.TestCase):
@@ -156,6 +160,78 @@ class CombinedDamageEditorTests(unittest.TestCase):
         )
         for extra in extras:
             self.assertNotIn(extra, body, extra)
+
+
+class IsolationHSplashMissionTests(unittest.TestCase):
+    def test_three_editor_files_exist_and_are_opt_in(self) -> None:
+        self.assertTrue(H_INC.is_file())
+        self.assertTrue(H_MI.is_file())
+        self.assertTrue(H_INFO.is_file())
+        mi = H_MI.read_text(encoding="utf-8")
+        inc = H_INC.read_text(encoding="utf-8")
+        self.assertIn('(include "/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.inc")', mi)
+        self.assertNotIn("aio_p0_runtime_h", TRIG.read_text(encoding="utf-8"))
+        self.assertNotIn("aio_p0_runtime_h", DCG.read_text(encoding="utf-8"))
+        self.assertNotIn("aio_p0_runtime_h", BEH.read_text(encoding="utf-8"))
+        self.assertNotIn("dcg_zeeland_sum", TRIG.read_text(encoding="utf-8"))
+        self.assertIn("EDITOR ONLY", inc)
+
+    def test_tank_attacks_dummies_left_to_right_never_bystanders(self) -> None:
+        body = _uncommented(H_INC)
+        mi = H_MI.read_text(encoding="utf-8")
+        self.assertEqual(body.count("{action attack}"), 3)
+        attacks = body.split("{action attack}", 1)[1]
+        self.assertLess(attacks.find("aio_p0_h_dummy_1"), attacks.find("aio_p0_h_dummy_2"))
+        self.assertLess(attacks.find("aio_p0_h_dummy_2"), attacks.find("aio_p0_h_dummy_3"))
+        self.assertIn("{state operatable}", body)
+        self.assertIn("{state user_control}", body)
+        self.assertIn("aio_p0_h_dummy_1", attacks)
+        self.assertIn("aio_p0_h_dummy_2", attacks)
+        self.assertIn("aio_p0_h_dummy_3", attacks)
+        self.assertIn("aio_p0_h_dummy_1", mi)
+        self.assertIn("aio_p0_h_dummy_2", mi)
+        self.assertIn("aio_p0_h_dummy_3", mi)
+        self.assertIn("{Player 1}", mi)
+        self.assertIn("{Player 2}", mi)
+        self.assertNotIn("{Player 0}", mi)
+        self.assertIn("{Position 200 0}", mi)
+        self.assertIn("{Position 1400 0}", mi)
+        self.assertIn("{Position 2600 0}", mi)
+        self.assertIn("{Position 200 12}", mi)
+        self.assertIn("{Position 1400 12}", mi)
+        self.assertIn("{Position 2600 12}", mi)
+
+    def test_p0_apply_matches_g_and_forbids_extras(self) -> None:
+        body = _uncommented(H_INC)
+        self.assertEqual(body.count('{player "0"}'), 2)
+        self.assertEqual(body.count("{effect start_white_flag}"), 1)
+        self.assertEqual(body.count("{tag_remove enemy}"), 1)
+        self.assertEqual(body.count("{volume in_hands}"), 1)
+        self.assertEqual(body.count("{collage stand_giveup_1}"), 1)
+        self.assertLess(body.find("aio_p0_h_bystander_p0"), body.find("{effect start_white_flag}"))
+        self.assertLess(body.find("{effect start_white_flag}"), body.find("{tag_remove enemy}"))
+        self.assertLess(body.find("{tag_remove enemy}"), body.find("{volume in_hands}"))
+        self.assertLess(body.find("{volume in_hands}"), body.find("{collage stand_giveup_1}"))
+        self.assertNotIn("aio_morale_surrendering", body)
+        self.assertNotIn("aio_morale_surrender_expire", body)
+        self.assertNotIn("aio_morale_surrender_evacuating", body)
+        extras = (
+            "{control AI}",
+            '{able "select" 0}',
+            '{able "fight" 0}',
+            "{fire_mode hold}",
+            "{weapon_prepare off}",
+            "{move_mode hold}",
+            "{ai_move",
+            '{drop "orders sensor senseless"}',
+            "{Player 0}",
+            "aio_pow_ob_fight_off",
+            "generated_pow",
+            "{delete}",
+        )
+        for extra in extras:
+            self.assertNotIn(extra, body, extra)
+            self.assertNotIn(extra, H_MI.read_text(encoding="utf-8"), extra)
 
 
 if __name__ == "__main__":

@@ -16,6 +16,8 @@ on:
       - "resource/map/multi/ce/ce_broken_behavior_triggers.inc"
       - "tests/test_ce_pow_oldboy_captive.py"
       - "resource/map/multi/ce/ce_pow_dmg_editor.inc"
+      - "resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.inc"
+      - "resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.mi"
       - ".github/workflows/morale-breed-metadata-guard.yml"
   push:
     branches:
@@ -34,6 +36,8 @@ on:
       - "resource/map/multi/ce/ce_broken_behavior_triggers.inc"
       - "tests/test_ce_pow_oldboy_captive.py"
       - "resource/map/multi/ce/ce_pow_dmg_editor.inc"
+      - "resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.inc"
+      - "resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.mi"
       - ".github/workflows/morale-breed-metadata-guard.yml"
 
 permissions:

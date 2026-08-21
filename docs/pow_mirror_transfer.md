@@ -7,8 +7,8 @@ Production surrender present uses the proven Old Boy captive 5-step on the live 
 | What | Evidence |
 | --- | --- |
 | `{behaviour civilian}` makes a live hostile human untargetable and projectile-safe | Isolation trio PASS. Armed civilian also ignored. Evidence fixtures only; not production. |
-| Old Boy captive 5-step on a live combat human | Owner isolation **Run B PASS**. Production present path. |
-| Runtime `{"player"} {operation set} {player "0"}` alone | Owner isolation **Run A PASS**. Shot/killed SAFE. |
+| Old Boy captive 5-step on a live combat human | Rifle A–E PASS. Isolation **F PASS** (owner HE). Isolation **G**: AI ignores five-step P0. |
+| Runtime `{"player"} {operation set} {player "0"}` alone | Rifle **Run A PASS**. Isolation **F PASS**. Isolation **G**: runtime P0 alone is native AI ignore. |
 | `{"effect" aio_morale_surrender_apply}` tags / icons / expire | `{on "aio_morale_surrender_apply"}` in `human_ce.inc` |
 | `{entity_state}` routing tags | Existing AIO surrender / cleanup selectors |
 
@@ -48,7 +48,10 @@ Routing tags `aio_morale_surrendering` / `aio_morale_surrender_presenting` / `ai
 - **Run D PASS:** Run B + `weapon_prepare off`, no AV.
 - **Run E PASS:** Run B + `fire_mode hold`, no AV.
 
-Isolation series stopped. Do not resume the one-variable shooting matrix. Remaining extras stay off P0.
+- **Isolation F PASS:** owner-controlled T-62 HE killed CONTROL, runtime-P0-only, and exact five-step; no AV.
+- **Isolation G:** no AV. AI T-62 killed CONTROL and would not target runtime-P0-only or five-step P0. Owner then killed both P0 subjects with no AV. ProcDump was SetThreadName/startup, not a GoH AV. G does **not** test AI-owned damage into P0.
+
+Do not resume direct-target tests. Do not add `{able "select" 0}`. Remaining extras stay off P0.
 
 Old crashing heads (`483387c` / `707f425`) stacked P0 on top of fight/select/hold-fire/weapon_prepare/drop-sensor/evac/control AI and AVed in `scene.quant.bullets`.
 
@@ -66,27 +69,31 @@ Two production AVs followed **AI-owned** damage to neutral/P0 POWs: T-62/HE via 
 
 Do not infer targeting from those tank events. Target-ignore and damage-safety stay separate gates. Do not add `select 0`. Do not return to Conquest permutations for this isolate. Do not infer an expire/delete race from nearby unrelated `deleted` log lines unless the exact crash-victim entity ID is shown entering that transition on the same tick.
 
-The clean five-step remains **HOLD as production-safe** until AI-owned **collateral** damage is isolated. Production present is unchanged so Editor subjects match `b95f3cdc`.
+Isolation G shows runtime Player 0 alone is sufficient for native AI ignore, and the five-step keeps that ignore. Direct targeting will not deliver AI-owned damage into P0. The five-step remains **HOLD as production-safe** until AI-owned *collateral* damage is isolated. Production present is unchanged.
 
-## Combined Editor damage fixture
+F/G Editor files stay unused. The current native isolate is Isolation H.
 
-Opt-in only: `resource/map/multi/ce/ce_pow_dmg_editor.inc` (not in `ce_triggers.inc` / `dcg_script.inc`).
+## Isolation H splash mission
 
-F PASS used owner-fired HE. G proved a direct AI `{action attack}` will not fire on P0 subjects. This file now isolates **AI-owned HE splash/collateral**: the same AI T-62 (`aio_pow_dmg_ai`, never `user_control`) `{action attack}`s ordinary targetable dummy humans after P0 states settle. Subjects sit in the blast radius and are never the attack `{target}`.
+Editor-only on `dcg_zeeland_sum`:
 
-Stations:
+- `resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.mi`
+- `resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.inc`
+- `resource/map/multi/dcg_zeeland_sum/aio_p0_runtime_h.info`
 
-1. `aio_pow_dmg_dummy_ctrl` + `aio_pow_dmg_ctrl` — ordinary control human in blast radius
-2. `aio_pow_dmg_dummy_p0` + `aio_pow_dmg_p0` — runtime P0 only in blast radius
-3. `aio_pow_dmg_dummy_ob` + `aio_pow_dmg_ob` — exact Old Boy five-step in blast radius
+Paul does nothing. One AI-owned T-62 (`aio_p0_h_ai`, Player 2, not `user_control`) fires HE left-to-right at three normal dummy humans. A bystander at each station is 12 units off the dummy (splash only). Stations are 1200 units apart so one blast cannot reach the next.
 
-Attack order: dummy_ctrl → dummy_p0 → dummy_ob. Place each P0 subject close enough that HE splash damages/kills it.
+1. `aio_p0_h_dummy_1` + `aio_p0_h_bystander_1` — ordinary control
+2. `aio_p0_h_dummy_2` + `aio_p0_h_bystander_p0` — runtime P0 only (same as G)
+3. `aio_p0_h_dummy_3` + `aio_p0_h_bystander_ob` — exact Old Boy five-step from F/G
 
-No CE surrender tags, expire, evac, or delete on these victims. No fight/select/hold/control-AI pile.
+Attack grammar matches G: `{action attack}` from the tank (operatable, exclude user_control/dead/inactive) at the **dummy** tags only. Never attack a P0 bystander. No authored `{Player 0}`. No `{control AI}`. No CE surrender tags, expire, evac, delete, select/fight.
 
-- ordinary collateral safe + P0-only splash AV ⇒ AI-owned collateral damage into Player 0 is sufficient; abandon Player 0
-- P0-only splash safe + five-step splash AV ⇒ narrow within the five-step
-- both P0 splash cases safe ⇒ AI ownership/collateral alone is not sufficient; only then one production-state fixture (CE tags / expire / evac / delete timing), not more owner Conquest matches
+- splash kills P0-ONLY and crashes ⇒ abandon Player 0
+- P0-ONLY safe, FIVE-STEP crashes ⇒ five-step interaction
+- both P0 splash cases safe ⇒ stop P0 permutations; next is Conquest-only CE tags/evac/delete lifecycle
+
+Unused tag fixture: `resource/map/multi/ce/ce_pow_dmg_editor.inc`.
 
 ## Evacuation
 
