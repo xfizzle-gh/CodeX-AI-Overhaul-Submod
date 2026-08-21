@@ -197,6 +197,18 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{tag_remove enemy}", present)
         self.assertLess(present.find("{tag_add aio_morale_surrender_presenting}"), present.find("{effect start_white_flag}"))
         self.assertLess(present.find("{effect start_white_flag}"), present.find('{player "0"}'))
+        stamp = present.split("{effect start_white_flag}", 1)[1].split('{"player"', 1)[0]
+        self.assertIn("{relation ally}", stamp)
+        self.assertIn("id_1st_player$", stamp)
+        self.assertIn("id_1st_enemy$", stamp)
+        self.assertIn("id_defenderbot$", stamp)
+        self.assertIn("id_attack_support$", stamp)
+        self.assertIn('{player "1"}', stamp)
+        self.assertIn('{player "16"}', stamp)
+        self.assertNotIn('{player "0"}', stamp)
+        self.assertIn("{tag_add aio_pow_captor_enemy}", stamp)
+        self.assertIn("{tag_add aio_pow_captor_player}", stamp)
+        self.assertLess(present.find("{tag_add aio_pow_captor_enemy}"), present.find('{player "0"}'))
         self.assertLess(present.find('{player "0"}'), present.find("{impregnability harmless}"))
         self.assertLess(present.find("{impregnability harmless}"), present.find("{tag_remove enemy}"))
         self.assertLess(present.find("{tag_remove enemy}"), present.find('{"inventory"'))
@@ -339,8 +351,10 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{waypoint "attack_support_entry_a"}', evac)
         self.assertIn('{waypoint "attack_support_entry_b"}', evac)
         self.assertIn("enemy_spawnside$", evac)
-        self.assertIn("{tag _user_ally}", evac)
-        self.assertIn("{tag def_sup_src}", evac)
+        self.assertIn("{tag aio_pow_captor_player}", evac)
+        self.assertIn("{tag aio_pow_captor_enemy}", evac)
+        self.assertNotIn("{tag _user_ally}", evac)
+        self.assertNotIn("{tag def_sup_src}", evac)
         self.assertGreaterEqual(evac.count("{action move}"), 4)
         self.assertEqual(evac.count('{"actor_state"'), 0)
         self.assertIn("{time 3}", evac)
@@ -409,6 +423,10 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "aio_morale_surrender_to_b",
             "aio_morale_surrender_to_camp",
             "prisoner_in_camp",
+            "aio_morale_surrender_to_enemy_camp",
+            "prisoner_in_enemy_camp",
+            "aio_pow_captor_player",
+            "aio_pow_captor_enemy",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
 

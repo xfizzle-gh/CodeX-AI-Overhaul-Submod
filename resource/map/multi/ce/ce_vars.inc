@@ -94,4 +94,6 @@
 			{"aio_pow_seq"}
 			{"aio_pow_last_evt"}
 			{"ce_morale_sys_done"}
-			{"aio_pow_camp_ready"} 
+			{"aio_pow_camp_ready"}
+			{"aio_pow_camp_enemy_ready"}
+			{"aio_pow_camp_announced"} 

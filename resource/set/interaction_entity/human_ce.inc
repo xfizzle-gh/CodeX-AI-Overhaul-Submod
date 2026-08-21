@@ -424,7 +424,11 @@
 		{tags remove "aio_morale_surrender_to_a"}
 		{tags remove "aio_morale_surrender_to_b"}
 		{tags remove "aio_morale_surrender_to_camp"}
+		{tags remove "aio_morale_surrender_to_enemy_camp"}
 		{tags remove "prisoner_in_camp"}
+		{tags remove "prisoner_in_enemy_camp"}
+		{tags remove "aio_pow_captor_player"}
+		{tags remove "aio_pow_captor_enemy"}
 		{tags remove "aio_morale_watching_regroup"}
 		{tags remove "aio_icon_refresh"}
 		{tags remove "aio_cmd_had_command"}
@@ -776,10 +780,12 @@
 		{delay 100
 			{if tagged "aio_morale_surrendering"
 				{if not tagged "prisoner_in_camp"
-					{if not dead
-						{call "stop_white_flag"}
-						{tags add "aio_morale_surrender_expire"}
-						{tags add "aio_pow_evt_expire"}
+					{if not tagged "prisoner_in_enemy_camp"
+						{if not dead
+							{call "stop_white_flag"}
+							{tags add "aio_morale_surrender_expire"}
+							{tags add "aio_pow_evt_expire"}
+						}
 					}
 				}
 			}
