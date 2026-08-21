@@ -183,9 +183,11 @@ Unused tag fixture: `resource/map/multi/ce/ce_pow_dmg_editor.inc`.
 
 ## Evacuation
 
-Tag-driven evac still runs: `aio_morale_surrender_fx` → `aio_morale_surrender_evacuating` → `{action move}` to captor entry → mission `{"delete"}` at egress. The evac actor_state pile and `{drop "orders sensor senseless"}` on those move branches are stripped.
+c47c272 overlay Conquest: present/assign/p0/drop at 00:05:30, then 0x158 `scene.quant.bullets` at 00:05:44 into a standing lingering P0. Evac was arming: `_fx` after the five-step → `surrender_evacuate` → 3s pose → `{action move}` to captor entry.
 
-`{action move}` / egress delete on this stripped P0 actor is a **hunch, not a fact**. A–E prove presentation projectile/death safety only.
+That walk is removed. After the 3s pose, `surrender_evacuate` `{delete}`s the POW with the same expire/arrive delete grammar (evacuating + surrendering, exclude dead/inactive/user_control/player). `_to_a` / `_to_b` move arms are gone from evac so they cannot start a walk. 100s expire stays as a backstop. No drop-sensor (Paul forbids it). Delete-without-sensor-clear is a possible new AV risk (`eActorSensorDetect`); this is the testable production delta.
+
+`ce_morale_diag_delete$` is declared and set immediately before that delete. Lua prints `CE_POW_DIAG event=delete` on flip.
 
 Later bounded end-to-end native check (not another isolation shooting matrix): surrender → hostile AI ignores → POW walks to the correct captor entry → disappears at egress → no AV → no unintended kill/score/ticket → clean `game.log`.
 

@@ -185,6 +185,7 @@ function SetCEMissionVariables(botDefender)
   BotApi.Scene:SetVar("ce_morale_diag_assign", 0)
   BotApi.Scene:SetVar("ce_morale_diag_p0", 0)
   BotApi.Scene:SetVar("ce_morale_diag_drop", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_delete", 0)
   BotApi.Scene:SetVar("aio_pow_next_id", 0)
   BotApi.Scene:SetVar("aio_pow_seq", 0)
   BotApi.Scene:SetVar("aio_pow_last_evt", 0)
@@ -435,6 +436,7 @@ local function startPowDiagWatch()
   local seenAssign = false
   local seenP0 = false
   local seenDrop = false
+  local seenDelete = false
   print("CE_POW_DIAG event=watch_armed entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
   local function watch()
     if not seenPresent and readMoraleVar("ce_morale_diag_present") > 0 then
@@ -452,6 +454,10 @@ local function startPowDiagWatch()
     if not seenDrop and readMoraleVar("ce_morale_diag_drop") > 0 then
       seenDrop = true
       print("CE_POW_DIAG event=drop entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenDelete and readMoraleVar("ce_morale_diag_delete") > 0 then
+      seenDelete = true
+      print("CE_POW_DIAG event=delete entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
     end
     BotApi.Events:SetQuantTimer(watch, 1000)
   end

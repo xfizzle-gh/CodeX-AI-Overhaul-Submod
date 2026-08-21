@@ -88,6 +88,7 @@
 			{"ce_morale_diag_assign"}
 			{"ce_morale_diag_p0"}
 			{"ce_morale_diag_drop"}
+			{"ce_morale_diag_delete"}
 			{"aio_pow_next_id"}
 			{"aio_pow_seq"}
 			{"aio_pow_last_evt"}
