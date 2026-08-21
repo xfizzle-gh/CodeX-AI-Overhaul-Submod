@@ -36,10 +36,10 @@ At surrender present, apply the Old Boy 5-step plus verified `{impregnability ha
 2. `{"player"} {operation set} {player "0"}`
 3. `{"entity_state"} {impregnability harmless}` — keep for POW life. Not `{impregnability full}`.
 4. `{tag_remove enemy}`
-5. `{"action"} {action drop} {volume in_hands}`
+5. `{"inventory"}` + `{with_item {type using} {item "weapon"}}` + `{action drop}`
 6. `{collage stand_giveup_1}`
 
-The five Old Boy operations are intact. Harmless sits immediately after P0. Routing tags `aio_morale_surrendering` / `aio_morale_surrender_presenting` / `aio_morale_surrender_fx` stay so cleanup and tag-driven evac selectors still match.
+Harmless sits immediately after P0 and is kept for POW life. Native `3c6c624` Conquest: no 0x158, POWs not dying, `present -> p0 -> impregnable -> drop`, AI ignore intact. Rifles did not leave hands on the generic `{volume in_hands}` drop; production now uses the `4478904` inventory weapon drop. Routing tags stay so cleanup and tag-driven evac selectors still match.
 
 ### Verified impregnability syntax
 
@@ -111,7 +111,7 @@ There is no mission `{"log"}` command in this repo. The source-proven `game.log`
 
 Declared vars (same grammar as `ce_morale_diag_surrender` in `ce_vars.inc`): `aio_pow_next_id`, `aio_pow_seq`, `aio_pow_last_evt`, `ce_morale_diag_present`, `ce_morale_diag_assign`, `ce_morale_diag_p0`, `ce_morale_diag_impregnable`, `ce_morale_diag_drop`.
 
-Unconditional `{"set_i"}` (no entity selector) is the first action of `surrender_present` (`ce_morale_diag_present$=1`) and of sibling `surrender_diag_assign` (`ce_morale_diag_assign$=1`). `ce_morale_diag_p0$=1` is immediately after `{player "0"}`. Overlay `aio_pow_last_evt$` / `aio_pow_seq$` sit **after** drop, not between P0 and drop (undeclared `set_i` there is the hunch for the missed drop on `788397d`). `ce_morale_diag_drop$=1` is immediately after `{action drop}{volume in_hands}`.
+Unconditional `{"set_i"}` (no entity selector) is the first action of `surrender_present` (`ce_morale_diag_present$=1`) and of sibling `surrender_diag_assign` (`ce_morale_diag_assign$=1`). `ce_morale_diag_p0$=1` is immediately after `{player "0"}`. Overlay `aio_pow_last_evt$` / `aio_pow_seq$` sit **after** drop, not between P0 and drop (undeclared `set_i` there is the hunch for the missed drop on `788397d`). `ce_morale_diag_drop$=1` is immediately after the source-backed `{"inventory"}` weapon drop.
 
 Lua prints `CE_POW_DIAG event=present|assign|p0|impregnable|drop` when those declared vars flip (same flip pattern as `CE_MORALE_EVENT surrender`). `ce_morale_diag_impregnable$=1` is immediately after the post-P0 `{impregnability harmless}` `entity_state`.
 
@@ -164,13 +164,7 @@ No script-readable sensor / detect / player-registration cleanup command exists.
 
 Do **not** silently add Old Boy extras onto production P0. This is a report, not a license to restack drop-sensor / leave-squad / fight / select.
 
-After runtime P0, the in-repo Old Boy captive 5-step (Isolation B / production present) is only:
-
-1. `{effect start_white_flag}`
-2. `{"player"} {operation set} {player "0"}`
-3. `{tag_remove enemy}`
-4. `{"action"} {action drop} {volume in_hands}`
-5. `{collage stand_giveup_1}`
+After runtime P0, Isolation B used `{volume in_hands}` drop. Production present now uses the source-backed `4478904` inventory drop (`{"inventory"}` + `{with_item {type using} {item "weapon"}}` + `{action drop}`) because Conquest `3c6c624` issued the generic in-hands drop but rifles stayed in hands.
 
 Not on that path: `{control AI}` (body-recovery only), authored `{Player 0}`, `{able "fight" 0}` / `{able "select" 0}`, hold-fire, `weapon_prepare`, `{drop "orders sensor senseless"}`, leave-squad, expire/evac/delete, or any script-visible detect-registration cleanup.
 

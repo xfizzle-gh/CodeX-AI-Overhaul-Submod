@@ -1,7 +1,8 @@
 ; F0: native retreat_ratio is not how FE/Old Boy move Broken units. Rally move is the authority.
 ; Actor-scoped ratios are assist only. Writers must exclude aio_morale_owned. No player seizure.
 ; Surrender present is the Old Boy Player-0 5-step only (start_white_flag,
-; runtime player 0, tag_remove enemy, action drop volume in_hands, stand_giveup_1).
+; runtime player 0, impregnability harmless, tag_remove enemy,
+; inventory drop of the currently-used weapon, stand_giveup_1).
 ; After P0, entity_state {impregnability harmless} (vanilla token from
 ; {Impregnability harmless}; do not use {impregnability full}). Keep for POW life.
 ; Evac stays tag-driven after a 3s pose, then {action move} to captor entry.
@@ -2971,7 +2972,7 @@
 					{"delay"
 						{time 0.05}
 					}
-					{"action"
+					{"inventory"
 						{selector
 							{source advanced}
 							{group
@@ -2986,6 +2987,10 @@
 									}
 									{prop
 										{prop human}
+									}
+									{with_item
+										{type using}
+										{item "weapon"}
 									}
 								}
 								{exclude
@@ -3005,7 +3010,6 @@
 							}
 						}
 						{action drop}
-						{volume in_hands}
 					}
 					{"set_i"
 						{var "ce_morale_diag_drop$"}
