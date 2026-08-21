@@ -181,6 +181,15 @@ function SetCEMissionVariables(botDefender)
   BotApi.Scene:SetVar("ce_morale_diag_broken", 0)
   BotApi.Scene:SetVar("ce_morale_diag_retreat", 0)
   BotApi.Scene:SetVar("ce_morale_diag_surrender", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_present", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_assign", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_p0", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_drop", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_impregnable", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_delete", 0)
+  BotApi.Scene:SetVar("aio_pow_next_id", 0)
+  BotApi.Scene:SetVar("aio_pow_seq", 0)
+  BotApi.Scene:SetVar("aio_pow_last_evt", 0)
   BotApi.Scene:SetVar("ce_morale_sys_done", 0)
   StartCeMoraleProbeLog()
 
@@ -395,26 +404,104 @@ local function readMoraleVar(name)
   return tonumber(value) or 0
 end
 
+local function countSquadsTagged(tag)
+  local n = 0
+  local ok, squads = pcall(function()
+    return BotApi.Scene.Squads
+  end)
+  if ok and type(squads) == "table" then
+    for _, squad in pairs(squads) do
+      local tok, tagged = pcall(function()
+        return BotApi.Scene:IsSquadTagged(squad, tag)
+      end)
+      if tok and tagged then
+        n = n + 1
+      end
+    end
+  end
+  return n
+end
+
+-- Diagnostic-only POW trail. Uses declared mission vars (same pattern as
+-- ce_morale_diag_surrender$ → CE_MORALE_EVENT surrender). Entity tags are
+-- invisible to IsSquadTagged; do not poll squad tags for this trail.
+-- Entity hex is not BotApi-readable.
+local powDiagWatchStarted = false
+
+local function startPowDiagWatch()
+  if powDiagWatchStarted then
+    return
+  end
+  powDiagWatchStarted = true
+  local seenPresent = false
+  local seenAssign = false
+  local seenP0 = false
+  local seenImpregnable = false
+  local seenDrop = false
+  local seenDelete = false
+  print("CE_POW_DIAG event=watch_armed entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+  local function watch()
+    if not seenPresent and readMoraleVar("ce_morale_diag_present") > 0 then
+      seenPresent = true
+      print("CE_POW_DIAG event=present entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenAssign and readMoraleVar("ce_morale_diag_assign") > 0 then
+      seenAssign = true
+      print("CE_POW_DIAG event=assign entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenP0 and readMoraleVar("ce_morale_diag_p0") > 0 then
+      seenP0 = true
+      print("CE_POW_DIAG event=p0 entity=unreadable breed=unreadable orig_player=unreadable curr_player=0_inferred squad=unreadable sensor=unreadable")
+    end
+    if not seenImpregnable and readMoraleVar("ce_morale_diag_impregnable") > 0 then
+      seenImpregnable = true
+      print("CE_POW_DIAG event=impregnable entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenDrop and readMoraleVar("ce_morale_diag_drop") > 0 then
+      seenDrop = true
+      print("CE_POW_DIAG event=drop entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenDelete and readMoraleVar("ce_morale_diag_delete") > 0 then
+      seenDelete = true
+      print("CE_POW_DIAG event=delete entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    BotApi.Events:SetQuantTimer(watch, 1000)
+  end
+  BotApi.Events:SetQuantTimer(watch, 1000)
+end
+
+-- Diagnostic-only 2s watcher for native POW tests. Re-gate or remove before production merge.
 local function startMoraleEventWatch()
   local seenRetreat = false
   local seenSurrender = false
+  local lastPow = -1
   local function watch()
     if not seenRetreat and readMoraleVar("ce_morale_diag_retreat") > 0 then
       seenRetreat = true
       print("CE_MORALE_EVENT retreat")
     end
-    if not seenSurrender and readMoraleVar("ce_morale_diag_surrender") > 0 then
+    local pow = countSquadsTagged("aio_morale_surrendering")
+    if pow > 0 then
+      BotApi.Scene:SetVar("ce_morale_diag_surrender", 1)
+      if pow ~= lastPow then
+        print("CE_POW alive=1 surrendering=" .. pow)
+        lastPow = pow
+      end
+    elseif lastPow > 0 then
+      print("CE_POW alive=0 surrendering=0")
+      lastPow = 0
+    end
+    if not seenSurrender and (readMoraleVar("ce_morale_diag_surrender") > 0 or pow > 0) then
       seenSurrender = true
       print("CE_MORALE_EVENT surrender")
     end
-    if not (seenRetreat and seenSurrender) then
-      BotApi.Events:SetQuantTimer(watch, 2000)
-    end
+    BotApi.Events:SetQuantTimer(watch, 2000)
   end
   BotApi.Events:SetQuantTimer(watch, 2000)
 end
 
 function StartCeMoraleProbeLog()
+  startPowDiagWatch()
   if readMoraleVar("enable_ce_morale_debug") > 0 or readMoraleVar("enable_ce_morale_autodemo") > 0 then
     startMoraleEventWatch()
   end

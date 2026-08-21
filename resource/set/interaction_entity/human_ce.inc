@@ -391,6 +391,10 @@
 	}
 
 	{on "die"
+		{if tagged "aio_pow_did"
+			{tags add "aio_pow_evt_die"}
+		}
+
 		{if tagged "ai_signaller"
 			{clear_inventory}
 			{tags remove "ai_signaller"}
@@ -425,6 +429,11 @@
 	}
 
 	{on bullet_hit
+		{if tagged "aio_pow_did"
+			{if not tagged "aio_pow_evt_hit"
+				{tags add "aio_pow_evt_hit"}
+			}
+		}
 		{delay 0.10
 			{tags remove "aio_morale_recovering"}
 		}
@@ -754,16 +763,18 @@
 	}
 	{on "aio_morale_surrender_apply"
 		{tags add "aio_morale_surrendering"}
+		{tags add "aio_pow_pre_p0"}
+		{tags add "aio_pow_evt_apply"}
+		{tags add "aio_pow_need_id"}
 		{tags remove "aio_morale_broken"}
 		{tags remove "aio_morale_regrouping"}
-		{able "select" 0}
-		{able "fight" 0}
 		{call "aio_morale_refresh_icons"}
-		{delay 75
+		{delay 100
 			{if tagged "aio_morale_surrendering"
 				{if not dead
 					{call "stop_white_flag"}
 					{tags add "aio_morale_surrender_expire"}
+					{tags add "aio_pow_evt_expire"}
 				}
 			}
 		}

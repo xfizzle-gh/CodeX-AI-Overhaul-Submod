@@ -81,8 +81,9 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{"for selector" aio_morale_surrender_cand}', text)
         self.assertIn("{time 0.2}", surr)
         self.assertNotIn("{delete}", text)
-        self.assertNotIn('{player "0"}', text)
-        self.assertNotIn("{control AI}", text)
+        apply_only = HUMAN.read_text(encoding="utf-8").split('{on "aio_morale_surrender_apply"', 1)[1].split('{on "', 1)[0]
+        self.assertNotIn('{player "0"}', apply_only)
+        self.assertNotIn("{control AI}", apply_only)
 
     def test_command_reacquire_clears_failed_regroup(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
@@ -107,6 +108,59 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn('{player "0"}', rec)
         self.assertNotIn("{control AI}", rec)
 
+    def _enemy_before_distance(self, text: str) -> str:
+        start = text.find("{enemy")
+        self.assertGreater(start, -1, "missing {enemy")
+        end = text.find("{distance", start)
+        self.assertGreater(end, start, "missing {distance after {enemy")
+        return text[start:end]
+
+    def test_scripted_attack_excludes_surrendering(self) -> None:
+        ce = (ROOT / "resource/map/multi/ce/ai_logic/ce_lua_triggers.inc").read_text(encoding="utf-8")
+        unhold = ce.split("ai/ai_unhold", 1)[1].split("ai/tank_alt_fight", 1)[0]
+        first = unhold.split('{"1.see_actors"', 1)[1].split('{"2.see_actors"', 1)[0]
+        second = unhold.split('{"2.see_actors"', 1)[1]
+        self.assertIn("aio_morale_surrendering", self._enemy_before_distance(first))
+        self.assertIn("aio_morale_surrendering", self._enemy_before_distance(second))
+        self.assertIn("_user_ally", first)
+        td = ce.split("ai/td_attack_see_actors", 1)[1].split("{distance", 1)[0]
+        self.assertIn("aio_morale_surrendering", td.split("{enemy", 1)[1])
+        codex = (ROOT / "resource/map/multi/codex_ai_combat.inc").read_text(encoding="utf-8")
+        c100 = codex.split("{meters 100}", 1)[0].rsplit("{enemy", 1)[1]
+        c125 = codex.split("{meters 125}", 1)[0].rsplit("{enemy", 1)[1]
+        self.assertIn("aio_morale_surrendering", c100)
+        self.assertIn("aio_morale_surrendering", c125)
+        dcg = DCG.read_text(encoding="utf-8")
+        for grenade in ("m67", "m26", "rgd5"):
+            block = dcg.split("dcg/betterai/grenade/inf/" + grenade, 1)[1].split("{distance", 1)[0]
+            self.assertIn("aio_morale_surrendering", block.split("{enemy", 1)[1])
+        d55 = dcg.split("{meters 55}", 1)[0].rsplit("{enemy", 1)[1]
+        d66 = dcg.split("{meters 66}", 1)[0].rsplit("{enemy", 1)[1]
+        self.assertIn("aio_morale_surrendering", d55)
+        self.assertIn("aio_morale_surrendering", d66)
+        lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
+        self.assertIn("CE_POW alive=1 surrendering=", lua)
+        self.assertIn("CE_POW alive=0 surrendering=0", lua)
+        self.assertNotIn("targeted=", lua)
+        probe = lua.split("function StartCeMoraleProbeLog()", 1)[1]
+        self.assertLess(probe.find("enable_ce_morale_debug"), probe.find("startMoraleEventWatch()"))
+        self.assertLess(probe.find("startPowDiagWatch()"), probe.find("startMoraleEventWatch()"))
+        self.assertIn("CE_POW_DIAG", lua)
+        self.assertIn('print("CE_POW_DIAG event=present', lua)
+        self.assertIn('print("CE_POW_DIAG event=p0', lua)
+        self.assertIn('print("CE_POW_DIAG event=drop', lua)
+        self.assertIn('print("CE_POW_DIAG event=assign', lua)
+        self.assertIn('print("CE_POW_DIAG event=delete', lua)
+        self.assertIn("sensor=unreadable", lua)
+        self.assertIn("entity=unreadable", lua)
+        for rel in (
+            "resource/map/multi/ce/ai_logic/ce_lua_triggers.inc",
+            "resource/map/multi/codex_ai_combat.inc",
+            "resource/map/multi/dcg_script.inc",
+        ):
+            text = (ROOT / rel).read_text(encoding="utf-8")
+            self.assertEqual(text.count("{"), text.count("}"), rel)
+
     def test_one_surrender_authority(self) -> None:
         text = BEH.read_text(encoding="utf-8")
         self.assertEqual(text.count('{"conquest_enhanced_mechanics/broken/surrender"'), 1)
@@ -116,32 +170,54 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         beh = BEH.read_text(encoding="utf-8")
         human = HUMAN.read_text(encoding="utf-8")
         lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
-        self.assertIn("{collage walk_giveup_1}", beh)
+        self.assertIn("{collage stand_giveup_1}", beh)
+        self.assertNotIn("{collage walk_giveup_1}", beh)
         self.assertNotIn("{collage stand_giveup_2}", beh)
         self.assertIn("{action drop}", beh)
+        self.assertIn('{"inventory"', beh)
+        self.assertIn('{item "weapon"}', beh)
         self.assertIn('{"delete"', beh)
         self.assertIn('{on "start_white_flag"', human)
-        self.assertIn("{delay 75", human)
+        self.assertIn("{delay 100", human)
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1]
+        self.assertNotIn('{able "select" 0}', apply)
+        self.assertNotIn('{able "fight" 0}', apply)
+        self.assertNotIn('{able "neutral" 1}', apply)
+        self.assertNotIn('{player "0"}', apply)
         self.assertNotIn("{delay 80", apply)
         self.assertNotIn("{delay 60", apply)
         self.assertIn('{tags add "aio_morale_surrender_expire"}', human)
         self.assertNotIn('{call "delete"}', human)
-        self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 75"))
+        self.assertLess(apply.find('{call "aio_morale_refresh_icons"}'), apply.find("{delay 100"))
         self.assertEqual(human.count('{call "start_white_flag"}'), 1)
-        self.assertNotIn("{effect start_white_flag}", beh)
         present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]
         self.assertIn("{tag_add aio_morale_surrender_presenting}", present)
-        self.assertLess(present.find("{tag_add aio_morale_surrender_presenting}"), present.find("{action drop}"))
-        self.assertLess(present.find("{action drop}"), present.find("{collage walk_giveup_1}"))
-        self.assertLess(present.find("{collage walk_giveup_1}"), present.find("{tag_add aio_morale_surrender_fx}"))
-        self.assertIn("{totalTime 99999}", present)
-        self.assertIn("{flags loop}", present)
-        self.assertIn("{drop orders}", present)
+        self.assertIn("{effect start_white_flag}", present)
+        self.assertIn('{player "0"}', present)
+        self.assertIn("{tag_remove enemy}", present)
+        self.assertLess(present.find("{tag_add aio_morale_surrender_presenting}"), present.find("{effect start_white_flag}"))
+        self.assertLess(present.find("{effect start_white_flag}"), present.find('{player "0"}'))
+        self.assertLess(present.find('{player "0"}'), present.find("{impregnability harmless}"))
+        self.assertLess(present.find("{impregnability harmless}"), present.find("{tag_remove enemy}"))
+        self.assertLess(present.find("{tag_remove enemy}"), present.find('{"inventory"'))
+        self.assertNotIn("{impregnability full}", present)
+        self.assertIn("{type using}", present)
+        self.assertIn('{item "weapon"}', present)
+        self.assertNotIn("{volume in_hands}", present)
+        self.assertLess(present.find('{"inventory"'), present.find("{collage stand_giveup_1}"))
+        self.assertLess(present.find("{collage stand_giveup_1}"), present.find("{tag_add aio_morale_surrender_fx}"))
+        self.assertNotIn("{totalTime 99999}", present)
+        self.assertNotIn("{flags loop}", present)
+        self.assertNotIn("{drop orders}", present)
+        self.assertNotIn("{fire_mode hold}", present)
+        self.assertNotIn("{weapon_prepare off}", present)
+        self.assertNotIn("{control AI}", present)
+        self.assertNotIn('{able "select" 0}', present)
+        self.assertNotIn('{able "fight" 0}', present)
         self.assertIn("{tag_remove aio_morale_surrender_presenting}", present)
         self.assertGreaterEqual(present.count("{tag aio_morale_surrender_presenting}"), 4)
-        self.assertNotIn('{player "0"}', beh)
         self.assertNotIn("{control AI}", beh)
+        self.assertNotIn("{Player 0}", beh)
         self.assertIn("enable_ce_morale_autodemo", lua.split("function StartCeMoraleProbeLog()", 1)[1][:400])
         self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/white_flag.def").is_file())
         self.assertTrue((ROOT / "resource/entity/fx/human_markers_fx/no_comd.def").is_file())
@@ -162,6 +238,81 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{min 0.3}", flag)
         self.assertIn('{add_view "aio_cmd_junior"', human)
 
+    def test_pow_diag_logs_only_on_production_hooks(self) -> None:
+        beh = BEH.read_text(encoding="utf-8")
+        human = HUMAN.read_text(encoding="utf-8")
+        lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
+        present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]
+        evac = beh.split("broken/surrender_evacuate", 1)[1].split("broken/surrender_arrive_a", 1)[0]
+        arrive_a = beh.split("broken/surrender_arrive_a", 1)[1].split("broken/surrender_arrive_b", 1)[0]
+        expire = beh.split("broken/surrender_expire", 1)[1].split("broken/observe_surrender", 1)[0]
+        apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split('{on "', 1)[0]
+        die = human.split('{on "die"', 1)[1].split("{on ", 1)[0]
+        self.assertIn("surrender_diag_assign", beh)
+        assign = beh.split("broken/surrender_diag_assign", 1)[1].split("broken/surrender_present", 1)[0]
+        self.assertNotIn("{count", assign)
+        self.assertNotIn("{type entities}", assign)
+        self.assertIn('{condition {type cmp_i} {var "aio_pow_next_id$"} {op "=="} {value 0}}', assign)
+        self.assertLess(assign.find('{var "ce_morale_diag_assign$"}'), assign.find('{"switch"'))
+        self.assertLess(present.find('{var "ce_morale_diag_present$"}'), present.find("{effect start_white_flag}"))
+        self.assertLess(present.find('{player "0"}'), present.find('{var "ce_morale_diag_p0$"}'))
+        self.assertLess(present.find('{var "ce_morale_diag_p0$"}'), present.find("{impregnability harmless}"))
+        self.assertLess(present.find("{impregnability harmless}"), present.find('{var "ce_morale_diag_impregnable$"}'))
+        self.assertLess(present.find('{var "ce_morale_diag_impregnable$"}'), present.find("{tag_remove enemy}"))
+        self.assertNotIn("{impregnability full}", present)
+        self.assertLess(present.find('{"inventory"'), present.find('{var "ce_morale_diag_drop$"}'))
+        self.assertLess(present.find('{"inventory"'), present.find('{var "aio_pow_last_evt$"}'))
+        self.assertGreater(present.find('{var "aio_pow_last_evt$"}'), present.find('{"inventory"'))
+        gap = present[present.find('{player "0"}'):present.find('{"inventory"')]
+        self.assertNotIn('{var "aio_pow_last_evt$"}', gap)
+        self.assertNotIn('{var "aio_pow_seq$"}', gap)
+        self.assertIn("{tag_add aio_pow_d01}", beh)
+        self.assertIn("{tag_add aio_pow_d16}", beh)
+        self.assertNotIn("{tag_add aio_pow_d17}", beh)
+        vars_inc = (ROOT / "resource/map/multi/ce/ce_vars.inc").read_text(encoding="utf-8")
+        for name in (
+            "aio_pow_next_id",
+            "aio_pow_seq",
+            "aio_pow_last_evt",
+            "ce_morale_diag_present",
+            "ce_morale_diag_assign",
+            "ce_morale_diag_p0",
+            "ce_morale_diag_impregnable",
+            "ce_morale_diag_drop",
+            "ce_morale_diag_delete",
+            "ce_morale_diag_surrender",
+        ):
+            self.assertIn('{"' + name + '"}', vars_inc)
+        self.assertIn('{tags add "aio_pow_evt_apply"}', apply)
+        self.assertIn('{tags add "aio_pow_need_id"}', apply)
+        self.assertIn("{tag_add aio_pow_evt_p0}", present)
+        self.assertIn("{tag_add aio_pow_evt_present_done}", present)
+        self.assertIn("{tag_add aio_pow_evt_evac}", evac)
+        self.assertIn("{tag_add aio_pow_evt_move_a}", evac)
+        self.assertIn("{tag_add aio_pow_evt_move_b}", evac)
+        self.assertNotIn('{"delete"', evac)
+        self.assertIn("{action move}", evac)
+        self.assertIn("{tag_add aio_pow_evt_arrive}", arrive_a)
+        self.assertIn("{tag_add aio_pow_evt_delete}", arrive_a)
+        self.assertIn("{tag_add aio_pow_evt_expire}", expire)
+        self.assertIn("{tag_add aio_pow_evt_delete}", expire)
+        self.assertLess(arrive_a.find("{tag_add aio_pow_evt_delete}"), arrive_a.find('{"delete"'))
+        self.assertLess(expire.find("{tag_add aio_pow_evt_delete}"), expire.find('{"delete"'))
+        self.assertIn('{tags add "aio_pow_evt_die"}', die)
+        self.assertNotIn("{delete}", die)
+        self.assertNotIn('{drop "orders sensor senseless"}', present)
+        self.assertNotIn('{drop "orders sensor senseless"}', evac)
+        self.assertNotIn('{able "select" 0}', beh)
+        self.assertNotIn('{able "fight" 0}', beh)
+        self.assertNotIn("{control AI}", beh)
+        self.assertIn("function startPowDiagWatch()", lua)
+        self.assertIn('print("CE_POW_DIAG event=present', lua)
+        self.assertIn('print("CE_POW_DIAG event=impregnable', lua)
+        watch = lua.split("local function startPowDiagWatch()", 1)[1].split("local function startMoraleEventWatch()", 1)[0]
+        self.assertNotIn("IsSquadTagged", watch)
+        probe = lua.split("function StartCeMoraleProbeLog()", 1)[1]
+        self.assertLess(probe.find("startPowDiagWatch()"), probe.find("if readMoraleVar"))
+
     def test_surrender_evacuates_to_captor_entry(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
         lua = CONQ.read_text(encoding="utf-8")
@@ -179,8 +330,11 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{state inactive}", evac)
         self.assertIn("{state user_control}", evac)
         self.assertIn("{tag player}", evac)
-        self.assertIn("{move_mode free}", evac)
-        self.assertIn("{mode enable}", evac)
+        self.assertNotIn("{fire_mode hold}", evac)
+        self.assertNotIn("{weapon_prepare off}", evac)
+        self.assertNotIn("{move_mode hold}", evac)
+        self.assertNotIn("{control AI}", evac)
+        self.assertNotIn('{drop "orders sensor senseless"}', evac)
         self.assertIn("{action move}", evac)
         self.assertIn('{waypoint "attack_support_entry_a"}', evac)
         self.assertIn('{waypoint "attack_support_entry_b"}', evac)
@@ -188,8 +342,10 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{tag _user_ally}", evac)
         self.assertIn("{tag def_sup_src}", evac)
         self.assertGreaterEqual(evac.count("{action move}"), 4)
-        self.assertEqual(evac.count('{"actor_state"'), 1)
-        self.assertIn("{time 5}", evac)
+        self.assertEqual(evac.count('{"actor_state"'), 0)
+        self.assertIn("{time 3}", evac)
+        self.assertNotIn("{time 5}", evac)
+        self.assertNotIn('{"delete"', evac)
         self.assertNotIn('{var "enemy_spawnside$"} {op "=="} {value 0}', evac)
         s1 = evac.split("{value 1}", 1)[1].split("{value 2}", 1)[0]
         s1_wp = [line for line in s1.splitlines() if "attack_support_entry" in line]
@@ -203,6 +359,9 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertEqual(len(s2_wp), 2)
         self.assertIn("entry_b", s2_wp[0])
         self.assertIn("entry_a", s2_wp[1])
+        expire_del = beh.split("broken/surrender_expire", 1)[1].split("broken/observe_surrender", 1)[0]
+        expire_del = expire_del.split('{"delete"', 1)[1].split('{"delay"', 1)[0]
+        self.assertIn("{tag aio_morale_surrender_expire}", expire_del)
         arrive_a = beh.split("broken/surrender_arrive_a", 1)[1].split("broken/surrender_arrive_b", 1)[0]
         arrive_b = beh.split("broken/surrender_arrive_b", 1)[1].split("broken/surrender_expire", 1)[0]
         self.assertIn('{"delete"', arrive_a)
