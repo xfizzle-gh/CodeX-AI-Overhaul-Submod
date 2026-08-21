@@ -1,23 +1,28 @@
-; EDITOR ONLY combined tank/HE damage fixture. Do not include from
+; EDITOR ONLY killer-ownership damage fixture. Do not include from
 ; ce_triggers.inc / dcg_script.inc. No CWA-map / production changes.
 ; No fight/select/hold/control-AI. No civilian-mirror. No Conquest.
+; No CE surrender tags / expire / evac / delete on these victims.
 ;
-; Exact b95f3cdc five-step P0 AVed under T-62/HE: scene.quant.dmg
-; read 0x00000158. Rifle A-E PASS does not cover this. Next cycle is
-; this one fixture, not another shooting matrix.
+; Isolation F PASS: owner-controlled T-62 HE killed CONTROL, runtime
+; P0-only, and exact five-step P0 with no AV. Conquest owner/player
+; damage to P0 POWs was also safe. Production AVs were AI-owned
+; damage (T-62/HE scene.quant.dmg and AI M4/rifle scene.quant.bullets),
+; both read 0x00000158. Do not treat nearby deleted logs as the cause.
 ;
 ; Place three Player-1 combat humans (nato_rifleman or StormV rifleman):
 ;   aio_pow_dmg_ctrl — normal control, no transfer
 ;   aio_pow_dmg_p0   — runtime {"player"} {operation set} {player "0"} only
 ;   aio_pow_dmg_ob   — exact Old Boy five-step (white flag, P0, strip
 ;                      enemy, {"action"} drop {volume in_hands}, stand_giveup_1)
-; Place a player-controlled T-62 (or same HE source). After 2s P0 and
-; five-step apply. Then hit ctrl, then p0, then five-step with the SAME
-; tank/HE shot. Preserve dump if AV.
+; Place one ordinary AI-owned shooter (prefer T-62 to match F HE),
+; Player 2 / not user_control, tag aio_pow_dmg_ai. After 2s P0 and
+; five-step apply, then scripted {action attack} ctrl -> p0 -> ob.
+; Preserve dump if AV.
 ;
-; If p0 already AVs: Player 0 damage registration is the seam.
-; If only five-step AVs: narrow inside that sequence.
-; Stop. No Conquest.
+; control safe + P0-only AV => abandon Player 0.
+; P0-only safe + five-step AV => narrow the five-step.
+; all three safe => killer ownership alone is not sufficient.
+; Stop. No Conquest. No select 0.
 			{"editor_pow_dmg/prepare"
 				{condition
 					{terms
@@ -50,6 +55,34 @@
 										}
 										{tag
 											{tag hidden}
+										}
+									}
+								}
+							}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_pow_dmg_ai}
+										}
+									}
+									{include
+										{state
+											{state operatable}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state user_control}
 										}
 									}
 								}
@@ -278,6 +311,147 @@
 							}
 						}
 						{tag_add aio_pow_dmg_ready}
+					}
+					{"delay"
+						{time 1}
+					}
+					{"action"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_dmg_ai}
+									}
+								}
+								{include
+									{state
+										{state operatable}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+								}
+							}
+						}
+						{action attack}
+						{target
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_dmg_ctrl}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+							}
+						}
+					}
+					{"delay"
+						{time 6}
+					}
+					{"action"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_dmg_ai}
+									}
+								}
+								{include
+									{state
+										{state operatable}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+								}
+							}
+						}
+						{action attack}
+						{target
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_dmg_p0}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+							}
+						}
+					}
+					{"delay"
+						{time 6}
+					}
+					{"action"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_dmg_ai}
+									}
+								}
+								{include
+									{state
+										{state operatable}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+								}
+							}
+						}
+						{action attack}
+						{target
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_dmg_ob}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+							}
+						}
 					}
 				}
 			}

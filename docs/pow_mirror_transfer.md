@@ -56,25 +56,31 @@ Old crashing heads (`483387c` / `707f425`) stacked P0 on top of fight/select/hol
 
 The ~18:21 Conquest red-dot/shot-while-moving run was on installed `d7fa808`, **not** `b95f3cdc`. That attribution is withdrawn.
 
-## Native damage blocker (exact `b95f3cdc`)
+## Native damage evidence
 
-A T-62 killed a neutral/P0 surrendered StormV rifleman. AV: `EXCEPTION_ACCESS_VIOLATION` read `0x00000158`, stack `scene.quant` → `scene.quant.dmg` → `ia:call`. Same near-null offset as the older `scene.quant.bullets` rifle AVs; do not assume a separate root cause. Rifle A–E PASS does **not** make the five-step production-safe under ordinary combat/HE damage.
+**Isolation F PASS:** owner-controlled T-62 HE hit/killed CONTROL, runtime-P0-only, and exact five-step P0 with no AV. Conquest owner/player damage to P0 POWs was also safe, including a vehicle hit.
 
-Do not infer targeting from that tank event. It proves damage/death on a neutral actor, not a fresh target-select. Target-ignore and damage-safety stay separate gates.
+Two production AVs followed **AI-owned** damage to neutral/P0 POWs: T-62/HE via `scene.quant.dmg`, AI M4/rifle via `scene.quant.bullets`. Both `EXCEPTION_ACCESS_VIOLATION` read `0x00000158`, same RIP class. Nearby `deleted` log lines are correlation only unless the crash victim ID enters delete/expire/egress on the same tick.
 
-The clean five-step P0 path is **rejected as production-safe** until this damage seam is isolated. Production present is unchanged for this diagnostic so the Editor subjects match `b95f3cdc`.
+Do not infer targeting from those tank events. Target-ignore and damage-safety stay separate gates. Do not add `select 0`. Do not return to Conquest permutations for this isolate.
+
+The clean five-step remains **HOLD as production-safe** until AI-owned damage is isolated. Production present is unchanged so Editor subjects match `b95f3cdc`.
 
 ## Combined Editor damage fixture
 
 Opt-in only: `resource/map/multi/ce/ce_pow_dmg_editor.inc` (not in `ce_triggers.inc` / `dcg_script.inc`).
 
-One fixture, three Player-1 humans, same tank/HE sequentially, dump capture:
+F PASS used owner-fired HE. This file now isolates **killer ownership** in one Editor run. Three Player-1 humans plus one AI-owned shooter (`aio_pow_dmg_ai`, not `user_control`; prefer T-62). After victim state settles, source-backed `{action attack}` hits ctrl → p0 → ob.
 
 1. `aio_pow_dmg_ctrl` — normal control, no transfer
 2. `aio_pow_dmg_p0` — runtime P0 only
 3. `aio_pow_dmg_ob` — exact Old Boy five-step
 
-If P0-only already AVs under `scene.quant.dmg`, Player 0 damage registration is the seam. If only the five-step AVs, narrow inside that sequence. No fight/select/hold/control-AI pile. No Conquest. No civilian-mirror changes.
+No CE surrender tags, expire, evac, or delete on these victims. No fight/select/hold/control-AI pile.
+
+- control safe + P0-only AV ⇒ abandon Player 0
+- P0-only safe + five-step AV ⇒ narrow the five-step
+- all three safe under AI-owned damage ⇒ killer ownership alone is not sufficient; next is one production-state fixture (CE tags / expire / evac / delete timing), not more owner Conquest matches
 
 ## Evacuation
 
