@@ -196,3 +196,6 @@
 					}
 				}
 			}
+
+; Runtime human-born support provenance bridge (issue #97).
+(include "/map/multi/native_support_birth.inc")

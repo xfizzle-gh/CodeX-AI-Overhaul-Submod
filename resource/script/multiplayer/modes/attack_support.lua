@@ -5,8 +5,8 @@
 --
 -- Unit delivery is MI: attack_support_waves.inc (real-breed pool, MOVE in).
 -- Lua Spawn is not viable on this slot (IsUnitAvailable always false; utility load crashes).
--- Mission participation is gated in MI by support_mission_enabled$. This controller publishes
--- its own routed Team A playerId as the attack-support owner and issues squad orders.
+-- No enable var gates this: attack support is on by default on every human attack
+-- mission, and publishing the identity below is what arms the MI wave engine.
 --
 -- This slot also carries the ENGINE-STATE MIRROR. Every MIRROR_QUANTS quants it writes
 -- one game.log line per wave engine - attack_support, enemy_defense (plus its garrison
@@ -61,6 +61,17 @@ local function readVar(name)
 	return tostring(v)
 end
 
+local function setVar(name, value)
+	local sc = scene()
+	if not sc or not sc.SetVar then return false end
+	local ok, err = pcall(function() sc:SetVar(name, value) end)
+	if not ok then
+		log("setvar_failed", name, tostring(err))
+		return false
+	end
+	return true
+end
+
 local function positiveId(primary, fallback)
 	primary = tonumber(primary or 0) or 0
 	fallback = tonumber(fallback or 0) or 0
@@ -69,7 +80,6 @@ local function positiveId(primary, fallback)
 	return 0
 end
 
--- NEVER touch spawnPointName / PlayerSpawnPoint / require(utility) on this slot.
 local function identity()
 	local i = instance()
 	local c = conquestApi()
@@ -84,6 +94,28 @@ local function identity()
 		firstEnemyId = positiveId(c.FirstEnemyId, i.CampaignFirstEnemyId),
 		defenderBotId = positiveId(c.DefenderBotId, i.CampaignDefenderBotId),
 	}
+end
+
+-- #110 proved the live single-player Conquest topology can be resolved without
+-- QueryScene: Mate, enemy, and DefenderBot occupy three unique slots in 1..4;
+-- the remaining slot is the human. Fail closed if that proven topology changes.
+local function resolveHumanId(id)
+	local occupied = {}
+	local known = {
+		tonumber(id.playerId or 0) or 0,
+		tonumber(id.firstEnemyId or 0) or 0,
+		tonumber(id.defenderBotId or 0) or 0,
+	}
+	for _, playerId in ipairs(known) do
+		if playerId < 1 or playerId > 4 or occupied[playerId] then
+			return 0
+		end
+		occupied[playerId] = true
+	end
+	for playerId = 1, 4 do
+		if not occupied[playerId] then return playerId end
+	end
+	return 0
 end
 
 local function mirrorMotor()
@@ -115,6 +147,8 @@ end
 local state = {
 	quant = 0,
 	ordered = {},
+	humanId = 0,
+	mateId = 0,
 	identityPublished = false,
 	attackMission = nil,
 }
@@ -128,34 +162,34 @@ local function publishIdentity(id, isRetry)
 	state.attackMission = true
 	local sc = scene()
 	if not sc or not sc.SetVar then
-		if not isRetry then log("identity_publish_skipped", "Scene.SetVar_missing") end
+		log("identity_publish_skipped", "Scene.SetVar_missing")
 		return false
 	end
-	-- bot.main.lua routes this module only onto the non-human Team A attack-support
-	-- controller and explicitly excludes DefenderBotId. Therefore this controller's
-	-- own playerId is the authoritative same-side owner. DefenderBotId is a defender-
-	-- side identity in human-attack missions and must never own friendly support.
-	local ownerId = positiveId(id.playerId, 0)
-	if ownerId <= 0 then
-		if not isRetry or state.quant % 50 == 0 then
-			log("identity_publish_skipped", "support_controller_owner_unresolved",
-				"controller_playerId", id.playerId,
-				"defenderBotId", id.defenderBotId,
-				"team", id.team,
-				"retry", tostring(isRetry == true))
-		end
+
+	local mateId = positiveId(id.playerId, 0)
+	local humanId = resolveHumanId(id)
+	if mateId <= 0 or humanId <= 0 or humanId == mateId then
+		log("identity_publish_skipped", "human_or_mate_unresolved",
+			"mate", mateId, "human", humanId,
+			"enemy", id.firstEnemyId, "defender", id.defenderBotId)
 		return false
 	end
-	sc:SetVar("id_attack_support", ownerId)
-	sc:SetVar("attack_support_ready", 1)
-	sc:SetVar("attack_support_use_mi", 1)
+
+	state.mateId = mateId
+	state.humanId = humanId
 	state.identityPublished = true
-	log("identity_published", "id_attack_support", ownerId,
-		"controller_playerId", id.playerId,
-		"defenderBotId", id.defenderBotId,
-		"team", id.team,
-		"retry", tostring(isRetry == true),
-		"mi_waves", 1)
+
+	setVar("id_attack_support", mateId)
+	setVar("id_attack_support_mate", mateId)
+	setVar("id_attack_support_human", humanId)
+	setVar("attack_support_native_birth", 1)
+	setVar("attack_support_use_mi", 0)
+	setVar("attack_support_ready", 1)
+
+	log("identity_published",
+		"mate", mateId, "human", humanId,
+		"native_birth", 1, "legacy_mi_waves", 0,
+		"retry", tostring(isRetry == true))
 	return true
 end
 
@@ -217,6 +251,14 @@ local function mirrorEngineState()
 		"armed", readVar("attack_support_armed"),
 		"wave_num", readVar("attack_support_wave_num"),
 		"waves_left", readVar("attack_support_waves_left"))
+	emit("native_birth",
+		"enabled", readVar("attack_support_native_birth"),
+		"armed", readVar("native_support_armed"),
+		"stage", readVar("native_support_stage"),
+		"wave_num", readVar("native_support_wave_num"),
+		"waves_left", readVar("native_support_waves_left"),
+		"human", readVar("id_attack_support_human"),
+		"mate", readVar("id_attack_support_mate"))
 	emit("mirror", "enemy_defense",
 		"armed", readVar("enemy_defense_armed"),
 		"wave_num", readVar("enemy_defense_wave_num"),
@@ -236,23 +278,34 @@ end
 local function onGameStart()
 	state.quant = 0
 	state.ordered = {}
+	state.humanId = 0
+	state.mateId = 0
 	state.identityPublished = false
 	state.attackMission = nil
+	setVar("attack_support_native_birth", 0)
+	setVar("attack_support_ready", 0)
+	setVar("attack_support_use_mi", 0)
+	setVar("id_attack_support_human", 0)
+	setVar("id_attack_support_mate", 0)
+	setVar("native_support_armed", 0)
+	setVar("native_support_stage", 0)
+	setVar("native_support_wave_num", 0)
+	setVar("native_support_waves_left", 0)
+	setVar("native_support_busy", 0)
+
 	local id = identity()
 	log("game_start", "playerId", id.playerId, "attacking", tostring(id.attacking), "army", id.army)
 	publishIdentity(id, false)
 	if id.attacking == true then
-		log("mode", "mi_wave_delivery", "lua_spawn", "disabled_av_safe")
-	elseif id.attacking == false then
-		log("mode", "idle_not_attacking")
+		log("mode", "runtime_clone_human_birth_to_mate", "lua_spawn", "disabled_av_safe")
 	else
-		log("mode", "role_unresolved_retry_pending")
+		log("mode", "idle_not_attacking")
 	end
 end
 
 local function onQuant()
 	state.quant = state.quant + 1
-	if not state.identityPublished and state.attackMission ~= false then
+	if not state.identityPublished and state.attackMission ~= false and state.quant % 10 == 0 then
 		publishIdentity(identity(), true)
 	end
 	orderNewSquads()
@@ -274,7 +327,9 @@ local function onQuant()
 end
 
 local function onGameEnd()
-	log("game_end", "q", state.quant)
+	setVar("attack_support_native_birth", 0)
+	setVar("attack_support_ready", 0)
+	log("game_end", "q", state.quant, "human", state.humanId, "mate", state.mateId)
 end
 
 local function safeEvent(name, fn)
@@ -294,7 +349,7 @@ if ev and ev.Subscribe then
 	ev:Subscribe(ev.GameStart, safeEvent("GameStart", onGameStart))
 	ev:Subscribe(ev.Quant, safeEvent("Quant", onQuant))
 	ev:Subscribe(ev.GameEnd, safeEvent("GameEnd", onGameEnd))
-	log("armed", "identity_orders_mi_waves")
+	log("armed", "runtime_clone_human_birth_to_mate")
 else
 	log("not_armed", "BotApi.Events_missing")
 end
