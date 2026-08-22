@@ -6164,6 +6164,42 @@
 						}
 						{action drop}
 					}
+					{"inventory"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+								{include
+									{with_item
+										{type using}
+										{item "rocketlauncher"}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrender_fx}
+									}
+								}
+							}
+						}
+						{action drop}
+					}
 					{"set_i"
 						{var "ce_morale_diag_drop$"}
 						{op "="}
