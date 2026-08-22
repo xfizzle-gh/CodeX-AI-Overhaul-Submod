@@ -8,6 +8,7 @@
 			(include "ce_command_cohesion_triggers.inc")
 			(include "ce_broken_behavior_triggers.inc")
 			(include "ce_pow_camp_triggers.inc")
+			(include "ce_pow_camp_manage_triggers.inc")
 			(include "ai_logic/ce_lua_triggers.inc")
 			(include "ai_logic/ce_ai_spawn_triggers.inc")
 			(include "ai_logic/ce_ai_logic_triggers.inc")

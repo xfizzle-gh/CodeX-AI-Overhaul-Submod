@@ -186,6 +186,9 @@ function SetCEMissionVariables(botDefender)
   BotApi.Scene:SetVar("ce_morale_diag_p0", 0)
   BotApi.Scene:SetVar("ce_morale_diag_drop", 0)
   BotApi.Scene:SetVar("ce_morale_diag_impregnable", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_evac", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_expire", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_held", 0)
   BotApi.Scene:SetVar("ce_morale_diag_delete", 0)
   BotApi.Scene:SetVar("aio_pow_next_id", 0)
   BotApi.Scene:SetVar("aio_pow_seq", 0)
@@ -438,6 +441,16 @@ local function startPowDiagWatch()
   local seenP0 = false
   local seenImpregnable = false
   local seenDrop = false
+  local seenPoseComplete = false
+  local seenEvacCandidate = false
+  local seenEvacArmed = false
+  local seenEvac = false
+  local seenDestPlayerCamp = false
+  local seenDestEnemyCamp = false
+  local seenDestFallback = false
+  local seenMoveIssued = false
+  local seenExpire = false
+  local seenHeld = false
   local seenDelete = false
   print("CE_POW_DIAG event=watch_armed entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
   local function watch()
@@ -460,6 +473,46 @@ local function startPowDiagWatch()
     if not seenDrop and readMoraleVar("ce_morale_diag_drop") > 0 then
       seenDrop = true
       print("CE_POW_DIAG event=drop entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenPoseComplete and readMoraleVar("ce_morale_diag_pose_complete") > 0 then
+      seenPoseComplete = true
+      print("CE_POW_DIAG event=pose_complete entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenEvacCandidate and readMoraleVar("ce_morale_diag_evac_candidate") > 0 then
+      seenEvacCandidate = true
+      print("CE_POW_DIAG event=evac_candidate entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenEvacArmed and readMoraleVar("ce_morale_diag_evac_armed") > 0 then
+      seenEvacArmed = true
+      print("CE_POW_DIAG event=evac_armed entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenEvac and readMoraleVar("ce_morale_diag_evac") > 0 then
+      seenEvac = true
+      print("CE_POW_DIAG event=evac entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenDestPlayerCamp and readMoraleVar("ce_morale_diag_destination_player_camp") > 0 then
+      seenDestPlayerCamp = true
+      print("CE_POW_DIAG event=destination_player_camp entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenDestEnemyCamp and readMoraleVar("ce_morale_diag_destination_enemy_camp") > 0 then
+      seenDestEnemyCamp = true
+      print("CE_POW_DIAG event=destination_enemy_camp entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenDestFallback and readMoraleVar("ce_morale_diag_destination_fallback") > 0 then
+      seenDestFallback = true
+      print("CE_POW_DIAG event=destination_fallback entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenMoveIssued and readMoraleVar("ce_morale_diag_move_issued") > 0 then
+      seenMoveIssued = true
+      print("CE_POW_DIAG event=move_issued entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenExpire and readMoraleVar("ce_morale_diag_expire") > 0 then
+      seenExpire = true
+      print("CE_POW_DIAG event=expire entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
+    end
+    if not seenHeld and readMoraleVar("ce_morale_diag_held") > 0 then
+      seenHeld = true
+      print("CE_POW_DIAG event=held entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
     end
     if not seenDelete and readMoraleVar("ce_morale_diag_delete") > 0 then
       seenDelete = true
