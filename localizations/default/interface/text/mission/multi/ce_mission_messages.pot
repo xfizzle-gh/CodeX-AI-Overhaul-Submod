@@ -34,6 +34,10 @@ msgctxt "mission/multi/ce_morale_force_panic"
 msgid "CE morale test: Panic applied."
 msgstr "CE morale test: Panic applied."
 
+msgctxt "mission/multi/ce_pow_camp_held"
+msgid "Prisoners are being held at the rear camp."
+msgstr "Prisoners are being held at the rear camp."
+
 msgctxt "mission/multi/ai_sabotage_notify"
 msgid "Ai sabotage notify."
 msgstr "Ai sabotage notify."

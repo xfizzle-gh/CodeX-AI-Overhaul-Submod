@@ -25,8 +25,8 @@ def _uncommented(path: Path) -> str:
 class OldBoyProductionSurrenderTests(unittest.TestCase):
     def test_production_present_is_old_boy_five_step(self) -> None:
         beh = _uncommented(BEH)
-        present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]
-        evac = beh.split("broken/surrender_evacuate", 1)[1].split("broken/surrender_arrive_a", 1)[0]
+        present = beh.split("broken/surrender_present", 1)[1].split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[0]
+        evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split("broken/surrender_arrive_a", 1)[0]
         human = HUMAN.read_text(encoding="utf-8")
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split('{on "', 1)[0]
         self.assertIn("{effect start_white_flag}", present)
