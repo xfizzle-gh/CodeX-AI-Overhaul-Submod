@@ -3163,6 +3163,11 @@
 											{state user_control}
 										}
 									}
+									{exclude
+										{tag
+											{tag aio_morale_surrendering}
+										}
+									}
 								}
 								{group
 									{select
@@ -3173,6 +3178,11 @@
 									{include
 										{state
 											{state operatable}
+										}
+									}
+									{exclude
+										{tag
+											{tag aio_morale_surrendering}
 										}
 									}
 								}
@@ -3248,6 +3258,11 @@
 											{state user_control}
 										}
 									}
+									{exclude
+										{tag
+											{tag aio_morale_surrendering}
+										}
+									}
 								}
 								{group
 									{select
@@ -3258,6 +3273,11 @@
 									{include
 										{state
 											{state operatable}
+										}
+									}
+									{exclude
+										{tag
+											{tag aio_morale_surrendering}
 										}
 									}
 								}
@@ -6908,20 +6928,23 @@
 											{state operatable}
 										}
 									}
-									{exclude
-										{state
-											{state dead}
-										}
-										{tag
-											{tag bot_tank}
-										}
-										{state
-											{state inactive}
-										}
-										{prop
-											{prop airborne}
-										}
+								{exclude
+									{state
+										{state dead}
 									}
+									{tag
+										{tag bot_tank}
+									}
+									{state
+										{state inactive}
+									}
+									{prop
+										{prop airborne}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
 								}
 								{amount 1
 								}

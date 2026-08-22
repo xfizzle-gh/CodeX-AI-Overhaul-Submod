@@ -270,6 +270,9 @@
 										{tag {tag _user}}
 										{prop {prop human}}
 									}
+									{exclude
+										{tag {tag aio_morale_surrendering}}
+									}
 								}
 							}
 							{distance {mode near_than} {meters 22}}
@@ -316,6 +319,9 @@
 										{tag {tag _user}}
 										{prop {prop human}}
 									}
+									{exclude
+										{tag {tag aio_morale_surrendering}}
+									}
 								}
 							}
 							{distance {mode near_than} {meters 22}}
@@ -361,6 +367,9 @@
 										{state {state "operatable user_control"}}
 										{tag {tag _user}}
 										{prop {prop human}}
+									}
+									{exclude
+										{tag {tag aio_morale_surrendering}}
 									}
 								}
 							}
@@ -15121,6 +15130,11 @@
 											{state user_control}
 										}
 									}
+									{exclude
+										{tag
+											{tag aio_morale_surrendering}
+										}
+									}
 								}
 							}
 							{distance
@@ -15186,6 +15200,11 @@
 										}
 										{state
 											{state user_control}
+										}
+									}
+									{exclude
+										{tag
+											{tag aio_morale_surrendering}
 										}
 									}
 								}
