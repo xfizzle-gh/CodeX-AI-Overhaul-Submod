@@ -395,6 +395,10 @@ function WaveUnitCounter()
 		waveUnitCount = waveUnitCount + 1
 		if printDebug then print("Print: waveUnitCount =", waveUnitCount) end
 	end
+	if NoteStrategyPurchase then NoteStrategyPurchase() end
+	if NoteDropPlanePurchase and Context.SpawnInfo then
+		NoteDropPlanePurchase(Context.SpawnInfo.unit)
+	end
 end
 
 function EndWaveOnPurchaseFail()
