@@ -395,8 +395,11 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertLess(present.find("{tag_add aio_morale_surrender_fx}"), present.find("surrender_evacuate"))
         self.assertLess(present.find('{var "ce_morale_diag_pose_complete$"}'), present.find("surrender_evacuate"))
         self.assertLess(present.find('{var "ce_morale_diag_evac_candidate$"}'), present.find("surrender_evacuate"))
-        self.assertIn("{tag aio_morale_surrender_fx}", present[present.find("evac_candidate"):])
-        self.assertIn("{tag aio_morale_surrendering}", present[present.find("evac_candidate"):])
+        cand = present.split("ce_morale_diag_evac_candidate$", 1)[0][-1200:]
+        self.assertIn("{type entities}", cand)
+        self.assertIn("{tag aio_morale_surrender_fx}", cand)
+        self.assertIn("{tag aio_morale_surrendering}", cand)
+        self.assertIn("{tag aio_morale_surrender_evacuating}", cand)
         self.assertIn("{tag_add aio_morale_surrender_evacuating}", evac)
         self.assertLess(evac.find("{tag_add aio_morale_surrender_evacuating}"), evac.find('{var "ce_morale_diag_evac_armed$"}'))
         self.assertIn('{waypoint "attack_support_entry_a"}', evac)
