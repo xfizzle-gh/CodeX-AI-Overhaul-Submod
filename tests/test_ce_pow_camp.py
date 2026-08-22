@@ -42,7 +42,7 @@ class CePowCampTests(unittest.TestCase):
         self.assertNotIn("{control AI}", camp)
 
     def test_evac_branches_once_on_live_camp(self) -> None:
-        evac = BEH.read_text(encoding="utf-8").split("broken/surrender_evacuate", 1)[1].split(
+        evac = BEH.read_text(encoding="utf-8").split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split(
             "broken/surrender_arrive_a", 1
         )[0]
         self.assertNotIn("aio_pow_camp_ready$", evac)
@@ -130,7 +130,7 @@ class CePowCampTests(unittest.TestCase):
     def test_camp_files_do_not_override_p0_lifecycle(self) -> None:
         camp = CAMP.read_text(encoding="utf-8")
         present = BEH.read_text(encoding="utf-8").split("broken/surrender_present", 1)[1].split(
-            "broken/surrender_evacuate", 1
+            '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
         )[0]
         self.assertNotIn('{player "0"}', camp)
         self.assertNotIn("{control AI}", camp)

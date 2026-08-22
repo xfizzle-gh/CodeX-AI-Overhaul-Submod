@@ -57,7 +57,7 @@ class CePowCampManageTests(unittest.TestCase):
         self.assertNotIn('{on "aio_pow_camped"', human)
         self.assertIn("broken/pow_announce", manage)
         self.assertIn("ce_pow_camp_held", manage)
-        evac = BEH.read_text(encoding="utf-8").split("broken/surrender_evacuate", 1)[1].split(
+        evac = BEH.read_text(encoding="utf-8").split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split(
             "broken/surrender_arrive_a", 1
         )[0]
         self.assertIn("{tag aio_pow_camp_enemy}", evac)
@@ -71,7 +71,7 @@ class CePowCampManageTests(unittest.TestCase):
 
     def test_captor_stamp_is_before_p0(self) -> None:
         present = BEH.read_text(encoding="utf-8").split("broken/surrender_present", 1)[1].split(
-            "broken/surrender_evacuate", 1
+            '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
         )[0]
         stamp = present.split("{effect start_white_flag}", 1)[1].split('{"player"', 1)[0]
         self.assertLess(present.find("{tag_add aio_pow_captor_enemy}"), present.find('{player "0"}'))

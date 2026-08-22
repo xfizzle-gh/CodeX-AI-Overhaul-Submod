@@ -8,6 +8,7 @@
 ; Evac stays tag-driven after a 3s pose, then {action move}. Ordinary POWs
 ; retarget to a live {tag aio_pow_camp} collection anchor; otherwise captor-rear
 ; waypoint. Ally/support keep waypoint egress. No drop-sensor/fight/select restack.
+; Present arms surrender_evacuate after fx. Sibling evac was never kicked.
 ; 500s expire stays as a backstop. Walkers / presenting / held skip it.
 ; Do not restack fight/select/drop-sensor/control AI.
 ; ID assign uses evac switch/cmp_i on aio_pow_next_id$. Do not use entities+count in that switch.
@@ -6279,6 +6280,11 @@
 						{op "+"}
 						{value 1}
 					}
+					{"set_i"
+						{var "ce_morale_diag_pose_complete$"}
+						{op "="}
+						{value 1}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -6291,6 +6297,66 @@
 							}
 						}
 						{tag_remove aio_morale_surrender_presenting}
+					}
+					{"switch"
+						{"case"
+							{condition
+								{type entities}
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag aio_morale_surrender_fx}
+											}
+										}
+										{include
+											{tag
+												{tag aio_morale_surrendering}
+											}
+											{prop
+												{prop human}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
+											{state
+												{state user_control}
+											}
+											{tag
+												{tag player}
+											}
+											{tag
+												{tag aio_morale_surrender_evacuating}
+											}
+											{tag
+												{tag prisoner_in_camp}
+											}
+											{tag
+												{tag prisoner_in_enemy_camp}
+											}
+										}
+									}
+								}
+								{count
+									{op ">="}
+									{value 1}
+								}
+							}
+							{"set_i"
+								{var "ce_morale_diag_evac_candidate$"}
+								{op "="}
+								{value 1}
+							}
+						}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/surrender_evacuate"}
 					}
 					{"delay"
 						{time 1}
@@ -6394,6 +6460,11 @@
 							}
 						}
 						{tag_add aio_morale_surrender_evacuating}
+					}
+					{"set_i"
+						{var "ce_morale_diag_evac_armed$"}
+						{op "="}
+						{value 1}
 					}
 					{"entity_state"
 						{selector
@@ -6505,7 +6576,12 @@
 											}
 											{tag_add aio_morale_surrender_to_enemy_camp}
 										}
-										{"action"
+										{"set_i"
+											{var "ce_morale_diag_destination_enemy_camp$"}
+											{op "="}
+											{value 1}
+										}
+										{"action"}
 											{selector
 												{source advanced}
 											{group
@@ -6555,6 +6631,11 @@
 											}
 											}
 										}
+										{"set_i"
+											{var "ce_morale_diag_move_issued$"}
+											{op "="}
+											{value 1}
+										}
 									}
 									{"case"
 										{condition {type cmp_i} {var "enemy_spawnside$"} {op "<="} {value 1}}
@@ -6602,7 +6683,12 @@
 											}
 											{tag_add aio_morale_surrender_to_a}
 										}
-										{"entity_state"
+										{"set_i"
+											{var "ce_morale_diag_destination_fallback$"}
+											{op "="}
+											{value 1}
+										}
+										{"entity_state"}
 											{selector
 												{source advanced}
 												{group
@@ -6686,6 +6772,11 @@
 											{action move}
 											{waypoint "attack_support_entry_a"}
 										}
+										{"set_i"
+											{var "ce_morale_diag_move_issued$"}
+											{op "="}
+											{value 1}
+										}
 									}
 								}
 								{"switch"
@@ -6751,7 +6842,12 @@
 											}
 											{tag_add aio_morale_surrender_to_camp}
 										}
-										{"action"
+										{"set_i"
+											{var "ce_morale_diag_destination_player_camp$"}
+											{op "="}
+											{value 1}
+										}
+										{"action"}
 											{selector
 												{source advanced}
 											{group
@@ -6801,6 +6897,11 @@
 											}
 											}
 										}
+										{"set_i"
+											{var "ce_morale_diag_move_issued$"}
+											{op "="}
+											{value 1}
+										}
 									}
 									{"case"
 										{condition {type cmp_i} {var "enemy_spawnside$"} {op "<="} {value 1}}
@@ -6848,7 +6949,12 @@
 											}
 											{tag_add aio_morale_surrender_to_b}
 										}
-										{"entity_state"
+										{"set_i"
+											{var "ce_morale_diag_destination_fallback$"}
+											{op "="}
+											{value 1}
+										}
+										{"entity_state"}
 											{selector
 												{source advanced}
 												{group
@@ -6931,6 +7037,11 @@
 											}
 											{action move}
 											{waypoint "attack_support_entry_b"}
+										}
+										{"set_i"
+											{var "ce_morale_diag_move_issued$"}
+											{op "="}
+											{value 1}
 										}
 									}
 								}
@@ -7000,7 +7111,12 @@
 											}
 											{tag_add aio_morale_surrender_to_enemy_camp}
 										}
-										{"action"
+										{"set_i"
+											{var "ce_morale_diag_destination_enemy_camp$"}
+											{op "="}
+											{value 1}
+										}
+										{"action"}
 											{selector
 												{source advanced}
 											{group
@@ -7050,6 +7166,11 @@
 											}
 											}
 										}
+										{"set_i"
+											{var "ce_morale_diag_move_issued$"}
+											{op "="}
+											{value 1}
+										}
 									}
 									{"case"
 										{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
@@ -7097,7 +7218,12 @@
 											}
 											{tag_add aio_morale_surrender_to_b}
 										}
-										{"entity_state"
+										{"set_i"
+											{var "ce_morale_diag_destination_fallback$"}
+											{op "="}
+											{value 1}
+										}
+										{"entity_state"}
 											{selector
 												{source advanced}
 												{group
@@ -7181,6 +7307,11 @@
 											{action move}
 											{waypoint "attack_support_entry_b"}
 										}
+										{"set_i"
+											{var "ce_morale_diag_move_issued$"}
+											{op "="}
+											{value 1}
+										}
 									}
 								}
 								{"switch"
@@ -7246,7 +7377,12 @@
 											}
 											{tag_add aio_morale_surrender_to_camp}
 										}
-										{"action"
+										{"set_i"
+											{var "ce_morale_diag_destination_player_camp$"}
+											{op "="}
+											{value 1}
+										}
+										{"action"}
 											{selector
 												{source advanced}
 											{group
@@ -7296,6 +7432,11 @@
 											}
 											}
 										}
+										{"set_i"
+											{var "ce_morale_diag_move_issued$"}
+											{op "="}
+											{value 1}
+										}
 									}
 									{"case"
 										{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
@@ -7343,7 +7484,12 @@
 											}
 											{tag_add aio_morale_surrender_to_a}
 										}
-										{"entity_state"
+										{"set_i"
+											{var "ce_morale_diag_destination_fallback$"}
+											{op "="}
+											{value 1}
+										}
+										{"entity_state"}
 											{selector
 												{source advanced}
 												{group
@@ -7426,6 +7572,11 @@
 											}
 											{action move}
 											{waypoint "attack_support_entry_a"}
+										}
+										{"set_i"
+											{var "ce_morale_diag_move_issued$"}
+											{op "="}
+											{value 1}
 										}
 									}
 								}

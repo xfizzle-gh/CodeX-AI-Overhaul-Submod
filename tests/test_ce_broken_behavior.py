@@ -151,6 +151,13 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('print("CE_POW_DIAG event=drop', lua)
         self.assertIn('print("CE_POW_DIAG event=assign', lua)
         self.assertIn('print("CE_POW_DIAG event=evac', lua)
+        self.assertIn('print("CE_POW_DIAG event=pose_complete', lua)
+        self.assertIn('print("CE_POW_DIAG event=evac_candidate', lua)
+        self.assertIn('print("CE_POW_DIAG event=evac_armed', lua)
+        self.assertIn('print("CE_POW_DIAG event=destination_player_camp', lua)
+        self.assertIn('print("CE_POW_DIAG event=destination_enemy_camp', lua)
+        self.assertIn('print("CE_POW_DIAG event=destination_fallback', lua)
+        self.assertIn('print("CE_POW_DIAG event=move_issued', lua)
         self.assertIn('print("CE_POW_DIAG event=expire', lua)
         self.assertIn('print("CE_POW_DIAG event=held', lua)
         self.assertIn('print("CE_POW_DIAG event=delete', lua)
@@ -198,7 +205,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('not tagged "aio_morale_surrender_to_camp"', apply)
         self.assertIn('not tagged "aio_morale_surrender_to_enemy_camp"', apply)
         self.assertEqual(human.count('{call "start_white_flag"}'), 1)
-        present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]
+        present = beh.split("broken/surrender_present", 1)[1].split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[0]
         self.assertIn("{tag_add aio_morale_surrender_presenting}", present)
         self.assertIn("{effect start_white_flag}", present)
         self.assertIn('{player "0"}', present)
@@ -262,8 +269,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         beh = BEH.read_text(encoding="utf-8")
         human = HUMAN.read_text(encoding="utf-8")
         lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
-        present = beh.split("broken/surrender_present", 1)[1].split("broken/surrender_evacuate", 1)[0]
-        evac = beh.split("broken/surrender_evacuate", 1)[1].split("broken/surrender_arrive_a", 1)[0]
+        present = beh.split("broken/surrender_present", 1)[1].split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[0]
+        evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split("broken/surrender_arrive_a", 1)[0]
         arrive_a = beh.split("broken/surrender_arrive_a", 1)[1].split("broken/surrender_arrive_b", 1)[0]
         expire = beh.split("broken/surrender_expire", 1)[1].split("broken/observe_surrender", 1)[0]
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split('{on "', 1)[0]
@@ -300,6 +307,13 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "ce_morale_diag_impregnable",
             "ce_morale_diag_drop",
             "ce_morale_diag_evac",
+            "ce_morale_diag_pose_complete",
+            "ce_morale_diag_evac_candidate",
+            "ce_morale_diag_evac_armed",
+            "ce_morale_diag_destination_player_camp",
+            "ce_morale_diag_destination_enemy_camp",
+            "ce_morale_diag_destination_fallback",
+            "ce_morale_diag_move_issued",
             "ce_morale_diag_expire",
             "ce_morale_diag_held",
             "ce_morale_diag_delete",
@@ -310,8 +324,25 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{tags add "aio_pow_need_id"}', apply)
         self.assertIn("{tag_add aio_pow_evt_p0}", present)
         self.assertIn("{tag_add aio_pow_evt_present_done}", present)
+        self.assertIn('{var "ce_morale_diag_pose_complete$"}', present)
+        self.assertIn('{var "ce_morale_diag_evac_candidate$"}', present)
+        self.assertLess(present.find("{collage stand_giveup_1}"), present.find('{var "ce_morale_diag_pose_complete$"}'))
+        self.assertLess(present.find("{tag_add aio_morale_surrender_fx}"), present.find('{var "ce_morale_diag_pose_complete$"}'))
+        self.assertLess(present.find('{var "ce_morale_diag_pose_complete$"}'), present.find('{var "ce_morale_diag_evac_candidate$"}'))
+        self.assertLess(present.find('{var "ce_morale_diag_evac_candidate$"}'), present.find("surrender_evacuate"))
+        self.assertIn('{name "conquest_enhanced_mechanics/broken/surrender_evacuate"}', present)
         self.assertIn("{tag_add aio_pow_evt_evac}", evac)
+        self.assertIn('{var "ce_morale_diag_evac_armed$"}', evac)
         self.assertIn('{var "ce_morale_diag_evac$"}', evac)
+        self.assertIn('{var "ce_morale_diag_destination_player_camp$"}', evac)
+        self.assertIn('{var "ce_morale_diag_destination_enemy_camp$"}', evac)
+        self.assertIn('{var "ce_morale_diag_destination_fallback$"}', evac)
+        self.assertIn('{var "ce_morale_diag_move_issued$"}', evac)
+        self.assertLess(evac.find("{tag_add aio_morale_surrender_evacuating}"), evac.find('{var "ce_morale_diag_evac_armed$"}'))
+        self.assertLess(evac.find("{tag_add aio_morale_surrender_to_camp}"), evac.find('{var "ce_morale_diag_destination_player_camp$"}'))
+        self.assertLess(evac.find("{tag_add aio_morale_surrender_to_enemy_camp}"), evac.find('{var "ce_morale_diag_destination_enemy_camp$"}'))
+        self.assertLess(evac.find("{tag_add aio_morale_surrender_to_a}"), evac.find('{var "ce_morale_diag_destination_fallback$"}'))
+        self.assertLess(evac.find("{action move}"), evac.find('{var "ce_morale_diag_move_issued$"}'))
         self.assertIn("{tag_add aio_pow_evt_move_a}", evac)
         self.assertIn("{tag_add aio_pow_evt_move_b}", evac)
         self.assertNotIn('{"delete"', evac)
@@ -338,6 +369,54 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         probe = lua.split("function StartCeMoraleProbeLog()", 1)[1]
         self.assertLess(probe.find("startPowDiagWatch()"), probe.find("if readMoraleVar"))
 
+    def test_present_arms_evac_after_fx(self) -> None:
+        beh = BEH.read_text(encoding="utf-8")
+        present = beh.split("broken/surrender_present", 1)[1].split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[0]
+        evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split("broken/surrender_arrive_a", 1)[0]
+        vars_inc = (ROOT / "resource/map/multi/ce/ce_vars.inc").read_text(encoding="utf-8")
+        lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
+        self.assertLess(present.find("{effect start_white_flag}"), present.find('{player "0"}'))
+        self.assertLess(present.find("{tag_add aio_pow_captor_player}"), present.find('{player "0"}'))
+        self.assertLess(present.find("{tag_add aio_pow_captor_enemy}"), present.find('{player "0"}'))
+        self.assertLess(present.find('{player "0"}'), present.find("{impregnability harmless}"))
+        self.assertLess(present.find("{impregnability harmless}"), present.find("{tag_remove enemy}"))
+        self.assertLess(present.find("{tag_remove enemy}"), present.find('{"inventory"'))
+        self.assertLess(present.find('{"inventory"'), present.find("{collage stand_giveup_1}"))
+        self.assertEqual(present.count("{action drop}"), 2)
+        self.assertIn('{item "weapon"}', present)
+        self.assertIn("{type using}", present)
+        self.assertNotIn('{able "select" 0}', present)
+        self.assertNotIn("civilian", present)
+        self.assertNotIn("preparationTime", present)
+        self.assertNotIn('{drop "orders sensor senseless"}', present)
+        self.assertNotIn("{fire_mode hold}", present)
+        self.assertNotIn("{ai_move", present)
+        self.assertIn('{name "conquest_enhanced_mechanics/broken/surrender_evacuate"}', present)
+        self.assertLess(present.find("{tag_add aio_morale_surrender_fx}"), present.find("surrender_evacuate"))
+        self.assertLess(present.find('{var "ce_morale_diag_pose_complete$"}'), present.find("surrender_evacuate"))
+        self.assertLess(present.find('{var "ce_morale_diag_evac_candidate$"}'), present.find("surrender_evacuate"))
+        self.assertIn("{tag aio_morale_surrender_fx}", present[present.find("evac_candidate"):])
+        self.assertIn("{tag aio_morale_surrendering}", present[present.find("evac_candidate"):])
+        self.assertIn("{tag_add aio_morale_surrender_evacuating}", evac)
+        self.assertLess(evac.find("{tag_add aio_morale_surrender_evacuating}"), evac.find('{var "ce_morale_diag_evac_armed$"}'))
+        self.assertIn('{waypoint "attack_support_entry_a"}', evac)
+        self.assertIn('{waypoint "attack_support_entry_b"}', evac)
+        self.assertIn("{tag aio_pow_camp}", evac)
+        self.assertIn("{tag aio_pow_camp_enemy}", evac)
+        self.assertNotIn("{ai_move", evac)
+        for name in (
+            "ce_morale_diag_pose_complete",
+            "ce_morale_diag_evac_candidate",
+            "ce_morale_diag_evac_armed",
+            "ce_morale_diag_destination_player_camp",
+            "ce_morale_diag_destination_enemy_camp",
+            "ce_morale_diag_destination_fallback",
+            "ce_morale_diag_move_issued",
+        ):
+            self.assertIn('{"' + name + '"}', vars_inc)
+            self.assertIn('readMoraleVar("' + name + '")', lua)
+            self.assertIn('print("CE_POW_DIAG event=' + name.removeprefix("ce_morale_diag_") + '', lua)
+
     def test_surrender_evacuates_to_captor_entry(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
         lua = CONQ.read_text(encoding="utf-8")
@@ -348,7 +427,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("points_table_ai=0/0.000,0.33/3.750,0.50/4.500,0.66/5.600,1.00/7.500", ctf)
         self.assertIn("kill_score_multiplier=6.00", ctf)
         self.assertNotIn("surrender_hold", beh)
-        evac = beh.split("broken/surrender_evacuate", 1)[1].split("broken/surrender_arrive_a", 1)[0]
+        evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split("broken/surrender_arrive_a", 1)[0]
         self.assertIn("{tag aio_morale_surrender_evacuating}", evac)
         self.assertIn("{tag aio_morale_surrendering}", evac)
         self.assertIn("{state dead}", evac)

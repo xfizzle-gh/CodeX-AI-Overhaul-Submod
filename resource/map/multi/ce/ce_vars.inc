@@ -90,6 +90,13 @@
 			{"ce_morale_diag_drop"}
 			{"ce_morale_diag_impregnable"}
 			{"ce_morale_diag_evac"}
+			{"ce_morale_diag_pose_complete"}
+			{"ce_morale_diag_evac_candidate"}
+			{"ce_morale_diag_evac_armed"}
+			{"ce_morale_diag_destination_player_camp"}
+			{"ce_morale_diag_destination_enemy_camp"}
+			{"ce_morale_diag_destination_fallback"}
+			{"ce_morale_diag_move_issued"}
 			{"ce_morale_diag_expire"}
 			{"ce_morale_diag_held"}
 			{"ce_morale_diag_delete"}
