@@ -12,6 +12,8 @@ forcedUnitTypes = {}
 excludedUnitTypes = {}
 forceUnitCount = 0
 forceUnitCountMax = 0
+dropPlanesBought = 0
+DROP_PLANE_MATCH_CAP = 1
 botApiUnitsIndex = nil
 force_ai_direct_attack_logic = 0
 ai_attack_started = false
@@ -102,6 +104,33 @@ function KillAiSpawnMoveTimer()
     BotApi.Events:KillQuantTimer(Context.AiSpawnMoveTimer)
     Context.AiSpawnMoveTimer = nil
   end
+end
+
+function IsDropPlaneUnit(unit)
+  if type(unit) ~= "string" then return false end
+  local name = string.lower(unit)
+  return string.find(name, "il-76", 1, true)
+    or string.find(name, "c130_para", 1, true)
+    or string.find(name, "c130_lav", 1, true)
+end
+
+function NoteDropPlanePurchase(unit)
+  if not IsDropPlaneUnit(unit) then return end
+  dropPlanesBought = (dropPlanesBought or 0) + 1
+  if printDebug then print("DCG drop plane purchased", unit, "count", dropPlanesBought) end
+end
+
+function NoteStrategyPurchase()
+  if not forceUnitPriority then return end
+  forceUnitCount = (forceUnitCount or 0) + 1
+  if forceUnitCount < forceUnitCountMax then return end
+  forceUnitPriority = false
+  forcedUnitTypes = {}
+  excludedUnitTypes = {}
+  if BotApi and BotApi.Scene and BotApi.Scene.SetVar then
+    BotApi.Scene:SetVar("human_wave_strategy_active", 0)
+  end
+  if printDebug then print("AI forced priority ended after", forceUnitCount, "purchases") end
 end
 
 function ActivateAiStrategy(waveUnitTotal)
@@ -370,22 +399,13 @@ function GetUnitPriority(t)
     priorityMultiplier = 0.1
   end
 
-  -- Override all preivous priority calculations if true
   if forceUnitPriority then
-    if UnitTypesWithExclusions(forcedUnitTypes, excludedUnitTypes) then 
-      if UnitType("Command") then 
-        basePriority = 1
-        priorityMultiplier = 1.5
-      elseif UnitType("Signaller") then     
-        priorityMultiplier = 1.5
-      elseif UnitType("ReconPlane") then  
-        priorityMultiplier = 2
-      else 
-        priorityMultiplier = 2.5
-      end
-    else 
-      priorityMultiplier = 0.01
-    end 
+    if UnitTypesWithExclusions(forcedUnitTypes, excludedUnitTypes) then
+      priorityMultiplier = priorityMultiplier * 1.15
+    end
+  end
+  if IsDropPlaneUnit(t.unit) and (dropPlanesBought or 0) >= (DROP_PLANE_MATCH_CAP or 1) then
+    return 0
   end
   -- print("Unit ", t.unit, " has priority = ", basePriority * priorityMultiplier)
   return basePriority * priorityMultiplier
