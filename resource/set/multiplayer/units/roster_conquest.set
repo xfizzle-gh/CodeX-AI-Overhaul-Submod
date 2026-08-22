@@ -1,0 +1,16 @@
+;SDL
+; Same safe file list for DC apply paths.
+{units
+	(include "conquest/settings.set")
+	(include "conquest/inf_ukr.set")
+	(include "conquest/inf_rusa.set")
+	(include "conquest/inf_nato.set")
+	(include "conquest/inf_prc_era1960.set")
+	(include "conquest/inf_csa_era1960.set")
+	(include "conquest/units_ukr.set")
+	(include "conquest/units_rusa.set")
+	(include "conquest/units_nato.set")
+	(include "conquest/units_prc_era1960.set")
+	(include "conquest/units_csa_era1960.set")
+	(include "conquest/units_sov_era1960.set")
+}
