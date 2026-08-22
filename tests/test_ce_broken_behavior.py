@@ -382,7 +382,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertLess(present.find("{impregnability harmless}"), present.find("{tag_remove enemy}"))
         self.assertLess(present.find("{tag_remove enemy}"), present.find('{"inventory"'))
         self.assertLess(present.find('{"inventory"'), present.find("{collage stand_giveup_1}"))
-        self.assertEqual(present.count("{action drop}"), 2)
+        self.assertEqual(present.count("{action drop}"), 3)
         self.assertIn('{item "weapon"}', present)
         self.assertIn("{type using}", present)
         self.assertNotIn('{able "select" 0}', present)
@@ -534,6 +534,10 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "prisoner_in_enemy_camp",
             "aio_pow_captor_player",
             "aio_pow_captor_enemy",
+            "aio_pow_liberated",
+            "aio_pow_liberating",
+            "aio_pow_liberate_cand",
+            "aio_pow_withdraw",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
 

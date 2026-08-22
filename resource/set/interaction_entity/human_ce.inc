@@ -429,6 +429,26 @@
 		{tags remove "prisoner_in_enemy_camp"}
 		{tags remove "aio_pow_captor_player"}
 		{tags remove "aio_pow_captor_enemy"}
+		{tags remove "aio_pow_liberate_cand"}
+		{tags remove "aio_pow_liberating"}
+		{tags remove "aio_pow_liberated"}
+		{tags remove "aio_pow_withdraw"}
+		{tags remove "aio_pow_orig_p1"}
+		{tags remove "aio_pow_orig_p2"}
+		{tags remove "aio_pow_orig_p3"}
+		{tags remove "aio_pow_orig_p4"}
+		{tags remove "aio_pow_orig_p5"}
+		{tags remove "aio_pow_orig_p6"}
+		{tags remove "aio_pow_orig_p7"}
+		{tags remove "aio_pow_orig_p8"}
+		{tags remove "aio_pow_orig_p9"}
+		{tags remove "aio_pow_orig_p10"}
+		{tags remove "aio_pow_orig_p11"}
+		{tags remove "aio_pow_orig_p12"}
+		{tags remove "aio_pow_orig_p13"}
+		{tags remove "aio_pow_orig_p14"}
+		{tags remove "aio_pow_orig_p15"}
+		{tags remove "aio_pow_orig_p16"}
 		{tags remove "aio_morale_watching_regroup"}
 		{tags remove "aio_icon_refresh"}
 		{tags remove "aio_cmd_had_command"}
@@ -739,6 +759,7 @@
 				{if tagged "aio_morale_broken"
 					{if tagged "aio_morale_regroup_failed"
 						{if tagged "aio_cmd_linked"
+						else tagged "aio_pow_liberated"
 						else tagged "aio_steadfast"
 							{if rand 0.05
 								{call "aio_morale_surrender_apply"}
@@ -838,6 +859,12 @@
 	}
 	{on "stop_white_flag"
 		{view pause "white_flag"}
+	}
+	{on "aio_pow_liberate_guard"
+		{delay 20
+			{tags remove "aio_pow_liberated"}
+			{tags remove "aio_pow_withdraw"}
+		}
 	}
 	{on "start_no_comd"
 		{if not tagged "aio_icon_no_comd"

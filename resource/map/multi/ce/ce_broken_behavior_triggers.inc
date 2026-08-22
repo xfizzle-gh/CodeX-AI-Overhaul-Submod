@@ -12,6 +12,42 @@
 ; 500s expire stays as a backstop. Walkers / presenting / held skip it.
 ; Do not restack fight/select/drop-sensor/control AI.
 ; ID assign uses evac switch/cmp_i on aio_pow_next_id$. Do not use entities+count in that switch.
+; #127 already vetoes surrender while aio_cmd_linked (selector + apply + reacquire
+; clears regroup_failed). Do not add a naive friendly-proximity rule.
+			(define "pow_stamp_orig"
+				{"entity_state"
+					{selector
+						{source advanced}
+						{group
+							{select
+								{tag
+									{tag aio_morale_surrender_presenting}
+								}
+							}
+							{include
+								{prop
+									{prop human}
+								}
+								{player
+									{player "%slot"}
+								}
+							}
+							{exclude
+								{state
+									{state dead}
+								}
+								{state
+									{state inactive}
+								}
+								{tag
+									{tag aio_pow_orig_p%slot}
+								}
+							}
+						}
+					}
+					{tag_add aio_pow_orig_p%slot}
+				}
+			)
 			{"conquest_enhanced_mechanics/broken/acquire"
 				{condition
 					{terms
@@ -661,13 +697,16 @@
 									{tag
 										{tag aio_morale_surrendering}
 									}
-									{tag
-										{tag aio_cmd_linked}
-									}
+								{tag
+									{tag aio_cmd_linked}
+								}
+								{tag
+									{tag aio_pow_liberated}
+								}
 								}
 							}
 						}
-						{enemy
+						{enemy}
 							{source advanced}
 							{group
 								{select
@@ -733,6 +772,9 @@
 								}
 								{tag
 									{tag aio_cmd_linked}
+								}
+								{tag
+									{tag aio_pow_liberated}
 								}
 							}
 							}
@@ -5931,6 +5973,22 @@
 						}
 						{tag_add aio_pow_captor_player}
 					}
+					("pow_stamp_orig" slot(1))
+					("pow_stamp_orig" slot(2))
+					("pow_stamp_orig" slot(3))
+					("pow_stamp_orig" slot(4))
+					("pow_stamp_orig" slot(5))
+					("pow_stamp_orig" slot(6))
+					("pow_stamp_orig" slot(7))
+					("pow_stamp_orig" slot(8))
+					("pow_stamp_orig" slot(9))
+					("pow_stamp_orig" slot(10))
+					("pow_stamp_orig" slot(11))
+					("pow_stamp_orig" slot(12))
+					("pow_stamp_orig" slot(13))
+					("pow_stamp_orig" slot(14))
+					("pow_stamp_orig" slot(15))
+					("pow_stamp_orig" slot(16))
 					{"player"
 						{selector
 							{source advanced}
@@ -6141,6 +6199,44 @@
 									{with_item
 										{type using}
 										{item "weapon"}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrender_fx}
+									}
+								}
+							}
+						}
+						{action drop}
+					}
+					{"delay"
+						{time 0.2}
+					}
+					{"inventory"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+								{include
+									{with_item
+										{type using}
 									}
 								}
 								{exclude
@@ -9109,6 +9205,126 @@
 							}
 						}
 						{tag_remove aio_pow_captor_enemy}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_liberated}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_pow_liberated}
+									}
+								}
+								{include
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_remove aio_pow_liberated}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_liberating}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_pow_liberating}
+									}
+								}
+								{include
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_remove aio_pow_liberating}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_liberate_cand}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_pow_liberate_cand}
+									}
+								}
+								{include
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_remove aio_pow_liberate_cand}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_withdraw}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_pow_withdraw}
+									}
+								}
+								{include
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_remove aio_pow_withdraw}
 					}
 					{"delay"
 						{time 0.5}

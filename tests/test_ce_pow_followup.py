@@ -1,0 +1,125 @@
+from __future__ import annotations
+
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+BEH = ROOT / "resource/map/multi/ce/ce_broken_behavior_triggers.inc"
+CAMP = ROOT / "resource/map/multi/ce/ce_pow_camp_triggers.inc"
+MANAGE = ROOT / "resource/map/multi/ce/ce_pow_camp_manage_triggers.inc"
+LIB = ROOT / "resource/map/multi/ce/ce_pow_liberate_triggers.inc"
+TRIG = ROOT / "resource/map/multi/ce/ce_triggers.inc"
+HUMAN = ROOT / "resource/set/interaction_entity/human_ce.inc"
+DUMMY = ROOT / "resource/set/interaction_entity/dummy_ce.inc"
+CONQ = ROOT / "resource/script/multiplayer/modes/conquest.lua"
+
+
+class CePowFollowupTests(unittest.TestCase):
+    def test_visible_camp_uses_existing_entities_on_map_point(self) -> None:
+        dummy = DUMMY.read_text(encoding="utf-8")
+        camp = CAMP.read_text(encoding="utf-8")
+        manage = MANAGE.read_text(encoding="utf-8")
+        show = dummy.split('{on "aio_pow_show_camp"', 1)[1].split("{on ", 1)[0]
+        self.assertIn('{spawn "sandbag_ring"', show)
+        self.assertIn('{spawn "ai_waypoint_pole"', show)
+        self.assertIn("aio_pow_camp_visual", show)
+        self.assertIn("aio_pow_camp_visible", show)
+        self.assertIn("{effect aio_pow_show_camp}", camp)
+        self.assertIn("{effect aio_pow_show_camp}", manage)
+        self.assertIn("{tag_add aio_pow_camp}", camp)
+        self.assertIn("{tag_add aio_pow_camp_enemy}", manage)
+        self.assertIn("fail-closed routing", camp)
+        self.assertNotIn("radio_prison_camp", camp)
+        self.assertNotIn("prison_cell_beacon", camp)
+        self.assertNotIn("{effect set_prison_camp}", camp)
+
+    def test_orig_owner_is_stamped_before_p0(self) -> None:
+        beh = BEH.read_text(encoding="utf-8")
+        present = beh.split("broken/surrender_present", 1)[1].split(
+            '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
+        )[0]
+        self.assertIn("aio_pow_orig_p%slot", beh)
+        self.assertIn('("pow_stamp_orig" slot(1))', present)
+        self.assertIn('("pow_stamp_orig" slot(16))', present)
+        self.assertLess(present.find('("pow_stamp_orig" slot(1))'), present.find('{player "0"}'))
+        self.assertLess(present.find("{tag_add aio_pow_captor_enemy}"), present.find('("pow_stamp_orig" slot(1))'))
+        stamp = present.split("{effect start_white_flag}", 1)[1].split('{"player"', 1)[0]
+        self.assertNotIn("{tag _user_ally}", stamp)
+        self.assertNotIn("{tag def_sup_src}", stamp)
+
+    def test_using_drop_has_no_guessed_rocketlauncher(self) -> None:
+        present = BEH.read_text(encoding="utf-8").split("broken/surrender_present", 1)[1].split(
+            '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
+        )[0]
+        self.assertEqual(present.count('{"inventory"'), 3)
+        self.assertEqual(present.count('{item "weapon"}'), 2)
+        self.assertGreaterEqual(present.count("{type using}"), 3)
+        self.assertNotIn("rocketlauncher", present)
+        self.assertNotIn("{volume in_hands}", present)
+
+    def test_liberation_uses_pre_p0_provenance_and_withdraws(self) -> None:
+        self.assertTrue(LIB.is_file())
+        self.assertIn("ce_pow_liberate_triggers.inc", TRIG.read_text(encoding="utf-8"))
+        lib = "\n".join(
+            line for line in LIB.read_text(encoding="utf-8").splitlines() if not line.lstrip().startswith(";")
+        )
+        human = HUMAN.read_text(encoding="utf-8")
+        self.assertIn("{tag aio_pow_captor_enemy}", lib)
+        self.assertIn("{relation ally}", lib)
+        self.assertIn("id_1st_player$", lib)
+        self.assertIn("{meters 2}", lib)
+        self.assertIn("{detection located}", lib)
+        self.assertIn("{operation set}", lib)
+        self.assertIn('{player "%slot"}', lib)
+        self.assertIn('("pow_restore_orig" slot(1))', lib)
+        self.assertIn('("pow_restore_orig" slot(16))', lib)
+        self.assertIn("{impregnability disabled}", lib)
+        self.assertIn("{effect stop_white_flag}", lib)
+        self.assertIn("{effect aio_pow_liberate_guard}", lib)
+        self.assertIn('{waypoint "attack_support_entry_a"}', lib)
+        self.assertIn('{waypoint "attack_support_entry_b"}', lib)
+        self.assertIn("{tag_add aio_pow_liberated}", lib)
+        self.assertIn("{tag_remove aio_morale_surrendering}", lib)
+        self.assertNotIn("{tag _user_ally}", lib)
+        self.assertNotIn("{tag def_sup_src}", lib)
+        self.assertNotIn("{control user}", lib)
+        self.assertNotIn("{control AI}", lib)
+        self.assertNotIn("{weapon_prepare on}", lib)
+        self.assertNotIn("{fire_mode open}", lib)
+        self.assertNotIn('{player "0"}', lib)
+        self.assertIn('{on "aio_pow_liberate_guard"', human)
+        self.assertIn("{delay 20", human)
+        self.assertIn('{tags remove "aio_pow_liberated"}', human)
+        self.assertIn("aio_pow_liberated", CONQ.read_text(encoding="utf-8"))
+
+    def test_no_naive_friendly_proximity_surrender_rule(self) -> None:
+        beh = BEH.read_text(encoding="utf-8")
+        surr = beh.split('{"conquest_enhanced_mechanics/broken/surrender"', 1)[1].split(
+            "broken/surrender_diag_assign", 1
+        )[0]
+        cond = surr.split("{actions", 1)[0]
+        self.assertIn("aio_cmd_linked", cond)
+        self.assertIn("aio_pow_liberated", cond)
+        self.assertNotIn("{meters 5}", cond)
+        self.assertNotIn("{meters 10}", cond)
+        self.assertNotIn("{meters 15}", cond)
+        self.assertIn("Do not add a naive friendly-proximity rule", beh)
+        apply = HUMAN.read_text(encoding="utf-8").split('{on "aio_morale_surrender"', 1)[1].split(
+            '{on "aio_morale_surrender_apply"', 1
+        )[0]
+        self.assertLess(apply.find('{if tagged "aio_cmd_linked"'), apply.find('{if rand'))
+        self.assertLess(apply.find('{if tagged "aio_pow_liberated"'), apply.find("{if rand"))
+
+    def test_management_still_deferred(self) -> None:
+        manage = MANAGE.read_text(encoding="utf-8")
+        lib = LIB.read_text(encoding="utf-8")
+        human = HUMAN.read_text(encoding="utf-8")
+        self.assertNotIn("aio_pow_convert", manage + lib + human)
+        self.assertNotIn("follow_me", manage + lib)
+        self.assertNotIn("prison_truck", manage + lib)
+        self.assertNotIn("{on \"aio_pow_convert\"", human)
+
+
+if __name__ == "__main__":
+    unittest.main()
