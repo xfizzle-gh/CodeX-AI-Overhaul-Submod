@@ -728,7 +728,7 @@
 							}
 							{distance
 								{mode near_than}
-								{meters 30}
+								{meters 20}
 							}
 							{detection located}
 							{tag
