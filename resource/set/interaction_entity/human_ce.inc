@@ -800,6 +800,7 @@
 		{tags add "aio_pow_need_id"}
 		{tags remove "aio_morale_broken"}
 		{tags remove "aio_morale_regrouping"}
+		{tags remove "aio_pow_move_issued"}
 		{call "aio_morale_refresh_icons"}
 		{delay 500
 			{if tagged "aio_morale_surrendering"
