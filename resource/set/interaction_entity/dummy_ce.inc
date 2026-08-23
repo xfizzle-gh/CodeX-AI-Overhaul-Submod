@@ -93,10 +93,10 @@
 	{on "aio_pow_show_camp"
 		{if not tagged "aio_pow_camp_visible"
 			{tags add "aio_pow_camp_visible"}
-			{spawn "sandbag_ring" offset 0 1500 0 constrain_after_dir
+			{spawn "sandbag_ring" constrain_after_dir
 				{tags add "aio_pow_camp_visual"}
 			}
-			{spawn "ai_waypoint_pole" offset 0 1500 0 scale 4.0
+			{spawn "ai_waypoint_pole" scale 4.0
 				{tags add "aio_pow_camp_visual"}
 			}
 		}

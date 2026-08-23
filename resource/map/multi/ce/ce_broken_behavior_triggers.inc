@@ -700,10 +700,12 @@
 								{tag
 									{tag aio_cmd_linked}
 								}
-								{tag
-									{tag aio_pow_liberated}
-								}
-								}
+							{tag
+								{tag aio_pow_liberated}
+							}
+							{tag
+								{tag aio_pow_withdraw}
+							}
 							}
 						}
 						{enemy}
@@ -775,6 +777,9 @@
 								}
 								{tag
 									{tag aio_pow_liberated}
+								}
+								{tag
+									{tag aio_pow_withdraw}
 								}
 							}
 							}
@@ -5973,6 +5978,41 @@
 						}
 						{tag_add aio_pow_captor_player}
 					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+								}
+							}
+						}
+						{effect aio_pow_clear_orig}
+					}
 					("pow_stamp_orig" slot(1))
 					("pow_stamp_orig" slot(2))
 					("pow_stamp_orig" slot(3))
@@ -9325,6 +9365,66 @@
 							}
 						}
 						{tag_remove aio_pow_withdraw}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_withdraw_a}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_pow_withdraw_a}
+									}
+								}
+								{include
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_remove aio_pow_withdraw_a}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_withdraw_b}
+									}
+								}
+								{include
+									{state
+										{state dead}
+									}
+								}
+							}
+							{group
+								{select
+									{tag
+										{tag aio_pow_withdraw_b}
+									}
+								}
+								{include
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_remove aio_pow_withdraw_b}
 					}
 					{"delay"
 						{time 0.5}

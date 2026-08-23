@@ -538,6 +538,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             "aio_pow_liberating",
             "aio_pow_liberate_cand",
             "aio_pow_withdraw",
+            "aio_pow_withdraw_a",
+            "aio_pow_withdraw_b",
         ):
             self.assertIn("tag_remove " + tag, cleanup)
 

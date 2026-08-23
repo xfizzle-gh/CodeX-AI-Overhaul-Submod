@@ -5,7 +5,8 @@
 ; Apply: FE {player {operation set}} from aio_pow_orig_pN, stop_white_flag,
 ; {impregnability disabled}, strip prisoner state, withdraw to own rear.
 ; No {control user}, no re-arm, no teleport, no auto-recruit.
-; Bounded re-surrender guard is per-actor in human_ce aio_pow_liberate_guard.
+; aio_pow_withdraw lasts until rear arrival. aio_pow_liberated is a separate
+; 20s anti-resurrender timer. Clear orig-owner tags after restore.
 			(define "pow_liberate_see"
 				{"conquest_enhanced_mechanics/broken/pow_liberate_p%slot"
 					{condition
@@ -270,6 +271,32 @@
 					("pow_restore_orig" slot(14))
 					("pow_restore_orig" slot(15))
 					("pow_restore_orig" slot(16))
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_pow_liberating}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_pow_clear_orig}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -337,6 +364,12 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
+							{"entity_state"
+								{selector
+									{tag aio_pow_liberating}
+								}
+								{tag_add aio_pow_withdraw_a}
+							}
 							{"action"
 								{selector
 									{source advanced}
@@ -370,6 +403,12 @@
 						}
 						{"case"
 							{condition {type cmp_i} {var "enemy_spawnside$"} {op "<="} {value 1}}
+							{"entity_state"
+								{selector
+									{tag aio_pow_liberating}
+								}
+								{tag_add aio_pow_withdraw_b}
+							}
 							{"action"
 								{selector
 									{source advanced}
@@ -523,6 +562,180 @@
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/broken/pow_liberate"}
+					}
+				}
+			}
+			{"conquest_enhanced_mechanics/broken/pow_withdraw_arrive_a"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.see_actors"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_pow_withdraw_a}
+										}
+									}
+									{include
+										{tag
+											{tag aio_pow_withdraw}
+										}
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{tag
+											{tag player}
+										}
+									}
+								}
+							}
+							{enemy
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag spawn_a}
+										}
+									}
+								}
+							}
+							{distance
+								{mode near_than}
+								{meters 200}
+							}
+							{detection located}
+							{tag
+								{"tag pair"}
+								{"for selector" aio_pow_withdraw_at_rear}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{tag aio_pow_withdraw_at_rear}
+						}
+						{tag_remove aio_pow_withdraw}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_pow_withdraw_at_rear}
+						}
+						{tag_remove aio_pow_withdraw_a}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_pow_withdraw_at_rear}
+						}
+						{tag_remove aio_pow_withdraw_at_rear}
+					}
+					{"delay"
+						{time 2}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/pow_withdraw_arrive_a"}
+					}
+				}
+			}
+			{"conquest_enhanced_mechanics/broken/pow_withdraw_arrive_b"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.see_actors"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_pow_withdraw_b}
+										}
+									}
+									{include
+										{tag
+											{tag aio_pow_withdraw}
+										}
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{tag
+											{tag player}
+										}
+									}
+								}
+							}
+							{enemy
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag spawn_b}
+										}
+									}
+								}
+							}
+							{distance
+								{mode near_than}
+								{meters 200}
+							}
+							{detection located}
+							{tag
+								{"tag pair"}
+								{"for selector" aio_pow_withdraw_at_rear}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{tag aio_pow_withdraw_at_rear}
+						}
+						{tag_remove aio_pow_withdraw}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_pow_withdraw_at_rear}
+						}
+						{tag_remove aio_pow_withdraw_b}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_pow_withdraw_at_rear}
+						}
+						{tag_remove aio_pow_withdraw_at_rear}
+					}
+					{"delay"
+						{time 2}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/pow_withdraw_arrive_b"}
 					}
 				}
 			}
