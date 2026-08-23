@@ -62,6 +62,72 @@ class CePowFollowupTests(unittest.TestCase):
         self.assertNotIn("{tag _user_ally}", stamp)
         self.assertNotIn("{tag def_sup_src}", stamp)
 
+    def test_evac_action_move_is_oneshot(self) -> None:
+        beh = BEH.read_text(encoding="utf-8")
+        evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split(
+            "broken/surrender_arrive_a", 1
+        )[0]
+        present = beh.split("broken/surrender_present", 1)[1].split(
+            '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
+        )[0]
+        lib = LIB.read_text(encoding="utf-8")
+        human = HUMAN.read_text(encoding="utf-8")
+        self.assertIn("{time 3}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
+
+        def _close(src: str, open_idx: int) -> int:
+            depth = 0
+            i = open_idx
+            while i < len(src):
+                if src[i] == "{":
+                    depth += 1
+                elif src[i] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        return i
+                i += 1
+            self.fail("unbalanced block")
+
+        dest_tags = (
+            "aio_morale_surrender_to_camp",
+            "aio_morale_surrender_to_enemy_camp",
+            "aio_morale_surrender_to_a",
+            "aio_morale_surrender_to_b",
+        )
+        pop_keys = dest_tags + ("aio_pow_captor_enemy", "aio_pow_captor_player")
+        moves = 0
+        pos = 0
+        while True:
+            act = evac.find('{"action"', pos)
+            if act == -1:
+                break
+            act_end = _close(evac, act)
+            block = evac[act : act_end + 1]
+            pos = act_end + 1
+            if "{action move}" not in block:
+                continue
+            moves += 1
+            selector = block.split("{action move}", 1)[0]
+            self.assertIn("{tag aio_pow_move_issued}", selector)
+            after = evac[act_end + 1 :].lstrip()
+            self.assertTrue(after.startswith('{"entity_state"'), msg=block[-80:])
+            stamp_end = _close(after, 0)
+            stamp = after[: stamp_end + 1]
+            self.assertIn("{tag_add aio_pow_move_issued}", stamp)
+            for key in pop_keys:
+                token = "{tag %s}" % key
+                if token in selector:
+                    self.assertIn(token, stamp)
+            self.assertFalse(all(("{tag %s}" % tag) in stamp for tag in dest_tags))
+        self.assertEqual(moves, evac.count("{action move}"))
+        self.assertGreaterEqual(moves, 4)
+        self.assertEqual(evac.count("{tag_add aio_pow_move_issued}"), moves)
+        self.assertNotIn("{time 5}", evac)
+        self.assertNotIn("{time 10}", evac)
+        apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split("{on ", 1)[0]
+        self.assertIn('{tags remove "aio_pow_move_issued"}', apply)
+        self.assertIn("{tag_remove aio_pow_move_issued}", present)
+        self.assertIn("{tag_remove aio_pow_move_issued}", lib)
+
     def test_using_drop_has_no_guessed_rocketlauncher(self) -> None:
         present = BEH.read_text(encoding="utf-8").split("broken/surrender_present", 1)[1].split(
             '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
