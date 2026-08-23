@@ -725,7 +725,7 @@ end
 -- NOTE: Returns true if squad tagged "_lua_mi" / "repairing" / alert tags.
 -- "_lua_alert" or "lua_alert" = squad abruptly runs into enemy force.
 function IsSquadInScript(squad)
-	if BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrendering") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrender_evacuating") then
+	if BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrendering") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrender_evacuating") or BotApi.Scene:IsSquadTagged(squad, "aio_pow_liberated") or BotApi.Scene:IsSquadTagged(squad, "aio_pow_withdraw") then
 		if printDebug then print("Print: SQUADinSCRIPT thus no action squad", squad, "Player#",BotApi.Instance.playerId, "Team", team) end
 		return true
 
@@ -745,7 +745,7 @@ end
 
 -- MI/repair only — alert must not block a forced spawn kick.
 local function IsSquadReserved(squad)
-	return BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrendering") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrender_evacuating")
+	return BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrendering") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrender_evacuating") or BotApi.Scene:IsSquadTagged(squad, "aio_pow_liberated") or BotApi.Scene:IsSquadTagged(squad, "aio_pow_withdraw")
 end
 
 	-- NOTE: Returns true if squad tagged "_lua_ignore" for general ignore.

@@ -64,6 +64,9 @@ class CePowCampTests(unittest.TestCase):
         self.assertIn("{time 3}", evac)
         self.assertNotIn("{time 5}", evac)
         self.assertNotIn('{"actor_state"', evac)
+        self.assertNotIn('{"action"}', evac)
+        self.assertNotIn('{"entity_state"}', evac)
+        self.assertGreaterEqual(evac.count('{"action"'), 4)
         self.assertNotIn('{drop "orders sensor senseless"}', evac)
         self.assertNotIn("{fire_mode hold}", evac)
         s1 = evac.split("{value 1}", 1)[1].split("{value 2}", 1)[0]
@@ -126,6 +129,9 @@ class CePowCampTests(unittest.TestCase):
         self.assertIn('{tags remove "aio_morale_surrender_to_camp"}', die)
         self.assertIn('{tags remove "aio_pow_captor_player"}', die)
         self.assertIn('{tags remove "aio_pow_captor_enemy"}', die)
+        self.assertIn('{tags remove "aio_pow_liberated"}', die)
+        self.assertIn('{tags remove "aio_pow_orig_p1"}', die)
+        self.assertIn('{tags remove "aio_pow_orig_p16"}', die)
 
     def test_camp_files_do_not_override_p0_lifecycle(self) -> None:
         camp = CAMP.read_text(encoding="utf-8")

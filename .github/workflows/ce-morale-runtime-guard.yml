@@ -12,7 +12,14 @@ on:
       - "resource/set/interaction_entity/human_ce.inc"
       - "tests/test_ce_command_cohesion.py"
       - "tests/test_ce_broken_behavior.py"
+      - "tests/test_ce_pow_camp.py"
+      - "tests/test_ce_pow_camp_manage.py"
+      - "tests/test_ce_pow_followup.py"
       - "resource/map/multi/ce/ce_broken_behavior_triggers.inc"
+      - "resource/map/multi/ce/ce_pow_camp_triggers.inc"
+      - "resource/map/multi/ce/ce_pow_camp_manage_triggers.inc"
+      - "resource/map/multi/ce/ce_pow_liberate_triggers.inc"
+      - "resource/set/interaction_entity/dummy_ce.inc"
       - "tests/test_ce_morale_machine.py"
       - "resource/set/stuff/special/aio_marker_*"
       - "resource/map/multi/ce/ce_triggers.inc"
@@ -50,7 +57,14 @@ on:
       - "resource/set/interaction_entity/human_ce.inc"
       - "tests/test_ce_command_cohesion.py"
       - "tests/test_ce_broken_behavior.py"
+      - "tests/test_ce_pow_camp.py"
+      - "tests/test_ce_pow_camp_manage.py"
+      - "tests/test_ce_pow_followup.py"
       - "resource/map/multi/ce/ce_broken_behavior_triggers.inc"
+      - "resource/map/multi/ce/ce_pow_camp_triggers.inc"
+      - "resource/map/multi/ce/ce_pow_camp_manage_triggers.inc"
+      - "resource/map/multi/ce/ce_pow_liberate_triggers.inc"
+      - "resource/set/interaction_entity/dummy_ce.inc"
       - "tests/test_ce_morale_machine.py"
       - "resource/set/stuff/special/aio_marker_*"
       - "resource/map/multi/ce/ce_triggers.inc"
@@ -92,4 +106,4 @@ jobs:
           python-version: "3.13"
 
       - name: Run full 19-test morale set
-        run: python -m unittest tests/test_ce_morale_runtime.py tests/test_ce_morale_probe_report.py tests/test_ce_morale_arch_diag.py tests/test_ce_morale_machine.py tests/test_morale_breed_metadata.py tests/test_ce_command_cohesion.py tests/test_ce_broken_behavior.py
+        run: python -m unittest tests/test_ce_morale_runtime.py tests/test_ce_morale_probe_report.py tests/test_ce_morale_arch_diag.py tests/test_ce_morale_machine.py tests/test_morale_breed_metadata.py tests/test_ce_command_cohesion.py tests/test_ce_broken_behavior.py tests/test_ce_pow_camp.py tests/test_ce_pow_camp_manage.py tests/test_ce_pow_followup.py tests/test_ce_pow_oldboy_captive.py

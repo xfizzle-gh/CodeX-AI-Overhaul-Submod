@@ -1,5 +1,6 @@
 ; POW camp management: opposite-spawn enemy collection + first-hold talk.
-; No convert, release, truck, or live count.
+; No convert, auto-recruit, truck, or live count. Liberation is a sibling file.
+; No visible camp entity. Opposite spawn stays an invisible collection anchor.
 ; Spawnside 0 uses the same mapping as spawnside 1 (Conquest default:
 ; enemy-on-A): enemy_spawnside$ <= 1 arms spawn_a as aio_pow_camp_enemy;
 ; == 2 arms spawn_b. Allied POWs still get a live opposite camp.
