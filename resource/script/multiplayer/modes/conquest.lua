@@ -2,7 +2,7 @@ require([[/script/multiplayer/modes/utility]])
 require([[/script/multiplayer/modes/utility_ce]])
 
 -- [1.5.6] Code:X Reversion
-printDebug = true
+printDebug = false
 
 Context.SpawnSeekTimer = Context.SpawnSeekTimer or {}
 
@@ -303,7 +303,6 @@ local function requestWaveArty(wave)
 	local slot = (#slots > 0) and slots[math.random(#slots)] or 1
 	BotApi.Scene:SetVar("arty_wave_slot", slot)
 	BotApi.Scene:SetVar("arty_prep_wave", w)
-	BotApi.Scene:SetVar("arty_smoke", 1)
 	if printDebug then print("DCG arty_prep_wave requested", w, "slot", slot) end
 end
 
@@ -392,6 +391,10 @@ function WaveUnitCounter()
 	if waveSpawnPossible then
 		waveUnitCount = waveUnitCount + 1
 		if printDebug then print("Print: waveUnitCount =", waveUnitCount) end
+	end
+	if NoteStrategyPurchase then NoteStrategyPurchase() end
+	if NoteDropPlanePurchase and Context.SpawnInfo then
+		NoteDropPlanePurchase(Context.SpawnInfo.unit)
 	end
 end
 

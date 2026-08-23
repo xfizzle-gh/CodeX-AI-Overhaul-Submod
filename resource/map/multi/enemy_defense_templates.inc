@@ -150,131 +150,11 @@
 		{Able "-select"}
 	}
 
-	{Human "mp/rusa/2022s/rus90_squadlead" 0xb114
-		{Position -8600 -35400}
-		{Player 0}
-		{MID 9120}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_rifleman" 0xb115
-		{Position -8580 -35400}
-		{Player 0}
-		{MID 9121}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_rifleman" 0xb116
-		{Position -8560 -35400}
-		{Player 0}
-		{MID 9122}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_mg" 0xb117
-		{Position -8540 -35400}
-		{Player 0}
-		{MID 9123}
-		{Able "-select"}
-	}
 
 ; ===== RUSA WPN POOL (16 = 4 x 4) =====
-	{Human "mp/rusa/2022s/rus90_seniorrifleman" 0xb118
-		{Position -8520 -35400}
-		{Player 0}
-		{MID 9124}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_antitank" 0xb119
-		{Position -8500 -35400}
-		{Player 0}
-		{MID 9125}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_marksman" 0xb11a
-		{Position -8480 -35400}
-		{Player 0}
-		{MID 9126}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_rifleman" 0xb11b
-		{Position -8460 -35400}
-		{Player 0}
-		{MID 9127}
-		{Able "-select"}
-	}
 
-	{Human "mp/rusa/2022s/rus90_seniorrifleman" 0xb11c
-		{Position -8440 -35400}
-		{Player 0}
-		{MID 9128}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_antitank" 0xb11d
-		{Position -8420 -35400}
-		{Player 0}
-		{MID 9129}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_marksman" 0xb11e
-		{Position -8400 -35400}
-		{Player 0}
-		{MID 9130}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_rifleman" 0xb11f
-		{Position -8380 -35400}
-		{Player 0}
-		{MID 9131}
-		{Able "-select"}
-	}
 
-	{Human "mp/rusa/2022s/rus90_seniorrifleman" 0xb120
-		{Position -8360 -35400}
-		{Player 0}
-		{MID 9132}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_antitank" 0xb121
-		{Position -8340 -35400}
-		{Player 0}
-		{MID 9133}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_marksman" 0xb122
-		{Position -8320 -35400}
-		{Player 0}
-		{MID 9134}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_rifleman" 0xb123
-		{Position -8300 -35400}
-		{Player 0}
-		{MID 9135}
-		{Able "-select"}
-	}
 
-	{Human "mp/rusa/2022s/rus90_seniorrifleman" 0xb124
-		{Position -8280 -35400}
-		{Player 0}
-		{MID 9136}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_antitank" 0xb125
-		{Position -8260 -35400}
-		{Player 0}
-		{MID 9137}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_marksman" 0xb126
-		{Position -8240 -35400}
-		{Player 0}
-		{MID 9138}
-		{Able "-select"}
-	}
-	{Human "mp/rusa/2022s/rus90_rifleman" 0xb127
-		{Position -8220 -35400}
-		{Player 0}
-		{MID 9139}
-		{Able "-select"}
-	}
 
 ; ===== UKR LINE POOL (24 = 6 x 4) =====
 	{Human "mp/ukr/2022s/ter_squadlead" 0xb128
@@ -402,131 +282,11 @@
 		{Able "-select"}
 	}
 
-	{Human "mp/ukr/2022s/ter_squadlead" 0xb13c
-		{Position -7800 -35400}
-		{Player 0}
-		{MID 9160}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_rifleman" 0xb13d
-		{Position -7780 -35400}
-		{Player 0}
-		{MID 9161}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_rifleman" 0xb13e
-		{Position -7760 -35400}
-		{Player 0}
-		{MID 9162}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_mg" 0xb13f
-		{Position -7740 -35400}
-		{Player 0}
-		{MID 9163}
-		{Able "-select"}
-	}
 
 ; ===== UKR WPN POOL (16 = 4 x 4) =====
-	{Human "mp/ukr/2022s/ter_squadlead" 0xb140
-		{Position -7720 -35400}
-		{Player 0}
-		{MID 9164}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_antitank" 0xb141
-		{Position -7700 -35400}
-		{Player 0}
-		{MID 9165}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_marksman" 0xb142
-		{Position -7680 -35400}
-		{Player 0}
-		{MID 9166}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_rifleman" 0xb143
-		{Position -7660 -35400}
-		{Player 0}
-		{MID 9167}
-		{Able "-select"}
-	}
 
-	{Human "mp/ukr/2022s/ter_squadlead" 0xb144
-		{Position -7640 -35400}
-		{Player 0}
-		{MID 9168}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_antitank" 0xb145
-		{Position -7620 -35400}
-		{Player 0}
-		{MID 9169}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_marksman" 0xb146
-		{Position -7600 -35400}
-		{Player 0}
-		{MID 9170}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_rifleman" 0xb147
-		{Position -7580 -35400}
-		{Player 0}
-		{MID 9171}
-		{Able "-select"}
-	}
 
-	{Human "mp/ukr/2022s/ter_squadlead" 0xb148
-		{Position -7560 -35400}
-		{Player 0}
-		{MID 9172}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_antitank" 0xb149
-		{Position -7540 -35400}
-		{Player 0}
-		{MID 9173}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_marksman" 0xb14a
-		{Position -7520 -35400}
-		{Player 0}
-		{MID 9174}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_rifleman" 0xb14b
-		{Position -7500 -35400}
-		{Player 0}
-		{MID 9175}
-		{Able "-select"}
-	}
 
-	{Human "mp/ukr/2022s/ter_squadlead" 0xb14c
-		{Position -7480 -35400}
-		{Player 0}
-		{MID 9176}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_antitank" 0xb14d
-		{Position -7460 -35400}
-		{Player 0}
-		{MID 9177}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_marksman" 0xb14e
-		{Position -7440 -35400}
-		{Player 0}
-		{MID 9178}
-		{Able "-select"}
-	}
-	{Human "mp/ukr/2022s/ter_rifleman" 0xb14f
-		{Position -7420 -35400}
-		{Player 0}
-		{MID 9179}
-		{Able "-select"}
-	}
 
 ; ===== PRC LINE POOL (24 = 6 x 4) =====
 	{Human "mp/prc/2022s/pla_squadlead" 0xb150
@@ -654,131 +414,11 @@
 		{Able "-select"}
 	}
 
-	{Human "mp/prc/2022s/pla_squadlead" 0xb164
-		{Position -7000 -35400}
-		{Player 0}
-		{MID 9200}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_rifleman" 0xb165
-		{Position -6980 -35400}
-		{Player 0}
-		{MID 9201}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_rifleman" 0xb166
-		{Position -6960 -35400}
-		{Player 0}
-		{MID 9202}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_mg" 0xb167
-		{Position -6940 -35400}
-		{Player 0}
-		{MID 9203}
-		{Able "-select"}
-	}
 
 ; ===== PRC WPN POOL (16 = 4 x 4) =====
-	{Human "mp/prc/2022s/pla_senior" 0xb168
-		{Position -6920 -35400}
-		{Player 0}
-		{MID 9204}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_antitank_pf98" 0xb169
-		{Position -6900 -35400}
-		{Player 0}
-		{MID 9205}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_marksman" 0xb16a
-		{Position -6880 -35400}
-		{Player 0}
-		{MID 9206}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_rifleman" 0xb16b
-		{Position -6860 -35400}
-		{Player 0}
-		{MID 9207}
-		{Able "-select"}
-	}
 
-	{Human "mp/prc/2022s/pla_senior" 0xb16c
-		{Position -6840 -35400}
-		{Player 0}
-		{MID 9208}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_antitank_pf98" 0xb16d
-		{Position -6820 -35400}
-		{Player 0}
-		{MID 9209}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_marksman" 0xb16e
-		{Position -6800 -35400}
-		{Player 0}
-		{MID 9210}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_rifleman" 0xb16f
-		{Position -6780 -35400}
-		{Player 0}
-		{MID 9211}
-		{Able "-select"}
-	}
 
-	{Human "mp/prc/2022s/pla_senior" 0xb170
-		{Position -6760 -35400}
-		{Player 0}
-		{MID 9212}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_antitank_pf98" 0xb171
-		{Position -6740 -35400}
-		{Player 0}
-		{MID 9213}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_marksman" 0xb172
-		{Position -6720 -35400}
-		{Player 0}
-		{MID 9214}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_rifleman" 0xb173
-		{Position -6700 -35400}
-		{Player 0}
-		{MID 9215}
-		{Able "-select"}
-	}
 
-	{Human "mp/prc/2022s/pla_senior" 0xb174
-		{Position -6680 -35400}
-		{Player 0}
-		{MID 9216}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_antitank_pf98" 0xb175
-		{Position -6660 -35400}
-		{Player 0}
-		{MID 9217}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_marksman" 0xb176
-		{Position -6640 -35400}
-		{Player 0}
-		{MID 9218}
-		{Able "-select"}
-	}
-	{Human "mp/prc/2022s/pla_rifleman" 0xb177
-		{Position -6620 -35400}
-		{Player 0}
-		{MID 9219}
-		{Able "-select"}
-	}
 
 ; ===== NATO LINE POOL (24 = 6 x 4) =====
 	{Human "mp/nato/2022s/nato_squadlead" 0xb178
@@ -906,131 +546,93 @@
 		{Able "-select"}
 	}
 
-	{Human "mp/nato/2022s/nato_squadlead" 0xb18c
-		{Position -6200 -35400}
+
+; ===== ENEMY L2 LIGHT CARS (1 hull+crew per faction) =====
+	{Entity "gaz2975a_nsvt" 0xb1c0
+		{Position -9000 -35600}
 		{Player 0}
-		{MID 9240}
+		{MID 9260}
 		{Able "-select"}
 	}
-	{Human "mp/nato/2022s/nato_rifleman" 0xb18d
-		{Position -6180 -35400}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xb1c1
+		{Position -8995 -35600}
 		{Player 0}
-		{MID 9241}
+		{MID 9261}
 		{Able "-select"}
 	}
-	{Human "mp/nato/2022s/nato_rifleman" 0xb18e
-		{Position -6160 -35400}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xb1c2
+		{Position -8990 -35600}
 		{Player 0}
-		{MID 9242}
+		{MID 9262}
 		{Able "-select"}
 	}
-	{Human "mp/nato/2022s/nato_mg" 0xb18f
-		{Position -6140 -35400}
+	{Entity "humvee_m2hb_ukr" 0xb1c3
+		{Position -8200 -35600}
 		{Player 0}
-		{MID 9243}
+		{MID 9263}
 		{Able "-select"}
 	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xb1c4
+		{Position -8195 -35600}
+		{Player 0}
+		{MID 9264}
+		{Able "-select"}
+	}
+	{Human "mp/ukr/2022s/ukr_vehicleman" 0xb1c5
+		{Position -8190 -35600}
+		{Player 0}
+		{MID 9265}
+		{Able "-select"}
+	}
+	{Entity "dongfeng__mengshi_sk131" 0xb1c6
+		{Position -7400 -35600}
+		{Player 0}
+		{MID 9266}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_vehicleman" 0xb1c7
+		{Position -7395 -35600}
+		{Player 0}
+		{MID 9267}
+		{Able "-select"}
+	}
+	{Human "mp/prc/2022s/pla_vehicleman" 0xb1c8
+		{Position -7390 -35600}
+		{Player 0}
+		{MID 9268}
+		{Able "-select"}
+	}
+	{Entity "fennek" 0xb1c9
+		{Position -6600 -35600}
+		{Player 0}
+		{MID 9269}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/pzgd_vehicleman" 0xb1ca
+		{Position -6595 -35600}
+		{Player 0}
+		{MID 9270}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/pzgd_vehicleman" 0xb1cb
+		{Position -6590 -35600}
+		{Player 0}
+		{MID 9271}
+		{Able "-select"}
+	}
+	{Link 0xb1c1 {0xb1c0 "driver"}}
+	{Link 0xb1c2 {0xb1c0 "gunner2"}}
+	{Link 0xb1c4 {0xb1c3 "driver"}}
+	{Link 0xb1c5 {0xb1c3 "gunner2"}}
+	{Link 0xb1c7 {0xb1c6 "driver"}}
+	{Link 0xb1c8 {0xb1c6 "gunner2"}}
+	{Link 0xb1ca {0xb1c9 "driver"}}
+	{Link 0xb1cb {0xb1c9 "gunner2"}}
 
 ; ===== NATO WPN POOL (16 = 4 x 4) =====
-	{Human "mp/nato/2022s/nato_teamlead" 0xb190
-		{Position -6120 -35400}
-		{Player 0}
-		{MID 9244}
-		{Able "-select"}
-	}
-	{Human "mp/nato/2022s/nato_antitank" 0xb191
-		{Position -6100 -35400}
-		{Player 0}
-		{MID 9245}
-		{Able "-select"}
-	}
-	{Human "mp/nato/2022s/nato_sniper" 0xb192
-		{Position -6080 -35400}
-		{Player 0}
-		{MID 9246}
-		{Able "-select"}
-	}
-	{Human "mp/nato/2022s/nato_rifleman" 0xb193
-		{Position -6060 -35400}
-		{Player 0}
-		{MID 9247}
-		{Able "-select"}
-	}
 
-	{Human "mp/nato/2022s/nato_teamlead" 0xb194
-		{Position -6040 -35400}
-		{Player 0}
-		{MID 9248}
-		{Able "-select"}
-	}
-	{Human "mp/nato/2022s/nato_antitank" 0xb195
-		{Position -6020 -35400}
-		{Player 0}
-		{MID 9249}
-		{Able "-select"}
-	}
-	{Human "mp/nato/2022s/nato_sniper" 0xb196
-		{Position -6000 -35400}
-		{Player 0}
-		{MID 9250}
-		{Able "-select"}
-	}
-	{Human "mp/nato/2022s/nato_rifleman" 0xb197
-		{Position -5980 -35400}
-		{Player 0}
-		{MID 9251}
-		{Able "-select"}
-	}
 
-	{Human "mp/nato/2022s/nato_teamlead" 0xb198
-		{Position -5960 -35400}
-		{Player 0}
-		{MID 9252}
-		{Able "-select"}
-	}
-	{Human "mp/nato/2022s/nato_antitank" 0xb199
-		{Position -5940 -35400}
-		{Player 0}
-		{MID 9253}
-		{Able "-select"}
-	}
-	{Human "mp/nato/2022s/nato_sniper" 0xb19a
-		{Position -5920 -35400}
-		{Player 0}
-		{MID 9254}
-		{Able "-select"}
-	}
-	{Human "mp/nato/2022s/nato_rifleman" 0xb19b
-		{Position -5900 -35400}
-		{Player 0}
-		{MID 9255}
-		{Able "-select"}
-	}
 
-	{Human "mp/nato/2022s/nato_teamlead" 0xb19c
-		{Position -5880 -35400}
-		{Player 0}
-		{MID 9256}
-		{Able "-select"}
-	}
-	{Human "mp/nato/2022s/nato_antitank" 0xb19d
-		{Position -5860 -35400}
-		{Player 0}
-		{MID 9257}
-		{Able "-select"}
-	}
-	{Human "mp/nato/2022s/nato_sniper" 0xb19e
-		{Position -5840 -35400}
-		{Player 0}
-		{MID 9258}
-		{Able "-select"}
-	}
-	{Human "mp/nato/2022s/nato_rifleman" 0xb19f
-		{Position -5820 -35400}
-		{Player 0}
-		{MID 9259}
-		{Able "-select"}
-	}
 
 ; ===== TAGS =====
 	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb100}
@@ -1053,26 +655,6 @@
 	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb111}
 	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb112}
 	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb113}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb114}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb115}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb116}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_line" "hidden" 0xb117}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb118}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb119}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb11a}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb11b}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb11c}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb11d}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb11e}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb11f}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb120}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb121}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb122}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb123}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb124}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb125}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb126}
-	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_wpn" "hidden" 0xb127}
 	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb128}
 	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb129}
 	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb12a}
@@ -1093,26 +675,6 @@
 	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb139}
 	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb13a}
 	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb13b}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb13c}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb13d}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb13e}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_line" "hidden" 0xb13f}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb140}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb141}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb142}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb143}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb144}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb145}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb146}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb147}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb148}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb149}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb14a}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb14b}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb14c}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb14d}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb14e}
-	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_wpn" "hidden" 0xb14f}
 	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb150}
 	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb151}
 	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb152}
@@ -1133,26 +695,6 @@
 	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb161}
 	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb162}
 	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb163}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb164}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb165}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb166}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_line" "hidden" 0xb167}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb168}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb169}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb16a}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb16b}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb16c}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb16d}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb16e}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb16f}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb170}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb171}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb172}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb173}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb174}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb175}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb176}
-	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_wpn" "hidden" 0xb177}
 	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb178}
 	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb179}
 	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb17a}
@@ -1171,25 +713,17 @@
 	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb187}
 	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb188}
 	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb189}
+	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_veh" "enemy_def_rusa_veh1" "hidden" 0xb1c0}
+	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_veh" "enemy_def_rusa_veh1" "hidden" 0xb1c1}
+	{Tags "enemy_def_tpl" "enemy_def_rusa" "enemy_def_rusa_veh" "enemy_def_rusa_veh1" "hidden" 0xb1c2}
+	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_veh" "enemy_def_ukr_veh1" "hidden" 0xb1c3}
+	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_veh" "enemy_def_ukr_veh1" "hidden" 0xb1c4}
+	{Tags "enemy_def_tpl" "enemy_def_ukr" "enemy_def_ukr_veh" "enemy_def_ukr_veh1" "hidden" 0xb1c5}
+	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_veh" "enemy_def_prc_veh1" "hidden" 0xb1c6}
+	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_veh" "enemy_def_prc_veh1" "hidden" 0xb1c7}
+	{Tags "enemy_def_tpl" "enemy_def_prc" "enemy_def_prc_veh" "enemy_def_prc_veh1" "hidden" 0xb1c8}
+	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_veh" "enemy_def_nato_veh1" "hidden" 0xb1c9}
+	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_veh" "enemy_def_nato_veh1" "hidden" 0xb1ca}
+	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_veh" "enemy_def_nato_veh1" "hidden" 0xb1cb}
 	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb18a}
 	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb18b}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb18c}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb18d}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb18e}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_line" "hidden" 0xb18f}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb190}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb191}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb192}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb193}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb194}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb195}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb196}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb197}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb198}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb199}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb19a}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb19b}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb19c}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb19d}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb19e}
-	{Tags "enemy_def_tpl" "enemy_def_nato" "enemy_def_nato_wpn" "hidden" 0xb19f}

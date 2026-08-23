@@ -638,12 +638,6 @@
 				{"trigger" {name "defense_support/ally_prc_air"}}
 				{"trigger" {name "defense_support/ally_nato_air"}}
 			)
-			(define "ds_poke_faction_manpad"
-				{"trigger" {name "defense_support/ally_rusa_manpad"}}
-				{"trigger" {name "defense_support/ally_ukr_manpad"}}
-				{"trigger" {name "defense_support/ally_prc_manpad"}}
-				{"trigger" {name "defense_support/ally_nato_manpad"}}
-			)
 
 			; One line (or rare recon) team onto the flag. Not from wave budget. No veh.
 			(define "ds_pick_garrison"
@@ -1569,11 +1563,13 @@
 
 ; END FRIENDLY DEFENDER MOTOR ONE-SHOT
 
-			; Infantry hybrid only (no light veh on defense edge waves).
+			; L1/L2: 4-man line only on the defense edge (no parked car pool here).
 			(define "ds_pick_hybrid_non_nato"
+				{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
+				("ds_poke_faction_line")
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
+						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value -1}}
 						{"switch"
 							{"case"
 								{condition {type rand} {value 0.15}}
@@ -1588,11 +1584,6 @@
 										("ds_poke_faction_line")
 									}
 								}
-							}
-							{"case"
-								{condition {type rand} {value 0.1}}
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 15}}
-								("ds_poke_faction_manpad")
 							}
 							{"case"
 								{condition {type rand} {value 0.12}}
@@ -1621,7 +1612,7 @@
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
+						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value -2}}
 						{"switch"
 							{"case"
 								{condition {type rand} {value 0.15}}
@@ -1664,27 +1655,20 @@
 						}
 					}
 					{"default"
-						{"switch"
-							{"case"
-								{condition {type rand} {value 0.35}}
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 12}}
-								("ds_poke_faction_recon")
-							}
-							{"default"
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
-								("ds_poke_faction_line")
-							}
-						}
+						{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
+						("ds_poke_faction_line")
 					}
 				}
 			)
 
-			; Faction-aware hybrid. NATO specialty + hybrid inject; others full hybrid. No veh.
+			; L1/L2: 4-man faction line only.
 			(define "ds_pick_composition"
 				("ds_resolve_army")
+				{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
+				("ds_poke_faction_line")
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value 3}}
+						{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value -1}}
 						{"switch"
 							{"case"
 								{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
@@ -1702,11 +1686,6 @@
 												{"trigger" {name "defense_support/comp_usmc"}}
 											}
 										}
-									}
-									{"case"
-										{condition {type rand} {value 0.1}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 15}}
-										("ds_poke_faction_manpad")
 									}
 									{"case"
 										{condition {type rand} {value 0.1}}
@@ -2232,7 +2211,7 @@
 				{actions
 					{"set_i" {var "defense_support_air_test_done$"} {op "="} {value 1}}
 					{"set_i" {var "support_announce$"} {op "="} {value 1}}
-					{"set_i" {var "defense_support_air_left$"} {op "="} {value 1}}
+					{"set_i" {var "defense_support_air_left$"} {op "="} {value 0}}
 					{"delay" {time 30}}
 					("ds_resolve_army")
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 18}}
@@ -2257,7 +2236,7 @@
 					{"set_i" {var "defense_support_air_left$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}
 					; DAY-2 TEST default ON (shared toggle). Set value 0 for production-only air rolls.
-					{"set_i" {var "attack_support_air_test$"} {op "="} {value 1}}
+					{"set_i" {var "attack_support_air_test$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_place$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 0}}
@@ -2355,7 +2334,7 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
-							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 2}}
+							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 4}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2366,7 +2345,7 @@
 						}
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
-							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 1}}
+							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 4}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -2376,11 +2355,11 @@
 							}
 						}
 						{"default"
-							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 1}}
+							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 3}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L1, 1 WAVE"}}
+									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L1, 3 WAVES"}}
 								}
 								{"default"}
 							}
@@ -2461,51 +2440,22 @@
 						}
 					}
 					{"delay" {time 0.1}}
+					{"set_i" {var "defense_support_wave_num$"} {op "+"} {value 1}}
+					{"set_i" {var "defense_support_waves_left$"} {op "-"} {value 1}}
 					{"switch"
-						; LIVE-UNIT CAP. Skip this cycle without consuming a wave while
-						; the friendly defender still has a platoon on the field. Counted
-						; on the simple selector form the mission scripts use for live
-						; units - the advanced selector's prop/state decorations zero the
-						; match on these entities.
 						{"case"
-							{condition
-								{type entities}
-								{selector
-									{ignore_captured_by_user 0}
-									{tag def_sup_src}
-									{type human}
-									{state "not dead"}
-								}
-								{count {op ">"} {value 14}}
-							}
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 8} {title "DEFENSE SUPPORT NEAR CAP DEFER"}}
-								}
-								{"default"}
-							}
+							{condition {type cmp_i} {var "defense_support_group$"} {op "=="} {value 1}}
+							{"set_i" {var "defense_support_group$"} {op "="} {value 2}}
+						}
+						{"case"
+							{condition {type cmp_i} {var "defense_support_group$"} {op "=="} {value 2}}
+							{"set_i" {var "defense_support_group$"} {op "="} {value 3}}
 						}
 						{"default"
-							{"set_i" {var "defense_support_wave_num$"} {op "+"} {value 1}}
-							{"set_i" {var "defense_support_waves_left$"} {op "-"} {value 1}}
-							; Rotate the hold group so waves spread over the flags.
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "defense_support_group$"} {op "=="} {value 1}}
-									{"set_i" {var "defense_support_group$"} {op "="} {value 2}}
-								}
-								{"case"
-									{condition {type cmp_i} {var "defense_support_group$"} {op "=="} {value 2}}
-									{"set_i" {var "defense_support_group$"} {op "="} {value 3}}
-								}
-								{"default"
-									{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
-								}
-							}
-							("ds_pick_composition")
+							{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
 						}
 					}
+					("ds_pick_composition")
 					{"delay" {time 0.1}}
 					{"set_i" {var "defense_support_busy$"} {op "="} {value 0}}
 					{"trigger" {name "defense_support/clock"}}
@@ -3608,7 +3558,7 @@
 				}
 			}
 
-			; ===== HYBRID defense (recon/assault/eng/manpad) — no light veh =====
+			; ===== HYBRID defense (recon/assault/eng) — no light veh =====
 			{"defense_support/ally_rusa_recon"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5"}
@@ -3975,130 +3925,6 @@
 						{selector {source advanced} {group {select {tag {tag ally_sup_nato_eng}}}} {amount 3}}
 						{tag_add def_sup_deploy}
 						{tag_remove ally_sup_nato_eng}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_rusa_manpad"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 15}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_rusa_manpad}} {count {op ">="} {value 2}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA MANPAD"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_manpad}}}} {amount 2}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_rusa_manpad}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_ukr_manpad"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 15}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_ukr_manpad}} {count {op ">="} {value 2}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - UKR MANPAD"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_manpad}}}} {amount 2}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_ukr_manpad}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_prc_manpad"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 15}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_prc_manpad}} {count {op ">="} {value 2}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - PRC MANPAD"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_manpad}}}} {amount 2}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_prc_manpad}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_nato_manpad"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 15}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_nato_manpad}} {count {op ">="} {value 2}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - NATO MANPAD"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_manpad}}}} {amount 2}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_nato_manpad}
 					}
 					{"delay" {time 0.1}}
 					("ds_place_at_entry")

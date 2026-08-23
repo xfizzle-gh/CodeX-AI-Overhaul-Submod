@@ -590,6 +590,12 @@
 				{"trigger" {name "enemy_defense/prc_wpn"}}
 				{"trigger" {name "enemy_defense/nato_wpn"}}
 			)
+			(define "ed_poke_veh"
+				{"trigger" {name "enemy_defense/rusa_veh"}}
+				{"trigger" {name "enemy_defense/ukr_veh"}}
+				{"trigger" {name "enemy_defense/prc_veh"}}
+				{"trigger" {name "enemy_defense/nato_veh"}}
+			)
 
 			; The garrison draw: one 4-strong line fireteam for the flag named by
 			; enemy_defense_place$. A composition clears the command as its first action,
@@ -649,7 +655,21 @@
 			(define "ed_pick_squad"
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
+						{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "enemy_defense_veh_left$"} {op ">"} {value 0}}
+								{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 4}}
+								("ed_poke_veh")
+							}
+							{"default"
+								{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 2}}
+								("ed_poke_line")
+							}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value -3}}
 						{"switch"
 							{"case"
 								{condition {type rand} {value 0.6}}
@@ -677,7 +697,7 @@
 						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
+						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value -2}}
 						{"switch"
 							{"case"
 								{condition {type rand} {value 0.34}}
@@ -1129,6 +1149,7 @@
 				}
 				{actions
 					{"set_i" {var "enemy_defense_armed$"} {op "="} {value 1}}
+					{"set_i" {var "enemy_defense_veh_left$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_defense_stage$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
 										{"set_i" {var "enemy_defense_wave_num$"} {op "="} {value 0}}
@@ -1144,7 +1165,7 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
-							{"set_i" {var "enemy_defense_waves_left$"} {op "="} {value 8}}
+							{"set_i" {var "enemy_defense_waves_left$"} {op "="} {value 4}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1155,7 +1176,7 @@
 						}
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
-							{"set_i" {var "enemy_defense_waves_left$"} {op "="} {value 6}}
+							{"set_i" {var "enemy_defense_waves_left$"} {op "="} {value 4}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1165,11 +1186,11 @@
 							}
 						}
 						{"default"
-							{"set_i" {var "enemy_defense_waves_left$"} {op "="} {value 4}}
+							{"set_i" {var "enemy_defense_waves_left$"} {op "="} {value 3}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "ENEMY DEFENSE ARMED - L1, 4 WAVES"}}
+									{"timer" {time 10} {title "ENEMY DEFENSE ARMED - L1, 3 WAVES"}}
 								}
 								{"default"}
 							}
@@ -1272,38 +1293,11 @@
 						}
 					}
 					{"delay" {time 0.1}}
-					{"switch"
-						; LIVE-UNIT CAP. Skip the cycle without consuming a wave while the
-						; defender still has a platoon of MI infantry on the field. Counted on
-						; the simple selector form the mission scripts use for live units - the
-						; advanced selector's prop/state decorations zero the match on these.
-						{"case"
-							{condition
-								{type entities}
-								{selector
-									{ignore_captured_by_user 0}
-									{tag enemy_def_src}
-									{type human}
-									{state "not dead"}
-								}
-								{count {op ">"} {value 16}}
-							}
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 8} {title "ENEMY DEFENSE NEAR CAP DEFER"}}
-								}
-								{"default"}
-							}
-						}
-						{"default"
-							{"set_i" {var "enemy_defense_wave_num$"} {op "+"} {value 1}}
-							{"set_i" {var "enemy_defense_waves_left$"} {op "-"} {value 1}}
-							{"set_i" {var "enemy_defense_place$"} {op "="} {value 0}}
-							{"set_i" {var "enemy_defense_group$"} {op "="} {value 3}}
-							("ed_pick_light")
-						}
-					}
+					{"set_i" {var "enemy_defense_wave_num$"} {op "+"} {value 1}}
+					{"set_i" {var "enemy_defense_waves_left$"} {op "-"} {value 1}}
+					{"set_i" {var "enemy_defense_place$"} {op "="} {value 0}}
+					{"set_i" {var "enemy_defense_group$"} {op "="} {value 3}}
+					("ed_pick_light")
 					{"delay" {time 0.1}}
 					{"set_i" {var "enemy_defense_trickle_busy$"} {op "="} {value 0}}
 					{"trigger" {name "enemy_defense/trickle"}}
@@ -1356,38 +1350,11 @@
 						}
 					}
 					{"delay" {time 0.1}}
-					{"switch"
-						; LIVE-UNIT CAP. Skip the cycle without consuming a wave while the
-						; defender still has a platoon of MI infantry on the field. Counted on
-						; the simple selector form the mission scripts use for live units - the
-						; advanced selector's prop/state decorations zero the match on these.
-						{"case"
-							{condition
-								{type entities}
-								{selector
-									{ignore_captured_by_user 0}
-									{tag enemy_def_src}
-									{type human}
-									{state "not dead"}
-								}
-								{count {op ">"} {value 16}}
-							}
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 8} {title "ENEMY DEFENSE NEAR CAP DEFER"}}
-								}
-								{"default"}
-							}
-						}
-						{"default"
-							{"set_i" {var "enemy_defense_wave_num$"} {op "+"} {value 1}}
-							{"set_i" {var "enemy_defense_waves_left$"} {op "-"} {value 1}}
-							{"set_i" {var "enemy_defense_place$"} {op "="} {value 0}}
-							{"set_i" {var "enemy_defense_group$"} {op "="} {value 4}}
-							("ed_pick_squad")
-						}
-					}
+					{"set_i" {var "enemy_defense_wave_num$"} {op "+"} {value 1}}
+					{"set_i" {var "enemy_defense_waves_left$"} {op "-"} {value 1}}
+					{"set_i" {var "enemy_defense_place$"} {op "="} {value 0}}
+					{"set_i" {var "enemy_defense_group$"} {op "="} {value 4}}
+					("ed_pick_squad")
 					{"delay" {time 0.1}}
 					{"set_i" {var "enemy_defense_surge_busy$"} {op "="} {value 0}}
 					{"trigger" {name "enemy_defense/surge"}}
@@ -2417,6 +2384,127 @@
 					("ed_place")
 					("ed_finish")
 					{"set_i" {var "enemy_defense_stage$"} {op "="} {value 22}}
+				}
+			}
+
+			{"enemy_defense/rusa_veh"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 4}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 1}}
+						{"5.cmp_i" {var "enemy_defense_veh_left$"} {op ">"} {value 0}}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_rusa_line}}}} {amount 6}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_rusa_line}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_rusa_veh1}}}}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_rusa_veh}
+						{tag_remove enemy_def_rusa_veh1}
+					}
+					{"set_i" {var "enemy_defense_veh_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
+				}
+			}
+			{"enemy_defense/ukr_veh"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 4}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 2}}
+						{"5.cmp_i" {var "enemy_defense_veh_left$"} {op ">"} {value 0}}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_ukr_line}}}} {amount 6}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_ukr_line}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_ukr_veh1}}}}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_ukr_veh}
+						{tag_remove enemy_def_ukr_veh1}
+					}
+					{"set_i" {var "enemy_defense_veh_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
+				}
+			}
+			{"enemy_defense/prc_veh"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 4}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 4}}
+						{"5.cmp_i" {var "enemy_defense_veh_left$"} {op ">"} {value 0}}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_prc_line}}}} {amount 6}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_prc_line}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_prc_veh1}}}}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_prc_veh}
+						{tag_remove enemy_def_prc_veh1}
+					}
+					{"set_i" {var "enemy_defense_veh_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
+				}
+			}
+			{"enemy_defense/nato_veh"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 4}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 3}}
+						{"5.cmp_i" {var "enemy_defense_veh_left$"} {op ">"} {value 0}}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_nato_line}}}} {amount 6}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_nato_line}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_nato_veh1}}}}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_nato_veh}
+						{tag_remove enemy_def_nato_veh1}
+					}
+					{"set_i" {var "enemy_defense_veh_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
 				}
 			}
 

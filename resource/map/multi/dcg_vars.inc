@@ -75,11 +75,13 @@
 			{"attack_support_hmmwv_left"}
 			{"attack_support_ukr_veh_left"}
 			{"attack_support_nato_veh_left"}
+			{"attack_support_veh_left"}
 			{"attack_support_use_mi"}
 			{"enemy_spawnside"}
 			{"id_attack_support"}
 			{"attack_support_ready"}
 			{"enemy_defense_armed"}
+			{"enemy_defense_veh_left"}
 			{"enemy_defense_army"}
 			{"enemy_defense_stage"}
 			{"enemy_defense_transferred"}
@@ -138,5 +140,6 @@
 			{"support_e2_flag"}
 			{"support_templates_inert"}
 			{"support_templates_culled"}
+			{"support_templates_wiped"}
 			{"support_templates_ally"}
 			{"support_templates_enemy"}
