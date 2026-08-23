@@ -6717,7 +6717,7 @@
 											{op "="}
 											{value 1}
 										}
-										{"action"}
+										{"action"
 											{selector
 												{source advanced}
 											{group
@@ -6824,7 +6824,7 @@
 											{op "="}
 											{value 1}
 										}
-										{"entity_state"}
+										{"entity_state"
 											{selector
 												{source advanced}
 												{group
@@ -6983,7 +6983,7 @@
 											{op "="}
 											{value 1}
 										}
-										{"action"}
+										{"action"
 											{selector
 												{source advanced}
 											{group
@@ -7090,7 +7090,7 @@
 											{op "="}
 											{value 1}
 										}
-										{"entity_state"}
+										{"entity_state"
 											{selector
 												{source advanced}
 												{group
@@ -7252,7 +7252,7 @@
 											{op "="}
 											{value 1}
 										}
-										{"action"}
+										{"action"
 											{selector
 												{source advanced}
 											{group
@@ -7359,7 +7359,7 @@
 											{op "="}
 											{value 1}
 										}
-										{"entity_state"}
+										{"entity_state"
 											{selector
 												{source advanced}
 												{group
@@ -7518,7 +7518,7 @@
 											{op "="}
 											{value 1}
 										}
-										{"action"}
+										{"action"
 											{selector
 												{source advanced}
 											{group
@@ -7625,7 +7625,7 @@
 											{op "="}
 											{value 1}
 										}
-										{"entity_state"}
+										{"entity_state"
 											{selector
 												{source advanced}
 												{group

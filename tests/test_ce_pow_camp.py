@@ -64,6 +64,9 @@ class CePowCampTests(unittest.TestCase):
         self.assertIn("{time 3}", evac)
         self.assertNotIn("{time 5}", evac)
         self.assertNotIn('{"actor_state"', evac)
+        self.assertNotIn('{"action"}', evac)
+        self.assertNotIn('{"entity_state"}', evac)
+        self.assertGreaterEqual(evac.count('{"action"'), 4)
         self.assertNotIn('{drop "orders sensor senseless"}', evac)
         self.assertNotIn("{fire_mode hold}", evac)
         s1 = evac.split("{value 1}", 1)[1].split("{value 2}", 1)[0]
