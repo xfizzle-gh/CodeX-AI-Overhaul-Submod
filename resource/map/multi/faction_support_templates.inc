@@ -355,7 +355,7 @@
 		{Able "-select"}
 	}
 ; ----- ALLY ARF LIGHT VEH (3 hull+crew) -----
-	{Entity "kipri2" 0xb375}
+	{Entity "kipri2" 0xb375
 		{Position 3000 -36200}
 		{Player 0}
 		{MID 9673}
@@ -373,7 +373,7 @@
 		{MID 9675}
 		{Able "-select"}
 	}
-	{Entity "kipri2" 0xb378}
+	{Entity "kipri2" 0xb378
 		{Position 3100 -36200}
 		{Player 0}
 		{MID 9676}
