@@ -89,36 +89,6 @@
 				{tags add "map_point"}
 			}
 		}
-		{if tagged "spawn_a"
-			{delay 3 {call "aio_pow_try_show_camp"}}
-			{delay 8 {call "aio_pow_try_show_camp"}}
-			{delay 15 {call "aio_pow_try_show_camp"}}
-			{delay 30 {call "aio_pow_try_show_camp"}}
-		else tagged "spawn_b"
-			{delay 3 {call "aio_pow_try_show_camp"}}
-			{delay 8 {call "aio_pow_try_show_camp"}}
-			{delay 15 {call "aio_pow_try_show_camp"}}
-			{delay 30 {call "aio_pow_try_show_camp"}}
-		}
-	}
-	{on "aio_pow_try_show_camp"
-		{if tagged "aio_pow_camp_visible"
-		else tagged "aio_pow_camp"
-			{call "aio_pow_show_camp"}
-		else tagged "aio_pow_camp_enemy"
-			{call "aio_pow_show_camp"}
-		}
-	}
-	{on "aio_pow_show_camp"
-		{if not tagged "aio_pow_camp_visible"
-			{tags add "aio_pow_camp_visible"}
-			{spawn "sandbag_ring" constrain_after_dir
-				{tags add "aio_pow_camp_visual"}
-			}
-			{spawn "ai_waypoint_pole" scale 4.0
-				{tags add "aio_pow_camp_visual"}
-			}
-		}
 	}
 	{on "spawn_drop_zone_targets"
 		{spawn "ai_waypoint_pole" random_position 50 scale 4.0
@@ -181,41 +151,6 @@
 		{spawn "ai_waypoint_pole" random_position 6000 constrain_after_dir scale 4.0}
 		{spawn "ai_waypoint_pole" random_position 6000 constrain_after_dir scale 4.0}
 		{spawn "ai_waypoint_pole" random_position 6000 constrain_after_dir scale 4.0}
-	}
-}
-
-{"map_point_conquest"
-	{on spawn
-		{if tagged "spawn_a"
-			{delay 3 {call "aio_pow_try_show_camp"}}
-			{delay 8 {call "aio_pow_try_show_camp"}}
-			{delay 15 {call "aio_pow_try_show_camp"}}
-			{delay 30 {call "aio_pow_try_show_camp"}}
-		else tagged "spawn_b"
-			{delay 3 {call "aio_pow_try_show_camp"}}
-			{delay 8 {call "aio_pow_try_show_camp"}}
-			{delay 15 {call "aio_pow_try_show_camp"}}
-			{delay 30 {call "aio_pow_try_show_camp"}}
-		}
-	}
-	{on "aio_pow_try_show_camp"
-		{if tagged "aio_pow_camp_visible"
-		else tagged "aio_pow_camp"
-			{call "aio_pow_show_camp"}
-		else tagged "aio_pow_camp_enemy"
-			{call "aio_pow_show_camp"}
-		}
-	}
-	{on "aio_pow_show_camp"
-		{if not tagged "aio_pow_camp_visible"
-			{tags add "aio_pow_camp_visible"}
-			{spawn "sandbag_ring" constrain_after_dir
-				{tags add "aio_pow_camp_visual"}
-			}
-			{spawn "ai_waypoint_pole" scale 4.0
-				{tags add "aio_pow_camp_visual"}
-			}
-		}
 	}
 }
 

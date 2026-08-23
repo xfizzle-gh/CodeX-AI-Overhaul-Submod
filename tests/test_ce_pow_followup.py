@@ -16,29 +16,35 @@ CONQ = ROOT / "resource/script/multiplayer/modes/conquest.lua"
 
 
 class CePowFollowupTests(unittest.TestCase):
-    def test_visible_camp_uses_existing_entities_on_map_point(self) -> None:
+    def test_camp_stays_invisible_anchor(self) -> None:
         dummy = DUMMY.read_text(encoding="utf-8")
         camp = CAMP.read_text(encoding="utf-8")
         manage = MANAGE.read_text(encoding="utf-8")
-        show = dummy.split('{on "aio_pow_show_camp"', 1)[1].split("{on ", 1)[0]
-        self.assertIn('{spawn "sandbag_ring"', dummy)
-        self.assertIn('{spawn "ai_waypoint_pole"', show)
-        self.assertNotIn("offset 0 1500 0", dummy)
-        self.assertIn("aio_pow_camp_visual", show)
-        self.assertIn("aio_pow_camp_visible", show)
-        self.assertIn('{"map_point_conquest"', dummy)
-        self.assertIn('{on "aio_pow_try_show_camp"', dummy)
-        self.assertIn('{if tagged "spawn_a"', dummy)
-        self.assertIn('else tagged "spawn_b"', dummy)
-        self.assertIn("hold center = visible enclosure", camp)
-        self.assertIn("{effect aio_pow_show_camp}", camp)
-        self.assertIn("{effect aio_pow_show_camp}", manage)
+        self.assertNotIn('{spawn "sandbag_ring"', dummy)
+        self.assertNotIn("{effect aio_pow_show_camp}", camp)
+        self.assertNotIn("{effect aio_pow_show_camp}", manage)
+        self.assertNotIn('{"map_point_conquest"', dummy)
         self.assertIn("{tag_add aio_pow_camp}", camp)
         self.assertIn("{tag_add aio_pow_camp_enemy}", manage)
-        self.assertIn("fail-closed routing", camp)
+        self.assertIn("invisible", camp)
         self.assertNotIn("radio_prison_camp", camp)
         self.assertNotIn("prison_cell_beacon", camp)
         self.assertNotIn("{effect set_prison_camp}", camp)
+
+    def test_surrender_detector_matches_accepted_main(self) -> None:
+        surr = BEH.read_text(encoding="utf-8").split(
+            '{"conquest_enhanced_mechanics/broken/surrender"', 1
+        )[1].split("broken/surrender_diag_assign", 1)[0]
+        cond = surr.split("{actions", 1)[0]
+        self.assertIn("{enemy\n", cond)
+        self.assertNotIn("{enemy}", cond)
+        self.assertIn("{source advanced}", cond.split("{enemy\n", 1)[1])
+        self.assertIn("{meters 30}", cond)
+        self.assertNotIn("{meters 20}", cond)
+        self.assertIn("{detection located}", cond)
+        self.assertIn("aio_cmd_linked", cond)
+        self.assertNotIn("aio_pow_liberated", cond)
+        self.assertNotIn("aio_pow_withdraw", cond)
 
     def test_orig_owner_is_stamped_before_p0(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
@@ -121,8 +127,8 @@ class CePowFollowupTests(unittest.TestCase):
         )[0]
         cond = surr.split("{actions", 1)[0]
         self.assertIn("aio_cmd_linked", cond)
-        self.assertIn("aio_pow_liberated", cond)
-        self.assertIn("aio_pow_withdraw", cond)
+        self.assertNotIn("aio_pow_liberated", cond)
+        self.assertNotIn("aio_pow_withdraw", cond)
         self.assertNotIn("{meters 5}", cond)
         self.assertNotIn("{meters 10}", cond)
         self.assertNotIn("{meters 15}", cond)

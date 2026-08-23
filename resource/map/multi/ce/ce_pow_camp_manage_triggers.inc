@@ -1,6 +1,6 @@
 ; POW camp management: opposite-spawn enemy collection + first-hold talk.
-; Visible enemy-rear marker uses the same map_point effect as the player camp.
 ; No convert, auto-recruit, truck, or live count. Liberation is a sibling file.
+; No visible camp entity. Opposite spawn stays an invisible collection anchor.
 ; Spawnside 0 uses the same mapping as spawnside 1 (Conquest default:
 ; enemy-on-A): enemy_spawnside$ <= 1 arms spawn_a as aio_pow_camp_enemy;
 ; == 2 arms spawn_b. Allied POWs still get a live opposite camp.
@@ -52,21 +52,6 @@
 							}
 						}
 						{tag_add aio_pow_camp_enemy}
-					}
-					{"effect"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_camp_enemy}
-									}
-								}
-							}
-							{amount 1
-							}
-						}
-						{effect aio_pow_show_camp}
 					}
 					{"set_i"
 						{var "aio_pow_camp_enemy_ready$"}
@@ -122,21 +107,6 @@
 							}
 						}
 						{tag_add aio_pow_camp_enemy}
-					}
-					{"effect"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_camp_enemy}
-									}
-								}
-							}
-							{amount 1
-							}
-						}
-						{effect aio_pow_show_camp}
 					}
 					{"set_i"
 						{var "aio_pow_camp_enemy_ready$"}

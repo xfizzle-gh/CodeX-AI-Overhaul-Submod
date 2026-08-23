@@ -697,18 +697,13 @@
 									{tag
 										{tag aio_morale_surrendering}
 									}
-								{tag
-									{tag aio_cmd_linked}
+									{tag
+										{tag aio_cmd_linked}
+									}
 								}
-							{tag
-								{tag aio_pow_liberated}
-							}
-							{tag
-								{tag aio_pow_withdraw}
-							}
 							}
 						}
-						{enemy}
+						{enemy
 							{source advanced}
 							{group
 								{select
@@ -728,7 +723,7 @@
 							}
 							{distance
 								{mode near_than}
-								{meters 20}
+								{meters 30}
 							}
 							{detection located}
 							{tag
@@ -774,12 +769,6 @@
 								}
 								{tag
 									{tag aio_cmd_linked}
-								}
-								{tag
-									{tag aio_pow_liberated}
-								}
-								{tag
-									{tag aio_pow_withdraw}
 								}
 							}
 							}

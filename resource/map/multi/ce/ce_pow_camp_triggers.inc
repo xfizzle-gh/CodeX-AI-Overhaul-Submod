@@ -1,7 +1,6 @@
 ; Interim collection: tag captor-rear spawn_a/spawn_b as aio_pow_camp.
 ; That spawn tag stays the fail-closed routing/hold authority.
-; After the tag, {effect aio_pow_show_camp} places sandbag_ring + pole on the
-; same map_point (hold center = visible enclosure). No offset.
+; Interim invisible collection only. No visible camp entity is source-proven.
 ; Ally/support keep waypoint egress. Spawnside 0 uses the same mapping as
 ; spawnside 1 (Conquest default / bots_spawnside fallback: enemy-on-A,
 ; player-rear-B). enemy_spawnside$ <= 1 arms spawn_b; == 2 arms spawn_a.
@@ -53,21 +52,6 @@
 							}
 						}
 						{tag_add aio_pow_camp}
-					}
-					{"effect"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_camp}
-									}
-								}
-							}
-							{amount 1
-							}
-						}
-						{effect aio_pow_show_camp}
 					}
 					{"set_i"
 						{var "aio_pow_camp_ready$"}
@@ -123,21 +107,6 @@
 							}
 						}
 						{tag_add aio_pow_camp}
-					}
-					{"effect"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_camp}
-									}
-								}
-							}
-							{amount 1
-							}
-						}
-						{effect aio_pow_show_camp}
 					}
 					{"set_i"
 						{var "aio_pow_camp_ready$"}
