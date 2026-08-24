@@ -10,11 +10,11 @@
 ; waypoint. Ally/support keep waypoint egress. No drop-sensor/fight/select restack.
 ; Evac {action move} is one-shot via aio_pow_move_issued. Later evac threads
 ; must not reissue movement. Dest routing stays unchanged.
-; At T+2: claim aio_pow_fast_release_pending (evacuating, not issued, not
-; already pending), fast-release actor_state on pending only, send_auto_resupply
-; 0.25s gap, then #140 dest {action move} requiring pending, then stamp
-; move_issued and clear pending. Overlapping evac threads cannot reclaim or
-; restamp a POW mid-gap. No kind fast. No recover pulse.
+; At T+2: fast-release actor_state on evacuating not-pending/not-issued POWs,
+; immediately claim aio_pow_fast_release_pending, send_auto_resupply 0.25s gap,
+; then #140 dest {action move} requiring pending, then stamp move_issued and
+; clear pending. Overlapping evac threads cannot restamp a POW mid-gap. No
+; kind fast. No recover pulse.
 ; Present arms surrender_evacuate after fx. Sibling evac was never kicked.
 ; 500s expire stays as a backstop. Walkers / presenting / held skip it.
 ; Do not restack fight/select/drop-sensor/control AI.
@@ -6644,6 +6644,60 @@
 					{"delay"
 						{time 2}
 					}
+					{"actor_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
+									}
+									{tag
+										{tag aio_pow_move_issued}
+									}
+									{tag
+										{tag aio_pow_fast_release_pending}
+									}
+								}
+							}
+						}
+						{drop orders}
+						{move_mode free}
+						{ai_move
+							{mode enable}
+						}
+						{movement
+							{speed fast}
+						}
+					}
 					{"entity_state"
 						{selector
 							{source advanced}
@@ -6690,60 +6744,6 @@
 							}
 						}
 						{tag_add aio_pow_fast_release_pending}
-					}
-					{"actor_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_pow_fast_release_pending}
-									}
-								}
-								{include
-									{tag
-										{tag aio_morale_surrendering}
-									}
-									{tag
-										{tag aio_morale_surrender_evacuating}
-									}
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{state
-										{state user_control}
-									}
-									{tag
-										{tag player}
-									}
-									{tag
-										{tag prisoner_in_camp}
-									}
-									{tag
-										{tag prisoner_in_enemy_camp}
-									}
-									{tag
-										{tag aio_pow_move_issued}
-									}
-								}
-							}
-						}
-						{drop orders}
-						{move_mode free}
-						{ai_move
-							{mode enable}
-						}
-						{movement
-							{speed fast}
-						}
 					}
 					{"delay"
 						{time 0.25}

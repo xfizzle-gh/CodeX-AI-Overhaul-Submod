@@ -80,8 +80,8 @@ class CePowFollowupTests(unittest.TestCase):
         self.assertIn("{time 2}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
         self.assertIn("{time 0.25}", evac.split('{"actor_state"', 1)[1].split("{action move}", 1)[0])
         self.assertLess(
-            evac.split("{actions", 1)[1].find("{tag_add aio_pow_fast_release_pending}"),
             evac.split("{actions", 1)[1].find('{"actor_state"'),
+            evac.split("{actions", 1)[1].find("{tag_add aio_pow_fast_release_pending}"),
         )
         self.assertNotIn("{time 3}", evac)
         self.assertNotIn("pow_using_drops", evac)
@@ -148,14 +148,22 @@ class CePowFollowupTests(unittest.TestCase):
         self.assertIn("{mode enable}", actor)
         self.assertIn("{speed fast}", actor)
         self.assertNotIn("{kind fast}", actor)
-        self.assertIn("{tag aio_pow_move_issued}", actor)
-        self.assertIn("{tag aio_pow_fast_release_pending}", actor)
-        claim = evac.split("{actions", 1)[1].split('{"actor_state"', 1)[0]
+        actor_sel, actor_exc = actor.split("{exclude", 1)
+        self.assertNotIn("{tag aio_pow_fast_release_pending}", actor_sel)
+        self.assertIn("{tag aio_morale_surrender_evacuating}", actor_sel)
+        self.assertIn("{tag aio_pow_fast_release_pending}", actor_exc)
+        self.assertIn("{tag aio_pow_move_issued}", actor_exc)
+        after_state = evac[ast_end + 1 :].lstrip()
+        self.assertTrue(after_state.startswith('{"entity_state"'))
+        claim_end = _close(after_state, 0)
+        claim = after_state[: claim_end + 1]
         self.assertIn("{tag_add aio_pow_fast_release_pending}", claim)
         self.assertIn("{tag aio_pow_fast_release_pending}", claim)
         self.assertIn("{tag aio_pow_move_issued}", claim)
+        self.assertNotIn("{time ", evac[ast_end + 1 : evac.find("{tag_add aio_pow_fast_release_pending}", ast_end)])
         between = evac[ast_end + 1 : evac.find("{action move}", ast_end)]
         self.assertIn("{time 0.25}", between)
+        self.assertLess(evac.find("{tag_add aio_pow_fast_release_pending}", ast_end), evac.find("{time 0.25}", ast_end))
         self.assertNotEqual(evac[ast_end + 1 : evac.find('{"action"', ast_end)].strip(), "")
         self.assertNotIn("{drop orders}", evac[evac.find("{action move}") :])
         self.assertNotIn("{time 5}", evac)
@@ -197,11 +205,13 @@ class CePowFollowupTests(unittest.TestCase):
             '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
         )[1].split('\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_arrive_a"', 1)[0]
         release = evac.split("{actions", 1)[1].split("{action move}", 1)[0]
-        self.assertLess(release.find("{time 2}"), release.find("{tag_add aio_pow_fast_release_pending}"))
-        self.assertLess(release.find("{tag_add aio_pow_fast_release_pending}"), release.find('{"actor_state"'))
-        self.assertLess(release.find('{"actor_state"'), release.find("{time 0.25}"))
+        self.assertLess(release.find("{time 2}"), release.find('{"actor_state"'))
+        self.assertLess(release.find('{"actor_state"'), release.find("{tag_add aio_pow_fast_release_pending}"))
+        self.assertLess(release.find("{tag_add aio_pow_fast_release_pending}"), release.find("{time 0.25}"))
         self.assertGreater(release.find("{time 0.25}"), release.rfind("{speed fast}"))
-        self.assertIn("{tag aio_pow_fast_release_pending}", release.split('{"actor_state"', 1)[1])
+        actor = release.split('{"actor_state"', 1)[1].split("{tag_add aio_pow_fast_release_pending}", 1)[0]
+        self.assertIn("{tag aio_pow_fast_release_pending}", actor.split("{exclude", 1)[1])
+        self.assertNotIn("{tag aio_pow_fast_release_pending}", actor.split("{exclude", 1)[0])
         self.assertNotIn("{kind fast}", evac)
         self.assertNotIn("{speed assault}", evac)
 
