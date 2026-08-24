@@ -5,11 +5,16 @@
 ; inventory drop of the currently-used weapon (9fb440b double drop), stand_giveup_1).
 ; After P0, entity_state {impregnability harmless} (vanilla token from
 ; {Impregnability harmless}; do not use {impregnability full}). Keep for POW life.
-; Evac stays tag-driven after a 3s pose, then {action move}. Ordinary POWs
+; Evac stays tag-driven after a 2s pose, then one-shot {action move}. Ordinary POWs
 ; retarget to a live {tag aio_pow_camp} collection anchor; otherwise captor-rear
 ; waypoint. Ally/support keep waypoint egress. No drop-sensor/fight/select restack.
 ; Evac {action move} is one-shot via aio_pow_move_issued. Later evac threads
-; must not reissue movement. 3s pose and dest routing stay unchanged.
+; must not reissue movement. Dest routing stays unchanged.
+; At T+2: fast-release actor_state on evacuating not-pending/not-issued POWs,
+; immediately claim aio_pow_fast_release_pending, send_auto_resupply 0.25s gap,
+; then #140 dest {action move} requiring pending, then stamp move_issued and
+; clear pending. Overlapping evac threads cannot restamp a POW mid-gap. No
+; kind fast. No recover pulse.
 ; Present arms surrender_evacuate after fx. Sibling evac was never kicked.
 ; 500s expire stays as a backstop. Walkers / presenting / held skip it.
 ; Do not restack fight/select/drop-sensor/control AI.
@@ -2818,6 +2823,7 @@
 						}
 						{tag_add aio_morale_surrender_presenting}
 						{tag_remove aio_pow_move_issued}
+						{tag_remove aio_pow_fast_release_pending}
 					}
 					{"effect"
 						{selector
@@ -6636,7 +6642,111 @@
 						{value 1}
 					}
 					{"delay"
-						{time 3}
+						{time 2}
+					}
+					{"actor_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
+									}
+									{tag
+										{tag aio_pow_move_issued}
+									}
+									{tag
+										{tag aio_pow_fast_release_pending}
+									}
+								}
+							}
+						}
+						{drop orders}
+						{move_mode free}
+						{ai_move
+							{mode enable}
+						}
+						{movement
+							{speed fast}
+						}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
+									}
+									{tag
+										{tag aio_pow_move_issued}
+									}
+									{tag
+										{tag aio_pow_fast_release_pending}
+									}
+								}
+							}
+						}
+						{tag_add aio_pow_fast_release_pending}
+					}
+					{"delay"
+						{time 0.25}
 					}
 					{"switch"
 							{"case"
@@ -6676,6 +6786,9 @@
 													{tag
 														{tag aio_pow_captor_enemy}
 													}
+													{tag
+														{tag aio_pow_fast_release_pending}
+													}
 												}
 												{exclude
 													{state
@@ -6709,7 +6822,7 @@
 											{op "="}
 											{value 1}
 										}
-										{"action"
+																				{"action"
 											{selector
 												{source advanced}
 											{group
@@ -6724,6 +6837,9 @@
 													}
 													{tag
 														{tag aio_morale_surrender_evacuating}
+													}
+													{tag
+														{tag aio_pow_fast_release_pending}
 													}
 												}
 												{exclude
@@ -6778,6 +6894,9 @@
 													{tag
 														{tag aio_morale_surrender_evacuating}
 													}
+													{tag
+														{tag aio_pow_fast_release_pending}
+													}
 												}
 												{exclude
 													{state
@@ -6802,6 +6921,7 @@
 											}
 											}
 											{tag_add aio_pow_move_issued}
+											{tag_remove aio_pow_fast_release_pending}
 										}
 										{"set_i"
 											{var "ce_morale_diag_move_issued$"}
@@ -6826,6 +6946,9 @@
 													}
 													{tag
 														{tag aio_pow_captor_enemy}
+													}
+													{tag
+														{tag aio_pow_fast_release_pending}
 													}
 												}
 												{exclude
@@ -6899,7 +7022,7 @@
 											{op "+"}
 											{value 1}
 										}
-										{"action"
+																				{"action"
 											{selector
 												{source advanced}
 											{group
@@ -6914,6 +7037,9 @@
 													}
 													{tag
 														{tag aio_pow_captor_enemy}
+													}
+													{tag
+														{tag aio_pow_fast_release_pending}
 													}
 												}
 												{exclude
@@ -6963,6 +7089,9 @@
 													{tag
 														{tag aio_pow_captor_enemy}
 													}
+													{tag
+														{tag aio_pow_fast_release_pending}
+													}
 												}
 												{exclude
 													{state
@@ -6993,6 +7122,7 @@
 											}
 											}
 											{tag_add aio_pow_move_issued}
+											{tag_remove aio_pow_fast_release_pending}
 										}
 										{"set_i"
 											{var "ce_morale_diag_move_issued$"}
@@ -7036,6 +7166,9 @@
 													{tag
 														{tag aio_pow_captor_player}
 													}
+													{tag
+														{tag aio_pow_fast_release_pending}
+													}
 												}
 												{exclude
 													{state
@@ -7069,7 +7202,7 @@
 											{op "="}
 											{value 1}
 										}
-										{"action"
+																				{"action"
 											{selector
 												{source advanced}
 											{group
@@ -7084,6 +7217,9 @@
 													}
 													{tag
 														{tag aio_morale_surrender_evacuating}
+													}
+													{tag
+														{tag aio_pow_fast_release_pending}
 													}
 												}
 												{exclude
@@ -7138,6 +7274,9 @@
 													{tag
 														{tag aio_morale_surrender_evacuating}
 													}
+													{tag
+														{tag aio_pow_fast_release_pending}
+													}
 												}
 												{exclude
 													{state
@@ -7162,6 +7301,7 @@
 											}
 											}
 											{tag_add aio_pow_move_issued}
+											{tag_remove aio_pow_fast_release_pending}
 										}
 										{"set_i"
 											{var "ce_morale_diag_move_issued$"}
@@ -7186,6 +7326,9 @@
 													}
 													{tag
 														{tag aio_pow_captor_player}
+													}
+													{tag
+														{tag aio_pow_fast_release_pending}
 													}
 												}
 												{exclude
@@ -7259,7 +7402,7 @@
 											{op "+"}
 											{value 1}
 										}
-										{"action"
+																				{"action"
 											{selector
 												{source advanced}
 											{group
@@ -7274,6 +7417,9 @@
 													}
 													{tag
 														{tag aio_pow_captor_player}
+													}
+													{tag
+														{tag aio_pow_fast_release_pending}
 													}
 												}
 												{exclude
@@ -7323,6 +7469,9 @@
 													{tag
 														{tag aio_pow_captor_player}
 													}
+													{tag
+														{tag aio_pow_fast_release_pending}
+													}
 												}
 												{exclude
 													{state
@@ -7353,6 +7502,7 @@
 											}
 											}
 											{tag_add aio_pow_move_issued}
+											{tag_remove aio_pow_fast_release_pending}
 										}
 										{"set_i"
 											{var "ce_morale_diag_move_issued$"}
@@ -7399,6 +7549,9 @@
 													{tag
 														{tag aio_pow_captor_enemy}
 													}
+													{tag
+														{tag aio_pow_fast_release_pending}
+													}
 												}
 												{exclude
 													{state
@@ -7432,7 +7585,7 @@
 											{op "="}
 											{value 1}
 										}
-										{"action"
+																				{"action"
 											{selector
 												{source advanced}
 											{group
@@ -7447,6 +7600,9 @@
 													}
 													{tag
 														{tag aio_morale_surrender_evacuating}
+													}
+													{tag
+														{tag aio_pow_fast_release_pending}
 													}
 												}
 												{exclude
@@ -7501,6 +7657,9 @@
 													{tag
 														{tag aio_morale_surrender_evacuating}
 													}
+													{tag
+														{tag aio_pow_fast_release_pending}
+													}
 												}
 												{exclude
 													{state
@@ -7525,6 +7684,7 @@
 											}
 											}
 											{tag_add aio_pow_move_issued}
+											{tag_remove aio_pow_fast_release_pending}
 										}
 										{"set_i"
 											{var "ce_morale_diag_move_issued$"}
@@ -7549,6 +7709,9 @@
 													}
 													{tag
 														{tag aio_pow_captor_enemy}
+													}
+													{tag
+														{tag aio_pow_fast_release_pending}
 													}
 												}
 												{exclude
@@ -7622,7 +7785,7 @@
 											{op "+"}
 											{value 1}
 										}
-										{"action"
+																				{"action"
 											{selector
 												{source advanced}
 											{group
@@ -7637,6 +7800,9 @@
 													}
 													{tag
 														{tag aio_pow_captor_enemy}
+													}
+													{tag
+														{tag aio_pow_fast_release_pending}
 													}
 												}
 												{exclude
@@ -7686,6 +7852,9 @@
 													{tag
 														{tag aio_pow_captor_enemy}
 													}
+													{tag
+														{tag aio_pow_fast_release_pending}
+													}
 												}
 												{exclude
 													{state
@@ -7716,6 +7885,7 @@
 											}
 											}
 											{tag_add aio_pow_move_issued}
+											{tag_remove aio_pow_fast_release_pending}
 										}
 										{"set_i"
 											{var "ce_morale_diag_move_issued$"}
@@ -7759,6 +7929,9 @@
 													{tag
 														{tag aio_pow_captor_player}
 													}
+													{tag
+														{tag aio_pow_fast_release_pending}
+													}
 												}
 												{exclude
 													{state
@@ -7792,7 +7965,7 @@
 											{op "="}
 											{value 1}
 										}
-										{"action"
+																				{"action"
 											{selector
 												{source advanced}
 											{group
@@ -7807,6 +7980,9 @@
 													}
 													{tag
 														{tag aio_morale_surrender_evacuating}
+													}
+													{tag
+														{tag aio_pow_fast_release_pending}
 													}
 												}
 												{exclude
@@ -7861,6 +8037,9 @@
 													{tag
 														{tag aio_morale_surrender_evacuating}
 													}
+													{tag
+														{tag aio_pow_fast_release_pending}
+													}
 												}
 												{exclude
 													{state
@@ -7885,6 +8064,7 @@
 											}
 											}
 											{tag_add aio_pow_move_issued}
+											{tag_remove aio_pow_fast_release_pending}
 										}
 										{"set_i"
 											{var "ce_morale_diag_move_issued$"}
@@ -7909,6 +8089,9 @@
 													}
 													{tag
 														{tag aio_pow_captor_player}
+													}
+													{tag
+														{tag aio_pow_fast_release_pending}
 													}
 												}
 												{exclude
@@ -7982,7 +8165,7 @@
 											{op "+"}
 											{value 1}
 										}
-										{"action"
+																				{"action"
 											{selector
 												{source advanced}
 											{group
@@ -7997,6 +8180,9 @@
 													}
 													{tag
 														{tag aio_pow_captor_player}
+													}
+													{tag
+														{tag aio_pow_fast_release_pending}
 													}
 												}
 												{exclude
@@ -8046,6 +8232,9 @@
 													{tag
 														{tag aio_pow_captor_player}
 													}
+													{tag
+														{tag aio_pow_fast_release_pending}
+													}
 												}
 												{exclude
 													{state
@@ -8076,6 +8265,7 @@
 											}
 											}
 											{tag_add aio_pow_move_issued}
+											{tag_remove aio_pow_fast_release_pending}
 										}
 										{"set_i"
 											{var "ce_morale_diag_move_issued$"}
@@ -8086,7 +8276,7 @@
 								}
 							}
 					}
-										{"delay"
+					{"delay"
 						{time 2}
 					}
 					{"trigger"

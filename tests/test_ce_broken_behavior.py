@@ -270,7 +270,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         human = HUMAN.read_text(encoding="utf-8")
         lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
         present = beh.split("broken/surrender_present", 1)[1].split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[0]
-        evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split("broken/surrender_arrive_a", 1)[0]
+        evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split('\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_arrive_a"', 1)[0]
         arrive_a = beh.split("broken/surrender_arrive_a", 1)[1].split("broken/surrender_arrive_b", 1)[0]
         expire = beh.split("broken/surrender_expire", 1)[1].split("broken/observe_surrender", 1)[0]
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split('{on "', 1)[0]
@@ -372,7 +372,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
     def test_present_arms_evac_after_fx(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
         present = beh.split("broken/surrender_present", 1)[1].split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[0]
-        evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split("broken/surrender_arrive_a", 1)[0]
+        evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split('\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_arrive_a"', 1)[0]
         vars_inc = (ROOT / "resource/map/multi/ce/ce_vars.inc").read_text(encoding="utf-8")
         lua = (ROOT / "resource/script/multiplayer/modes/utility_ce.lua").read_text(encoding="utf-8")
         self.assertLess(present.find("{effect start_white_flag}"), present.find('{player "0"}'))
@@ -406,7 +406,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{waypoint "attack_support_entry_b"}', evac)
         self.assertIn("{tag aio_pow_camp}", evac)
         self.assertIn("{tag aio_pow_camp_enemy}", evac)
-        self.assertNotIn("{ai_move", evac)
+        self.assertIn("{ai_move", evac)
         for name in (
             "ce_morale_diag_pose_complete",
             "ce_morale_diag_evac_candidate",
@@ -430,7 +430,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("points_table_ai=0/0.000,0.33/3.750,0.50/4.500,0.66/5.600,1.00/7.500", ctf)
         self.assertIn("kill_score_multiplier=6.00", ctf)
         self.assertNotIn("surrender_hold", beh)
-        evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split("broken/surrender_arrive_a", 1)[0]
+        evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split('\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_arrive_a"', 1)[0]
         self.assertIn("{tag aio_morale_surrender_evacuating}", evac)
         self.assertIn("{tag aio_morale_surrendering}", evac)
         self.assertIn("{state dead}", evac)
@@ -451,8 +451,15 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{tag _user_ally}", evac)
         self.assertNotIn("{tag def_sup_src}", evac)
         self.assertGreaterEqual(evac.count("{action move}"), 4)
-        self.assertEqual(evac.count('{"actor_state"'), 0)
-        self.assertIn("{time 3}", evac)
+        self.assertEqual(evac.count('{"actor_state"'), 1)
+        self.assertIn("{speed fast}", evac)
+        self.assertNotIn("{kind fast}", evac)
+        self.assertIn("{drop orders}", evac)
+        self.assertIn("{time 0.25}", evac.split('{"actor_state"', 1)[1].split("{action move}", 1)[0])
+        self.assertNotIn("pow_using_drops", evac)
+        self.assertIn("{time 2}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
+        self.assertNotIn("{time 3}", evac)
+        self.assertNotIn("{speed assault}", evac)
         self.assertNotIn("{time 5}", evac)
         self.assertNotIn('{"delete"', evac)
         self.assertNotIn('{var "enemy_spawnside$"} {op "=="} {value 0}', evac)

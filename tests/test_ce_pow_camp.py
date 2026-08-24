@@ -43,7 +43,7 @@ class CePowCampTests(unittest.TestCase):
 
     def test_evac_branches_once_on_live_camp(self) -> None:
         evac = BEH.read_text(encoding="utf-8").split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split(
-            "broken/surrender_arrive_a", 1
+            '\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_arrive_a"', 1
         )[0]
         self.assertNotIn("aio_pow_camp_ready$", evac)
         self.assertNotIn("tag_remove aio_morale_surrender_to_a", evac)
@@ -61,9 +61,10 @@ class CePowCampTests(unittest.TestCase):
         self.assertEqual(evac.count("{tag_add aio_morale_surrender_to_enemy_camp}"), 2)
         self.assertIn('{waypoint "attack_support_entry_a"}', evac)
         self.assertIn('{waypoint "attack_support_entry_b"}', evac)
-        self.assertIn("{time 3}", evac)
+        self.assertIn("{time 2}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
+        self.assertNotIn("{time 3}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
         self.assertNotIn("{time 5}", evac)
-        self.assertNotIn('{"actor_state"', evac)
+        self.assertEqual(evac.count('{"actor_state"'), 1)
         self.assertNotIn('{"action"}', evac)
         self.assertNotIn('{"entity_state"}', evac)
         self.assertGreaterEqual(evac.count('{"action"'), 4)

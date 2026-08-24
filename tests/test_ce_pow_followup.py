@@ -65,14 +65,29 @@ class CePowFollowupTests(unittest.TestCase):
     def test_evac_action_move_is_oneshot(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
         evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split(
-            "broken/surrender_arrive_a", 1
+            '\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_arrive_a"', 1
         )[0]
         present = beh.split("broken/surrender_present", 1)[1].split(
             '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
         )[0]
         lib = LIB.read_text(encoding="utf-8")
         human = HUMAN.read_text(encoding="utf-8")
-        self.assertIn("{time 3}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
+        self.assertNotIn("surrender_evac_recover", evac)
+        self.assertNotIn("aio_pow_recovery_used", evac)
+        self.assertNotIn("aio_pow_recovery_used", present)
+        self.assertNotIn("aio_pow_recovery_used", lib)
+        self.assertNotIn("aio_pow_recovery_used", human)
+        self.assertIn("{time 2}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
+        self.assertIn("{time 0.25}", evac.split('{"actor_state"', 1)[1].split("{action move}", 1)[0])
+        self.assertLess(
+            evac.split("{actions", 1)[1].find('{"actor_state"'),
+            evac.split("{actions", 1)[1].find("{tag_add aio_pow_fast_release_pending}"),
+        )
+        self.assertNotIn("{time 3}", evac)
+        self.assertNotIn("pow_using_drops", evac)
+        self.assertNotIn("pow_using_drops", beh)
+        self.assertNotIn("{speed assault}", evac)
+        self.assertNotIn("{kind fast}", evac)
 
         def _close(src: str, open_idx: int) -> int:
             depth = 0
@@ -108,25 +123,97 @@ class CePowFollowupTests(unittest.TestCase):
             moves += 1
             selector = block.split("{action move}", 1)[0]
             self.assertIn("{tag aio_pow_move_issued}", selector)
+            self.assertIn("{tag aio_pow_fast_release_pending}", selector)
+            self.assertNotIn("{drop orders}", block)
             after = evac[act_end + 1 :].lstrip()
             self.assertTrue(after.startswith('{"entity_state"'), msg=block[-80:])
             stamp_end = _close(after, 0)
             stamp = after[: stamp_end + 1]
             self.assertIn("{tag_add aio_pow_move_issued}", stamp)
+            self.assertIn("{tag_remove aio_pow_fast_release_pending}", stamp)
             for key in pop_keys:
                 token = "{tag %s}" % key
                 if token in selector:
                     self.assertIn(token, stamp)
             self.assertFalse(all(("{tag %s}" % tag) in stamp for tag in dest_tags))
         self.assertEqual(moves, evac.count("{action move}"))
-        self.assertGreaterEqual(moves, 4)
+        self.assertEqual(moves, 8)
         self.assertEqual(evac.count("{tag_add aio_pow_move_issued}"), moves)
+        self.assertEqual(evac.count('{"actor_state"'), 1)
+        ast = evac.find('{"actor_state"')
+        ast_end = _close(evac, ast)
+        actor = evac[ast : ast_end + 1]
+        self.assertIn("{drop orders}", actor)
+        self.assertIn("{move_mode free}", actor)
+        self.assertIn("{mode enable}", actor)
+        self.assertIn("{speed fast}", actor)
+        self.assertNotIn("{kind fast}", actor)
+        actor_sel, actor_exc = actor.split("{exclude", 1)
+        self.assertNotIn("{tag aio_pow_fast_release_pending}", actor_sel)
+        self.assertIn("{tag aio_morale_surrender_evacuating}", actor_sel)
+        self.assertIn("{tag aio_pow_fast_release_pending}", actor_exc)
+        self.assertIn("{tag aio_pow_move_issued}", actor_exc)
+        after_state = evac[ast_end + 1 :].lstrip()
+        self.assertTrue(after_state.startswith('{"entity_state"'))
+        claim_end = _close(after_state, 0)
+        claim = after_state[: claim_end + 1]
+        self.assertIn("{tag_add aio_pow_fast_release_pending}", claim)
+        self.assertIn("{tag aio_pow_fast_release_pending}", claim)
+        self.assertIn("{tag aio_pow_move_issued}", claim)
+        self.assertNotIn("{time ", evac[ast_end + 1 : evac.find("{tag_add aio_pow_fast_release_pending}", ast_end)])
+        between = evac[ast_end + 1 : evac.find("{action move}", ast_end)]
+        self.assertIn("{time 0.25}", between)
+        self.assertLess(evac.find("{tag_add aio_pow_fast_release_pending}", ast_end), evac.find("{time 0.25}", ast_end))
+        self.assertNotEqual(evac[ast_end + 1 : evac.find('{"action"', ast_end)].strip(), "")
+        self.assertNotIn("{drop orders}", evac[evac.find("{action move}") :])
         self.assertNotIn("{time 5}", evac)
         self.assertNotIn("{time 10}", evac)
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split("{on ", 1)[0]
         self.assertIn('{tags remove "aio_pow_move_issued"}', apply)
+        self.assertIn('{tags remove "aio_pow_fast_release_pending"}', apply)
+        self.assertNotIn("aio_pow_recovery_used", apply)
         self.assertIn("{tag_remove aio_pow_move_issued}", present)
+        self.assertIn("{tag_remove aio_pow_fast_release_pending}", present)
         self.assertIn("{tag_remove aio_pow_move_issued}", lib)
+        self.assertIn("{tag_remove aio_pow_fast_release_pending}", lib)
+
+    def test_evac_has_no_recovery(self) -> None:
+        beh = BEH.read_text(encoding="utf-8")
+        self.assertNotIn("surrender_evac_recover", beh)
+        self.assertNotIn("aio_pow_recovery_used", beh)
+        self.assertNotIn("aio_pow_recovery_used", HUMAN.read_text(encoding="utf-8"))
+        self.assertNotIn("aio_pow_recovery_used", LIB.read_text(encoding="utf-8"))
+
+    def test_evac_fast_release_uses_human_resupply_gap(self) -> None:
+        lua = (ROOT / "resource/map/multi/ce/ai_logic/ce_lua_triggers.inc").read_text(encoding="utf-8")
+        resupply = (ROOT / "resource/map/multi/ce/ce_functions.inc").read_text(encoding="utf-8").split(
+            '{"send_auto_resupply"', 1
+        )[1].split(";============", 1)[0]
+        unhold = lua.split('{"for selector" unhold_iq}', 1)[1]
+        human_state = unhold.split("{prop human}", 1)[1]
+        human_state = human_state[human_state.find("{drop orders}") :]
+        human_state = human_state[: human_state.find('{"default"}')]
+        self.assertIn("{drop orders}", human_state)
+        self.assertIn("{move_mode free}", human_state)
+        self.assertIn("{mode enable}", human_state)
+        self.assertNotIn("{speed fast}", human_state.split("{action move}", 1)[0] if "{action move}" in human_state else human_state)
+        gap = resupply.split('{"actor_state"', 1)[1].split("{action move}", 1)[0]
+        self.assertIn("{speed fast}", gap)
+        self.assertIn("{time 0.25}", gap)
+        self.assertIn("{type human}", resupply.split('{"actor_state"', 1)[1].split("{action move}", 1)[0])
+        evac = BEH.read_text(encoding="utf-8").split(
+            '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
+        )[1].split('\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_arrive_a"', 1)[0]
+        release = evac.split("{actions", 1)[1].split("{action move}", 1)[0]
+        self.assertLess(release.find("{time 2}"), release.find('{"actor_state"'))
+        self.assertLess(release.find('{"actor_state"'), release.find("{tag_add aio_pow_fast_release_pending}"))
+        self.assertLess(release.find("{tag_add aio_pow_fast_release_pending}"), release.find("{time 0.25}"))
+        self.assertGreater(release.find("{time 0.25}"), release.rfind("{speed fast}"))
+        actor = release.split('{"actor_state"', 1)[1].split("{tag_add aio_pow_fast_release_pending}", 1)[0]
+        self.assertIn("{tag aio_pow_fast_release_pending}", actor.split("{exclude", 1)[1])
+        self.assertNotIn("{tag aio_pow_fast_release_pending}", actor.split("{exclude", 1)[0])
+        self.assertNotIn("{kind fast}", evac)
+        self.assertNotIn("{speed assault}", evac)
 
     def test_using_drop_has_no_guessed_rocketlauncher(self) -> None:
         present = BEH.read_text(encoding="utf-8").split("broken/surrender_present", 1)[1].split(
@@ -137,6 +224,7 @@ class CePowFollowupTests(unittest.TestCase):
         self.assertGreaterEqual(present.count("{type using}"), 3)
         self.assertNotIn("rocketlauncher", present)
         self.assertNotIn("{volume in_hands}", present)
+        self.assertNotIn("{action take}", present)
 
     def test_liberation_uses_pre_p0_provenance_and_withdraws(self) -> None:
         self.assertTrue(LIB.is_file())

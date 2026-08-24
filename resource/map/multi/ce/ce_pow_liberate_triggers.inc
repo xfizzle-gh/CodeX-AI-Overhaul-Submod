@@ -355,6 +355,7 @@
 						}
 						{tag_add aio_pow_liberated}
 						{tag_remove aio_pow_move_issued}
+						{tag_remove aio_pow_fast_release_pending}
 					}
 					{"entity_state"
 						{selector
