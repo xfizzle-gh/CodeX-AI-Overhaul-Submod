@@ -72,7 +72,8 @@ class CePowFollowupTests(unittest.TestCase):
         )[0]
         lib = LIB.read_text(encoding="utf-8")
         human = HUMAN.read_text(encoding="utf-8")
-        self.assertIn("{time 3}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
+        self.assertIn("{time 2}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
+        self.assertNotIn("{time 3}", evac)
 
         def _close(src: str, open_idx: int) -> int:
             depth = 0
@@ -108,6 +109,17 @@ class CePowFollowupTests(unittest.TestCase):
             moves += 1
             selector = block.split("{action move}", 1)[0]
             self.assertIn("{tag aio_pow_move_issued}", selector)
+            ast = evac.rfind('{"actor_state"', 0, act)
+            self.assertNotEqual(ast, -1)
+            ast_end = _close(evac, ast)
+            self.assertEqual(evac[ast_end + 1 : act].strip(), "")
+            actor = evac[ast : ast_end + 1]
+            self.assertIn("{speed assault}", actor)
+            self.assertIn("{kind fast}", actor)
+            for key in pop_keys:
+                token = "{tag %s}" % key
+                if token in selector:
+                    self.assertIn(token, actor)
             after = evac[act_end + 1 :].lstrip()
             self.assertTrue(after.startswith('{"entity_state"'), msg=block[-80:])
             stamp_end = _close(after, 0)
@@ -132,25 +144,12 @@ class CePowFollowupTests(unittest.TestCase):
         present = BEH.read_text(encoding="utf-8").split("broken/surrender_present", 1)[1].split(
             '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
         )[0]
-        self.assertEqual(present.count('{"inventory"'), 5)
+        self.assertEqual(present.count('{"inventory"'), 3)
         self.assertEqual(present.count('{item "weapon"}'), 2)
         self.assertGreaterEqual(present.count("{type using}"), 3)
-        self.assertEqual(present.count("{time 2}"), 2)
         self.assertNotIn("rocketlauncher", present)
         self.assertNotIn("{volume in_hands}", present)
-        self.assertNotIn('{action take}', present)
-        drops = present.split('{"inventory"')[1:]
-        self.assertEqual(len(drops), 5)
-        self.assertIn("{type using}", drops[0])
-        self.assertIn('{item "weapon"}', drops[0])
-        self.assertIn("{type using}", drops[1])
-        self.assertIn('{item "weapon"}', drops[1])
-        self.assertIn("{type using}", drops[2])
-        self.assertNotIn('{item "weapon"}', drops[2])
-        self.assertNotIn("{with_item", drops[3])
-        self.assertNotIn("{with_item", drops[4])
-        self.assertIn("{action drop}", drops[3])
-        self.assertIn("{action drop}", drops[4])
+        self.assertNotIn("{action take}", present)
 
     def test_liberation_uses_pre_p0_provenance_and_withdraws(self) -> None:
         self.assertTrue(LIB.is_file())
