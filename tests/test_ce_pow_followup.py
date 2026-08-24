@@ -118,21 +118,7 @@ class CePowFollowupTests(unittest.TestCase):
             moves += 1
             selector = block.split("{action move}", 1)[0]
             self.assertIn("{tag aio_pow_move_issued}", selector)
-            ast = evac.rfind('{"actor_state"', 0, act)
-            self.assertNotEqual(ast, -1)
-            ast_end = _close(evac, ast)
-            self.assertEqual(evac[ast_end + 1 : act].strip(), "")
-            actor = evac[ast : ast_end + 1]
-            self.assertIn("{speed fast}", actor)
-            self.assertIn("{move_mode free}", actor)
-            self.assertIn("{mode enable}", actor)
-            self.assertIn("{drop orders}", actor)
-            self.assertNotIn("{kind fast}", actor)
             self.assertNotIn("{drop orders}", block)
-            for key in pop_keys:
-                token = "{tag %s}" % key
-                if token in selector:
-                    self.assertIn(token, actor)
             after = evac[act_end + 1 :].lstrip()
             self.assertTrue(after.startswith('{"entity_state"'), msg=block[-80:])
             stamp_end = _close(after, 0)
@@ -146,7 +132,9 @@ class CePowFollowupTests(unittest.TestCase):
         self.assertEqual(moves, evac.count("{action move}"))
         self.assertEqual(moves, 8)
         self.assertEqual(evac.count("{tag_add aio_pow_move_issued}"), moves)
-        self.assertEqual(evac.count('{"actor_state"'), moves)
+        self.assertEqual(evac.count('{"actor_state"'), 0)
+        self.assertNotIn("{drop orders}", evac)
+        self.assertNotIn("{speed fast}", evac)
         self.assertNotIn("{time 5}", evac)
         self.assertNotIn("{time 10}", evac)
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split("{on ", 1)[0]

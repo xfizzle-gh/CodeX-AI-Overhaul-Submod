@@ -64,7 +64,7 @@ class CePowCampTests(unittest.TestCase):
         self.assertIn("{time 2}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
         self.assertNotIn("{time 3}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
         self.assertNotIn("{time 5}", evac)
-        self.assertEqual(evac.count('{"actor_state"'), evac.count("{action move}"))
+        self.assertEqual(evac.count('{"actor_state"'), 0)
         self.assertNotIn('{"action"}', evac)
         self.assertNotIn('{"entity_state"}', evac)
         self.assertGreaterEqual(evac.count('{"action"'), 4)

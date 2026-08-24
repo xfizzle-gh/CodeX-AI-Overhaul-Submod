@@ -406,7 +406,7 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn('{waypoint "attack_support_entry_b"}', evac)
         self.assertIn("{tag aio_pow_camp}", evac)
         self.assertIn("{tag aio_pow_camp_enemy}", evac)
-        self.assertIn("{ai_move", evac)
+        self.assertNotIn("{ai_move", evac)
         for name in (
             "ce_morale_diag_pose_complete",
             "ce_morale_diag_evac_candidate",
@@ -451,12 +451,10 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertNotIn("{tag _user_ally}", evac)
         self.assertNotIn("{tag def_sup_src}", evac)
         self.assertGreaterEqual(evac.count("{action move}"), 4)
-        self.assertEqual(evac.count('{"actor_state"'), evac.count("{action move}"))
-        self.assertIn("{speed fast}", evac)
-        self.assertIn("{move_mode free}", evac)
-        self.assertIn("{mode enable}", evac)
+        self.assertEqual(evac.count('{"actor_state"'), 0)
+        self.assertNotIn("{speed fast}", evac)
         self.assertNotIn("{kind fast}", evac)
-        self.assertEqual(evac.count("{drop orders}"), evac.count("{action move}"))
+        self.assertNotIn("{drop orders}", evac)
         self.assertNotIn("pow_using_drops", evac)
         self.assertIn("{time 2}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
         self.assertNotIn("{time 3}", evac)
