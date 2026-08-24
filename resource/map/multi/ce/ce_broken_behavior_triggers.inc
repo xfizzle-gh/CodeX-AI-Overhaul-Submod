@@ -10,8 +10,9 @@
 ; waypoint. Ally/support keep waypoint egress. No drop-sensor/fight/select restack.
 ; Evac {action move} is one-shot via aio_pow_move_issued. Later evac threads
 ; must not reissue movement. Dest routing stays unchanged.
-; Before each evac move: actor_state {movement {speed assault} {kind fast}}
-; (ce_ai_logic_triggers engineer / ce_lua bot_destroyer). AT disarm is unresolved.
+; Before each evac move: actor_state {move_mode free}{movement {speed assault}}
+; then action drop-orders + move (ce_lua bot_destroyer). No isolated movement
+; actor_state. AT disarm is unresolved.
 ; Present arms surrender_evacuate after fx. Sibling evac was never kicked.
 ; 500s expire stays as a backstop. Walkers / presenting / held skip it.
 ; Do not restack fight/select/drop-sensor/control AI.
@@ -6750,10 +6751,10 @@
 												}
 											}
 											}
-											{movement
-												{speed assault}
-												{kind fast}
-											}
+										{move_mode free}
+										{movement
+											{speed assault}
+										}
 										}
 									{"action"
 											{selector
@@ -6794,6 +6795,7 @@
 												}
 											}
 											}
+											{drop orders}
 											{action move}
 											{target
 											{source advanced}
@@ -6990,10 +6992,10 @@
 												}
 											}
 											}
-											{movement
-												{speed assault}
-												{kind fast}
-											}
+										{move_mode free}
+										{movement
+											{speed assault}
+										}
 										}
 									{"action"
 											{selector
@@ -7040,6 +7042,7 @@
 												}
 											}
 											}
+											{drop orders}
 											{action move}
 											{waypoint "attack_support_entry_a"}
 										}
@@ -7204,10 +7207,10 @@
 												}
 											}
 											}
-											{movement
-												{speed assault}
-												{kind fast}
-											}
+										{move_mode free}
+										{movement
+											{speed assault}
+										}
 										}
 									{"action"
 											{selector
@@ -7248,6 +7251,7 @@
 												}
 											}
 											}
+											{drop orders}
 											{action move}
 											{target
 											{source advanced}
@@ -7444,10 +7448,10 @@
 												}
 											}
 											}
-											{movement
-												{speed assault}
-												{kind fast}
-											}
+										{move_mode free}
+										{movement
+											{speed assault}
+										}
 										}
 									{"action"
 											{selector
@@ -7494,6 +7498,7 @@
 												}
 											}
 											}
+											{drop orders}
 											{action move}
 											{waypoint "attack_support_entry_b"}
 										}
@@ -7661,10 +7666,10 @@
 												}
 											}
 											}
-											{movement
-												{speed assault}
-												{kind fast}
-											}
+										{move_mode free}
+										{movement
+											{speed assault}
+										}
 										}
 									{"action"
 											{selector
@@ -7705,6 +7710,7 @@
 												}
 											}
 											}
+											{drop orders}
 											{action move}
 											{target
 											{source advanced}
@@ -7901,10 +7907,10 @@
 												}
 											}
 											}
-											{movement
-												{speed assault}
-												{kind fast}
-											}
+										{move_mode free}
+										{movement
+											{speed assault}
+										}
 										}
 									{"action"
 											{selector
@@ -7951,6 +7957,7 @@
 												}
 											}
 											}
+											{drop orders}
 											{action move}
 											{waypoint "attack_support_entry_b"}
 										}
@@ -8115,10 +8122,10 @@
 												}
 											}
 											}
-											{movement
-												{speed assault}
-												{kind fast}
-											}
+										{move_mode free}
+										{movement
+											{speed assault}
+										}
 										}
 									{"action"
 											{selector
@@ -8159,6 +8166,7 @@
 												}
 											}
 											}
+											{drop orders}
 											{action move}
 											{target
 											{source advanced}
@@ -8355,10 +8363,10 @@
 												}
 											}
 											}
-											{movement
-												{speed assault}
-												{kind fast}
-											}
+										{move_mode free}
+										{movement
+											{speed assault}
+										}
 										}
 									{"action"
 											{selector
@@ -8405,6 +8413,7 @@
 												}
 											}
 											}
+											{drop orders}
 											{action move}
 											{waypoint "attack_support_entry_a"}
 										}

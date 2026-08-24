@@ -115,7 +115,9 @@ class CePowFollowupTests(unittest.TestCase):
             self.assertEqual(evac[ast_end + 1 : act].strip(), "")
             actor = evac[ast : ast_end + 1]
             self.assertIn("{speed assault}", actor)
-            self.assertIn("{kind fast}", actor)
+            self.assertIn("{move_mode free}", actor)
+            self.assertNotIn("{kind fast}", actor)
+            self.assertIn("{drop orders}", block)
             for key in pop_keys:
                 token = "{tag %s}" % key
                 if token in selector:
