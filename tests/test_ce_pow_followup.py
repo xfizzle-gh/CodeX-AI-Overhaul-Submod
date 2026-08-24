@@ -132,11 +132,25 @@ class CePowFollowupTests(unittest.TestCase):
         present = BEH.read_text(encoding="utf-8").split("broken/surrender_present", 1)[1].split(
             '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
         )[0]
-        self.assertEqual(present.count('{"inventory"'), 3)
+        self.assertEqual(present.count('{"inventory"'), 5)
         self.assertEqual(present.count('{item "weapon"}'), 2)
         self.assertGreaterEqual(present.count("{type using}"), 3)
+        self.assertEqual(present.count("{time 2}"), 2)
         self.assertNotIn("rocketlauncher", present)
         self.assertNotIn("{volume in_hands}", present)
+        self.assertNotIn('{action take}', present)
+        drops = present.split('{"inventory"')[1:]
+        self.assertEqual(len(drops), 5)
+        self.assertIn("{type using}", drops[0])
+        self.assertIn('{item "weapon"}', drops[0])
+        self.assertIn("{type using}", drops[1])
+        self.assertIn('{item "weapon"}', drops[1])
+        self.assertIn("{type using}", drops[2])
+        self.assertNotIn('{item "weapon"}', drops[2])
+        self.assertNotIn("{with_item", drops[3])
+        self.assertNotIn("{with_item", drops[4])
+        self.assertIn("{action drop}", drops[3])
+        self.assertIn("{action drop}", drops[4])
 
     def test_liberation_uses_pre_p0_provenance_and_withdraws(self) -> None:
         self.assertTrue(LIB.is_file())

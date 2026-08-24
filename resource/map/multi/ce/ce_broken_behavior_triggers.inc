@@ -2,7 +2,8 @@
 ; Actor-scoped ratios are assist only. Writers must exclude aio_morale_owned. No player seizure.
 ; Surrender present is the Old Boy Player-0 5-step only (start_white_flag,
 ; runtime player 0, impregnability harmless, tag_remove enemy,
-; inventory drop of the currently-used weapon (9fb440b double drop), stand_giveup_1).
+; inventory drop of the currently-used weapon (9fb440b double drop), then FE
+; unfiltered {action drop} x2 with delay 2 for backpack AT, stand_giveup_1).
 ; After P0, entity_state {impregnability harmless} (vanilla token from
 ; {Impregnability harmless}; do not use {impregnability full}). Keep for POW life.
 ; Evac stays tag-driven after a 3s pose, then {action move}. Ordinary POWs
@@ -6269,6 +6270,88 @@
 								{include
 									{with_item
 										{type using}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrender_fx}
+									}
+								}
+							}
+						}
+						{action drop}
+					}
+					{"delay"
+						{time 2}
+					}
+					{"inventory"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag aio_morale_surrender_fx}
+									}
+								}
+							}
+						}
+						{action drop}
+					}
+					{"delay"
+						{time 2}
+					}
+					{"inventory"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_presenting}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
 									}
 								}
 								{exclude
