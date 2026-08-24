@@ -391,10 +391,6 @@
 	}
 
 	{on "die"
-		{if tagged "aio_pow_did"
-			{tags add "aio_pow_evt_die"}
-		}
-
 		{if tagged "ai_signaller"
 			{clear_inventory}
 			{tags remove "ai_signaller"}
@@ -411,24 +407,12 @@
 		{tags remove "ignore_recrew"}
 		{tags remove "aio_morale_broken"}
 		{tags remove "aio_morale_owned"}
+		{tags remove "aio_morale_retreat_issued"}
+		{tags remove "aio_morale_retreat_wave"}
+		{tags remove "aio_morale_at_rear"}
 		{tags remove "aio_morale_regrouping"}
 		{tags remove "aio_morale_regroup_failed"}
 		{tags remove "aio_morale_moving_to_rally"}
-		{tags remove "aio_morale_surrendering"}
-		{tags remove "aio_morale_surrender_cand"}
-		{tags remove "aio_morale_surrender_fx"}
-		{tags remove "aio_morale_surrender_presenting"}
-		{tags remove "aio_morale_surrender_expire"}
-		{tags remove "aio_morale_surrender_evacuating"}
-		{tags remove "aio_morale_surrender_at_egress"}
-		{tags remove "aio_morale_surrender_to_a"}
-		{tags remove "aio_morale_surrender_to_b"}
-		{tags remove "aio_morale_surrender_to_camp"}
-		{tags remove "aio_morale_surrender_to_enemy_camp"}
-		{tags remove "prisoner_in_camp"}
-		{tags remove "prisoner_in_enemy_camp"}
-		{tags remove "aio_pow_captor_player"}
-		{tags remove "aio_pow_captor_enemy"}
 		{tags remove "aio_morale_watching_regroup"}
 		{tags remove "aio_icon_refresh"}
 		{tags remove "aio_cmd_had_command"}
@@ -437,11 +421,6 @@
 	}
 
 	{on bullet_hit
-		{if tagged "aio_pow_did"
-			{if not tagged "aio_pow_evt_hit"
-				{tags add "aio_pow_evt_hit"}
-			}
-		}
 		{delay 0.10
 			{tags remove "aio_morale_recovering"}
 		}
@@ -733,71 +712,19 @@
 			{tags remove "aio_morale_moving_to_rally"}
 		}
 	}
-	{on "aio_morale_surrender"
-		{if not user_control
-			{if not tagged "aio_morale_surrendering"
-				{if tagged "aio_morale_broken"
-					{if tagged "aio_morale_regroup_failed"
-						{if tagged "aio_cmd_linked"
-						else tagged "aio_steadfast"
-							{if rand 0.05
-								{call "aio_morale_surrender_apply"}
-							}
-						else tagged "aio_cmd_independent"
-							{if rand 0.08
-								{call "aio_morale_surrender_apply"}
-							}
-						else tagged "aio_morale_elite"
-							{if rand 0.08
-								{call "aio_morale_surrender_apply"}
-							}
-						else tagged "aio_morale_low"
-							{if rand 0.7
-								{call "aio_morale_surrender_apply"}
-							}
-						else tagged "aio_morale_trained"
-							{if rand 0.25
-								{call "aio_morale_surrender_apply"}
-							}
-						else
-							{if rand 0.4
-								{call "aio_morale_surrender_apply"}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	{on "aio_morale_surrender_apply"
-		{tags add "aio_morale_surrendering"}
-		{tags add "aio_pow_pre_p0"}
-		{tags add "aio_pow_evt_apply"}
-		{tags add "aio_pow_need_id"}
+	{on "aio_morale_rally"
 		{tags remove "aio_morale_broken"}
+		{tags remove "aio_morale_owned"}
+		{tags remove "aio_morale_retreat_issued"}
+		{tags remove "aio_morale_retreat_wave"}
+		{tags remove "aio_morale_at_rear"}
 		{tags remove "aio_morale_regrouping"}
+		{tags remove "aio_morale_regroup_failed"}
+		{tags remove "aio_morale_moving_to_rally"}
+		{tags add "aio_morale_shaken"}
+		{call "aio_morale_just_shaken"}
+		{call "recovering_from_shaken"}
 		{call "aio_morale_refresh_icons"}
-		{delay 500
-			{if tagged "aio_morale_surrendering"
-				{if not tagged "prisoner_in_camp"
-					{if not tagged "prisoner_in_enemy_camp"
-						{if not tagged "aio_morale_surrender_evacuating"
-							{if not tagged "aio_morale_surrender_presenting"
-								{if not tagged "aio_morale_surrender_to_camp"
-									{if not tagged "aio_morale_surrender_to_enemy_camp"
-										{if not dead
-											{call "stop_white_flag"}
-											{tags add "aio_morale_surrender_expire"}
-											{tags add "aio_pow_evt_expire"}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 	{on "aio_morale_stop_icons"
 		{view pause "white_flag"}
@@ -811,9 +738,7 @@
 	}
 	{on "aio_morale_refresh_icons"
 		{call "aio_morale_stop_icons"}
-		{if tagged "aio_morale_surrendering"
-			{call "start_white_flag"}
-		else tagged "aio_morale_broken"
+		{if tagged "aio_morale_broken"
 			{call "start_aio_morale_broken"}
 		else tagged "aio_morale_panic"
 			{call "start_aio_morale_panic"}
@@ -828,16 +753,6 @@
 		else tagged "aio_cmd_junior"
 			{call "start_aio_cmd_junior"}
 		}
-	}
-	{on "start_white_flag"
-		{if not tagged "aio_icon_white_flag"
-			{tags add "aio_icon_white_flag"}
-			{add_view "white_flag" "white_flag" "head"}
-		}
-		{view start "white_flag"}
-	}
-	{on "stop_white_flag"
-		{view pause "white_flag"}
 	}
 	{on "start_no_comd"
 		{if not tagged "aio_icon_no_comd"
