@@ -72,9 +72,6 @@
 			{"attack_support_waves_left"}
 			{"attack_support_busy"}
 			{"attack_support_next_ok"}
-			{"attack_support_hmmwv_left"}
-			{"attack_support_ukr_veh_left"}
-			{"attack_support_nato_veh_left"}
 			{"attack_support_veh_left"}
 			{"attack_support_use_mi"}
 			{"enemy_spawnside"}
@@ -95,6 +92,7 @@
 			{"enemy_defense_surge_ok"}
 			{"enemy_defense_surge_busy"}
 			{"defense_support_armed"}
+			{"defense_support_veh_left"}
 			{"defense_support_transferred"}
 			{"defense_support_stage"}
 			{"defense_support_wave_cmd"}

@@ -2484,7 +2484,6 @@
 	{Link 0xfd00 {0xa800 "ammo"}}
 	{Link 0xfd01 {0xe80b "ammo"}}
 	{Link 0xfd02 {0x9003 "ammo"}}
-	(include "../attack_support_templates.inc")
 	(include "../faction_support_templates.inc")
 	(include "../enemy_defense_templates.inc")
 	(include "../flag_props_templates.inc")

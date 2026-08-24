@@ -74,14 +74,40 @@ local PriorityOverlay = {
 	["plz83"] = 0.8,
 }
 
+local function isDropPlaneName(name)
+	if type(name) ~= "string" then return false end
+	local unit = string.lower(name)
+	return string.find(unit, "il-76", 1, true)
+		or string.find(unit, "c130_para", 1, true)
+		or string.find(unit, "c130_lav", 1, true)
+end
+
+local function isDroneName(name)
+	if type(name) ~= "string" then return false end
+	local unit = string.lower(name)
+	return string.find(unit, "fpv", 1, true)
+		or string.find(unit, "wingloong", 1, true)
+		or string.find(unit, "drone", 1, true)
+end
+
 function ApplyPurchaseOverlay(purchases)
 	if type(purchases) ~= "table" then return end
 	for _, pack in ipairs(purchases) do
 		local units = pack and pack.Units
 		if type(units) == "table" then
 			for _, entry in ipairs(units) do
-				local weight = entry and PriorityOverlay[entry.unit]
-				if weight then entry.priority = weight end
+				if entry then
+					local weight = PriorityOverlay[entry.unit]
+					if weight then entry.priority = weight end
+					if isDropPlaneName(entry.unit) then
+						entry.priority = 0.05
+					end
+					if isDroneName(entry.unit) then
+						-- Code:X ships these at 5.0. 0.3 is in the infantry-squad range
+						-- so a match sees about 1-2, not a standing swarm.
+						entry.priority = 0.3
+					end
+				end
 			end
 		end
 	end

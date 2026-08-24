@@ -8,16 +8,15 @@
 -- Mission participation is gated in MI by support_mission_enabled$. This controller publishes
 -- its own routed Team A playerId as the attack-support owner and issues squad orders.
 --
--- This slot also carries the ENGINE-STATE MIRROR. Every MIRROR_QUANTS quants it writes
--- one game.log line per wave engine - attack_support, enemy_defense (plus its garrison
--- anchors), defense_support, enemy_attack - and the resolved faction_support_army$.
--- Always on and log-only, because the on-screen diagnostics in those engines are gated
--- behind support_debug$ and default to off, so the log is all a shipped run leaves
--- behind. Reads go through readVar, which pcall-guards GetVar.
+-- This slot also carries the ENGINE-STATE MIRROR. When DEBUG_LOG is true, every
+-- MIRROR_QUANTS quants it writes one game.log line per wave engine - attack_support,
+-- enemy_defense (plus its garrison anchors), defense_support, enemy_attack - and the
+-- resolved faction_support_army$. Off in production; on-screen MI diagnostics stay
+-- gated behind support_debug$. Reads go through readVar, which pcall-guards GetVar.
 
 local PREFIX = "CODEX_ATTACK_SUPPORT"
 
-local DEBUG_LOG = true
+local DEBUG_LOG = false
 
 local function emit(...)
 	local out = { PREFIX .. ":" }
@@ -176,7 +175,7 @@ local function orderSquad(squad)
 	local sc = scene()
 	if sc and sc.IsSquadTagged then
 		local ok, owned = pcall(function()
-			return sc:IsSquadTagged(squad, "aio_morale_owned") or sc:IsSquadTagged(squad, "aio_morale_surrendering") or sc:IsSquadTagged(squad, "aio_morale_surrender_evacuating") or sc:IsSquadTagged(squad, "_lua_mi") or sc:IsSquadTagged(squad, "repairing")
+			return sc:IsSquadTagged(squad, "aio_morale_owned") or sc:IsSquadTagged(squad, "aio_morale_surrendering") or sc:IsSquadTagged(squad, "aio_morale_surrender_evacuating") or sc:IsSquadTagged(squad, "aio_pow_liberated") or sc:IsSquadTagged(squad, "aio_pow_withdraw") or sc:IsSquadTagged(squad, "_lua_mi") or sc:IsSquadTagged(squad, "repairing")
 		end)
 		if ok and owned then return end
 	end
@@ -267,7 +266,7 @@ local function onQuant()
 	if DEBUG_LOG and state.quant % 200 == 0 then
 		log("heartbeat", "q", state.quant)
 	end
-	if state.quant % MIRROR_QUANTS == 0 then
+	if DEBUG_LOG and state.quant % MIRROR_QUANTS == 0 then
 		mirrorMotor()
 		mirrorEngineState()
 	end

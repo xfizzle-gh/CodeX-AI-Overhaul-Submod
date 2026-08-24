@@ -118,26 +118,26 @@
 		-- Bot is defender
 		Defending = {
 			emplacement = {
-				defenseLevelOne = 4,
-				defenseLevelTwo = 6,
-				defenseLevelThree = 8
+				defenseLevelOne = 2,
+				defenseLevelTwo = 3,
+				defenseLevelThree = 4
 			},
 
 			infantry = {
-				x5_cloneClount = 1,
-				perFlag = 8,
-				max_ai_defender_at_flag = 4
+				x5_cloneClount = 0,
+				perFlag = 4,
+				max_ai_defender_at_flag = 2
 			},
 			challengeMaps = {
 				emplacement = {
-				defenseLevelOne = 6,
-				defenseLevelTwo = 10,
-				defenseLevelThree = 14
+				defenseLevelOne = 3,
+				defenseLevelTwo = 5,
+				defenseLevelThree = 7
 				},
 				infantry = {
-					x5_cloneClount = 4,
-					perFlag = 16,
-					max_ai_defender_at_flag = 8
+					x5_cloneClount = 1,
+					perFlag = 8,
+					max_ai_defender_at_flag = 4
 				},
 			},
 			difficultyModifier = {
@@ -157,7 +157,7 @@
 	enableSabotageMechanics = 0
 	enableAiAbandonMechanics = 0
 	enableCeMoraleMechanic = 1.0
-	enableCeMoraleDebug = 1.0
+	enableCeMoraleDebug = 0
 	enableCeMoraleAutodemo = 0
 -- =============================== Logging DO NOT MODIFY =======================================
 	require([[/conquest_configuration/bot.mod_configuration]])

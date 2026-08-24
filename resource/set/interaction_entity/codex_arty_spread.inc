@@ -146,6 +146,7 @@
 
 {"codex_arty_105_16"
 	{on spawn
+		{tags add "codex_arty_need_owner"}
 		{if not tagged "fired"
 			{tags add "fired"}
 			{start_sound "weapon/shot/ambient_cannon"}
@@ -177,6 +178,7 @@
 
 {"codex_arty_150_8"
 	{on spawn
+		{tags add "codex_arty_need_owner"}
 		{if not tagged "fired"
 			{tags add "fired"}
 			{start_sound "weapon/shot/ambient_cannon"}
@@ -200,12 +202,13 @@
 
 {"codex_smoke_6"
 	{on spawn
+		{tags add "codex_arty_need_owner"}
 		{if not tagged "fired"
 			{tags add "fired"}
 			{start_sound "weapon/shot/ambient_cannon"}
 			(define "rnd_smk"
 				{delay %delay 0.5
-					{spawn "artillery_single_smoke_dummy" random_position 4500 offset 0 -1500 0}
+					{spawn "artillery_single_smoke_dummy" random_position 2000 offset 0 -1500 0}
 				}
 			)
 			("rnd_smk" delay(1))
@@ -223,12 +226,13 @@
 
 {"codex_smoke_6b"
 	{on spawn
+		{tags add "codex_arty_need_owner"}
 		{if not tagged "fired"
 			{tags add "fired"}
 			{start_sound "weapon/shot/ambient_cannon"}
 			(define "rnd_smk_b"
 				{delay %delay 0.5
-					{spawn "artillery_single_smoke_dummy" random_position 4500 offset 0 1500 0}
+					{spawn "artillery_single_smoke_dummy" random_position 2000 offset 0 1500 0}
 				}
 			)
 			("rnd_smk_b" delay(1))
@@ -298,6 +302,7 @@
 
 {"mortar_barrage_120"
 	{on spawn
+		{tags add "codex_arty_need_owner"}
 		{if not tagged "fired"
 			{tags add "fired"}
 			(define "rnd_art_bomb"
@@ -328,6 +333,7 @@
 
 {"mortar_barrage_160"
 	{on spawn
+		{tags add "codex_arty_need_owner"}
 		{if not tagged "fired"
 			{tags add "fired"}
 			(define "rnd_art_bomb"

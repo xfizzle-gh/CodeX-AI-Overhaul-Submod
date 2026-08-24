@@ -1918,6 +1918,6 @@ min_stage(1) max_stage(8) name(ulman_squad)
 }
 
 {"fpv_rpg_rus(rusa)" 
-	("squad_vehicle"		 side(rusa) period(2022s) min_stage(5) max_stage(99) vehicle(fpv_rpg) cw(0) cp(4) crew(rus_vehicleman:0)
-)	{not_for_player_sale 1}
+	("squad_vehicle"		 side(rusa) period(2022s) min_stage(8) max_stage(99) vehicle(fpv_rpg) cw(0) cp(4) crew(rus_vehicleman:0)
+)	{cost 120}{not_for_player_sale 1}
 }

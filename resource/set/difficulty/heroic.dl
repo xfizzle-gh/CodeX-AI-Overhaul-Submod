@@ -11,10 +11,10 @@
 	}
 	{ally
 		{health 1.00}
-		{accuracy 0.85}
+		{accuracy 0.95}
 	}
 	{player
 		{health 0.70}
-		{accuracy 0.85}
+		{accuracy 0.95}
 	}
 }

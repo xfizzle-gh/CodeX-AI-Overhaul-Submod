@@ -1418,9 +1418,9 @@ min_stage(8) max_stage(99) name(21th_inf_razv_m107)
 }
 
 {"fpv_rpg(ukr)" 
-	("squad_vehicle"		 side(ukr) period(2022s) min_stage(5) max_stage(99) vehicle(fpv_rpg) cw(0) cp(4) crew(ukr_wepcrew:0)
+	("squad_vehicle"		 side(ukr) period(2022s) min_stage(8) max_stage(99) vehicle(fpv_rpg) cw(0) cp(4) crew(ukr_wepcrew:0)
 )
-{not_for_player_sale 1}
+{cost 120}{not_for_player_sale 1}
 }
 
 {"c130_para_ai"

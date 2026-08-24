@@ -391,6 +391,10 @@
 	}
 
 	{on "die"
+		{if tagged "aio_pow_did"
+			{tags add "aio_pow_evt_die"}
+		}
+
 		{if tagged "ai_signaller"
 			{clear_inventory}
 			{tags remove "ai_signaller"}
@@ -417,6 +421,36 @@
 		{tags remove "aio_morale_surrender_expire"}
 		{tags remove "aio_morale_surrender_evacuating"}
 		{tags remove "aio_morale_surrender_at_egress"}
+		{tags remove "aio_morale_surrender_to_a"}
+		{tags remove "aio_morale_surrender_to_b"}
+		{tags remove "aio_morale_surrender_to_camp"}
+		{tags remove "aio_morale_surrender_to_enemy_camp"}
+		{tags remove "prisoner_in_camp"}
+		{tags remove "prisoner_in_enemy_camp"}
+		{tags remove "aio_pow_captor_player"}
+		{tags remove "aio_pow_captor_enemy"}
+		{tags remove "aio_pow_liberate_cand"}
+		{tags remove "aio_pow_liberating"}
+		{tags remove "aio_pow_liberated"}
+		{tags remove "aio_pow_withdraw"}
+		{tags remove "aio_pow_withdraw_a"}
+		{tags remove "aio_pow_withdraw_b"}
+		{tags remove "aio_pow_orig_p1"}
+		{tags remove "aio_pow_orig_p2"}
+		{tags remove "aio_pow_orig_p3"}
+		{tags remove "aio_pow_orig_p4"}
+		{tags remove "aio_pow_orig_p5"}
+		{tags remove "aio_pow_orig_p6"}
+		{tags remove "aio_pow_orig_p7"}
+		{tags remove "aio_pow_orig_p8"}
+		{tags remove "aio_pow_orig_p9"}
+		{tags remove "aio_pow_orig_p10"}
+		{tags remove "aio_pow_orig_p11"}
+		{tags remove "aio_pow_orig_p12"}
+		{tags remove "aio_pow_orig_p13"}
+		{tags remove "aio_pow_orig_p14"}
+		{tags remove "aio_pow_orig_p15"}
+		{tags remove "aio_pow_orig_p16"}
 		{tags remove "aio_morale_watching_regroup"}
 		{tags remove "aio_icon_refresh"}
 		{tags remove "aio_cmd_had_command"}
@@ -425,6 +459,11 @@
 	}
 
 	{on bullet_hit
+		{if tagged "aio_pow_did"
+			{if not tagged "aio_pow_evt_hit"
+				{tags add "aio_pow_evt_hit"}
+			}
+		}
 		{delay 0.10
 			{tags remove "aio_morale_recovering"}
 		}
@@ -722,6 +761,8 @@
 				{if tagged "aio_morale_broken"
 					{if tagged "aio_morale_regroup_failed"
 						{if tagged "aio_cmd_linked"
+						else tagged "aio_pow_liberated"
+						else tagged "aio_pow_withdraw"
 						else tagged "aio_steadfast"
 							{if rand 0.05
 								{call "aio_morale_surrender_apply"}
@@ -754,14 +795,33 @@
 	}
 	{on "aio_morale_surrender_apply"
 		{tags add "aio_morale_surrendering"}
+		{tags add "aio_pow_pre_p0"}
+		{tags add "aio_pow_evt_apply"}
+		{tags add "aio_pow_need_id"}
 		{tags remove "aio_morale_broken"}
 		{tags remove "aio_morale_regrouping"}
+		{tags remove "aio_pow_move_issued"}
+		{tags remove "aio_pow_fast_release_pending"}
+		{tags remove "aio_pow_recovery_used"}
 		{call "aio_morale_refresh_icons"}
-		{delay 100
+		{delay 500
 			{if tagged "aio_morale_surrendering"
-				{if not dead
-					{call "stop_white_flag"}
-					{tags add "aio_morale_surrender_expire"}
+				{if not tagged "prisoner_in_camp"
+					{if not tagged "prisoner_in_enemy_camp"
+						{if not tagged "aio_morale_surrender_evacuating"
+							{if not tagged "aio_morale_surrender_presenting"
+								{if not tagged "aio_morale_surrender_to_camp"
+									{if not tagged "aio_morale_surrender_to_enemy_camp"
+										{if not dead
+											{call "stop_white_flag"}
+											{tags add "aio_morale_surrender_expire"}
+											{tags add "aio_pow_evt_expire"}
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -805,6 +865,29 @@
 	}
 	{on "stop_white_flag"
 		{view pause "white_flag"}
+	}
+	{on "aio_pow_clear_orig"
+		{tags remove "aio_pow_orig_p1"}
+		{tags remove "aio_pow_orig_p2"}
+		{tags remove "aio_pow_orig_p3"}
+		{tags remove "aio_pow_orig_p4"}
+		{tags remove "aio_pow_orig_p5"}
+		{tags remove "aio_pow_orig_p6"}
+		{tags remove "aio_pow_orig_p7"}
+		{tags remove "aio_pow_orig_p8"}
+		{tags remove "aio_pow_orig_p9"}
+		{tags remove "aio_pow_orig_p10"}
+		{tags remove "aio_pow_orig_p11"}
+		{tags remove "aio_pow_orig_p12"}
+		{tags remove "aio_pow_orig_p13"}
+		{tags remove "aio_pow_orig_p14"}
+		{tags remove "aio_pow_orig_p15"}
+		{tags remove "aio_pow_orig_p16"}
+	}
+	{on "aio_pow_liberate_guard"
+		{delay 20
+			{tags remove "aio_pow_liberated"}
+		}
 	}
 	{on "start_no_comd"
 		{if not tagged "aio_icon_no_comd"

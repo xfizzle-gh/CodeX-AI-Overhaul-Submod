@@ -13,8 +13,9 @@
 (include "/map/multi/ce/ce_player_triggers.inc")
 (include "/map/multi/ce/ce_morale_marker_apply_triggers.inc")
 (include "/map/multi/ce/ce_morale_classification_triggers.inc")
-(include "/map/multi/ce/ce_morale_probe_report.inc")
-(include "/map/multi/ce/ce_morale_diag_triggers.inc")
+; FPS: production-loaded morale diagnostics. Re-enable for morale/POW debug only.
+;(include "/map/multi/ce/ce_morale_probe_report.inc")
+;(include "/map/multi/ce/ce_morale_diag_triggers.inc")
 (include "/map/multi/ce/ce_morale_machine_triggers.inc")
 (include "/map/multi/ce/ce_command_cohesion_triggers.inc")
 (include "/map/multi/ce/ce_broken_behavior_triggers.inc")
@@ -23,18 +24,23 @@
 (include "/map/nikral's trigger.mi")
 (include "/map/north_trigger.mi")
 
-; Horten Frontline AI (loot/mines/arty/flanking/airstrike) — AI-only loot already in upstream
+; Horten Frontline AI (mines/flanking/airstrike/medic). Loot + arty AI are off inside HF-dcg_script.inc.
 (include "/map/multi/HF-dcg_script.inc")
 (include "/map/multi/HF-dcg_dynamic_weather.inc")
 (include "/map/multi/dcg_functions.mi")
 (include "/map/multi/dcg_ai_smoke.inc")
 (include "/map/multi/dcg_arty_prep.inc")
 (include "/map/multi/dcg_para.inc")
-(include "/map/multi/codex_ai_combat.inc") ; combat AI: recrew/bail, pursue, TNT, flag smoke, arty counterfire
+; FPS: Indomitus combat is a duplicate of Code:X inlined combat + ce_lua_triggers
+; (recrew/bail/pursue/TNT). Unique leftovers were player-arty counterfire and unused Khorne.
+;(include "/map/multi/codex_ai_combat.inc")
 
 ; Full CE AI stack + map setup (defender balance, patrol, repair, lua bridge, spawns)
 (include "/map/multi/ce/ai_logic/ce_ai_spawn_triggers.inc")
-(include "/map/multi/ce/ai_logic/ce_lua_triggers.inc")
+; FPS: same combat pack as the inlined tail below (bail/recrew/pursue/TNT/bot_tags).
+; File-level last-wins: that tail already replaces this include. Restore by uncommenting
+; AND moving it to after {"clean-saved-tags"} if CE combat should win as a file.
+;(include "/map/multi/ce/ai_logic/ce_lua_triggers.inc")
 (include "/map/multi/ce/ai_logic/ce_ai_logic_triggers.inc")
 ; Do NOT include base_map_setup_triggers.inc here — that content is already inlined
 ; below (parachute/music/dcg/init/...). Double-registering it re-enabled music/music_detect

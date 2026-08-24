@@ -21,7 +21,7 @@
 ; format can express. Ownership is a literal 1-16 {player} switch on id_1st_enemy$ (the
 ; live attacker bot on a defence mission); the engine will not accept a var there.
 ;
-; POOL SHARING, deliberate and safe. This engine claims from the SAME four faction pools
+; POOL SHARING, deliberate and safe. This engine claims from the SAME two Kor/ARF parks
 ; enemy_defense_templates.inc parks for enemy_defense_support.inc. The two can never
 ; contend: enemy_defense_support.inc gates every trigger on user_is_defender$ == 0 and
 ; this engine gates every trigger on user_is_defender$ == 1, and a mission has exactly
@@ -34,9 +34,9 @@
 ; pool-sharing engines stay decoupled. conquest.lua publishes bot_army$ from its
 ; nationMap (1 rusa, 2 ukr, 3 nato, 4 csa, 5 sov, 6 prc, 7 frg, 8 pol) - and on a defence
 ; mission the bot it describes is the ATTACKER, which is exactly the side this engine
-; reinforces. ea_resolve_army folds that onto the four pools this mod ships
-; (enemy_attack_army$ 1 rusa / 2 ukr / 3 nato / 4 prc), routing sov+pol to the rusa pool
-; and csa+frg to the nato pool. An unpublished bot_army$ lands in the default and draws
+; reinforces. ea_resolve_army folds that onto the two Kor/ARF parks this mod ships
+; (enemy_attack_army$ 1 Kor / 3 ARF), routing sov+pol+prc to Kor
+; and csa+frg+ukr to ARF. An unpublished bot_army$ lands in the default and draws
 ; rusa, so the system never stalls waiting for a var.
 ;
 ; PREP PHASE. A defence mission runs a real preparation phase (preparationTime 480 in
@@ -53,20 +53,13 @@
 ;                 distinct from defense_support_waves.inc's 140-290s ladder, which is
 ;                 the only other engine live on this mission, so the two never
 ;                 synchronise.
-;   budget        defense_level$ (CE campaign progression, 1-3): L1 2 waves, L2 3, L3 4,
-;                 including the opening wave. Level 0 falls back to L1. defense_level$ is
-;                 computed on defence missions too - CE's set_defense_level trigger is
-;                 gated only on defense_level$ == 0 and carries its own
-;                 user_is_defender$ == 1 branch, so it is not attack-only.
+;   budget        always 4 waves, including the opening wave. Same cap as the other
+;                 three support engines.
 ;   live cap      more than 10 live ea_src infantry defers the cycle WITHOUT consuming a
 ;                 wave, exactly as the other three engines' caps do.
 ;
-; COMPOSITION POOL, one drawn at random per wave, widening with the level:
-;   1 line     4 bodies from the faction line pool   L1 L2 L3  (also the pool-short fallback)
-;   2 weapons  4 bodies from the faction wpn pool       L2 L3  (AT + marksman flavour)
-; Infantry line/wpn baseline, plus L2+ motorized truck insert (cmd 19) for parity with
-; friendly attack_support. Claims ally_sup_*_motor packages (shared park; attack_support
-; is inert on defence missions so no pool contention). Silent — no player talk lines.
+; COMPOSITION: Kor/ARF line fireteams from the shared enemy_def park.
+; L2+ may insert a motorized truck (cmd 19) when that one-shot is armed.
 ;
 ; WHAT THEY DO. This is Q1's order flow aimed the other way. Every wave re-shuffles up to
 ; three ACTIVE flag points, splits into staggered fireteams and advances - one straight
@@ -114,7 +107,6 @@
 					}
 				}
 			)
-
 
 			; Delivery point: the ATTACKER's own map edge. enemy_spawnside$ is published
 			; from conquest.lua's mission-authority branch and on a defence mission the
@@ -293,11 +285,11 @@
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "bot_army$"} {op "=="} {value 2}}
-						{"set_i" {var "enemy_attack_army$"} {op "="} {value 2}}
+						{"set_i" {var "enemy_attack_army$"} {op "="} {value 3}}
 						{"switch"
 							{"case"
 								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-								{"timer" {time 8} {title "ENEMY ATTACK ARMY - UKR"}}
+								{"timer" {time 8} {title "ENEMY ATTACK ARMY - ARF (ukr)"}}
 							}
 							{"default"}
 						}
@@ -326,11 +318,11 @@
 					}
 					{"case"
 						{condition {type cmp_i} {var "bot_army$"} {op "=="} {value 6}}
-						{"set_i" {var "enemy_attack_army$"} {op "="} {value 4}}
+						{"set_i" {var "enemy_attack_army$"} {op "="} {value 1}}
 						{"switch"
 							{"case"
 								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-								{"timer" {time 8} {title "ENEMY ATTACK ARMY - PRC"}}
+								{"timer" {time 8} {title "ENEMY ATTACK ARMY - NK (prc)"}}
 							}
 							{"default"}
 						}
@@ -528,36 +520,22 @@
 
 			; Command 1 - line fireteam, 4 bodies from the faction line pool. Only the
 			; trigger whose enemy_attack_army$ matches can clear the command, so poking
-			; all four factions is safe.
+			; Kor/ARF fold is safe.
 			(define "ea_poke_line"
 				{"trigger" {name "enemy_attack/rusa_line"}}
-				{"trigger" {name "enemy_attack/ukr_line"}}
-				{"trigger" {name "enemy_attack/prc_line"}}
 				{"trigger" {name "enemy_attack/nato_line"}}
-			)
-
-			; Command 2 - weapons fireteam, 4 bodies from the faction wpn pool. Only the
-			; trigger whose enemy_attack_army$ matches can clear the command, so poking
-			; all four factions is safe.
-			(define "ea_poke_wpn"
-				{"trigger" {name "enemy_attack/rusa_wpn"}}
-				{"trigger" {name "enemy_attack/ukr_wpn"}}
-				{"trigger" {name "enemy_attack/prc_wpn"}}
-				{"trigger" {name "enemy_attack/nato_wpn"}}
 			)
 			; Command 19 - motorized truck. Claims shared ally_sup_*_motor packages by army.
 			(define "ea_poke_motor"
 				{"trigger" {name "enemy_attack/rusa_motor"}}
-				{"trigger" {name "enemy_attack/ukr_motor"}}
-				{"trigger" {name "enemy_attack/prc_motor"}}
 				{"trigger" {name "enemy_attack/nato_motor"}}
 			)
 
 			; The wave draw, widening with the campaign level: L1 fields plain line
-			; fireteams, L2 mixes in the AT/marksman weapons team a third of the time, L3
-			; leads with it. Level 0 - CE has not published a level yet - lands in the
-			; default and behaves as L1. A draw clears the command as its first action, so
-			; a command still standing four seconds later means the pool came up short.
+			; fireteams; L2+ may insert the one-shot motorized truck. Level 0 - CE has
+			; not published a level yet - lands in the default and behaves as L1. A
+			; draw clears the command as its first action, so a command still standing
+			; four seconds later means the pool came up short.
 			(define "ea_pick_wave"
 				{"switch"
 					{"case"
@@ -589,12 +567,12 @@
 								{"switch"
 									{"case"
 										{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-										{"timer" {time 8} {title "ENEMY ATTACK WAVE - WEAPONS FIRETEAM"}}
+										{"timer" {time 8} {title "ENEMY ATTACK WAVE - LINE FIRETEAM"}}
 									}
 									{"default"}
 								}
-								{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 2}}
-								("ea_poke_wpn")
+								{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 1}}
+								("ea_poke_line")
 							}
 							{"default"
 								{"switch"
@@ -638,12 +616,12 @@
 								{"switch"
 									{"case"
 										{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-										{"timer" {time 8} {title "ENEMY ATTACK WAVE - WEAPONS FIRETEAM"}}
+										{"timer" {time 8} {title "ENEMY ATTACK WAVE - LINE FIRETEAM"}}
 									}
 									{"default"}
 								}
-								{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 2}}
-								("ea_poke_wpn")
+								{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 1}}
+								("ea_poke_line")
 							}
 							{"default"
 								{"switch"
@@ -670,24 +648,7 @@
 						("ea_poke_line")
 					}
 				}
-				; Pool-short fallback: step down to the always-deepest line pool, then
-				; give up on this cycle rather than spin.
-				{"delay" {time 4}}
-				{"switch"
-					{"case"
-						{condition {type cmp_i} {var "enemy_attack_wave_cmd$"} {op "=="} {value 2}}
-						{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 1}}
-						("ea_poke_line")
-						{"switch"
-							{"case"
-								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-								{"timer" {time 6} {title "ENEMY ATTACK POOL SHORT - LINE TEAM INSTEAD"}}
-							}
-							{"default"}
-						}
-					}
-					{"default"}
-				}
+				; Pool-short fallback: give up on this cycle rather than spin.
 				{"delay" {time 4}}
 				{"switch"
 					{"case"
@@ -736,42 +697,13 @@
 					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 1}}
 					{"delay" {time 2}}
 					("ea_resolve_army")
-					; Wave budget by campaign progression. defense_level$ is computed by
-					; the CE mission setup (1-3, roughly campaign games 0 / 6 / 12) on
-					; defence missions as well as attack ones.
+					{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 4}}
 					{"switch"
 						{"case"
-							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
-							{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 4}}
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "ENEMY ATTACK ARMED - L3, 4 WAVES"}}
-								}
-								{"default"}
-							}
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 10} {title "ENEMY ATTACK ARMED - 4 WAVES"}}
 						}
-						{"case"
-							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
-							{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 4}}
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "ENEMY ATTACK ARMED - L2, 3 WAVES"}}
-								}
-								{"default"}
-							}
-						}
-						{"default"
-							{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 3}}
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "ENEMY ATTACK ARMED - L1, 3 WAVES"}}
-								}
-								{"default"}
-							}
-						}
+						{"default"}
 					}
 					; Opening wave, deliberately behind the friendly defensive-support
 					; engine's opening so attacker pressure builds instead of arriving
@@ -872,13 +804,10 @@
 				}
 			}
 
-			; COMPOSITION TRIGGERS - four faction pools x two draws, claiming from the
-			; prototypes enemy_defense_templates.inc parks. Command gated the way the
-			; other engines' compositions are: the command IS the draw id and the trigger
-			; clears it as its first action, so a command still standing means no pool
-			; could field it. Each also gates on enemy_attack_army$, so exactly one
-			; faction can ever answer a poke, and on its own pool being stocked - a claim
-			; strips the pool tag, so the tag count is precisely "still parked".
+			; COMPOSITION TRIGGERS - Kor/ARF line draws from the shared enemy_def park.
+			; The command IS the draw id and the trigger clears it as its first action,
+			; so a command still standing means no pool could field it. Each gates on
+			; enemy_attack_army$, so exactly one park can answer a poke.
 			{"enemy_attack/rusa_line"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5"}
@@ -919,206 +848,11 @@
 				}
 			}
 
-			{"enemy_attack/rusa_wpn"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} {value 2}}
-						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
-						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 1}}
-						{"5.entities"
-							{selector {tag enemy_def_rusa_wpn}}
-							{count {op ">="} {value 4}}
-						}
-					}
-				}
-				{actions
-					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
-										{"set_i" {var "enemy_attack_stage$"} {op "="} {value 21}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "ENEMY ATTACK RUSA WEAPONS FIRETEAM"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group {select {tag {tag enemy_def_rusa_wpn}}}}
-							{amount 4}
-						}
-						{tag_add ea_deploy}
-						{tag_remove enemy_def_rusa_wpn}
-					}
-					{"delay" {time 0.1}}
-					("ea_place_at_entry")
-					("ea_finish")
-					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 22}}
-				}
-			}
-
-			{"enemy_attack/ukr_line"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} {value 1}}
-						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
-						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 2}}
-						{"5.entities"
-							{selector {tag enemy_def_ukr_line}}
-							{count {op ">="} {value 4}}
-						}
-					}
-				}
-				{actions
-					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
-										{"set_i" {var "enemy_attack_stage$"} {op "="} {value 11}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "ENEMY ATTACK UKR LINE FIRETEAM"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group {select {tag {tag enemy_def_ukr_line}}}}
-							{amount 4}
-						}
-						{tag_add ea_deploy}
-						{tag_remove enemy_def_ukr_line}
-					}
-					{"delay" {time 0.1}}
-					("ea_place_at_entry")
-					("ea_finish")
-					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 12}}
-				}
-			}
-
-			{"enemy_attack/ukr_wpn"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} {value 2}}
-						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
-						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 2}}
-						{"5.entities"
-							{selector {tag enemy_def_ukr_wpn}}
-							{count {op ">="} {value 4}}
-						}
-					}
-				}
-				{actions
-					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
-										{"set_i" {var "enemy_attack_stage$"} {op "="} {value 21}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "ENEMY ATTACK UKR WEAPONS FIRETEAM"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group {select {tag {tag enemy_def_ukr_wpn}}}}
-							{amount 4}
-						}
-						{tag_add ea_deploy}
-						{tag_remove enemy_def_ukr_wpn}
-					}
-					{"delay" {time 0.1}}
-					("ea_place_at_entry")
-					("ea_finish")
-					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 22}}
-				}
-			}
-
-			{"enemy_attack/prc_line"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} {value 1}}
-						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
-						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 4}}
-						{"5.entities"
-							{selector {tag enemy_def_prc_line}}
-							{count {op ">="} {value 4}}
-						}
-					}
-				}
-				{actions
-					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
-										{"set_i" {var "enemy_attack_stage$"} {op "="} {value 11}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "ENEMY ATTACK PRC LINE FIRETEAM"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group {select {tag {tag enemy_def_prc_line}}}}
-							{amount 4}
-						}
-						{tag_add ea_deploy}
-						{tag_remove enemy_def_prc_line}
-					}
-					{"delay" {time 0.1}}
-					("ea_place_at_entry")
-					("ea_finish")
-					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 12}}
-				}
-			}
-
-			{"enemy_attack/prc_wpn"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} {value 2}}
-						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
-						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 4}}
-						{"5.entities"
-							{selector {tag enemy_def_prc_wpn}}
-							{count {op ">="} {value 4}}
-						}
-					}
-				}
-				{actions
-					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
-										{"set_i" {var "enemy_attack_stage$"} {op "="} {value 21}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "ENEMY ATTACK PRC WEAPONS FIRETEAM"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group {select {tag {tag enemy_def_prc_wpn}}}}
-							{amount 4}
-						}
-						{tag_add ea_deploy}
-						{tag_remove enemy_def_prc_wpn}
-					}
-					{"delay" {time 0.1}}
-					("ea_place_at_entry")
-					("ea_finish")
-					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 22}}
-				}
-			}
-
+			
+			
+			
+			
+			
 			{"enemy_attack/nato_line"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5"}
@@ -1159,47 +893,7 @@
 				}
 			}
 
-			{"enemy_attack/nato_wpn"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} {value 2}}
-						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
-						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 3}}
-						{"5.entities"
-							{selector {tag enemy_def_nato_wpn}}
-							{count {op ">="} {value 4}}
-						}
-					}
-				}
-				{actions
-					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
-										{"set_i" {var "enemy_attack_stage$"} {op "="} {value 21}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "ENEMY ATTACK NATO WEAPONS FIRETEAM"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group {select {tag {tag enemy_def_nato_wpn}}}}
-							{amount 4}
-						}
-						{tag_add ea_deploy}
-						{tag_remove enemy_def_nato_wpn}
-					}
-					{"delay" {time 0.1}}
-					("ea_place_at_entry")
-					("ea_finish")
-					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 22}}
-				}
-			}
-
-
+			
 
 			; TEST OVERLAY: place the complete linked enemy truck package in one operation
 			; at the attacker's original spawn-centroid entry waypoint.
@@ -1332,7 +1026,6 @@
 				{"set_i" {var "enemy_attack_transferred$"} {op "="} {value 1}}
 			)
 
-
 			{"enemy_attack/rusa_motor"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5 & 6"}
@@ -1379,98 +1072,8 @@
 				}
 			}
 
-			{"enemy_attack/ukr_motor"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} {value 19}}
-						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
-						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 2}}
-						{"5.cmp_i" {var "enemy_attack_motor_left$"} {op ">"} {value 0}}
-						{"6.entities" {selector {tag ally_sup_ukr_motor_hull}} {count {op ">="} {value 1}}}
-					}
-				}
-				{actions
-					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
-					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 91}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "ENEMY ATTACK MOTORIZED INSERT"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor}}}}}
-						{tag_add ea_deploy}
-						{tag_remove ally_sup_ukr_motor}
-						{tag_remove ally_sup_ukr_motor_crew}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_hull}}}}}
-						{tag_add ea_motor_hull}
-						{tag_remove ally_sup_ukr_motor_hull}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_pax}}}}}
-						{tag_add ea_motor_pax}
-						{tag_remove ally_sup_ukr_motor_pax}
-					}
-					{"set_i" {var "enemy_attack_motor_left$"} {op "-"} {value 1}}
-					{"delay" {time 0.1}}
-					("ea_place_motor_visible")
-					("ea_finish_motor")
-					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 92}}
-				}
-			}
-
-			{"enemy_attack/prc_motor"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "enemy_attack_wave_cmd$"} {op "=="} {value 19}}
-						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
-						{"4.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 4}}
-						{"5.cmp_i" {var "enemy_attack_motor_left$"} {op ">"} {value 0}}
-						{"6.entities" {selector {tag ally_sup_prc_motor_hull}} {count {op ">="} {value 1}}}
-					}
-				}
-				{actions
-					{"set_i" {var "enemy_attack_wave_cmd$"} {op "="} {value 0}}
-					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 91}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "ENEMY ATTACK MOTORIZED INSERT"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor}}}}}
-						{tag_add ea_deploy}
-						{tag_remove ally_sup_prc_motor}
-						{tag_remove ally_sup_prc_motor_crew}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_hull}}}}}
-						{tag_add ea_motor_hull}
-						{tag_remove ally_sup_prc_motor_hull}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_pax}}}}}
-						{tag_add ea_motor_pax}
-						{tag_remove ally_sup_prc_motor_pax}
-					}
-					{"set_i" {var "enemy_attack_motor_left$"} {op "-"} {value 1}}
-					{"delay" {time 0.1}}
-					("ea_place_motor_visible")
-					("ea_finish_motor")
-					{"set_i" {var "enemy_attack_stage$"} {op "="} {value 92}}
-				}
-			}
-
+			
+			
 			{"enemy_attack/nato_motor"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5 & 6"}
@@ -1675,67 +1278,7 @@
 				}
 			}
 
-			{"enemy_attack/normal_transport_ukr"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "enemy_attack_armed$"} {op "=="} {value 1}}
-						{"3.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 2}}
-						{"4.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
-						{"5.cmp_i" {var "transport_ea_done$"} {op "=="} {value 0}}
-						{"6.entities" {selector {tag transport_enemy_ukr_hull}} {count {op ">="} {value 1}}}
-					}
-				}
-				{actions
-					{"set_i" {var "transport_ea_done$"} {op "="} {value 1}}
-					{"delay" {time 45}}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag transport_enemy_ukr}}}}}
-						{tag_add ea_deploy}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag transport_enemy_ukr_hull}}}}}
-						{tag_add transport_ea_hull}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag transport_enemy_ukr_pax}}}}}
-						{tag_add transport_ea_pax}
-					}
-					("transport_ea_place")
-					{"entity_state"
-						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
-						{tag_remove transport_enemy_tpl}
-						{tag_remove transport_enemy_ukr}
-						{tag_remove hidden}
-						{inactive off}
-						{impregnability disabled}
-						{discovered on}
-					}
-					{"delay" {time 0.2}}
-					("ea_own_to_enemy")
-					{"delay" {time 0.4}}
-					{"actor_state"
-						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
-						{control AI}
-						{ai_move {mode enable}}
-						{weapon_prepare on}
-						{fire_mode open}
-						{move_mode free}
-						{movement {speed normal} {kind normal} {type normal}}
-						{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}
-					}
-					{"set_i" {var "transport_ea_step$"} {op "="} {value 3}}
-					("transport_ea_issue_patrol")
-					{"entity_state"
-						{selector {tag ea_deploy}}
-						{tag_remove ea_deploy}
-					}
-					{"delay" {time 45}}
-					{"trigger" {name "enemy_attack/normal_transport_patrol"}}
-				}
-			}
-
+			
 			{"enemy_attack/normal_transport_nato"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5 & 6"}
@@ -1797,67 +1340,7 @@
 				}
 			}
 
-			{"enemy_attack/normal_transport_prc"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "enemy_attack_armed$"} {op "=="} {value 1}}
-						{"3.cmp_i" {var "enemy_attack_army$"} {op "=="} {value 4}}
-						{"4.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
-						{"5.cmp_i" {var "transport_ea_done$"} {op "=="} {value 0}}
-						{"6.entities" {selector {tag transport_enemy_prc_hull}} {count {op ">="} {value 1}}}
-					}
-				}
-				{actions
-					{"set_i" {var "transport_ea_done$"} {op "="} {value 1}}
-					{"delay" {time 45}}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag transport_enemy_prc}}}}}
-						{tag_add ea_deploy}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag transport_enemy_prc_hull}}}}}
-						{tag_add transport_ea_hull}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag transport_enemy_prc_pax}}}}}
-						{tag_add transport_ea_pax}
-					}
-					("transport_ea_place")
-					{"entity_state"
-						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
-						{tag_remove transport_enemy_tpl}
-						{tag_remove transport_enemy_prc}
-						{tag_remove hidden}
-						{inactive off}
-						{impregnability disabled}
-						{discovered on}
-					}
-					{"delay" {time 0.2}}
-					("ea_own_to_enemy")
-					{"delay" {time 0.4}}
-					{"actor_state"
-						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
-						{control AI}
-						{ai_move {mode enable}}
-						{weapon_prepare on}
-						{fire_mode open}
-						{move_mode free}
-						{movement {speed normal} {kind normal} {type normal}}
-						{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}
-					}
-					{"set_i" {var "transport_ea_step$"} {op "="} {value 3}}
-					("transport_ea_issue_patrol")
-					{"entity_state"
-						{selector {tag ea_deploy}}
-						{tag_remove ea_deploy}
-					}
-					{"delay" {time 45}}
-					{"trigger" {name "enemy_attack/normal_transport_patrol"}}
-				}
-			}
-
+			
 			; Route continues only while at least one tagged passenger remains within
 			; eight metres of the hull. Normal AI dismount under contact breaks that
 			; proximity and therefore stops all further scripted route orders.

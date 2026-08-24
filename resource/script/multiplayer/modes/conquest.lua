@@ -300,7 +300,8 @@ local function requestWaveArty(wave)
 	for i = 1, 5 do
 		if live[i] == 1 then slots[#slots + 1] = i end
 	end
-	local slot = (#slots > 0) and slots[math.random(#slots)] or 1
+	if #slots < 1 then return end
+	local slot = slots[math.random(#slots)]
 	BotApi.Scene:SetVar("arty_wave_slot", slot)
 	BotApi.Scene:SetVar("arty_prep_wave", w)
 	if printDebug then print("DCG arty_prep_wave requested", w, "slot", slot) end
@@ -395,6 +396,9 @@ function WaveUnitCounter()
 	if NoteStrategyPurchase then NoteStrategyPurchase() end
 	if NoteDropPlanePurchase and Context.SpawnInfo then
 		NoteDropPlanePurchase(Context.SpawnInfo.unit)
+	end
+	if NoteDronePurchase and Context.SpawnInfo then
+		NoteDronePurchase(Context.SpawnInfo.unit)
 	end
 end
 
@@ -646,11 +650,19 @@ local function ApplyWaveCadence()
 	if printDebug then print("DCG WaveUnit", WaveUnit.Min, WaveUnit.Max, "waveOffMin", SpawnCooldownTime.DCGWaveOffMin / 1000) end
 end
 
+local droneSquads = {}
+
+local function isSpawnedDroneUnit()
+	return IsDroneUnit and Context.SpawnInfo and IsDroneUnit(Context.SpawnInfo.unit)
+end
+
 function OnGameStart()
 	isAttackerOrDefender()
 	ApplyDifficultyScaling()
 	ApplyWaveCadence()
 	CheckIfChallengeMap()
+	droneSquads = {}
+	if ResetDronePurchaseState then ResetDronePurchaseState() end
 	local wroteMissionVars = setVarsInMissionScript()
 	if wroteMissionVars then
 		setDocVarsInNattorSpeak()
@@ -722,7 +734,7 @@ end
 -- NOTE: Returns true if squad tagged "_lua_mi" / "repairing" / alert tags.
 -- "_lua_alert" or "lua_alert" = squad abruptly runs into enemy force.
 function IsSquadInScript(squad)
-	if BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrendering") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrender_evacuating") then
+	if BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrendering") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrender_evacuating") or BotApi.Scene:IsSquadTagged(squad, "aio_pow_liberated") or BotApi.Scene:IsSquadTagged(squad, "aio_pow_withdraw") then
 		if printDebug then print("Print: SQUADinSCRIPT thus no action squad", squad, "Player#",BotApi.Instance.playerId, "Team", team) end
 		return true
 
@@ -742,7 +754,7 @@ end
 
 -- MI/repair only — alert must not block a forced spawn kick.
 local function IsSquadReserved(squad)
-	return BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrendering") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrender_evacuating")
+	return BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrendering") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrender_evacuating") or BotApi.Scene:IsSquadTagged(squad, "aio_pow_liberated") or BotApi.Scene:IsSquadTagged(squad, "aio_pow_withdraw")
 end
 
 	-- NOTE: Returns true if squad tagged "_lua_ignore" for general ignore.
@@ -820,6 +832,11 @@ local function IssueScatterOrder(squad, flags, logTag)
 end
 
 function CaptureFlag(squad)
+    if droneSquads[squad] then
+        BotApi.Commands:SeekAndDestroy(squad)
+        return
+    end
+
     local flags = {}
     for i, flag in pairs(BotApi.Scene.Flags) do
         table.insert(flags, {id = i, name = flag.name, priority = getDefaultFlagPriority(flag), owner = flag.occupant})
@@ -902,6 +919,13 @@ function OnGameSpawn(args)
         if printDebug then print("AI has started their attack!") end
         SelectAiSpawnStrategy()
     end
+
+	if isSpawnedDroneUnit() then
+		droneSquads[squad] = true
+		BotApi.Commands:SeekAndDestroy(squad)
+		SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
+		return
+	end
 
 	-- Always register the CaptureFlag order loop (scatter uses waypoints when present).
 	-- Waypoint maps used to get a single move order at spawn and never re-order,

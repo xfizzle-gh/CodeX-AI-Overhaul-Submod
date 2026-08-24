@@ -12,12 +12,12 @@
 	}
 	{ally
 		{health 1.50}
-		{accuracy 0.85}
+		{accuracy 0.95}
 		{grenade_timeout 0.50}
 	}
 	{player
 		{health 1.50}
-		{accuracy 0.85}
+		{accuracy 0.95}
 		{grenade_timeout 0.50}
 	}
 

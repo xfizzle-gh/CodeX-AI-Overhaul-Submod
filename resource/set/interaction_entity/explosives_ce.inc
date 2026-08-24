@@ -124,8 +124,7 @@
 
 ;=====================Conquest Barrages=================
 
-	; Vanilla smoke_barrage_* uses random_position 750. 150/1100 stacked into
-	; a pile; 4000 (~40m) makes one volley a screen across a flag approach.
+	; Vanilla smoke_barrage_* uses random_position 750. 2000 (~20m) screens a flag approach.
 	(define "ce_smoke_barrage"
 		{on spawn overload
 			{if not tagged "fired"
@@ -142,11 +141,11 @@
 	)
 
 	{"smoke_barrage_105_ger"
-		("ce_smoke_barrage" shell(artillery_single_105_sm_ger_dummy) postion(4000))
+		("ce_smoke_barrage" shell(artillery_single_105_sm_ger_dummy) postion(2000))
 	}
 
 	{"smoke_barrage_122_rus"
-		("ce_smoke_barrage" shell(artillery_single_122_sm_rus_dummy) postion(4000))
+		("ce_smoke_barrage" shell(artillery_single_122_sm_rus_dummy) postion(2000))
 	}
 
 	{"conquest_smoke_barrage_105_ger"
