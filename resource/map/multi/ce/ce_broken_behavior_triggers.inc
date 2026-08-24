@@ -10,15 +10,131 @@
 ; waypoint. Ally/support keep waypoint egress. No drop-sensor/fight/select restack.
 ; Evac {action move} is one-shot via aio_pow_move_issued. Later evac threads
 ; must not reissue movement. Dest routing stays unchanged.
-; Before each evac move: actor_state {move_mode free}{movement {speed assault}}
-; then action drop-orders + move (ce_lua bot_destroyer). No isolated movement
-; actor_state. AT disarm is unresolved.
+; At T+2: retry using-drop, then actor_state release (drop orders, move_mode
+; free, ai_move enable, speed fast) and one-shot dest move. Human-proven in
+; ce_functions resupply / ce_lua unhold. No kind fast. One recover at +3s
+; via aio_pow_recovery_used. No pulse. AT backpack still unresolved.
 ; Present arms surrender_evacuate after fx. Sibling evac was never kicked.
 ; 500s expire stays as a backstop. Walkers / presenting / held skip it.
 ; Do not restack fight/select/drop-sensor/control AI.
 ; ID assign uses evac switch/cmp_i on aio_pow_next_id$. Do not use entities+count in that switch.
 ; #127 already vetoes surrender while aio_cmd_linked (selector + apply + reacquire
 ; clears regroup_failed). Do not add a naive friendly-proximity rule.
+			(define "pow_using_drops"
+				{"inventory"
+					{selector
+						{source advanced}
+						{group
+							{select
+								{tag
+									{tag %tag}
+								}
+							}
+							{include
+								{tag
+									{tag aio_morale_surrendering}
+								}
+								{with_item
+									{type using}
+									{item "weapon"}
+								}
+							}
+							{exclude
+								{state
+									{state dead}
+								}
+								{state
+									{state inactive}
+								}
+								{state
+									{state user_control}
+								}
+								{tag
+									{tag player}
+								}
+							}
+						}
+					}
+					{action drop}
+				}
+				{"delay"
+					{time 0.05}
+				}
+				{"inventory"
+					{selector
+						{source advanced}
+						{group
+							{select
+								{tag
+									{tag %tag}
+								}
+							}
+							{include
+								{tag
+									{tag aio_morale_surrendering}
+								}
+								{with_item
+									{type using}
+									{item "weapon"}
+								}
+							}
+							{exclude
+								{state
+									{state dead}
+								}
+								{state
+									{state inactive}
+								}
+								{state
+									{state user_control}
+								}
+								{tag
+									{tag player}
+								}
+							}
+						}
+					}
+					{action drop}
+				}
+				{"delay"
+					{time 0.2}
+				}
+				{"inventory"
+					{selector
+						{source advanced}
+						{group
+							{select
+								{tag
+									{tag %tag}
+								}
+							}
+							{include
+								{tag
+									{tag aio_morale_surrendering}
+								}
+								{with_item
+									{type using}
+								}
+							}
+							{exclude
+								{state
+									{state dead}
+								}
+								{state
+									{state inactive}
+								}
+								{state
+									{state user_control}
+								}
+								{tag
+									{tag player}
+								}
+							}
+						}
+					}
+					{action drop}
+				}
+			)
 			(define "pow_stamp_orig"
 				{"entity_state"
 					{selector
@@ -2821,6 +2937,7 @@
 						}
 						{tag_add aio_morale_surrender_presenting}
 						{tag_remove aio_pow_move_issued}
+						{tag_remove aio_pow_recovery_used}
 					}
 					{"effect"
 						{selector
@@ -6641,6 +6758,7 @@
 					{"delay"
 						{time 2}
 					}
+					("pow_using_drops" tag(aio_morale_surrender_evacuating))
 					{"switch"
 							{"case"
 								{condition {type cmp_i} {var "enemy_spawnside$"} {op "<="} {value 1}}
@@ -6751,9 +6869,13 @@
 												}
 											}
 											}
+										{drop orders}
 										{move_mode free}
+										{ai_move
+											{mode enable}
+										}
 										{movement
-											{speed assault}
+											{speed fast}
 										}
 										}
 									{"action"
@@ -6992,9 +7114,13 @@
 												}
 											}
 											}
+										{drop orders}
 										{move_mode free}
+										{ai_move
+											{mode enable}
+										}
 										{movement
-											{speed assault}
+											{speed fast}
 										}
 										}
 									{"action"
@@ -7207,9 +7333,13 @@
 												}
 											}
 											}
+										{drop orders}
 										{move_mode free}
+										{ai_move
+											{mode enable}
+										}
 										{movement
-											{speed assault}
+											{speed fast}
 										}
 										}
 									{"action"
@@ -7448,9 +7578,13 @@
 												}
 											}
 											}
+										{drop orders}
 										{move_mode free}
+										{ai_move
+											{mode enable}
+										}
 										{movement
-											{speed assault}
+											{speed fast}
 										}
 										}
 									{"action"
@@ -7666,9 +7800,13 @@
 												}
 											}
 											}
+										{drop orders}
 										{move_mode free}
+										{ai_move
+											{mode enable}
+										}
 										{movement
-											{speed assault}
+											{speed fast}
 										}
 										}
 									{"action"
@@ -7907,9 +8045,13 @@
 												}
 											}
 											}
+										{drop orders}
 										{move_mode free}
+										{ai_move
+											{mode enable}
+										}
 										{movement
-											{speed assault}
+											{speed fast}
 										}
 										}
 									{"action"
@@ -8122,9 +8264,13 @@
 												}
 											}
 											}
+										{drop orders}
 										{move_mode free}
+										{ai_move
+											{mode enable}
+										}
 										{movement
-											{speed assault}
+											{speed fast}
 										}
 										}
 									{"action"
@@ -8363,9 +8509,13 @@
 												}
 											}
 											}
+										{drop orders}
 										{move_mode free}
+										{ai_move
+											{mode enable}
+										}
 										{movement
-											{speed assault}
+											{speed fast}
 										}
 										}
 									{"action"
@@ -8473,11 +8623,435 @@
 								}
 							}
 					}
-										{"delay"
+						{"delay"
+						{time 3}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/surrender_evac_recover"}
+					}
+					{"delay"
 						{time 2}
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/broken/surrender_evacuate"}
+					}
+				}
+			}
+			{"conquest_enhanced_mechanics/broken/surrender_evac_recover"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_surrender_evacuating}
+										}
+									}
+									{include
+										{tag
+											{tag aio_morale_surrendering}
+										}
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+										{state
+											{state user_control}
+										}
+										{tag
+											{tag player}
+										}
+										{tag
+											{tag prisoner_in_camp}
+										}
+										{tag
+											{tag prisoner_in_enemy_camp}
+										}
+										{tag
+											{tag aio_pow_recovery_used}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
+					("pow_using_drops" tag(aio_morale_surrender_evacuating))
+					{"actor_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_to_enemy_camp}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
+									}
+									{tag
+										{tag aio_pow_recovery_used}
+									}
+								}
+							}
+						}
+						{drop orders}
+						{move_mode free}
+						{ai_move
+							{mode enable}
+						}
+						{movement
+							{speed fast}
+						}
+					}
+					{"action"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_to_enemy_camp}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
+									}
+									{tag
+										{tag aio_pow_recovery_used}
+									}
+								}
+							}
+						}
+						{drop orders}
+						{action move}
+						{target
+							{source advanced}
+							{amount 1
+							}
+							{group
+								{select
+									{tag
+										{tag aio_pow_camp_enemy}
+									}
+								}
+							}
+						}
+					}
+					{"actor_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag aio_pow_recovery_used}
+									}
+								}
+							}
+						}
+						{drop orders}
+						{move_mode free}
+						{ai_move
+							{mode enable}
+						}
+						{movement
+							{speed fast}
+						}
+					}
+					{"action"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_to_camp}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag aio_pow_recovery_used}
+									}
+								}
+							}
+						}
+						{drop orders}
+						{action move}
+						{target
+							{source advanced}
+							{amount 1
+							}
+							{group
+								{select
+									{tag
+										{tag aio_pow_camp}
+									}
+								}
+							}
+						}
+					}
+					{"actor_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_to_a}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_recovery_used}
+									}
+								}
+							}
+						}
+						{drop orders}
+						{move_mode free}
+						{ai_move
+							{mode enable}
+						}
+						{movement
+							{speed fast}
+						}
+					}
+					{"action"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_to_a}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_recovery_used}
+									}
+								}
+							}
+						}
+						{drop orders}
+						{action move}
+						{waypoint "attack_support_entry_a"}
+					}
+					{"actor_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_to_b}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_recovery_used}
+									}
+								}
+							}
+						}
+						{drop orders}
+						{move_mode free}
+						{ai_move
+							{mode enable}
+						}
+						{movement
+							{speed fast}
+						}
+					}
+					{"action"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_to_b}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_pow_recovery_used}
+									}
+								}
+							}
+						}
+						{drop orders}
+						{action move}
+						{waypoint "attack_support_entry_b"}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
+									}
+									{tag
+										{tag aio_pow_recovery_used}
+									}
+								}
+							}
+						}
+						{tag_add aio_pow_recovery_used}
 					}
 				}
 			}

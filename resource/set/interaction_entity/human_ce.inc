@@ -801,6 +801,7 @@
 		{tags remove "aio_morale_broken"}
 		{tags remove "aio_morale_regrouping"}
 		{tags remove "aio_pow_move_issued"}
+		{tags remove "aio_pow_recovery_used"}
 		{call "aio_morale_refresh_icons"}
 		{delay 500
 			{if tagged "aio_morale_surrendering"
