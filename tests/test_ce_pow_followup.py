@@ -79,7 +79,8 @@ class CePowFollowupTests(unittest.TestCase):
         self.assertNotIn("aio_pow_recovery_used", human)
         self.assertIn("{time 2}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
         self.assertNotIn("{time 3}", evac)
-        self.assertIn('("pow_using_drops" tag(aio_morale_surrender_evacuating))', evac.split("{action move}", 1)[0])
+        self.assertNotIn("pow_using_drops", evac)
+        self.assertNotIn("pow_using_drops", beh)
         self.assertNotIn("{speed assault}", evac)
         self.assertNotIn("{kind fast}", evac)
 
@@ -127,7 +128,7 @@ class CePowFollowupTests(unittest.TestCase):
             self.assertIn("{mode enable}", actor)
             self.assertIn("{drop orders}", actor)
             self.assertNotIn("{kind fast}", actor)
-            self.assertIn("{drop orders}", block)
+            self.assertNotIn("{drop orders}", block)
             for key in pop_keys:
                 token = "{tag %s}" % key
                 if token in selector:

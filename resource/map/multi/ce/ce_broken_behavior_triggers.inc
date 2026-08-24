@@ -10,131 +10,16 @@
 ; waypoint. Ally/support keep waypoint egress. No drop-sensor/fight/select restack.
 ; Evac {action move} is one-shot via aio_pow_move_issued. Later evac threads
 ; must not reissue movement. Dest routing stays unchanged.
-; At T+2: retry using-drop, then actor_state release (drop orders, move_mode
-; free, ai_move enable, speed fast) and one-shot dest move. Human-proven in
-; ce_functions resupply / ce_lua unhold. No kind fast. No recover pulse.
-; AT backpack still unresolved.
+; At T+2: actor_state release (drop orders, move_mode free, ai_move enable,
+; speed fast) then the #140 dest {action move} and immediate move_issued stamp.
+; Human-proven in ce_functions resupply / ce_lua unhold. No kind fast.
+; No second using-drop. No recover pulse. AT backpack still unresolved.
 ; Present arms surrender_evacuate after fx. Sibling evac was never kicked.
 ; 500s expire stays as a backstop. Walkers / presenting / held skip it.
 ; Do not restack fight/select/drop-sensor/control AI.
 ; ID assign uses evac switch/cmp_i on aio_pow_next_id$. Do not use entities+count in that switch.
 ; #127 already vetoes surrender while aio_cmd_linked (selector + apply + reacquire
 ; clears regroup_failed). Do not add a naive friendly-proximity rule.
-			(define "pow_using_drops"
-				{"inventory"
-					{selector
-						{source advanced}
-						{group
-							{select
-								{tag
-									{tag %tag}
-								}
-							}
-							{include
-								{tag
-									{tag aio_morale_surrendering}
-								}
-								{with_item
-									{type using}
-									{item "weapon"}
-								}
-							}
-							{exclude
-								{state
-									{state dead}
-								}
-								{state
-									{state inactive}
-								}
-								{state
-									{state user_control}
-								}
-								{tag
-									{tag player}
-								}
-							}
-						}
-					}
-					{action drop}
-				}
-				{"delay"
-					{time 0.05}
-				}
-				{"inventory"
-					{selector
-						{source advanced}
-						{group
-							{select
-								{tag
-									{tag %tag}
-								}
-							}
-							{include
-								{tag
-									{tag aio_morale_surrendering}
-								}
-								{with_item
-									{type using}
-									{item "weapon"}
-								}
-							}
-							{exclude
-								{state
-									{state dead}
-								}
-								{state
-									{state inactive}
-								}
-								{state
-									{state user_control}
-								}
-								{tag
-									{tag player}
-								}
-							}
-						}
-					}
-					{action drop}
-				}
-				{"delay"
-					{time 0.2}
-				}
-				{"inventory"
-					{selector
-						{source advanced}
-						{group
-							{select
-								{tag
-									{tag %tag}
-								}
-							}
-							{include
-								{tag
-									{tag aio_morale_surrendering}
-								}
-								{with_item
-									{type using}
-								}
-							}
-							{exclude
-								{state
-									{state dead}
-								}
-								{state
-									{state inactive}
-								}
-								{state
-									{state user_control}
-								}
-								{tag
-									{tag player}
-								}
-							}
-						}
-					}
-					{action drop}
-				}
-			)
 			(define "pow_stamp_orig"
 				{"entity_state"
 					{selector
@@ -6757,7 +6642,6 @@
 					{"delay"
 						{time 2}
 					}
-					("pow_using_drops" tag(aio_morale_surrender_evacuating))
 					{"switch"
 							{"case"
 								{condition {type cmp_i} {var "enemy_spawnside$"} {op "<="} {value 1}}
@@ -6916,7 +6800,6 @@
 												}
 											}
 											}
-											{drop orders}
 											{action move}
 											{target
 											{source advanced}
@@ -7167,7 +7050,6 @@
 												}
 											}
 											}
-											{drop orders}
 											{action move}
 											{waypoint "attack_support_entry_a"}
 										}
@@ -7380,7 +7262,6 @@
 												}
 											}
 											}
-											{drop orders}
 											{action move}
 											{target
 											{source advanced}
@@ -7631,7 +7512,6 @@
 												}
 											}
 											}
-											{drop orders}
 											{action move}
 											{waypoint "attack_support_entry_b"}
 										}
@@ -7847,7 +7727,6 @@
 												}
 											}
 											}
-											{drop orders}
 											{action move}
 											{target
 											{source advanced}
@@ -8098,7 +7977,6 @@
 												}
 											}
 											}
-											{drop orders}
 											{action move}
 											{waypoint "attack_support_entry_b"}
 										}
@@ -8311,7 +8189,6 @@
 												}
 											}
 											}
-											{drop orders}
 											{action move}
 											{target
 											{source advanced}
@@ -8562,7 +8439,6 @@
 												}
 											}
 											}
-											{drop orders}
 											{action move}
 											{waypoint "attack_support_entry_a"}
 										}
