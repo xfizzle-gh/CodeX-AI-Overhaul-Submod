@@ -65,15 +65,23 @@ class CePowFollowupTests(unittest.TestCase):
     def test_evac_action_move_is_oneshot(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
         evac = beh.split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split(
-            '\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_evac_recover"', 1
+            '\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_arrive_a"', 1
         )[0]
         present = beh.split("broken/surrender_present", 1)[1].split(
             '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
         )[0]
         lib = LIB.read_text(encoding="utf-8")
         human = HUMAN.read_text(encoding="utf-8")
+        self.assertNotIn("surrender_evac_recover", evac)
+        self.assertNotIn("aio_pow_recovery_used", evac)
+        self.assertNotIn("aio_pow_recovery_used", present)
+        self.assertNotIn("aio_pow_recovery_used", lib)
+        self.assertNotIn("aio_pow_recovery_used", human)
         self.assertIn("{time 2}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
-        self.assertNotIn("{time 3}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
+        self.assertNotIn("{time 3}", evac)
+        self.assertIn('("pow_using_drops" tag(aio_morale_surrender_evacuating))', evac.split("{action move}", 1)[0])
+        self.assertNotIn("{speed assault}", evac)
+        self.assertNotIn("{kind fast}", evac)
 
         def _close(src: str, open_idx: int) -> int:
             depth = 0
@@ -135,38 +143,23 @@ class CePowFollowupTests(unittest.TestCase):
                     self.assertIn(token, stamp)
             self.assertFalse(all(("{tag %s}" % tag) in stamp for tag in dest_tags))
         self.assertEqual(moves, evac.count("{action move}"))
-        self.assertGreaterEqual(moves, 4)
+        self.assertEqual(moves, 8)
         self.assertEqual(evac.count("{tag_add aio_pow_move_issued}"), moves)
+        self.assertEqual(evac.count('{"actor_state"'), moves)
         self.assertNotIn("{time 5}", evac)
         self.assertNotIn("{time 10}", evac)
-        self.assertIn("surrender_evac_recover", evac.rsplit("{action move}", 1)[1])
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split("{on ", 1)[0]
         self.assertIn('{tags remove "aio_pow_move_issued"}', apply)
-        self.assertIn('{tags remove "aio_pow_recovery_used"}', apply)
+        self.assertNotIn("aio_pow_recovery_used", apply)
         self.assertIn("{tag_remove aio_pow_move_issued}", present)
-        self.assertIn("{tag_remove aio_pow_recovery_used}", present)
         self.assertIn("{tag_remove aio_pow_move_issued}", lib)
-        self.assertIn("{tag_remove aio_pow_recovery_used}", lib)
 
-    def test_evac_recovery_is_oneshot(self) -> None:
+    def test_evac_has_no_recovery(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
-        rec = beh.split(
-            '\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_evac_recover"', 1
-        )[1].split("broken/surrender_arrive_a", 1)[0]
-        self.assertIn("aio_pow_recovery_used", rec.split("{actions", 1)[0])
-        self.assertIn("{tag_add aio_pow_recovery_used}", rec)
-        self.assertNotIn("surrender_evac_recover", rec.split("{actions", 1)[1])
-        self.assertIn("{speed fast}", rec)
-        self.assertIn("{move_mode free}", rec)
-        self.assertIn("{mode enable}", rec)
-        self.assertIn("{drop orders}", rec)
-        self.assertIn('("pow_using_drops" tag(aio_morale_surrender_evacuating))', rec)
-        self.assertIn('(define "pow_using_drops"', beh)
-        self.assertNotIn("rocketlauncher", rec)
-        self.assertIn("{tag aio_pow_camp}", rec)
-        self.assertIn("{tag aio_pow_camp_enemy}", rec)
-        self.assertIn('{waypoint "attack_support_entry_a"}', rec)
-        self.assertIn('{waypoint "attack_support_entry_b"}', rec)
+        self.assertNotIn("surrender_evac_recover", beh)
+        self.assertNotIn("aio_pow_recovery_used", beh)
+        self.assertNotIn("aio_pow_recovery_used", HUMAN.read_text(encoding="utf-8"))
+        self.assertNotIn("aio_pow_recovery_used", LIB.read_text(encoding="utf-8"))
 
     def test_using_drop_has_no_guessed_rocketlauncher(self) -> None:
         present = BEH.read_text(encoding="utf-8").split("broken/surrender_present", 1)[1].split(

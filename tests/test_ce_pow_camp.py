@@ -43,7 +43,7 @@ class CePowCampTests(unittest.TestCase):
 
     def test_evac_branches_once_on_live_camp(self) -> None:
         evac = BEH.read_text(encoding="utf-8").split('{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1)[1].split(
-            '\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_evac_recover"', 1
+            '\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_arrive_a"', 1
         )[0]
         self.assertNotIn("aio_pow_camp_ready$", evac)
         self.assertNotIn("tag_remove aio_morale_surrender_to_a", evac)
