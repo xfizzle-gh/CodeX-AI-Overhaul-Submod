@@ -57,7 +57,7 @@ def selector(select: str, include: list[str], exclude: list[str]) -> str:
 
 
 DEAD = [state("dead"), state("inactive")]
-CTRL = DEAD + [state("user_control"), tag("player")]
+CTRL = DEAD + [state("user_control")]
 HUMAN_BROKEN = [tag("aio_morale_broken"), prop_human()]
 
 
@@ -217,7 +217,7 @@ def see_actors(pad: str) -> str:
 	}
 	{distance
 		{mode near_than}
-		{meters 200}
+		{meters 25}
 	}
 	{detection located}
 	{tag

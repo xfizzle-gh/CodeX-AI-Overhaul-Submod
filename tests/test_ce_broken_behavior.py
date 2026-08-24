@@ -35,13 +35,21 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{state inactive}", hold)
         self.assertIn("aio_morale_owned", WAVES.read_text(encoding="utf-8"))
 
-    def test_player_excluded_from_broken_escape(self) -> None:
-        text = BEH.read_text(encoding="utf-8") + MACHINE.read_text(encoding="utf-8")
-        self.assertIn("{state user_control}", text)
-        self.assertIn("{tag player}", MACHINE.read_text(encoding="utf-8").split("escalate_broken", 1)[1])
-        escape = BEH.read_text(encoding="utf-8").split("broken/escape", 1)[1]
+    def test_direct_control_excluded_from_broken_escape(self) -> None:
+        machine = MACHINE.read_text(encoding="utf-8")
+        broken = machine.split("escalate_broken", 1)[1].split("start_recover", 1)[0]
+        self.assertIn("{state user_control}", broken)
+        self.assertNotIn("{tag player}", broken)
+        beh = BEH.read_text(encoding="utf-8")
+        acquire = beh.split("broken/acquire", 1)[1].split("broken/escape", 1)[0]
+        escape = beh.split("broken/escape", 1)[1]
+        self.assertIn("{state user_control}", acquire)
         self.assertIn("{state user_control}", escape)
-        self.assertIn("{tag player}", escape)
+        self.assertNotIn("{tag player}", acquire)
+        self.assertNotIn("{tag player}", escape)
+        self.assertEqual(acquire.count('{"actor_state"'), 1)
+        actor = acquire.split('{"actor_state"', 1)[1]
+        self.assertIn("{tag aio_morale_retreat_issued}", actor.split("{exclude", 1)[1])
 
     def test_pow_shipping_path_is_gone(self) -> None:
         beh = BEH.read_text(encoding="utf-8")
@@ -106,6 +114,8 @@ class CeBrokenBehaviorTests(unittest.TestCase):
         self.assertIn("{tag spawn_a}", arrive)
         self.assertIn("{tag spawn_b}", arrive)
         self.assertIn("{effect aio_morale_rally}", arrive)
+        self.assertIn("{meters 25}", arrive)
+        self.assertNotIn("{meters 200}", beh)
         human = HUMAN.read_text(encoding="utf-8")
         rally = human.split('{on "aio_morale_rally"', 1)[1].split('{on "', 1)[0]
         self.assertIn('{tags remove "aio_morale_broken"}', rally)

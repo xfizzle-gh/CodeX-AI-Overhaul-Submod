@@ -486,9 +486,6 @@
 											{state user_control}
 										}
 										{tag
-											{tag player}
-										}
-										{tag
 											{tag aio_morale_just_panic}
 										}
 										{tag
@@ -513,9 +510,6 @@
 									{exclude
 										{state
 											{state user_control}
-										}
-										{tag
-											{tag player}
 										}
 										{tag
 											{tag aio_morale_just_panic}
@@ -553,9 +547,6 @@
 								{exclude
 									{state
 										{state user_control}
-									}
-									{tag
-										{tag player}
 									}
 									{tag
 										{tag aio_morale_just_panic}

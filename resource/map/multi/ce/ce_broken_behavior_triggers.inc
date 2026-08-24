@@ -36,9 +36,6 @@
 										{state
 											{state user_control}
 										}
-										{tag
-											{tag player}
-										}
 									}
 								}
 							}
@@ -69,9 +66,6 @@
 									}
 									{state
 										{state user_control}
-									}
-									{tag
-										{tag player}
 									}
 									{tag
 										{tag aio_morale_owned}
@@ -119,52 +113,10 @@
 									{state
 										{state user_control}
 									}
-									{tag
-										{tag player}
-									}
 								}
 							}
 						}
 						{tag_add aio_morale_owned}
-					}
-										{"actor_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_morale_owned}
-									}
-								}
-								{include
-									{tag
-										{tag aio_morale_broken}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{state
-										{state user_control}
-									}
-								}
-							}
-						}
-						{move_mode free}
-						{ai_move
-							{mode enable}
-						}
-						{movement
-							{speed fast}
-						}
-						{ai
-							{advance_ratio "0.1"}
-							{retreat_ratio 4}
-						}
 					}
 					{"set_i"
 						{var "ce_morale_diag_broken$"}
@@ -215,9 +167,6 @@
 										{state
 											{state user_control}
 										}
-										{tag
-											{tag player}
-										}
 									}
 								}
 							}
@@ -251,9 +200,6 @@
 									}
 									{state
 										{state user_control}
-									}
-									{tag
-										{tag player}
 									}
 									{tag
 										{tag aio_morale_retreat_issued}
@@ -302,9 +248,6 @@
 										{state user_control}
 									}
 									{tag
-										{tag player}
-									}
-									{tag
 										{tag aio_morale_retreat_issued}
 									}
 								}
@@ -338,9 +281,6 @@
 									}
 									{state
 										{state user_control}
-									}
-									{tag
-										{tag player}
 									}
 									{tag
 										{tag aio_morale_retreat_issued}
@@ -396,9 +336,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -448,9 +385,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -513,9 +447,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -565,9 +496,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -630,9 +558,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -682,9 +607,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -747,9 +669,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -799,9 +718,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -864,9 +780,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -916,9 +829,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -981,9 +891,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -1033,9 +940,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -1098,9 +1002,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -1150,9 +1051,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -1215,9 +1113,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -1267,9 +1162,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -1332,9 +1224,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -1384,9 +1273,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -1449,9 +1335,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -1501,9 +1384,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -1566,9 +1446,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -1618,9 +1495,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -1683,9 +1557,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -1735,9 +1606,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -1800,9 +1668,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -1852,9 +1717,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -1917,9 +1779,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -1969,9 +1828,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -2034,9 +1890,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -2086,9 +1939,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -2151,9 +2001,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -2203,9 +2050,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -2267,9 +2111,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -2319,9 +2160,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -2389,9 +2227,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -2441,9 +2276,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -2506,9 +2338,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -2558,9 +2387,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -2623,9 +2449,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -2675,9 +2498,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -2740,9 +2560,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -2792,9 +2609,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -2857,9 +2671,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -2909,9 +2720,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -2974,9 +2782,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -3026,9 +2831,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -3091,9 +2893,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -3143,9 +2942,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -3208,9 +3004,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -3260,9 +3053,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -3325,9 +3115,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -3377,9 +3164,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -3442,9 +3226,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -3494,9 +3275,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -3559,9 +3337,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -3611,9 +3386,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -3676,9 +3448,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -3728,9 +3497,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -3793,9 +3559,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -3845,9 +3608,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -3910,9 +3670,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -3962,9 +3719,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -4027,9 +3781,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -4079,9 +3830,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -4144,9 +3892,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -4196,9 +3941,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -4260,9 +4002,6 @@
 													{state
 														{state user_control}
 													}
-													{tag
-														{tag player}
-													}
 												}
 											}
 										}
@@ -4312,9 +4051,6 @@
 													}
 													{state
 														{state user_control}
-													}
-													{tag
-														{tag player}
 													}
 													{relation
 														{relation ally}
@@ -4425,9 +4161,6 @@
 										{state
 											{state user_control}
 										}
-										{tag
-											{tag player}
-										}
 									}
 								}
 							}
@@ -4443,7 +4176,7 @@
 							}
 							{distance
 								{mode near_than}
-								{meters 200}
+								{meters 25}
 							}
 							{detection located}
 							{tag
@@ -5939,9 +5672,6 @@
 										{state
 											{state user_control}
 										}
-										{tag
-											{tag player}
-										}
 									}
 								}
 							}
@@ -5957,7 +5687,7 @@
 							}
 							{distance
 								{mode near_than}
-								{meters 200}
+								{meters 25}
 							}
 							{detection located}
 							{tag
