@@ -10,11 +10,12 @@
 ; waypoint. Ally/support keep waypoint egress. No drop-sensor/fight/select restack.
 ; Evac {action move} is one-shot via aio_pow_move_issued. Later evac threads
 ; must not reissue movement. Dest routing stays unchanged.
-; At T+2: #140 dest {action move} and immediate move_issued stamp only.
-; Do not prefix actor_state. Isolated movement actor_state cancelled the
-; following {action move}, then the stamp locked them standing (14940e6b
-; and 8186b141 native). No kind fast. No second using-drop. No recover pulse.
-; AT backpack still unresolved.
+; At T+2: one human fast-release actor_state (drop orders, move_mode
+; free, ai_move enable, speed fast), then the send_auto_resupply 0.25s
+; gap, then #140 dest {action move} and immediate move_issued stamp.
+; Do not put actor_state immediately before {action move} (14940e6b /
+; 8186b141 native lock). No kind fast. No second using-drop. No recover
+; pulse. AT backpack still unresolved.
 ; Present arms surrender_evacuate after fx. Sibling evac was never kicked.
 ; 500s expire stays as a backstop. Walkers / presenting / held skip it.
 ; Do not restack fight/select/drop-sensor/control AI.
@@ -6642,6 +6643,60 @@
 					}
 					{"delay"
 						{time 2}
+					}
+					{"actor_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_surrender_evacuating}
+									}
+								}
+								{include
+									{tag
+										{tag aio_morale_surrendering}
+									}
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{state
+										{state user_control}
+									}
+									{tag
+										{tag player}
+									}
+									{tag
+										{tag prisoner_in_camp}
+									}
+									{tag
+										{tag prisoner_in_enemy_camp}
+									}
+									{tag
+										{tag aio_pow_move_issued}
+									}
+								}
+							}
+						}
+						{drop orders}
+						{move_mode free}
+						{ai_move
+							{mode enable}
+						}
+						{movement
+							{speed fast}
+						}
+					}
+					{"delay"
+						{time 0.25}
 					}
 					{"switch"
 							{"case"

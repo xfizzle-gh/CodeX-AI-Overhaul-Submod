@@ -78,6 +78,7 @@ class CePowFollowupTests(unittest.TestCase):
         self.assertNotIn("aio_pow_recovery_used", lib)
         self.assertNotIn("aio_pow_recovery_used", human)
         self.assertIn("{time 2}", evac.split("{actions", 1)[1].split("{action move}", 1)[0])
+        self.assertIn("{time 0.25}", evac.split('{"actor_state"', 1)[1].split("{action move}", 1)[0])
         self.assertNotIn("{time 3}", evac)
         self.assertNotIn("pow_using_drops", evac)
         self.assertNotIn("pow_using_drops", beh)
@@ -132,9 +133,20 @@ class CePowFollowupTests(unittest.TestCase):
         self.assertEqual(moves, evac.count("{action move}"))
         self.assertEqual(moves, 8)
         self.assertEqual(evac.count("{tag_add aio_pow_move_issued}"), moves)
-        self.assertEqual(evac.count('{"actor_state"'), 0)
-        self.assertNotIn("{drop orders}", evac)
-        self.assertNotIn("{speed fast}", evac)
+        self.assertEqual(evac.count('{"actor_state"'), 1)
+        ast = evac.find('{"actor_state"')
+        ast_end = _close(evac, ast)
+        actor = evac[ast : ast_end + 1]
+        self.assertIn("{drop orders}", actor)
+        self.assertIn("{move_mode free}", actor)
+        self.assertIn("{mode enable}", actor)
+        self.assertIn("{speed fast}", actor)
+        self.assertNotIn("{kind fast}", actor)
+        self.assertIn("{tag aio_pow_move_issued}", actor)
+        between = evac[ast_end + 1 : evac.find("{action move}", ast_end)]
+        self.assertIn("{time 0.25}", between)
+        self.assertNotEqual(evac[ast_end + 1 : evac.find('{"action"', ast_end)].strip(), "")
+        self.assertNotIn("{drop orders}", evac[evac.find("{action move}") :])
         self.assertNotIn("{time 5}", evac)
         self.assertNotIn("{time 10}", evac)
         apply = human.split('{on "aio_morale_surrender_apply"', 1)[1].split("{on ", 1)[0]
@@ -149,6 +161,33 @@ class CePowFollowupTests(unittest.TestCase):
         self.assertNotIn("aio_pow_recovery_used", beh)
         self.assertNotIn("aio_pow_recovery_used", HUMAN.read_text(encoding="utf-8"))
         self.assertNotIn("aio_pow_recovery_used", LIB.read_text(encoding="utf-8"))
+
+    def test_evac_fast_release_uses_human_resupply_gap(self) -> None:
+        lua = (ROOT / "resource/map/multi/ce/ai_logic/ce_lua_triggers.inc").read_text(encoding="utf-8")
+        resupply = (ROOT / "resource/map/multi/ce/ce_functions.inc").read_text(encoding="utf-8").split(
+            '{"send_auto_resupply"', 1
+        )[1].split(";============", 1)[0]
+        unhold = lua.split('{"for selector" unhold_iq}', 1)[1]
+        human_state = unhold.split("{prop human}", 1)[1]
+        human_state = human_state[human_state.find("{drop orders}") :]
+        human_state = human_state[: human_state.find('{"default"}')]
+        self.assertIn("{drop orders}", human_state)
+        self.assertIn("{move_mode free}", human_state)
+        self.assertIn("{mode enable}", human_state)
+        self.assertNotIn("{speed fast}", human_state.split("{action move}", 1)[0] if "{action move}" in human_state else human_state)
+        gap = resupply.split('{"actor_state"', 1)[1].split("{action move}", 1)[0]
+        self.assertIn("{speed fast}", gap)
+        self.assertIn("{time 0.25}", gap)
+        self.assertIn("{type human}", resupply.split('{"actor_state"', 1)[1].split("{action move}", 1)[0])
+        evac = BEH.read_text(encoding="utf-8").split(
+            '{"conquest_enhanced_mechanics/broken/surrender_evacuate"', 1
+        )[1].split('\n\t\t\t{"conquest_enhanced_mechanics/broken/surrender_arrive_a"', 1)[0]
+        release = evac.split("{actions", 1)[1].split("{action move}", 1)[0]
+        self.assertLess(release.find("{time 2}"), release.find('{"actor_state"'))
+        self.assertLess(release.find('{"actor_state"'), release.find("{time 0.25}"))
+        self.assertGreater(release.find("{time 0.25}"), release.rfind("{speed fast}"))
+        self.assertNotIn("{kind fast}", evac)
+        self.assertNotIn("{speed assault}", evac)
 
     def test_using_drop_has_no_guessed_rocketlauncher(self) -> None:
         present = BEH.read_text(encoding="utf-8").split("broken/surrender_present", 1)[1].split(
