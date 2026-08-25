@@ -1,5 +1,8 @@
 ; PR D/E: command heartbeat + resistance. see_actors {enemy} is FE/Old Boy grammar for the other party.
 ; Linked = commander near_than 50. In-range = near_than 80. Weak/Lost derived from missing those pulses.
+; Pulses stamp aio_cmd_seen_now (50 m) / aio_cmd_in_range_now (80 m). Recompute has three
+; exclusive branches on those _now tags only. Retained seen/in_range/linked/weak are outputs.
+; seen_now = linked. in_range_now without seen_now = weak. neither + had_command = pending then lost.
 ; Commanders/independent never expire. No movement seizure.
 			{"conquest_enhanced_mechanics/command/self_link"
 				{condition
@@ -299,163 +302,12 @@
 							{detection located}
 							{tag
 								{"tag pair"}
-								{"for selector" aio_cmd_seen}
+								{"for selector" aio_cmd_seen_now}
 							}
 						}
 					}
 				}
 				{actions
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_cmd_seen}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-								}
-							}
-						}
-						{tag_add aio_cmd_linked}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_cmd_seen}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-								}
-							}
-						}
-						{tag_add aio_cmd_had_command}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_cmd_seen}
-									}
-								}
-								{include
-									{tag
-										{tag aio_cmd_lost}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-								}
-							}
-						}
-						{tag_add aio_icon_refresh}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_cmd_seen}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-								}
-							}
-						}
-						{tag_remove aio_cmd_weak}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_cmd_seen}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-								}
-							}
-						}
-						{tag_remove aio_cmd_lost}
-					}
-					{"effect"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_icon_refresh}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-								}
-							}
-						}
-						{effect aio_morale_refresh_icons}
-					}
-					{"entity_state"
-						{selector
-							{tag aio_icon_refresh}
-						}
-						{tag_remove aio_icon_refresh}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_cmd_seen}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-								}
-							}
-						}
-						{tag_remove aio_cmd_miss}
-					}
-					{"set_i"
-						{var "ce_morale_diag_cmd_link$"}
-						{op "="}
-						{value 1}
-					}
 					{"delay"
 						{time 1}
 					}
@@ -542,7 +394,7 @@
 							{detection located}
 							{tag
 								{"tag pair"}
-								{"for selector" aio_cmd_in_range}
+								{"for selector" aio_cmd_in_range_now}
 							}
 						}
 					}
@@ -576,12 +428,518 @@
 							{group
 								{select
 									{tag
-										{tag aio_cmd_miss}
+										{tag aio_cmd_seen_now}
 									}
 								}
 								{exclude
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_add aio_cmd_seen}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
 									{tag
-										{tag aio_cmd_seen}
+										{tag aio_cmd_seen_now}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_add aio_cmd_linked}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_add aio_cmd_had_command}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_add aio_cmd_in_range}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+								{include
+									{tag
+										{tag aio_cmd_lost}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{tag_add aio_icon_refresh}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_remove aio_cmd_weak}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_remove aio_cmd_loss_pending}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_remove aio_cmd_lost}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_in_range_now}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+							}
+						}
+						{tag_add aio_cmd_in_range}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_in_range_now}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+							}
+						}
+						{tag_add aio_cmd_had_command}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_in_range_now}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+							}
+						}
+						{tag_add aio_cmd_weak}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_in_range_now}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+							}
+						}
+						{tag_remove aio_cmd_linked}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_in_range_now}
+									}
+								}
+								{include
+									{tag
+										{tag aio_cmd_lost}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+							}
+						}
+						{tag_add aio_icon_refresh}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_in_range_now}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+							}
+						}
+						{tag_remove aio_cmd_loss_pending}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_in_range_now}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+								}
+							}
+						}
+						{tag_remove aio_cmd_lost}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_had_command}
+									}
+								}
+								{include
+									{tag
+										{tag aio_cmd_loss_pending}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+									{tag
+										{tag aio_cmd_in_range_now}
+									}
+									{tag
+										{tag aio_cmd_junior}
+									}
+									{tag
+										{tag aio_cmd_primary}
+									}
+									{tag
+										{tag aio_cmd_senior}
+									}
+									{tag
+										{tag aio_cmd_independent}
+									}
+									{tag
+										{tag aio_cmd_lost}
+									}
+								}
+							}
+						}
+						{tag_add aio_icon_refresh}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_had_command}
+									}
+								}
+								{include
+									{tag
+										{tag aio_cmd_loss_pending}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+									{tag
+										{tag aio_cmd_in_range_now}
+									}
+									{tag
+										{tag aio_cmd_junior}
+									}
+									{tag
+										{tag aio_cmd_primary}
+									}
+									{tag
+										{tag aio_cmd_senior}
+									}
+									{tag
+										{tag aio_cmd_independent}
+									}
+								}
+							}
+						}
+						{tag_add aio_cmd_lost}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_lost}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+								}
+							}
+						}
+						{tag_remove aio_cmd_loss_pending}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_had_command}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+									{tag
+										{tag aio_cmd_in_range_now}
+									}
+									{tag
+										{tag aio_cmd_loss_pending}
+									}
+									{tag
+										{tag aio_cmd_lost}
+									}
+									{tag
+										{tag aio_cmd_junior}
+									}
+									{tag
+										{tag aio_cmd_primary}
+									}
+									{tag
+										{tag aio_cmd_senior}
+									}
+									{tag
+										{tag aio_cmd_independent}
+									}
+								}
+							}
+						}
+						{tag_add aio_cmd_loss_pending}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_had_command}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+									{tag
+										{tag aio_cmd_in_range_now}
+									}
+									{tag
+										{tag aio_cmd_junior}
+									}
+									{tag
+										{tag aio_cmd_primary}
+									}
+									{tag
+										{tag aio_cmd_senior}
+									}
+									{tag
+										{tag aio_cmd_independent}
+									}
+								}
+							}
+						}
+						{tag_remove aio_cmd_weak}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_cmd_had_command}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_cmd_seen_now}
+									}
+									{tag
+										{tag aio_cmd_in_range_now}
 									}
 									{tag
 										{tag aio_cmd_junior}
@@ -606,12 +964,7 @@
 							{group
 								{select
 									{tag
-										{tag aio_cmd_linked}
-									}
-								}
-								{include
-									{prop
-										{prop human}
+										{tag aio_cmd_seen}
 									}
 								}
 								{exclude
@@ -619,35 +972,18 @@
 										{state dead}
 									}
 									{tag
-										{tag aio_cmd_seen}
-									}
-									{tag
-										{tag aio_cmd_junior}
-									}
-									{tag
-										{tag aio_cmd_primary}
-									}
-									{tag
-										{tag aio_cmd_senior}
-									}
-									{tag
-										{tag aio_cmd_independent}
+										{tag aio_cmd_seen_now}
 									}
 								}
 							}
 						}
-						{tag_add aio_cmd_miss}
+						{tag_remove aio_cmd_seen}
 					}
 					{"entity_state"
 						{selector
 							{source advanced}
 							{group
 								{select
-									{prop
-										{prop human}
-									}
-								}
-								{include
 									{tag
 										{tag aio_cmd_in_range}
 									}
@@ -657,208 +993,15 @@
 										{state dead}
 									}
 									{tag
-										{tag aio_cmd_linked}
+										{tag aio_cmd_seen_now}
 									}
 									{tag
-										{tag aio_cmd_junior}
-									}
-									{tag
-										{tag aio_cmd_primary}
-									}
-									{tag
-										{tag aio_cmd_senior}
-									}
-									{tag
-										{tag aio_cmd_independent}
+										{tag aio_cmd_in_range_now}
 									}
 								}
 							}
 						}
-						{tag_add aio_cmd_weak}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_cmd_weak}
-									}
-								}
-								{include
-									{tag
-										{tag aio_cmd_lost}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-								}
-							}
-						}
-						{tag_add aio_icon_refresh}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_cmd_weak}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-								}
-							}
-						}
-						{tag_remove aio_cmd_lost}
-					}
-					{"effect"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_icon_refresh}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-								}
-							}
-						}
-						{effect aio_morale_refresh_icons}
-					}
-					{"entity_state"
-						{selector
-							{tag aio_icon_refresh}
-						}
-						{tag_remove aio_icon_refresh}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{prop
-										{prop human}
-									}
-								}
-								{include
-									{tag
-										{tag aio_cmd_had_command}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_cmd_in_range}
-									}
-									{tag
-										{tag aio_cmd_seen}
-									}
-									{tag
-										{tag aio_cmd_junior}
-									}
-									{tag
-										{tag aio_cmd_primary}
-									}
-									{tag
-										{tag aio_cmd_senior}
-									}
-									{tag
-										{tag aio_cmd_independent}
-									}
-									{tag
-										{tag aio_cmd_lost}
-									}
-								}
-							}
-						}
-						{tag_add aio_icon_refresh}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{prop
-										{prop human}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-									{tag
-										{tag aio_cmd_in_range}
-									}
-									{tag
-										{tag aio_cmd_seen}
-									}
-									{tag
-										{tag aio_cmd_junior}
-									}
-									{tag
-										{tag aio_cmd_primary}
-									}
-									{tag
-										{tag aio_cmd_senior}
-									}
-									{tag
-										{tag aio_cmd_independent}
-									}
-								}
-							}
-						}
-						{tag_add aio_cmd_lost}
-					}
-					{"effect"
-						{selector
-							{source advanced}
-							{group
-								{select
-									{tag
-										{tag aio_icon_refresh}
-									}
-								}
-								{exclude
-									{state
-										{state dead}
-									}
-									{state
-										{state inactive}
-									}
-								}
-							}
-						}
-						{effect aio_morale_refresh_icons}
-					}
-					{"entity_state"
-						{selector
-							{tag aio_icon_refresh}
-						}
-						{tag_remove aio_icon_refresh}
+						{tag_remove aio_cmd_in_range}
 					}
 					{"entity_state"
 						{selector
@@ -867,11 +1010,43 @@
 								{select
 									{tag
 										{tag aio_cmd_lost}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
 									}
 								}
 							}
 						}
 						{tag_remove aio_cmd_weak}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_icon_refresh}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_refresh_icons}
+					}
+					{"entity_state"
+						{selector
+							{tag aio_icon_refresh}
+						}
+						{tag_remove aio_icon_refresh}
 					}
 					{"if"
 						{condition
@@ -892,12 +1067,12 @@
 							{group
 								{select
 									{tag
-										{tag aio_cmd_seen}
+										{tag aio_cmd_seen_now}
 									}
 								}
 							}
 						}
-						{tag_remove aio_cmd_seen}
+						{tag_remove aio_cmd_seen_now}
 					}
 					{"entity_state"
 						{selector
@@ -905,12 +1080,12 @@
 							{group
 								{select
 									{tag
-										{tag aio_cmd_in_range}
+										{tag aio_cmd_in_range_now}
 									}
 								}
 							}
 						}
-						{tag_remove aio_cmd_in_range}
+						{tag_remove aio_cmd_in_range_now}
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/command/recompute"}
