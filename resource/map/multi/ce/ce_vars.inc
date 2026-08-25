@@ -72,10 +72,6 @@
 			{"ce_morale_diag_player_hit"}
 			{"ce_morale_diag_ai_human"}
 			{"ce_morale_diag_cmd_link"}
-			{"ce_morale_diag_pulse_near"}
-			{"ce_morale_diag_pulse_range"}
-			{"ce_morale_diag_seen_now"}
-			{"ce_morale_diag_in_range_now"}
 			{"ce_morale_diag_cmd_lost"}
 			{"ce_morale_diag_cmd_shock"}
 			{"ce_morale_diag_cmd_encourage"}
