@@ -798,45 +798,40 @@
 						{selector
 							{source advanced}
 							{group
-							{select
-								{prop
-									{prop human}
+								{select
+									{prop
+										{prop human}
+									}
 								}
-							}
-							{include
-								{tag
-									{tag aio_cmd_had_command}
-								}
-							}
-							{exclude
-								{state
-									{state dead}
-								}
-								{state
-									{state inactive}
-								}
-								{tag
-									{tag aio_cmd_in_range}
-								}
-								{tag
-									{tag aio_cmd_seen}
-								}
-								{tag
-									{tag aio_cmd_junior}
-								}
-								{tag
-									{tag aio_cmd_primary}
-								}
-								{tag
-									{tag aio_cmd_senior}
-								}
-								{tag
-									{tag aio_cmd_independent}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+									{tag
+										{tag aio_cmd_in_range}
+									}
+									{tag
+										{tag aio_cmd_seen}
+									}
+									{tag
+										{tag aio_cmd_junior}
+									}
+									{tag
+										{tag aio_cmd_primary}
+									}
+									{tag
+										{tag aio_cmd_senior}
+									}
+									{tag
+										{tag aio_cmd_independent}
+									}
 								}
 							}
 						}
-					}
-					{tag_add aio_cmd_lost}
+						{tag_add aio_cmd_lost}
 					}
 					{"effect"
 						{selector

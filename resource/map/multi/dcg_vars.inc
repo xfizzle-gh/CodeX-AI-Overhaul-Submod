@@ -49,6 +49,7 @@
 			{"support_announce"}
 			{"support_mission_roll_done"}
 			{"support_mission_enabled"}
+			{"disable_allied_support"}
 			{"attack_support_entry_rr"}
 			{"attack_support_flank_rr"}
 			{"attack_support_ifv_left"}

@@ -6,7 +6,7 @@
 
 -- ================================= Standard Settings =========================================
 	-- Prints more information in game.log for debugging purposes
-	printDebug = false
+	printDebug = true
 	printTempDebug = false
 
 	-- This enables testing mode for debugging, and is not advised for regular play. Make sure this is off unless you are specifically testing for something. 
@@ -77,6 +77,11 @@
 	}
 
 -- ================================= Advanced Settings =========================================
+	-- Allied support waves (friendly teammates only). 1 = on, 0 = off.
+	-- Set to 0 if you do not want scripted allied infantry/IFV support on Conquest missions.
+	-- Does not disable enemy scripted support. All coop players must match this value.
+	enableAlliedSupport = 1
+
 	-- Percentage chance (between 0 and 1) that the AI will spawn from the player's side randomly during battle
 	enableRearAttackMechanics = 1.0
 
@@ -118,26 +123,26 @@
 		-- Bot is defender
 		Defending = {
 			emplacement = {
-				defenseLevelOne = 2,
-				defenseLevelTwo = 3,
-				defenseLevelThree = 4
+				defenseLevelOne = 4,
+				defenseLevelTwo = 6,
+				defenseLevelThree = 8
 			},
 
 			infantry = {
-				x5_cloneClount = 0,
-				perFlag = 4,
-				max_ai_defender_at_flag = 2
+				x5_cloneClount = 1,
+				perFlag = 8,
+				max_ai_defender_at_flag = 4
 			},
 			challengeMaps = {
 				emplacement = {
-				defenseLevelOne = 3,
-				defenseLevelTwo = 5,
-				defenseLevelThree = 7
+				defenseLevelOne = 6,
+				defenseLevelTwo = 10,
+				defenseLevelThree = 14
 				},
 				infantry = {
-					x5_cloneClount = 1,
-					perFlag = 8,
-					max_ai_defender_at_flag = 4
+					x5_cloneClount = 4,
+					perFlag = 16,
+					max_ai_defender_at_flag = 8
 				},
 			},
 			difficultyModifier = {

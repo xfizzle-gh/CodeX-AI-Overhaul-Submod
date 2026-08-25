@@ -957,9 +957,10 @@
 			; attack_support_next_ok$ until the opening wave has been issued, otherwise its
 			; condition is already true here and it fires alongside init.
 			; support_mission_enabled$ is the per-mission 50% gate (see support_mission/roll).
+			; disable_allied_support$ is the player toggle (bot.conquest_configuration.lua). Default 0 = on.
 			{"attack_support/init"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7"}
 					{terms
 						{"1.cmp_i" {var "attack_support_armed$"} {op "=="} {value 0}}
 						{"2.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
@@ -967,6 +968,7 @@
 						{"4.cmp_i" {var "attack_support_use_mi$"} {op "=="} {value 1}}
 						{"5.cmp_i" {var "id_attack_support$"} {op ">"} {value 0}}
 						{"6.cmp_i" {var "support_mission_enabled$"} {op "=="} {value 1}}
+						{"7.cmp_i" {var "disable_allied_support$"} {op "=="} {value 0}}
 					}
 				}
 				{actions

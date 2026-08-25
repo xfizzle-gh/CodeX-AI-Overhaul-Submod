@@ -14,12 +14,6 @@ forceUnitCount = 0
 forceUnitCountMax = 0
 dropPlanesBought = 0
 DROP_PLANE_MATCH_CAP = 1
-dronePurchases = 0
-lastDronePurchaseAt = 0
-droneMatchStartAt = 0
--- Hard ceiling so 0.3 weight still cannot roll 3+ in a long match.
-DRONE_MATCH_CAP = 2
-DRONE_WAVE_GAP = 90
 botApiUnitsIndex = nil
 force_ai_direct_attack_logic = 0
 ai_attack_started = false
@@ -124,36 +118,6 @@ function NoteDropPlanePurchase(unit)
   if not IsDropPlaneUnit(unit) then return end
   dropPlanesBought = (dropPlanesBought or 0) + 1
   if printDebug then print("DCG drop plane purchased", unit, "count", dropPlanesBought) end
-end
-
-function IsDroneUnit(unit)
-  if type(unit) ~= "string" then return false end
-  local name = string.lower(unit)
-  return string.find(name, "fpv", 1, true)
-    or string.find(name, "wingloong", 1, true)
-    or string.find(name, "drone", 1, true)
-end
-
-function ResetDronePurchaseState()
-  dronePurchases = 0
-  lastDronePurchaseAt = 0
-  droneMatchStartAt = os.time()
-end
-
-function CanPurchaseDrone()
-  if (dronePurchases or 0) >= (DRONE_MATCH_CAP or 2) then return false end
-  local now = os.time()
-  if (lastDronePurchaseAt or 0) > 0 and (now - lastDronePurchaseAt) < (DRONE_WAVE_GAP or 90) then
-    return false
-  end
-  return true
-end
-
-function NoteDronePurchase(unit)
-  if not IsDroneUnit(unit) then return end
-  dronePurchases = (dronePurchases or 0) + 1
-  lastDronePurchaseAt = os.time()
-  if printDebug then print("DCG drone purchased", unit, "count", dronePurchases) end
 end
 
 function NoteStrategyPurchase()
@@ -441,9 +405,6 @@ function GetUnitPriority(t)
     end
   end
   if IsDropPlaneUnit(t.unit) and (dropPlanesBought or 0) >= (DROP_PLANE_MATCH_CAP or 1) then
-    return 0
-  end
-  if IsDroneUnit(t.unit) and not CanPurchaseDrone() then
     return 0
   end
   -- print("Unit ", t.unit, " has priority = ", basePriority * priorityMultiplier)

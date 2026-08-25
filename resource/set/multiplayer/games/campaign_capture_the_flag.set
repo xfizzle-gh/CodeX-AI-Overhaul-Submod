@@ -10,20 +10,15 @@
 
 {game
 	{order -1}
-	{parameters	"points_table_player=0/0.000,0.333/0.416,0.5/0.555,0.667/0.667,1.00/0.833;points_table_ai=0/0.000,0.333/0.139,0.50/0.167,0.667/0.208,1.00/0.277;flag_capture_time=75;flag_release_time=25;flag_capture_factor=0.9;kill_score_multiplier=0"}
-	;rate to time to reach score if 1000
-	;0.139	=	120min
-	;0.167	=	100min
-	;0.208	=	80min
-	;0.277	=	60min
-	;0.333	=	50min
-	;0.416	=	40min
-	;0.555	=	30min
-	;0.667	=	25min
-	;0.833	=	20min
+	{parameters	"points_table_player=0/0.000,0.33/3.750,0.50/4.500,0.66/5.600,1.00/7.500;points_table_ai=0/0.000,0.33/3.750,0.50/4.500,0.66/5.600,1.00/7.500;flag_capture_time=75;flag_release_time=25;flag_capture_factor=0.9;kill_score_multiplier=6.00"}
+	;for score of 8500 (flag ticks @ full hold; kills add mix via kill_score_multiplier):
+	;30 min 	= 0.500
+	;25 min 	= 0.600
+	;20 min 	= 0.750
+	;15 min 	= 1.000
 	{settings
 		{difficulty				multiplayer}
-		{scoreFinal				900}
+		{scoreFinal				8500}
 		{preparationTime		1200}	; seconds (20 min). Official prep phase when player defends (v1.064+)
 		{pauseDuringPreparation	false}	; simulation runs during prep
 		{impregnableTimeout		5}	; seconds

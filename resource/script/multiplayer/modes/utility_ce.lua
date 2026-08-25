@@ -99,6 +99,11 @@ function SetCEMissionVariables(botDefender)
   BotApi.Scene:SetVar("noresusenabled", enabledNoresus)
   print("enabledNoresus == ", enabledNoresus)
 
+  local disableAllied = 0
+  if enableAlliedSupport == 0 then disableAllied = 1 end
+  BotApi.Scene:SetVar("disable_allied_support", disableAllied)
+  print("disable_allied_support = ", disableAllied)
+
   local totalFlags = 0
   for i, flag in pairs(BotApi.Scene.Flags) do
     -- print("i: ", i)
@@ -190,9 +195,6 @@ function SetCEMissionVariables(botDefender)
   BotApi.Scene:SetVar("ce_morale_diag_expire", 0)
   BotApi.Scene:SetVar("ce_morale_diag_held", 0)
   BotApi.Scene:SetVar("ce_morale_diag_delete", 0)
-  BotApi.Scene:SetVar("aio_pow_next_id", 0)
-  BotApi.Scene:SetVar("aio_pow_seq", 0)
-  BotApi.Scene:SetVar("aio_pow_last_evt", 0)
   BotApi.Scene:SetVar("ce_morale_sys_done", 0)
   if moraleDebug > 0 or moraleAutodemo > 0 then
     StartCeMoraleProbeLog()
@@ -427,128 +429,13 @@ local function countSquadsTagged(tag)
   return n
 end
 
--- Diagnostic-only POW trail. Uses declared mission vars (same pattern as
--- ce_morale_diag_surrender$ → CE_MORALE_EVENT surrender). Entity tags are
--- invisible to IsSquadTagged; do not poll squad tags for this trail.
--- Entity hex is not BotApi-readable.
-local powDiagWatchStarted = false
-
-local function startPowDiagWatch()
-  if powDiagWatchStarted then
-    return
-  end
-  powDiagWatchStarted = true
-  local seenPresent = false
-  local seenAssign = false
-  local seenP0 = false
-  local seenImpregnable = false
-  local seenDrop = false
-  local seenPoseComplete = false
-  local seenEvacCandidate = false
-  local seenEvacArmed = false
-  local seenEvac = false
-  local seenDestPlayerCamp = false
-  local seenDestEnemyCamp = false
-  local seenDestFallback = false
-  local seenMoveIssued = false
-  local seenExpire = false
-  local seenHeld = false
-  local seenDelete = false
-  print("CE_POW_DIAG event=watch_armed entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-  local function watch()
-    if not seenPresent and readMoraleVar("ce_morale_diag_present") > 0 then
-      seenPresent = true
-      print("CE_POW_DIAG event=present entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenAssign and readMoraleVar("ce_morale_diag_assign") > 0 then
-      seenAssign = true
-      print("CE_POW_DIAG event=assign entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenP0 and readMoraleVar("ce_morale_diag_p0") > 0 then
-      seenP0 = true
-      print("CE_POW_DIAG event=p0 entity=unreadable breed=unreadable orig_player=unreadable curr_player=0_inferred squad=unreadable sensor=unreadable")
-    end
-    if not seenImpregnable and readMoraleVar("ce_morale_diag_impregnable") > 0 then
-      seenImpregnable = true
-      print("CE_POW_DIAG event=impregnable entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenDrop and readMoraleVar("ce_morale_diag_drop") > 0 then
-      seenDrop = true
-      print("CE_POW_DIAG event=drop entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenPoseComplete and readMoraleVar("ce_morale_diag_pose_complete") > 0 then
-      seenPoseComplete = true
-      print("CE_POW_DIAG event=pose_complete entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenEvacCandidate and readMoraleVar("ce_morale_diag_evac_candidate") > 0 then
-      seenEvacCandidate = true
-      print("CE_POW_DIAG event=evac_candidate entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenEvacArmed and readMoraleVar("ce_morale_diag_evac_armed") > 0 then
-      seenEvacArmed = true
-      print("CE_POW_DIAG event=evac_armed entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenEvac and readMoraleVar("ce_morale_diag_evac") > 0 then
-      seenEvac = true
-      print("CE_POW_DIAG event=evac entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenDestPlayerCamp and readMoraleVar("ce_morale_diag_destination_player_camp") > 0 then
-      seenDestPlayerCamp = true
-      print("CE_POW_DIAG event=destination_player_camp entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenDestEnemyCamp and readMoraleVar("ce_morale_diag_destination_enemy_camp") > 0 then
-      seenDestEnemyCamp = true
-      print("CE_POW_DIAG event=destination_enemy_camp entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenDestFallback and readMoraleVar("ce_morale_diag_destination_fallback") > 0 then
-      seenDestFallback = true
-      print("CE_POW_DIAG event=destination_fallback entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenMoveIssued and readMoraleVar("ce_morale_diag_move_issued") > 0 then
-      seenMoveIssued = true
-      print("CE_POW_DIAG event=move_issued entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenExpire and readMoraleVar("ce_morale_diag_expire") > 0 then
-      seenExpire = true
-      print("CE_POW_DIAG event=expire entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenHeld and readMoraleVar("ce_morale_diag_held") > 0 then
-      seenHeld = true
-      print("CE_POW_DIAG event=held entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    if not seenDelete and readMoraleVar("ce_morale_diag_delete") > 0 then
-      seenDelete = true
-      print("CE_POW_DIAG event=delete entity=unreadable breed=unreadable orig_player=unreadable curr_player=unreadable squad=unreadable sensor=unreadable")
-    end
-    BotApi.Events:SetQuantTimer(watch, 1000)
-  end
-  BotApi.Events:SetQuantTimer(watch, 1000)
-end
-
--- Diagnostic-only 2s watcher for native POW tests. Re-gate or remove before production merge.
+-- Diagnostic-only 2s watcher for morale retreat events.
 local function startMoraleEventWatch()
   local seenRetreat = false
-  local seenSurrender = false
-  local lastPow = -1
   local function watch()
     if not seenRetreat and readMoraleVar("ce_morale_diag_retreat") > 0 then
       seenRetreat = true
       print("CE_MORALE_EVENT retreat")
-    end
-    local pow = countSquadsTagged("aio_morale_surrendering")
-    if pow > 0 then
-      BotApi.Scene:SetVar("ce_morale_diag_surrender", 1)
-      if pow ~= lastPow then
-        print("CE_POW alive=1 surrendering=" .. pow)
-        lastPow = pow
-      end
-    elseif lastPow > 0 then
-      print("CE_POW alive=0 surrendering=0")
-      lastPow = 0
-    end
-    if not seenSurrender and (readMoraleVar("ce_morale_diag_surrender") > 0 or pow > 0) then
-      seenSurrender = true
-      print("CE_MORALE_EVENT surrender")
     end
     BotApi.Events:SetQuantTimer(watch, 2000)
   end
@@ -556,10 +443,7 @@ local function startMoraleEventWatch()
 end
 
 function StartCeMoraleProbeLog()
-  -- POW var-poll and morale event watch are diagnostic-only. Gameplay morale
-  -- does not need them; they used to arm on every match even with debug off.
   if readMoraleVar("enable_ce_morale_debug") > 0 or readMoraleVar("enable_ce_morale_autodemo") > 0 then
-    startPowDiagWatch()
     startMoraleEventWatch()
   end
   if readMoraleVar("enable_ce_morale_autodemo") <= 0 then

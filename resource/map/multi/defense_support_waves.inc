@@ -1732,7 +1732,7 @@
 			; Shared Day-2 toggle attack_support_air_test$ (set in garrison_init AND attack init): 1=force, 0=production-only (L2+ random in pick).
 			{"defense_support/air_test"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7"}
 					{terms
 						{"1.cmp_i" {var "defense_support_air_test_done$"} {op "=="} {value 0}}
 						{"2.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
@@ -1740,6 +1740,7 @@
 						{"4.cmp_i" {var "enemy_spawnside$"} {op ">"} {value 0}}
 						{"5.cmp_i" {var "attack_support_air_test$"} {op "=="} {value 1}}
 						{"6.cmp_i" {var "support_mission_enabled$"} {op "=="} {value 1}}
+						{"7.cmp_i" {var "disable_allied_support$"} {op "=="} {value 0}}
 					}
 				}
 				{actions
@@ -1755,13 +1756,14 @@
 
 			{"defense_support/garrison_init"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
 					{terms
 						{"1.cmp_i" {var "defense_support_garrison_done$"} {op "=="} {value 0}}
 						{"2.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
 						{"3.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
 						{"4.cmp_i" {var "enemy_spawnside$"} {op ">"} {value 0}}
 						{"5.cmp_i" {var "support_mission_enabled$"} {op "=="} {value 1}}
+						{"6.cmp_i" {var "disable_allied_support$"} {op "=="} {value 0}}
 					}
 				}
 				{actions
@@ -1844,7 +1846,7 @@
 			; EDGE WAVES — wait for prep so reinforcements do not march in during placement.
 			{"defense_support/init"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{expression "1 & 2 & 3 & 4 & 5 & 6 & 7"}
 					{terms
 						{"1.cmp_i" {var "defense_support_armed$"} {op "=="} {value 0}}
 						{"2.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
@@ -1852,6 +1854,7 @@
 						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
 						{"5.cmp_i" {var "enemy_spawnside$"} {op ">"} {value 0}}
 						{"6.cmp_i" {var "support_mission_enabled$"} {op "=="} {value 1}}
+						{"7.cmp_i" {var "disable_allied_support$"} {op "=="} {value 0}}
 					}
 				}
 				{actions
@@ -1915,13 +1918,14 @@
 			; the condition stops matching and the loop ends.
 			{"defense_support/clock"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
 					{terms
 						{"1.cmp_i" {var "defense_support_next_ok$"} {op "=="} {value 1}}
 						{"2.cmp_i" {var "defense_support_busy$"} {op "=="} {value 0}}
 						{"3.cmp_i" {var "defense_support_waves_left$"} {op ">"} {value 0}}
 						{"4.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
 						{"5.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
+						{"6.cmp_i" {var "disable_allied_support$"} {op "=="} {value 0}}
 					}
 				}
 				{actions

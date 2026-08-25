@@ -22471,6 +22471,21 @@
 								{op ">"}
 								{value 0}
 							}
+							{"entity_state"
+								{selector
+									{source advanced}
+									{ignore_captured_by_user 0}
+									{group
+										{select
+											{tag
+												{tag arrow_enemy}
+											}
+										}
+									}
+								}
+								{tag_remove hidden}
+								{inactive off}
+							}
 						}
 						{"default"
 							{"delay"

@@ -124,45 +124,17 @@
 
 ;=====================Conquest Barrages=================
 
-	; Vanilla smoke_barrage_* uses random_position 750. 2000 (~20m) screens a flag approach.
-	(define "ce_smoke_barrage"
-		{on spawn overload
-			{if not tagged "fired"
-				{tags add "fired"}
-				("rnd_art_bomb" delay(0.5) shell(%shell) postion(%postion))
-				("rnd_art_bomb" delay(1) shell(%shell) postion(%postion))
-				("rnd_art_bomb" delay(1.5) shell(%shell) postion(%postion))
-				("rnd_art_bomb" delay(2) shell(%shell) postion(%postion))
-				("rnd_art_bomb" delay(2.5) shell(%shell) postion(%postion))
-				("rnd_art_bomb" delay(3) shell(%shell) postion(%postion))
-				{hide 18}
-			}
-		}
-	)
-
-	{"smoke_barrage_105_ger"
-		("ce_smoke_barrage" shell(artillery_single_105_sm_ger_dummy) postion(2000))
-	}
-
-	{"smoke_barrage_122_rus"
-		("ce_smoke_barrage" shell(artillery_single_122_sm_rus_dummy) postion(2000))
-	}
-
 	{"conquest_smoke_barrage_105_ger"
 		{on spawn overload
 			("barrage_delay" delay(15) barrage(smoke_barrage_105_ger))
-			{delay 50
-				{delete}
-			}
+			("last_barrage_delay" delay(25) barrage(smoke_barrage_105_ger))
 		}
 	}
 
 	{"conquest_smoke_barrage_122_rus"
 		{on spawn overload
 			("barrage_delay" delay(15) barrage(smoke_barrage_122_rus))
-			{delay 50
-				{delete}
-			}
+			("last_barrage_delay" delay(25) barrage(smoke_barrage_122_rus))
 		}
 	}
 
@@ -245,9 +217,9 @@
 	            	{tags add "smoke_barrage"}
 	            	{delay 20
 						{spawn "smoke_barrage_105_ger"}
-	            		;{delay 20
-	            		;	{spawn "smoke_barrage_105_ger"}
-	            		;}
+	            		{delay 20
+	            			{spawn "smoke_barrage_105_ger"}
+	            		}
 					}
 				}
 	        else rand 0.2

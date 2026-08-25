@@ -2,7 +2,7 @@ require([[/script/multiplayer/modes/utility]])
 require([[/script/multiplayer/modes/utility_ce]])
 
 -- [1.5.6] Code:X Reversion
-printDebug = false
+printDebug = true
 
 Context.SpawnSeekTimer = Context.SpawnSeekTimer or {}
 
@@ -74,6 +74,9 @@ local function publishConquestIds()
 	if firstEnemyId > 0 then BotApi.Scene:SetVar("id_1st_enemy", firstEnemyId) end
 	if defenderBotId > 0 then BotApi.Scene:SetVar("id_defenderbot", defenderBotId) end
 	if firstPlayerId > 0 then BotApi.Scene:SetVar("id_1st_player", firstPlayerId) end
+	local disableAllied = 0
+	if enableAlliedSupport == 0 then disableAllied = 1 end
+	BotApi.Scene:SetVar("disable_allied_support", disableAllied)
 end
 
 -- Attack-side scripts need the physical side the enemy bot spawned on: the
@@ -259,8 +262,10 @@ local usedOpeningArty = false
 local lastWaveArty = -1
 
 local function flagSlot(name)
-	local n = tostring(name or ""):match("^f([1-5])$")
-	return n and tonumber(n) or nil
+	local n = tostring(name or ""):match("(%d+)$")
+	n = n and tonumber(n) or nil
+	if n and n >= 1 and n <= 5 then return n end
+	return nil
 end
 
 local function publishLiveArtyFlags()
@@ -300,10 +305,10 @@ local function requestWaveArty(wave)
 	for i = 1, 5 do
 		if live[i] == 1 then slots[#slots + 1] = i end
 	end
-	if #slots < 1 then return end
-	local slot = slots[math.random(#slots)]
+	local slot = (#slots > 0) and slots[math.random(#slots)] or 1
 	BotApi.Scene:SetVar("arty_wave_slot", slot)
 	BotApi.Scene:SetVar("arty_prep_wave", w)
+	BotApi.Scene:SetVar("arty_smoke", 1)
 	if printDebug then print("DCG arty_prep_wave requested", w, "slot", slot) end
 end
 
@@ -396,9 +401,6 @@ function WaveUnitCounter()
 	if NoteStrategyPurchase then NoteStrategyPurchase() end
 	if NoteDropPlanePurchase and Context.SpawnInfo then
 		NoteDropPlanePurchase(Context.SpawnInfo.unit)
-	end
-	if NoteDronePurchase and Context.SpawnInfo then
-		NoteDronePurchase(Context.SpawnInfo.unit)
 	end
 end
 
@@ -650,19 +652,11 @@ local function ApplyWaveCadence()
 	if printDebug then print("DCG WaveUnit", WaveUnit.Min, WaveUnit.Max, "waveOffMin", SpawnCooldownTime.DCGWaveOffMin / 1000) end
 end
 
-local droneSquads = {}
-
-local function isSpawnedDroneUnit()
-	return IsDroneUnit and Context.SpawnInfo and IsDroneUnit(Context.SpawnInfo.unit)
-end
-
 function OnGameStart()
 	isAttackerOrDefender()
 	ApplyDifficultyScaling()
 	ApplyWaveCadence()
 	CheckIfChallengeMap()
-	droneSquads = {}
-	if ResetDronePurchaseState then ResetDronePurchaseState() end
 	local wroteMissionVars = setVarsInMissionScript()
 	if wroteMissionVars then
 		setDocVarsInNattorSpeak()
@@ -734,7 +728,7 @@ end
 -- NOTE: Returns true if squad tagged "_lua_mi" / "repairing" / alert tags.
 -- "_lua_alert" or "lua_alert" = squad abruptly runs into enemy force.
 function IsSquadInScript(squad)
-	if BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrendering") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrender_evacuating") or BotApi.Scene:IsSquadTagged(squad, "aio_pow_liberated") or BotApi.Scene:IsSquadTagged(squad, "aio_pow_withdraw") then
+	if BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") then
 		if printDebug then print("Print: SQUADinSCRIPT thus no action squad", squad, "Player#",BotApi.Instance.playerId, "Team", team) end
 		return true
 
@@ -754,7 +748,7 @@ end
 
 -- MI/repair only — alert must not block a forced spawn kick.
 local function IsSquadReserved(squad)
-	return BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrendering") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrender_evacuating") or BotApi.Scene:IsSquadTagged(squad, "aio_pow_liberated") or BotApi.Scene:IsSquadTagged(squad, "aio_pow_withdraw")
+	return BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned")
 end
 
 	-- NOTE: Returns true if squad tagged "_lua_ignore" for general ignore.
@@ -832,11 +826,6 @@ local function IssueScatterOrder(squad, flags, logTag)
 end
 
 function CaptureFlag(squad)
-    if droneSquads[squad] then
-        BotApi.Commands:SeekAndDestroy(squad)
-        return
-    end
-
     local flags = {}
     for i, flag in pairs(BotApi.Scene.Flags) do
         table.insert(flags, {id = i, name = flag.name, priority = getDefaultFlagPriority(flag), owner = flag.occupant})
@@ -920,13 +909,6 @@ function OnGameSpawn(args)
         SelectAiSpawnStrategy()
     end
 
-	if isSpawnedDroneUnit() then
-		droneSquads[squad] = true
-		BotApi.Commands:SeekAndDestroy(squad)
-		SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
-		return
-	end
-
 	-- Always register the CaptureFlag order loop (scatter uses waypoints when present).
 	-- Waypoint maps used to get a single move order at spawn and never re-order,
 	-- which left squads standing at the spawn line for the rest of the match.
@@ -939,30 +921,6 @@ function OnGameSpawn(args)
 	end
 	SetSquadOrder(CaptureFlag, squad, OrderRotationPeriod)
 	ScheduleSpawnOrderNudge(squad)
-end
-
-local emptyFieldKickTimer = nil
-local function scheduleEmptyFieldSpawnKick()
-	if emptyFieldKickTimer then return end
-	emptyFieldKickTimer = BotApi.Events:SetQuantTimer(function()
-		emptyFieldKickTimer = nil
-		if botDefender then return end
-		if isMissionAuthority and not isMissionAuthority() then return end
-		local n = 0
-		for _, squad in pairs(BotApi.Scene.Squads or {}) do
-			if BotApi.Scene:IsSquadExists(squad) then
-				n = n + 1
-			end
-		end
-		if n == 0 then
-			waveSpawnPossible = true
-			waveSpawnActive = true
-			if KillSpawnCooldownTimer then KillSpawnCooldownTimer() end
-			if KillSpawnWaitTimer then KillSpawnWaitTimer() end
-			if printDebug then print("DCG empty-field spawn kick") end
-		end
-		scheduleEmptyFieldSpawnKick()
-	end, 45 * 1000)
 end
 
 -- v1.064+: prep phase ended (timer or Skip Preparation). Mission scripts key off prep_inform.
@@ -979,7 +937,6 @@ function OnPrepTimeOver()
 		if printDebug then print("AI attack released after prep time.") end
 		if SelectAiSpawnStrategy then SelectAiSpawnStrategy() end
 		scheduleParaDrops()
-		scheduleEmptyFieldSpawnKick()
 	end
 end
 

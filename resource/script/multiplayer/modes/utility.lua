@@ -1,7 +1,7 @@
 -- Utility variables for various game modes
 
 require([[/script/multiplayer/logic/main]])
-printDebug = false
+printDebug = true
 printTempDebug = false
 
 spawnPoint = BotApi.Instance.spawnPointName

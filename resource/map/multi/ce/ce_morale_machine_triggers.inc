@@ -180,6 +180,29 @@
 						}
 						{tag_add aio_morale_shaken}
 					}
+					{"actor_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_shaken}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+							}
+						}
+						{movement
+							{type crawl}
+						}
+					}
 					{"effect"
 						{selector
 							{source advanced}
@@ -217,6 +240,27 @@
 							}
 						}
 						{effect aio_morale_just_shaken}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_shaken}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_refresh_icons}
 					}
 					{"delay"
 						{time 2}
@@ -362,6 +406,29 @@
 						}
 						{tag_add aio_morale_panic}
 					}
+					{"actor_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_panic}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+							}
+						}
+						{movement
+							{type crawl}
+						}
+					}
 					{"effect"
 						{selector
 							{source advanced}
@@ -470,52 +537,17 @@
 								{group
 									{select
 										{tag
-											{tag aio_cmd_lost}
+											{tag aio_morale_panic}
 										}
 									}
 									{include
 										{prop
 											{prop human}
 										}
-										{tag
-											{tag aio_morale_panic}
-										}
 									}
 									{exclude
 										{state
-											{state user_control}
-										}
-										{tag
-											{tag player}
-										}
-										{tag
-											{tag aio_morale_just_panic}
-										}
-										{tag
-											{tag aio_morale_broken}
-										}
-									}
-								}
-								{group
-									{select
-										{tag
-											{tag aio_cmd_shock}
-										}
-									}
-									{include
-										{prop
-											{prop human}
-										}
-										{tag
-											{tag aio_morale_panic}
-										}
-									}
-									{exclude
-										{state
-											{state user_control}
-										}
-										{tag
-											{tag player}
+											{state dead}
 										}
 										{tag
 											{tag aio_morale_just_panic}
@@ -536,26 +568,17 @@
 							{group
 								{select
 									{tag
-										{tag aio_cmd_lost}
-									}
-									{tag
-										{tag aio_cmd_shock}
+										{tag aio_morale_panic}
 									}
 								}
 								{include
-									{tag
-										{tag aio_morale_panic}
-									}
 									{prop
 										{prop human}
 									}
 								}
 								{exclude
 									{state
-										{state user_control}
-									}
-									{tag
-										{tag player}
+										{state dead}
 									}
 									{tag
 										{tag aio_morale_just_panic}
@@ -567,6 +590,48 @@
 							}
 						}
 						{tag_add aio_morale_broken}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_just_broken}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_player_lock}
 					}
 					{"effect"
 						{selector
