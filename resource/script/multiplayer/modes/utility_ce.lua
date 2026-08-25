@@ -169,6 +169,10 @@ function SetCEMissionVariables(botDefender)
   BotApi.Scene:SetVar("ce_morale_diag_player_hit", 0)
   BotApi.Scene:SetVar("ce_morale_diag_ai_human", 0)
   BotApi.Scene:SetVar("ce_morale_diag_cmd_link", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_pulse_near", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_pulse_range", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_seen_now", 0)
+  BotApi.Scene:SetVar("ce_morale_diag_in_range_now", 0)
   BotApi.Scene:SetVar("ce_morale_diag_cmd_lost", 0)
   BotApi.Scene:SetVar("ce_morale_diag_cmd_shock", 0)
   BotApi.Scene:SetVar("ce_morale_diag_cmd_encourage", 0)
@@ -197,6 +201,7 @@ function SetCEMissionVariables(botDefender)
   if moraleDebug > 0 or moraleAutodemo > 0 then
     StartCeMoraleProbeLog()
   end
+  StartCmdPulseDiagLog()
 
 
   -- only run rear attack script if bot is attacking
@@ -553,6 +558,22 @@ local function startMoraleEventWatch()
     BotApi.Events:SetQuantTimer(watch, 2000)
   end
   BotApi.Events:SetQuantTimer(watch, 2000)
+end
+
+function StartCmdPulseDiagLog()
+  local ticks = 0
+  local function tick()
+    ticks = ticks + 1
+    local near = readMoraleVar("ce_morale_diag_pulse_near")
+    local range = readMoraleVar("ce_morale_diag_pulse_range")
+    local seen = readMoraleVar("ce_morale_diag_seen_now")
+    local inrange = readMoraleVar("ce_morale_diag_in_range_now")
+    print("CE_CMD_PULSE t=" .. ticks .. " near=" .. near .. " range=" .. range .. " seen_now=" .. seen .. " in_range_now=" .. inrange)
+    if ticks < 35 then
+      BotApi.Events:SetQuantTimer(tick, 1000)
+    end
+  end
+  BotApi.Events:SetQuantTimer(tick, 1000)
 end
 
 function StartCeMoraleProbeLog()

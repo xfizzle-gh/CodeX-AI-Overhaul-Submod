@@ -308,6 +308,11 @@
 					}
 				}
 				{actions
+					{"set_i"
+						{var "ce_morale_diag_pulse_near$"}
+						{op "+"}
+						{value 1}
+					}
 					{"delay"
 						{time 1}
 					}
@@ -400,6 +405,11 @@
 					}
 				}
 				{actions
+					{"set_i"
+						{var "ce_morale_diag_pulse_range$"}
+						{op "+"}
+						{value 1}
+					}
 					{"delay"
 						{time 1}
 					}
@@ -1057,6 +1067,42 @@
 						}
 						{"set_i"
 							{var "ce_morale_diag_cmd_lost$"}
+							{op "="}
+							{value 1}
+						}
+					}
+					{"set_i"
+						{var "ce_morale_diag_seen_now$"}
+						{op "="}
+						{value 0}
+					}
+					{"if"
+						{condition
+							{type entities}
+							{selector
+								{tag aio_cmd_seen_now}
+							}
+						}
+						{"set_i"
+							{var "ce_morale_diag_seen_now$"}
+							{op "="}
+							{value 1}
+						}
+					}
+					{"set_i"
+						{var "ce_morale_diag_in_range_now$"}
+						{op "="}
+						{value 0}
+					}
+					{"if"
+						{condition
+							{type entities}
+							{selector
+								{tag aio_cmd_in_range_now}
+							}
+						}
+						{"set_i"
+							{var "ce_morale_diag_in_range_now$"}
 							{op "="}
 							{value 1}
 						}
