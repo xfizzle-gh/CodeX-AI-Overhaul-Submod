@@ -406,6 +406,8 @@
 		
 		{tags remove "ignore_recrew"}
 		{tags remove "aio_morale_broken"}
+		{tags remove "aio_morale_panic"}
+		{tags remove "aio_morale_suppressed"}
 		{tags remove "aio_morale_owned"}
 		{tags remove "aio_morale_retreat_issued"}
 		{tags remove "aio_morale_retreat_wave"}
@@ -416,6 +418,10 @@
 		{tags remove "aio_morale_moving_to_rally"}
 		{tags remove "aio_morale_watching_regroup"}
 		{tags remove "aio_icon_refresh"}
+		{tags remove "aio_icon_suppressed"}
+		{tags remove "aio_icon_panic"}
+		{tags remove "aio_icon_white_flag"}
+		{tags remove "aio_icon_no_comd"}
 		{tags remove "aio_cmd_had_command"}
 		{view stop "beacon_fx"}
 		{call "aio_morale_stop_icons"}
@@ -423,14 +429,16 @@
 
 	{on bullet_hit
 		{delay 0.10
-			{tags remove "aio_morale_recovering"}
-			{if not tagged "aio_morale_broken"
-				{if not tagged "aio_morale_panic"
-					{if not tagged "aio_morale_suppressed"
-						{tags add "aio_morale_suppressed"}
-						{call "aio_morale_just_suppressed"}
-						{call "recovering_from_suppressed"}
-						{call "aio_morale_refresh_icons"}
+			{if not dead
+				{tags remove "aio_morale_recovering"}
+				{if not tagged "aio_morale_broken"
+					{if not tagged "aio_morale_panic"
+						{if not tagged "aio_morale_suppressed"
+							{tags add "aio_morale_suppressed"}
+							{call "aio_morale_just_suppressed"}
+							{call "recovering_from_suppressed"}
+							{call "aio_morale_refresh_icons"}
+						}
 					}
 				}
 			}
@@ -438,6 +446,7 @@
 	}
 	{on "recovered_from_suppressed"
 		{delay 0.1
+			{if not dead
 			{if tagged "aio_morale_suppressed"
 				{tags remove "aio_morale_suppressed"}
 				{tags remove "aio_morale_recovering"}
@@ -447,6 +456,7 @@
 				{tags remove "aio_morale_moving_to_rally"}
 				{tags add "aio_morale_did_recover"}
 				{call "aio_morale_refresh_icons"}
+			}
 			}
 		}
 	}
@@ -540,6 +550,7 @@
 	}
 	{on "recovered_from_panic"
 		{delay 0.1
+			{if not dead
 			{tags remove "aio_morale_panic"}
 			{tags remove "aio_morale_recovering"}
 			{tags remove "aio_morale_recovering_from_panic"}
@@ -548,6 +559,7 @@
 			{call "aio_morale_just_suppressed"}
 			{call "recovering_from_suppressed"}
 			{call "aio_morale_refresh_icons"}
+			}
 		}
 	}
 	{on "recovering_from_panic"
@@ -767,17 +779,29 @@
 		{call "aio_morale_refresh_icons"}
 	}
 	{on "aio_morale_stop_icons"
-		{view pause "white_flag"}
-		{view pause "no_comd"}
-		{view pause "aio_cmd_lost"}
-		{view pause "aio_morale_suppressed"}
-		{view pause "aio_morale_panic"}
-		{view pause "aio_morale_broken"}
-		{view pause "aio_cmd_junior"}
-		{view pause "aio_cmd_primary"}
-		{view pause "aio_cmd_senior"}
+		{view stop "white_flag"}
+		{view hide "white_flag"}
+		{view stop "no_comd"}
+		{view hide "no_comd"}
+		{view stop "aio_cmd_lost"}
+		{view hide "aio_cmd_lost"}
+		{view stop "aio_morale_suppressed"}
+		{view hide "aio_morale_suppressed"}
+		{view stop "aio_morale_panic"}
+		{view hide "aio_morale_panic"}
+		{view stop "aio_morale_broken"}
+		{view hide "aio_morale_broken"}
+		{view stop "aio_cmd_junior"}
+		{view hide "aio_cmd_junior"}
+		{view stop "aio_cmd_primary"}
+		{view hide "aio_cmd_primary"}
+		{view stop "aio_cmd_senior"}
+		{view hide "aio_cmd_senior"}
 	}
 	{on "aio_morale_refresh_icons"
+		{if dead
+			{call "aio_morale_stop_icons"}
+		else
 		{call "aio_morale_stop_icons"}
 		{if tagged "aio_morale_broken"
 			{able "fight" 0}
@@ -792,6 +816,7 @@
 			{call "start_aio_cmd_primary"}
 		else tagged "aio_cmd_junior"
 			{call "start_aio_cmd_junior"}
+		}
 		}
 	}
 	{on "start_no_comd"

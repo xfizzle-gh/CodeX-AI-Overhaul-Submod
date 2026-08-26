@@ -19497,6 +19497,27 @@
 				{position -1814.71 -1630.60 0.00}
 				{radius 150}
 			}
+			{"transport_patrol_flag_1"
+				{position -263.91 1247.78 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_2"
+				{position -2388.62 -471.03 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_3"
+				{position 2419.68 -385.61 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_4"
+				{position 759.50 -6430.85 0.00}
+				{radius 140}
+			}
+			{"transport_patrol_flag_5"
+				{position -3404.27 5901.60 0.00}
+				{radius 140}
+			}
+
 			{"0"
 				{position 8883.33 -257.196 0}
 				{radius 800}

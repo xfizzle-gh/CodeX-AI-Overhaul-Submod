@@ -410,52 +410,18 @@
 				}
 				; Brief settle only — long pad dwell stacked corpses (parity fix).
 				{"delay" {time 0.25}}
-				; Up to 3 active flags, shuffled - a mission activates only ~2 of a map's
-				; 2-5 flag_point entities and a squad sent to a dead objective just
-				; stands there, so every pick excludes inactive.
 				{"entity_state"
-					{selector
-						{source advanced}
-						{group
-							{select {tag {tag flag}}}
-							{exclude {state {state inactive}}}
-						}
-						{sort {type shuffle}}
-						{amount 1}
-					}
+					{selector {tag fpc1}}
 					{tag_add ea_flag1}
 				}
 				{"delay" {time 0.05}}
 				{"entity_state"
-					{selector
-						{source advanced}
-						{group
-							{select {tag {tag flag}}}
-							{exclude
-								{state {state inactive}}
-								{tag {tag ea_flag1}}
-							}
-						}
-						{sort {type shuffle}}
-						{amount 1}
-					}
+					{selector {tag fpc2}}
 					{tag_add ea_flag2}
 				}
 				{"delay" {time 0.05}}
 				{"entity_state"
-					{selector
-						{source advanced}
-						{group
-							{select {tag {tag flag}}}
-							{exclude
-								{state {state inactive}}
-								{tag {tag ea_flag1}}
-								{tag {tag ea_flag2}}
-							}
-						}
-						{sort {type shuffle}}
-						{amount 1}
-					}
+					{selector {tag fpc1}}
 					{tag_add ea_flag3}
 				}
 				{"delay" {time 0.1}}
@@ -487,27 +453,14 @@
 					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_g1}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
-					{target {ignore_captured_by_user 0} {tag ea_flag1}}
+					{target {ignore_captured_by_user 0} {tag fpc1}}
 				}
 				{"delay" {time 0.35}}
-				{"switch"
-					{"case"
-						{condition {type rand} {value 0.34}}
-						{"action"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_g2}}} {exclude {tag {tag aio_morale_owned}}}}}
-							{drop orders}
-							{action advance}
-							{target {ignore_captured_by_user 0} {tag ea_flag3}}
-						}
-					}
-					{"default"
-						{"action"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_g2}}} {exclude {tag {tag aio_morale_owned}}}}}
-							{drop orders}
-							{action advance}
-							{target {ignore_captured_by_user 0} {tag ea_flag2}}
-						}
-					}
+				{"action"
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_g2}}} {exclude {tag {tag aio_morale_owned}}}}}
+					{drop orders}
+					{action advance}
+					{target {ignore_captured_by_user 0} {tag fpc2}}
 				}
 				{"delay" {time 0.2}}
 				{"entity_state"
@@ -1012,28 +965,12 @@
 					{remove select}
 				}
 				{"delay" {time 0.25}}
-				{"entity_state"
-					{selector {tag ea_flag1}}
-					{tag_remove ea_flag1}
-				}
-				{"entity_state"
-					{selector
-						{source advanced}
-						{group
-							{select {tag {tag flag}}}
-							{exclude {state {state inactive}}}
-						}
-						{sort {type shuffle}}
-						{amount 1}
-					}
-					{tag_add ea_flag1}
-				}
 				{"delay" {time 0.1}}
 				{"action"
 					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_motor_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
-					{action advance}
-					{target {ignore_captured_by_user 0} {tag ea_flag1}}
+					{action move}
+					{waypoint "transport_patrol_flag_1"}
 				}
 				{"delay" {time 60}}
 				{"emit"
@@ -1053,7 +990,7 @@
 					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag ea_motor_pax}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
-					{target {ignore_captured_by_user 0} {tag ea_flag1}}
+					{target {ignore_captured_by_user 0} {tag fpc1}}
 				}
 				; Driver leaves the field instead of idling: drive for waypoint "0" and the
 				; cleanup trigger below removes the hull 45s later, wreck included.

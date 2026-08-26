@@ -7499,7 +7499,7 @@
 			}
 
 			(define "leader_rally_p"
-			{"conquest_enhanced_mechanics/broken/leader_rally_p%slot"
+			{"conquest_enhanced_mechanics/broken/leader_rally_%rank_p%slot"
 				{condition
 					{terms
 						{"1.cmp_i"
@@ -7543,13 +7543,7 @@
 								{group
 									{select
 										{tag
-											{tag aio_cmd_junior}
-										}
-										{tag
-											{tag aio_cmd_primary}
-										}
-										{tag
-											{tag aio_cmd_senior}
+											{tag aio_cmd_%rank}
 										}
 									}
 									{include
@@ -7573,7 +7567,7 @@
 							}
 							{distance
 								{mode near_than}
-								{meters 25}
+								{meters %meters}
 							}
 							{detection located}
 							{tag
@@ -7658,27 +7652,33 @@
 						{time 1}
 					}
 					{"trigger"
-						{name "conquest_enhanced_mechanics/broken/leader_rally_p%slot"}
+						{name "conquest_enhanced_mechanics/broken/leader_rally_%rank_p%slot"}
 					}
 				}
 			}
 			)
-			("leader_rally_p" slot(1))
-			("leader_rally_p" slot(2))
-			("leader_rally_p" slot(3))
-			("leader_rally_p" slot(4))
-			("leader_rally_p" slot(5))
-			("leader_rally_p" slot(6))
-			("leader_rally_p" slot(7))
-			("leader_rally_p" slot(8))
-			("leader_rally_p" slot(9))
-			("leader_rally_p" slot(10))
-			("leader_rally_p" slot(11))
-			("leader_rally_p" slot(12))
-			("leader_rally_p" slot(13))
-			("leader_rally_p" slot(14))
-			("leader_rally_p" slot(15))
-			("leader_rally_p" slot(16))
+			(define "leader_rally_rank"
+				("leader_rally_p" slot(1) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(2) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(3) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(4) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(5) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(6) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(7) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(8) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(9) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(10) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(11) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(12) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(13) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(14) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(15) rank(%rank) meters(%meters))
+				("leader_rally_p" slot(16) rank(%rank) meters(%meters))
+			)
+			("leader_rally_rank" rank(junior) meters(25))
+			("leader_rally_rank" rank(primary) meters(50))
+			("leader_rally_rank" rank(senior) meters(75))
+			("leader_rally_rank" rank(independent) meters(100))
 
 			{"conquest_enhanced_mechanics/broken/cleanup_dead"
 				{condition

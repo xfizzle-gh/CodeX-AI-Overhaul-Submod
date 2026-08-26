@@ -615,50 +615,21 @@
 				}
 				; Brief settle only â€” long pad dwell was stacking corpses at the entry.
 				{"delay" {time 0.25}}
-				; Up to 3 active flags, shuffled â€” different elements peel different ways.
+				; Vanilla/DLC flags are often still {inactive} when support lands; {tag flag}
+				; plus that exclude left the wave with no objective. fpc1/fpc2 exist on every
+				; shipped map (CWA 2-flag included). Walk the pads via those tags.
 				{"entity_state"
-					{selector
-						{source advanced}
-						{group
-							{select {tag {tag flag}}}
-							{exclude {state {state inactive}}}
-						}
-						{sort {type shuffle}}
-						{amount 1}
-					}
+					{selector {tag fpc1}}
 					{tag_add attack_support_flag1}
 				}
 				{"delay" {time 0.05}}
 				{"entity_state"
-					{selector
-						{source advanced}
-						{group
-							{select {tag {tag flag}}}
-							{exclude
-								{state {state inactive}}
-								{tag {tag attack_support_flag1}}
-							}
-						}
-						{sort {type shuffle}}
-						{amount 1}
-					}
+					{selector {tag fpc2}}
 					{tag_add attack_support_flag2}
 				}
 				{"delay" {time 0.05}}
 				{"entity_state"
-					{selector
-						{source advanced}
-						{group
-							{select {tag {tag flag}}}
-							{exclude
-								{state {state inactive}}
-								{tag {tag attack_support_flag1}}
-								{tag {tag attack_support_flag2}}
-							}
-						}
-						{sort {type shuffle}}
-						{amount 1}
-					}
+					{selector {tag fpc1}}
 					{tag_add attack_support_flag3}
 				}
 				{"delay" {time 0.1}}
@@ -718,28 +689,28 @@
 					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_g1}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
-					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
+					{target {ignore_captured_by_user 0} {tag fpc1}}
 				}
 				{"delay" {time 0.35}}
 				{"action"
 					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_g2}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
-					{target {ignore_captured_by_user 0} {tag attack_support_flag2}}
+					{target {ignore_captured_by_user 0} {tag fpc2}}
 				}
 				{"delay" {time 0.35}}
 				{"action"
 					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_g3}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
-					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
+					{target {ignore_captured_by_user 0} {tag fpc1}}
 				}
 				{"delay" {time 0.35}}
 				{"action"
 					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_g4}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
-					{target {ignore_captured_by_user 0} {tag attack_support_flag3}}
+					{target {ignore_captured_by_user 0} {tag fpc2}}
 				}
 				{"delay" {time 0.2}}
 				{"entity_state"
@@ -1303,7 +1274,7 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "ATTACK SUPPORT WAVE - NATO FENNEK"}}
+							{"timer" {time 8} {title "ATTACK SUPPORT WAVE - NATO KIPRI"}}
 						}
 						{"default"}
 					}
@@ -1580,12 +1551,7 @@
 			(define "e2_choose_flag"
 				("e2_reset_target")
 				{"entity_state"
-					{selector
-						{source advanced}
-						{group {select {tag {tag flag}}} {exclude {state {state inactive}}}}
-						{sort {type shuffle}}
-						{amount 1}
-					}
+					{selector {tag fpc1}}
 					{tag_add support_e2_flag_target}
 				}
 				{"delay" {time 0.1}}
@@ -2242,30 +2208,12 @@
 					{remove select}
 				}
 				{"delay" {time 0.25}}
-				; Pick one active flag as the approach objective.
-				{"entity_state"
-					{selector {tag attack_support_flag1}}
-					{tag_remove attack_support_flag1}
-				}
-				{"entity_state"
-					{selector
-						{source advanced}
-						{group
-							{select {tag {tag flag}}}
-							{exclude {state {state inactive}}}
-						}
-						{sort {type shuffle}}
-						{amount 1}
-					}
-					{tag_add attack_support_flag1}
-				}
 				{"delay" {time 0.1}}
-				; Truck drives toward the flag (standoff handled by emit after travel delay).
 				{"action"
 					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_motor_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
-					{action advance}
-					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
+					{action move}
+					{waypoint "transport_patrol_flag_1"}
 				}
 				{"delay" {time 60}}
 				; Dismount passengers only (crew stays).
@@ -2287,7 +2235,7 @@
 					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag attack_support_motor_pax}}} {exclude {tag {tag aio_morale_owned}}}}}
 					{drop orders}
 					{action advance}
-					{target {ignore_captured_by_user 0} {tag attack_support_flag1}}
+					{target {ignore_captured_by_user 0} {tag fpc1}}
 				}
 				; Driver leaves the field instead of idling: drive for waypoint "0" and the
 				; cleanup trigger below removes the hull 45s later, wreck included.
