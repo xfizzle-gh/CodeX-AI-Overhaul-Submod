@@ -1,10 +1,10 @@
 {Modifiers
 	{modifier
-		{name aio_morale_shaken}
+		{name aio_morale_suppressed}
 		{filter
 			{include
 				{tag
-					{tag aio_morale_shaken}
+					{tag aio_morale_suppressed}
 				}
 			}
 			{exclude
@@ -44,10 +44,6 @@
 			{accuracy
 				{place "*"}
 				{scale 0.5}
-			}
-			{aim_range
-				{place "*"}
-				{scale 0.8}
 			}
 		}
 	}

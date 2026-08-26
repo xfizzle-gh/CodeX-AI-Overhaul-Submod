@@ -4,7 +4,7 @@
 
 local ROUTER_PREFIX = "CODEX_ATTACK_SUPPORT_ROUTER"
 
-local ROUTER_DEBUG = true
+local ROUTER_DEBUG = false
 local function routerLog(...)
     if not ROUTER_DEBUG then return end
     local out = {ROUTER_PREFIX .. ":"}

@@ -85,7 +85,7 @@
 					}
 				}
 			}
-			{"conquest_enhanced_mechanics/morale/shaken_entry"
+			{"conquest_enhanced_mechanics/morale/suppressed_entry"
 				{condition
 					{terms
 						{"1.cmp_i"
@@ -93,39 +93,10 @@
 							{op ">"}
 							{value 0}
 						}
-						{"2.entities"
-							{selector
-								{source advanced}
-								{group
-									{select
-										{prop
-											{prop human}
-										}
-									}
-									{include
-										{state
-											{state suppressed}
-										}
-									}
-									{exclude
-										{state
-											{state dead}
-										}
-										{state
-											{state inactive}
-										}
-										{state
-											{state linked}
-										}
-										{tag
-											{tag aio_morale_shaken}
-										}
-										{tag
-											{tag aio_morale_panic}
-										}
-									}
-								}
-							}
+						{"2.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 999}
 						}
 					}
 				}
@@ -170,7 +141,7 @@
 										{state linked}
 									}
 									{tag
-										{tag aio_morale_shaken}
+										{tag aio_morale_suppressed}
 									}
 									{tag
 										{tag aio_morale_panic}
@@ -178,7 +149,7 @@
 								}
 							}
 						}
-						{tag_add aio_morale_shaken}
+						{tag_add aio_morale_suppressed}
 					}
 					{"effect"
 						{selector
@@ -194,7 +165,7 @@
 										{state suppressed}
 									}
 									{tag
-										{tag aio_morale_shaken}
+										{tag aio_morale_suppressed}
 									}
 								}
 								{exclude
@@ -208,7 +179,7 @@
 										{state linked}
 									}
 									{tag
-										{tag aio_morale_just_shaken}
+										{tag aio_morale_just_suppressed}
 									}
 									{tag
 										{tag aio_morale_panic}
@@ -216,13 +187,34 @@
 								}
 							}
 						}
-						{effect aio_morale_just_shaken}
+						{effect aio_morale_just_suppressed}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_suppressed}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_refresh_icons}
 					}
 					{"delay"
 						{time 2}
 					}
 					{"trigger"
-						{name "conquest_enhanced_mechanics/morale/shaken_entry"}
+						{name "conquest_enhanced_mechanics/morale/suppressed_entry"}
 					}
 				}
 			}
@@ -248,7 +240,7 @@
 											{state suppressed}
 										}
 										{tag
-											{tag aio_morale_shaken}
+											{tag aio_morale_suppressed}
 										}
 									}
 									{exclude
@@ -262,7 +254,7 @@
 											{state linked}
 										}
 										{tag
-											{tag aio_morale_just_shaken}
+											{tag aio_morale_just_suppressed}
 										}
 										{tag
 											{tag aio_morale_panic}
@@ -294,7 +286,7 @@
 										{state suppressed}
 									}
 									{tag
-										{tag aio_morale_shaken}
+										{tag aio_morale_suppressed}
 									}
 								}
 								{exclude
@@ -302,7 +294,7 @@
 										{state dead}
 									}
 									{tag
-										{tag aio_morale_just_shaken}
+										{tag aio_morale_just_suppressed}
 									}
 									{tag
 										{tag aio_morale_panic}
@@ -332,7 +324,7 @@
 										{state suppressed}
 									}
 									{tag
-										{tag aio_morale_shaken}
+										{tag aio_morale_suppressed}
 									}
 								}
 								{exclude
@@ -346,7 +338,7 @@
 										{state linked}
 									}
 									{tag
-										{tag aio_morale_just_shaken}
+										{tag aio_morale_just_suppressed}
 									}
 									{tag
 										{tag aio_morale_panic}
@@ -410,7 +402,7 @@
 								}
 							}
 						}
-						{tag_remove aio_morale_shaken}
+						{tag_remove aio_morale_suppressed}
 					}
 					{"if"
 						{condition
@@ -470,52 +462,17 @@
 								{group
 									{select
 										{tag
-											{tag aio_cmd_lost}
+											{tag aio_morale_panic}
 										}
 									}
 									{include
 										{prop
 											{prop human}
 										}
-										{tag
-											{tag aio_morale_panic}
-										}
 									}
 									{exclude
 										{state
-											{state user_control}
-										}
-										{tag
-											{tag player}
-										}
-										{tag
-											{tag aio_morale_just_panic}
-										}
-										{tag
-											{tag aio_morale_broken}
-										}
-									}
-								}
-								{group
-									{select
-										{tag
-											{tag aio_cmd_shock}
-										}
-									}
-									{include
-										{prop
-											{prop human}
-										}
-										{tag
-											{tag aio_morale_panic}
-										}
-									}
-									{exclude
-										{state
-											{state user_control}
-										}
-										{tag
-											{tag player}
+											{state dead}
 										}
 										{tag
 											{tag aio_morale_just_panic}
@@ -536,26 +493,17 @@
 							{group
 								{select
 									{tag
-										{tag aio_cmd_lost}
-									}
-									{tag
-										{tag aio_cmd_shock}
+										{tag aio_morale_panic}
 									}
 								}
 								{include
-									{tag
-										{tag aio_morale_panic}
-									}
 									{prop
 										{prop human}
 									}
 								}
 								{exclude
 									{state
-										{state user_control}
-									}
-									{tag
-										{tag player}
+										{state dead}
 									}
 									{tag
 										{tag aio_morale_just_panic}
@@ -567,6 +515,48 @@
 							}
 						}
 						{tag_add aio_morale_broken}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_just_broken}
+					}
+					{"effect"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{effect aio_morale_player_lock}
 					}
 					{"effect"
 						{selector
@@ -629,7 +619,7 @@
 								{group
 									{select
 										{tag
-											{tag aio_morale_shaken}
+											{tag aio_morale_suppressed}
 										}
 									}
 									{include
@@ -648,7 +638,7 @@
 										{state linked}
 									}
 									{tag
-										{tag aio_morale_recovering_from_shaken}
+										{tag aio_morale_recovering_from_suppressed}
 									}
 									}
 								}
@@ -689,7 +679,7 @@
 							{group
 								{select
 									{tag
-										{tag aio_morale_shaken}
+										{tag aio_morale_suppressed}
 									}
 								}
 								{include
@@ -708,12 +698,12 @@
 										{state linked}
 									}
 									{tag
-										{tag aio_morale_recovering_from_shaken}
+										{tag aio_morale_recovering_from_suppressed}
 									}
 								}
 							}
 						}
-						{effect recovering_from_shaken}
+						{effect recovering_from_suppressed}
 					}
 					{"effect"
 						{selector

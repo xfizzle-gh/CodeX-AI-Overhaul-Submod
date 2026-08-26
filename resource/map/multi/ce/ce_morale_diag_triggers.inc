@@ -400,7 +400,7 @@
 								}
 							}
 						}
-						{tag_add aio_morale_shaken}
+						{tag_add aio_morale_suppressed}
 					}
 					{"delay"
 						{time 0.5}
@@ -523,7 +523,7 @@
 								{group
 									{select
 										{tag
-											{tag aio_morale_shaken}
+											{tag aio_morale_suppressed}
 										}
 										{tag
 											{tag aio_morale_panic}

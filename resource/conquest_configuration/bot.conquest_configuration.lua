@@ -6,7 +6,7 @@
 
 -- ================================= Standard Settings =========================================
 	-- Prints more information in game.log for debugging purposes
-	printDebug = true
+	printDebug = false
 	printTempDebug = false
 
 	-- This enables testing mode for debugging, and is not advised for regular play. Make sure this is off unless you are specifically testing for something. 
@@ -77,6 +77,11 @@
 	}
 
 -- ================================= Advanced Settings =========================================
+	-- Allied support waves (friendly teammates only). 1 = on, 0 = off.
+	-- Set to 0 if you do not want scripted allied infantry/IFV support on Conquest missions.
+	-- Does not disable enemy scripted support. All coop players must match this value.
+	enableAlliedSupport = 1
+
 	-- Percentage chance (between 0 and 1) that the AI will spawn from the player's side randomly during battle
 	enableRearAttackMechanics = 1.0
 
@@ -157,7 +162,7 @@
 	enableSabotageMechanics = 0
 	enableAiAbandonMechanics = 0
 	enableCeMoraleMechanic = 1.0
-	enableCeMoraleDebug = 1.0
+	enableCeMoraleDebug = 0
 	enableCeMoraleAutodemo = 0
 -- =============================== Logging DO NOT MODIFY =======================================
 	require([[/conquest_configuration/bot.mod_configuration]])

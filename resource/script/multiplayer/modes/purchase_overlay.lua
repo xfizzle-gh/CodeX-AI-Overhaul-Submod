@@ -82,6 +82,26 @@ local function isDropPlaneName(name)
 		or string.find(unit, "c130_lav", 1, true)
 end
 
+local function isDroneName(name)
+	if type(name) ~= "string" then return false end
+	local unit = string.lower(name)
+	return string.find(unit, "fpv", 1, true)
+		or string.find(unit, "wingloong", 1, true)
+		or string.find(unit, "drone", 1, true)
+end
+
+local function isHeloName(name)
+	if type(name) ~= "string" then return false end
+	local unit = string.lower(name)
+	return string.find(unit, "mi17", 1, true)
+		or string.find(unit, "mi-24", 1, true)
+		or string.find(unit, "mi28", 1, true)
+		or string.find(unit, "ah-64", 1, true)
+		or string.find(unit, "apache", 1, true)
+		or string.find(unit, "ka-52", 1, true)
+		or string.find(unit, "ka52", 1, true)
+end
+
 function ApplyPurchaseOverlay(purchases)
 	if type(purchases) ~= "table" then return end
 	for _, pack in ipairs(purchases) do
@@ -93,6 +113,12 @@ function ApplyPurchaseOverlay(purchases)
 					if weight then entry.priority = weight end
 					if isDropPlaneName(entry.unit) then
 						entry.priority = 0.05
+					end
+					if isDroneName(entry.unit) then
+						entry.priority = 0.3
+					end
+					if isHeloName(entry.unit) then
+						entry.priority = 0.3
 					end
 				end
 			end

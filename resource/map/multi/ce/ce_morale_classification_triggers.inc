@@ -549,7 +549,7 @@
 									}
 									{include
 										{tag
-											{tag aio_morale_shaken}
+											{tag aio_morale_suppressed}
 										}
 										{state
 											{state "dead inactive"}
@@ -587,7 +587,7 @@
 								}
 								{include
 									{tag
-										{tag aio_morale_shaken}
+										{tag aio_morale_suppressed}
 									}
 									{state
 										{state "dead inactive"}
@@ -610,7 +610,7 @@
 								}
 							}
 						}
-						{tag_remove aio_morale_shaken}
+						{tag_remove aio_morale_suppressed}
 					}
 					{"entity_state"
 						{selector
@@ -727,11 +727,11 @@
 							{amount 3
 							}
 						}
-						{tag_add aio_morale_shaken}
+						{tag_add aio_morale_suppressed}
 					}
 					{"entity_state"
 						{selector
-							{tag aio_morale_shaken}
+							{tag aio_morale_suppressed}
 							{type human}
 							{state operatable}
 						}
@@ -864,7 +864,7 @@
 							{type human}
 							{state operatable}
 						}
-						{tag_remove aio_morale_shaken}
+						{tag_remove aio_morale_suppressed}
 					}
 					{"set_i"
 						{var "ce_morale_force_panic$"}

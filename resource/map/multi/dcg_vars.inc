@@ -49,6 +49,7 @@
 			{"support_announce"}
 			{"support_mission_roll_done"}
 			{"support_mission_enabled"}
+			{"disable_allied_support"}
 			{"attack_support_entry_rr"}
 			{"attack_support_flank_rr"}
 			{"attack_support_ifv_left"}
@@ -72,14 +73,13 @@
 			{"attack_support_waves_left"}
 			{"attack_support_busy"}
 			{"attack_support_next_ok"}
-			{"attack_support_hmmwv_left"}
-			{"attack_support_ukr_veh_left"}
-			{"attack_support_nato_veh_left"}
+			{"attack_support_veh_left"}
 			{"attack_support_use_mi"}
 			{"enemy_spawnside"}
 			{"id_attack_support"}
 			{"attack_support_ready"}
 			{"enemy_defense_armed"}
+			{"enemy_defense_veh_left"}
 			{"enemy_defense_army"}
 			{"enemy_defense_stage"}
 			{"enemy_defense_transferred"}
@@ -93,6 +93,7 @@
 			{"enemy_defense_surge_ok"}
 			{"enemy_defense_surge_busy"}
 			{"defense_support_armed"}
+			{"defense_support_veh_left"}
 			{"defense_support_transferred"}
 			{"defense_support_stage"}
 			{"defense_support_wave_cmd"}
@@ -138,5 +139,6 @@
 			{"support_e2_flag"}
 			{"support_templates_inert"}
 			{"support_templates_culled"}
+			{"support_templates_wiped"}
 			{"support_templates_ally"}
 			{"support_templates_enemy"}

@@ -2,8 +2,9 @@
 			(include "ce_mechanics_triggers.inc")
 			(include "ce_morale_marker_apply_triggers.inc")
 			(include "ce_morale_classification_triggers.inc")
-			(include "ce_morale_probe_report.inc")
-			(include "ce_morale_diag_triggers.inc")
+			; FPS: production-loaded morale diagnostics. Re-enable for morale/POW debug only.
+			;(include "ce_morale_probe_report.inc")
+			;(include "ce_morale_diag_triggers.inc")
 			(include "ce_morale_machine_triggers.inc")
 			(include "ce_command_cohesion_triggers.inc")
 			(include "ce_broken_behavior_triggers.inc")

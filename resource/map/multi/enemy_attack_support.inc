@@ -53,12 +53,12 @@
 ;                 distinct from defense_support_waves.inc's 140-290s ladder, which is
 ;                 the only other engine live on this mission, so the two never
 ;                 synchronise.
-;   budget        defense_level$ (CE campaign progression, 1-3): L1 4 waves, L2 6, L3 8,
+;   budget        defense_level$ (CE campaign progression, 1-3): L1 2 waves, L2 3, L3 4,
 ;                 including the opening wave. Level 0 falls back to L1. defense_level$ is
 ;                 computed on defence missions too - CE's set_defense_level trigger is
 ;                 gated only on defense_level$ == 0 and carries its own
 ;                 user_is_defender$ == 1 branch, so it is not attack-only.
-;   live cap      more than 16 live ea_src infantry defers the cycle WITHOUT consuming a
+;   live cap      more than 10 live ea_src infantry defers the cycle WITHOUT consuming a
 ;                 wave, exactly as the other three engines' caps do.
 ;
 ; COMPOSITION POOL, one drawn at random per wave, widening with the level:
@@ -742,32 +742,32 @@
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
-							{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 8}}
+							{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 4}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "ENEMY ATTACK ARMED - L3, 8 WAVES"}}
+									{"timer" {time 10} {title "ENEMY ATTACK ARMED - L3, 4 WAVES"}}
 								}
 								{"default"}
 							}
 						}
 						{"case"
 							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
-							{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 6}}
+							{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 4}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "ENEMY ATTACK ARMED - L2, 6 WAVES"}}
+									{"timer" {time 10} {title "ENEMY ATTACK ARMED - L2, 3 WAVES"}}
 								}
 								{"default"}
 							}
 						}
 						{"default"
-							{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 4}}
+							{"set_i" {var "enemy_attack_waves_left$"} {op "="} {value 3}}
 							{"switch"
 								{"case"
 									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "ENEMY ATTACK ARMED - L1, 4 WAVES"}}
+									{"timer" {time 10} {title "ENEMY ATTACK ARMED - L1, 3 WAVES"}}
 								}
 								{"default"}
 							}
@@ -847,25 +847,6 @@
 						; Counted on the simple selector form the mission scripts use for
 						; live units - the advanced selector's prop/state decorations zero
 						; the match on these entities.
-						{"case"
-							{condition
-								{type entities}
-								{selector
-									{ignore_captured_by_user 0}
-									{tag ea_src}
-									{type human}
-									{state "not dead"}
-								}
-								{count {op ">"} {value 16}}
-							}
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 8} {title "ENEMY ATTACK NEAR CAP DEFER"}}
-								}
-								{"default"}
-							}
-						}
 						{"default"
 							{"set_i" {var "enemy_attack_wave_num$"} {op "+"} {value 1}}
 							{"set_i" {var "enemy_attack_waves_left$"} {op "-"} {value 1}}

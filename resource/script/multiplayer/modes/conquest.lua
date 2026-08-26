@@ -2,7 +2,7 @@ require([[/script/multiplayer/modes/utility]])
 require([[/script/multiplayer/modes/utility_ce]])
 
 -- [1.5.6] Code:X Reversion
-printDebug = true
+printDebug = false
 
 Context.SpawnSeekTimer = Context.SpawnSeekTimer or {}
 
@@ -74,6 +74,9 @@ local function publishConquestIds()
 	if firstEnemyId > 0 then BotApi.Scene:SetVar("id_1st_enemy", firstEnemyId) end
 	if defenderBotId > 0 then BotApi.Scene:SetVar("id_defenderbot", defenderBotId) end
 	if firstPlayerId > 0 then BotApi.Scene:SetVar("id_1st_player", firstPlayerId) end
+	local disableAllied = 0
+	if enableAlliedSupport == 0 then disableAllied = 1 end
+	BotApi.Scene:SetVar("disable_allied_support", disableAllied)
 end
 
 -- Attack-side scripts need the physical side the enemy bot spawned on: the
@@ -725,7 +728,7 @@ end
 -- NOTE: Returns true if squad tagged "_lua_mi" / "repairing" / alert tags.
 -- "_lua_alert" or "lua_alert" = squad abruptly runs into enemy force.
 function IsSquadInScript(squad)
-	if BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrendering") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrender_evacuating") then
+	if BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") then
 		if printDebug then print("Print: SQUADinSCRIPT thus no action squad", squad, "Player#",BotApi.Instance.playerId, "Team", team) end
 		return true
 
@@ -745,7 +748,7 @@ end
 
 -- MI/repair only — alert must not block a forced spawn kick.
 local function IsSquadReserved(squad)
-	return BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrendering") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_surrender_evacuating")
+	return BotApi.Scene:IsSquadTagged(squad, "_lua_mi") or BotApi.Scene:IsSquadTagged(squad, "repairing") or BotApi.Scene:IsSquadTagged(squad, "aio_morale_owned")
 end
 
 	-- NOTE: Returns true if squad tagged "_lua_ignore" for general ignore.

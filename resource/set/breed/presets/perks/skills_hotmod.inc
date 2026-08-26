@@ -506,12 +506,12 @@
 )
 
 (define "skill_rank_5"
-	{"pistol" lvl_5}
-	{"smg" lvl_5}
-	{"mgun" lvl_5}
-	{"rifle" lvl_5}
-	{"melee" lvl_5}
-	{"avoidance" lvl_5}
+	{"pistol" lvl_7}
+	{"smg" lvl_7}
+	{"mgun" lvl_7}
+	{"rifle" lvl_8}
+	{"melee" lvl_7}
+	{"avoidance" lvl_7}
 	("health_rank_5")
 	("fortification")
 	("deployable_weapons")
@@ -520,13 +520,13 @@
 )
 
 (define "skill_rank_kor"
-	{"pistol" lvl_5}
-	{"smg" lvl_5}
-	{"mgun" lvl_5}
-	{"rifle" lvl_6}
-	{"melee" lvl_5}
-	{"avoidance" lvl_5}
-	("health_rank_4")
+	{"pistol" lvl_8}
+	{"smg" lvl_8}
+	{"mgun" lvl_8}
+	{"rifle" lvl_8}
+	{"melee" lvl_8}
+	{"avoidance" lvl_8}
+	("health_rank_5")
 	("fortification")
 	("deployable_weapons")
 	("basic_repair")
@@ -565,12 +565,12 @@
 )
 
 (define "skill_rank_5_mg"
-	{"pistol" lvl_3}
-	{"smg" lvl_3}
-	{"mgun" lvl_5}
-	{"rifle" lvl_2}
-	{"melee" lvl_3}
-	{"avoidance" lvl_3}
+	{"pistol" lvl_4}
+	{"smg" lvl_4}
+	{"mgun" lvl_8}
+	{"rifle" lvl_4}
+	{"melee" lvl_4}
+	{"avoidance" lvl_4}
 	("health_rank_5")
 	("fortification")
 	("deployable_weapons")
@@ -579,12 +579,12 @@
 )
 
 (define "skill_rank_sf_4"
-	{"pistol" lvl_4}
-	{"smg" lvl_4}
-	{"mgun" lvl_4}
-	{"rifle" lvl_4}
-	{"melee" lvl_4}
-	{"avoidance" lvl_4}
+	{"pistol" lvl_6}
+	{"smg" lvl_6}
+	{"mgun" lvl_6}
+	{"rifle" lvl_6}
+	{"melee" lvl_6}
+	{"avoidance" lvl_6}
 	("health_rank_4")
 	("fortification")
 	("deployable_weapons")
@@ -592,12 +592,12 @@
 )
 
 (define "skill_rank_sf_3"
-	{"pistol" lvl_3}
-	{"smg" lvl_3}
-	{"mgun" lvl_3}
-	{"rifle" lvl_3}
-	{"melee" lvl_3}
-	{"avoidance" lvl_3}
+	{"pistol" lvl_4}
+	{"smg" lvl_4}
+	{"mgun" lvl_4}
+	{"rifle" lvl_4}
+	{"melee" lvl_4}
+	{"avoidance" lvl_4}
 	("health_rank_3")
 	("fortification")
 	("deployable_weapons")
