@@ -21,10 +21,10 @@
 ;
 ; FACTION SELECTION is a var switch, not a cascade. conquest.lua publishes
 ; bot_army$ from its nationMap (1 rusa, 2 ukr, 3 nato, 4 csa, 5 sov, 6 prc, 7 frg,
-; 8 pol); ed_resolve_army folds that onto the two Kor/ARF parks this mod ships
-; (enemy_defense_army$ 1 Kor / 3 ARF), routing sov+pol+prc to Kor and
-; ukr+csa+frg to ARF. An unpublished bot_army$ lands in the
-; default and draws Kor, so the system never stalls waiting for a var.
+; 8 pol); ed_resolve_army folds that onto the four pools this mod ships
+; (enemy_defense_army$ 1 rusa / 2 ukr / 3 nato / 4 prc), routing sov+pol to the
+; rusa pool and csa+frg to the nato pool. An unpublished bot_army$ lands in the
+; default and draws rusa, so the system never stalls waiting for a var.
 ;
 ; WHAT ARRIVES, AND WHEN
 ;   garrison   ~12s in, one 4-man line fireteam MOVED onto each ACTIVE flag point
@@ -46,8 +46,9 @@
 ;
 ; BUDGETS, kept deliberately at or below the friendly attack-support system so the
 ; two halves stay in proportion:
-;   waves      always 4, SHARED by the trickle and surge spawners, so the two
-;              ladders stay asynchronous without doubling the total.
+;   waves      defense_level$ (CE campaign progression, 1-3): L1 4, L2 6, L3 8,
+;              SHARED by the trickle and surge spawners, so the two ladders stay
+;              asynchronous without doubling the total. Level 0 falls back to L1.
 ;   garrison   one fireteam per active flag, on top of the wave budget and not
 ;              drawn from it - it is the standing defence, not a reinforcement.
 ;   live cap   more than 16 live enemy_def_src infantry defers the cycle WITHOUT
@@ -124,6 +125,7 @@
 					}
 				}
 			)
+
 
 			; Delivery point. Stagger one body at a time (same targets) so a full
 			; fireteam is not crushed into one pile on the pad / flag.
@@ -257,10 +259,6 @@
 
 			(define "ed_place"
 				("ed_entry_next")
-				("ed_place_one")
-				("ed_place_one")
-				("ed_place_one")
-				("ed_place_one")
 				("ed_place_one")
 				("ed_place_one")
 				("ed_place_one")
@@ -408,11 +406,11 @@
 				{"switch"
 					{"case"
 						{condition {type cmp_i} {var "bot_army$"} {op "=="} {value 2}}
-						{"set_i" {var "enemy_defense_army$"} {op "="} {value 3}}
+						{"set_i" {var "enemy_defense_army$"} {op "="} {value 2}}
 						{"switch"
 							{"case"
 								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-								{"timer" {time 8} {title "ENEMY DEFENSE ARMY - ARF (ukr)"}}
+								{"timer" {time 8} {title "ENEMY DEFENSE ARMY - UKR"}}
 							}
 							{"default"}
 						}
@@ -441,11 +439,11 @@
 					}
 					{"case"
 						{condition {type cmp_i} {var "bot_army$"} {op "=="} {value 6}}
-						{"set_i" {var "enemy_defense_army$"} {op "="} {value 1}}
+						{"set_i" {var "enemy_defense_army$"} {op "="} {value 4}}
 						{"switch"
 							{"case"
 								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-								{"timer" {time 8} {title "ENEMY DEFENSE ARMY - NK (prc)"}}
+								{"timer" {time 8} {title "ENEMY DEFENSE ARMY - PRC"}}
 							}
 							{"default"}
 						}
@@ -567,49 +565,35 @@
 			)
 
 			; Command 1 - light team, 3 bodies from the line pool. Only the trigger whose
-			; enemy_defense_army$ matches can clear it, so poking Kor/ARF is safe.
+			; enemy_defense_army$ matches can clear it, so poking all four is safe.
 			(define "ed_poke_light"
 				{"trigger" {name "enemy_defense/rusa_light"}}
+				{"trigger" {name "enemy_defense/ukr_light"}}
+				{"trigger" {name "enemy_defense/prc_light"}}
 				{"trigger" {name "enemy_defense/nato_light"}}
 			)
 
-			; Command 2 - line fireteam, 4 bodies from the Kor/ARF line pool.
+			; Command 2 - line fireteam, 4 bodies from the line pool. Only the trigger whose
+			; enemy_defense_army$ matches can clear it, so poking all four is safe.
 			(define "ed_poke_line"
 				{"trigger" {name "enemy_defense/rusa_line"}}
+				{"trigger" {name "enemy_defense/ukr_line"}}
+				{"trigger" {name "enemy_defense/prc_line"}}
 				{"trigger" {name "enemy_defense/nato_line"}}
 			)
-			(define "ed_claim_veh"
-				{"switch"
-					{"case"
-						{condition {type cmp_i} {var "enemy_defense_veh_left$"} {op "=="} {value 3}}
-						{"entity_state"
-							{selector {source advanced} {group {select {tag {tag enemy_def_%0_veh1}}}}}
-							{tag_add enemy_def_deploy}
-							{tag_remove enemy_def_%0_veh}
-							{tag_remove enemy_def_%0_veh1}
-						}
-					}
-					{"case"
-						{condition {type cmp_i} {var "enemy_defense_veh_left$"} {op "=="} {value 2}}
-						{"entity_state"
-							{selector {source advanced} {group {select {tag {tag enemy_def_%0_veh2}}}}}
-							{tag_add enemy_def_deploy}
-							{tag_remove enemy_def_%0_veh}
-							{tag_remove enemy_def_%0_veh2}
-						}
-					}
-					{"default"
-						{"entity_state"
-							{selector {source advanced} {group {select {tag {tag enemy_def_%0_veh3}}}}}
-							{tag_add enemy_def_deploy}
-							{tag_remove enemy_def_%0_veh}
-							{tag_remove enemy_def_%0_veh3}
-						}
-					}
-				}
+
+			; Command 3 - weapons fireteam, 4 bodies from the wpn pool. Only the trigger whose
+			; enemy_defense_army$ matches can clear it, so poking all four is safe.
+			(define "ed_poke_wpn"
+				{"trigger" {name "enemy_defense/rusa_wpn"}}
+				{"trigger" {name "enemy_defense/ukr_wpn"}}
+				{"trigger" {name "enemy_defense/prc_wpn"}}
+				{"trigger" {name "enemy_defense/nato_wpn"}}
 			)
 			(define "ed_poke_veh"
 				{"trigger" {name "enemy_defense/rusa_veh"}}
+				{"trigger" {name "enemy_defense/ukr_veh"}}
+				{"trigger" {name "enemy_defense/prc_veh"}}
 				{"trigger" {name "enemy_defense/nato_veh"}}
 			)
 
@@ -671,14 +655,74 @@
 			(define "ed_pick_squad"
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "enemy_defense_wave_num$"} {op "<="} {value 2}}
-						{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 2}}
-						("ed_poke_line")
+						{condition {type cmp_i} {var "defense_level$"} {op ">="} {value 2}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "enemy_defense_veh_left$"} {op ">"} {value 0}}
+								{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 4}}
+								("ed_poke_veh")
+							}
+							{"default"
+								{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 2}}
+								("ed_poke_line")
+							}
+						}
 					}
 					{"case"
-						{condition {type cmp_i} {var "enemy_defense_veh_left$"} {op ">"} {value 0}}
-						{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 4}}
-						("ed_poke_veh")
+						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value -3}}
+						{"switch"
+							{"case"
+								{condition {type rand} {value 0.6}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+										{"timer" {time 8} {title "ENEMY DEFENSE SURGE - WEAPONS FIRETEAM"}}
+									}
+									{"default"}
+								}
+								{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 3}}
+								("ed_poke_wpn")
+							}
+							{"default"
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+										{"timer" {time 8} {title "ENEMY DEFENSE SURGE - LINE FIRETEAM"}}
+									}
+									{"default"}
+								}
+								{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 2}}
+								("ed_poke_line")
+							}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value -2}}
+						{"switch"
+							{"case"
+								{condition {type rand} {value 0.34}}
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+										{"timer" {time 8} {title "ENEMY DEFENSE SURGE - WEAPONS FIRETEAM"}}
+									}
+									{"default"}
+								}
+								{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 3}}
+								("ed_poke_wpn")
+							}
+							{"default"
+								{"switch"
+									{"case"
+										{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+										{"timer" {time 8} {title "ENEMY DEFENSE SURGE - LINE FIRETEAM"}}
+									}
+									{"default"}
+								}
+								{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 2}}
+								("ed_poke_line")
+							}
+						}
 					}
 					{"default"
 						{"switch"
@@ -1105,7 +1149,7 @@
 				}
 				{actions
 					{"set_i" {var "enemy_defense_armed$"} {op "="} {value 1}}
-					{"set_i" {var "enemy_defense_veh_left$"} {op "="} {value 3}}
+					{"set_i" {var "enemy_defense_veh_left$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_defense_stage$"} {op "="} {value 1}}
 					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
 										{"set_i" {var "enemy_defense_wave_num$"} {op "="} {value 0}}
@@ -1117,14 +1161,40 @@
 					{"set_i" {var "enemy_defense_surge_busy$"} {op "="} {value 1}}
 					{"delay" {time 2}}
 					("ed_resolve_army")
-					; Always 4 waves, shared by trickle and surge.
-					{"set_i" {var "enemy_defense_waves_left$"} {op "="} {value 4}}
+					; Wave budget by campaign progression, shared by both spawners.
 					{"switch"
 						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 10} {title "ENEMY DEFENSE ARMED - 4 WAVES"}}
+							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
+							{"set_i" {var "enemy_defense_waves_left$"} {op "="} {value 4}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 10} {title "ENEMY DEFENSE ARMED - L3, 8 WAVES"}}
+								}
+								{"default"}
+							}
 						}
-						{"default"}
+						{"case"
+							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
+							{"set_i" {var "enemy_defense_waves_left$"} {op "="} {value 4}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 10} {title "ENEMY DEFENSE ARMED - L2, 6 WAVES"}}
+								}
+								{"default"}
+							}
+						}
+						{"default"
+							{"set_i" {var "enemy_defense_waves_left$"} {op "="} {value 3}}
+							{"switch"
+								{"case"
+									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+									{"timer" {time 10} {title "ENEMY DEFENSE ARMED - L1, 3 WAVES"}}
+								}
+								{"default"}
+							}
+						}
 					}
 					("ed_claim_anchors")
 					; Let the mission place its own opening forces before the garrison lands.
@@ -1462,7 +1532,67 @@
 				}
 			}
 
-			
+			{"enemy_defense/normal_transport_ukr"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_armed$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 2}}
+						{"4.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "transport_ed_done$"} {op "=="} {value 0}}
+						{"6.entities" {selector {tag transport_enemy_ukr_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "transport_ed_done$"} {op "="} {value 1}}
+					{"delay" {time 45}}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag transport_enemy_ukr}}}}}
+						{tag_add enemy_def_deploy}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag transport_enemy_ukr_hull}}}}}
+						{tag_add transport_ed_hull}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag transport_enemy_ukr_pax}}}}}
+						{tag_add transport_ed_pax}
+					}
+					("transport_ed_place")
+					{"entity_state"
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag enemy_def_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+						{tag_remove transport_enemy_tpl}
+						{tag_remove transport_enemy_ukr}
+						{tag_remove hidden}
+						{inactive off}
+						{impregnability disabled}
+						{discovered on}
+					}
+					{"delay" {time 0.2}}
+					("ed_own_to_enemy")
+					{"delay" {time 0.4}}
+					{"actor_state"
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag enemy_def_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+						{control AI}
+						{ai_move {mode enable}}
+						{weapon_prepare on}
+						{fire_mode open}
+						{move_mode free}
+						{movement {speed normal} {kind normal} {type normal}}
+						{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}
+					}
+					{"set_i" {var "transport_ed_step$"} {op "="} {value 3}}
+					("transport_ed_issue_patrol")
+					{"entity_state"
+						{selector {tag enemy_def_deploy}}
+						{tag_remove enemy_def_deploy}
+					}
+					{"delay" {time 45}}
+					{"trigger" {name "enemy_defense/normal_transport_patrol"}}
+				}
+			}
+
 			{"enemy_defense/normal_transport_nato"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5 & 6"}
@@ -1524,7 +1654,67 @@
 				}
 			}
 
-			
+			{"enemy_defense/normal_transport_prc"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_armed$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 4}}
+						{"4.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"5.cmp_i" {var "transport_ed_done$"} {op "=="} {value 0}}
+						{"6.entities" {selector {tag transport_enemy_prc_hull}} {count {op ">="} {value 1}}}
+					}
+				}
+				{actions
+					{"set_i" {var "transport_ed_done$"} {op "="} {value 1}}
+					{"delay" {time 45}}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag transport_enemy_prc}}}}}
+						{tag_add enemy_def_deploy}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag transport_enemy_prc_hull}}}}}
+						{tag_add transport_ed_hull}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag transport_enemy_prc_pax}}}}}
+						{tag_add transport_ed_pax}
+					}
+					("transport_ed_place")
+					{"entity_state"
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag enemy_def_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+						{tag_remove transport_enemy_tpl}
+						{tag_remove transport_enemy_prc}
+						{tag_remove hidden}
+						{inactive off}
+						{impregnability disabled}
+						{discovered on}
+					}
+					{"delay" {time 0.2}}
+					("ed_own_to_enemy")
+					{"delay" {time 0.4}}
+					{"actor_state"
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag enemy_def_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+						{control AI}
+						{ai_move {mode enable}}
+						{weapon_prepare on}
+						{fire_mode open}
+						{move_mode free}
+						{movement {speed normal} {kind normal} {type normal}}
+						{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}
+					}
+					{"set_i" {var "transport_ed_step$"} {op "="} {value 3}}
+					("transport_ed_issue_patrol")
+					{"entity_state"
+						{selector {tag enemy_def_deploy}}
+						{tag_remove enemy_def_deploy}
+					}
+					{"delay" {time 45}}
+					{"trigger" {name "enemy_defense/normal_transport_patrol"}}
+				}
+			}
+
 			; Route continues only while at least one tagged passenger remains within
 			; eight metres of the hull. Normal AI dismount under contact breaks that
 			; proximity and therefore stops all further scripted route orders.
@@ -2111,10 +2301,12 @@
 				}
 			}
 
-			; COMPOSITION TRIGGERS - Kor/ARF line/veh draws from the parked enemy_def
-			; pool. The command IS the draw id and the trigger clears it as its first
-			; action, so a command still standing means no pool could field it. Each
-			; gates on enemy_defense_army$, so exactly one park can answer a poke.
+			; COMPOSITION TRIGGERS - four faction pools x three draws. Command gated the
+			; way the attack-support compositions are: the command IS the draw id and the
+			; trigger clears it as its first action, so a command still standing means no
+			; pool could field it. Each also gates on enemy_defense_army$, so exactly one
+			; faction can ever answer a poke, and on its own pool being stocked - a claim
+			; strips the pool tag, so the tag count is precisely "still parked".
 			{"enemy_defense/rusa_light"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5"}
@@ -2213,26 +2405,76 @@
 						{tag_add enemy_def_deploy}
 						{tag_remove enemy_def_rusa_line}
 					}
-					("ed_claim_veh" args rusa)
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_rusa_veh1}}}}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_rusa_veh}
+						{tag_remove enemy_def_rusa_veh1}
+					}
 					{"set_i" {var "enemy_defense_veh_left$"} {op "-"} {value 1}}
 					{"delay" {time 0.1}}
 					("ed_place")
 					("ed_finish")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "enemy_defense_wave_num$"} {op ">="} {value 4}}
-							{"entity_state"
-								{selector {source advanced} {group {select {tag {tag enemy_def_rusa_ifv1}}}}}
-								{tag_add enemy_def_deploy}
-								{tag_remove enemy_def_rusa_ifv}
-								{tag_remove enemy_def_rusa_ifv1}
-							}
-							{"delay" {time 0.5}}
-							("ed_place")
-							("ed_finish")
-						}
-						{"default"}
+				}
+			}
+			{"enemy_defense/ukr_veh"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 4}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 2}}
+						{"5.cmp_i" {var "enemy_defense_veh_left$"} {op ">"} {value 0}}
 					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_ukr_line}}}} {amount 6}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_ukr_line}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_ukr_veh1}}}}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_ukr_veh}
+						{tag_remove enemy_def_ukr_veh1}
+					}
+					{"set_i" {var "enemy_defense_veh_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
+				}
+			}
+			{"enemy_defense/prc_veh"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 4}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 4}}
+						{"5.cmp_i" {var "enemy_defense_veh_left$"} {op ">"} {value 0}}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_prc_line}}}} {amount 6}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_prc_line}
+					}
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_prc_veh1}}}}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_prc_veh}
+						{tag_remove enemy_def_prc_veh1}
+					}
+					{"set_i" {var "enemy_defense_veh_left$"} {op "-"} {value 1}}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
 				}
 			}
 			{"enemy_defense/nato_veh"
@@ -2253,36 +2495,299 @@
 						{tag_add enemy_def_deploy}
 						{tag_remove enemy_def_nato_line}
 					}
-					("ed_claim_veh" args nato)
+					{"entity_state"
+						{selector {source advanced} {group {select {tag {tag enemy_def_nato_veh1}}}}}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_nato_veh}
+						{tag_remove enemy_def_nato_veh1}
+					}
 					{"set_i" {var "enemy_defense_veh_left$"} {op "-"} {value 1}}
 					{"delay" {time 0.1}}
 					("ed_place")
 					("ed_finish")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "enemy_defense_wave_num$"} {op ">="} {value 4}}
-							{"entity_state"
-								{selector {source advanced} {group {select {tag {tag enemy_def_nato_ifv1}}}}}
-								{tag_add enemy_def_deploy}
-								{tag_remove enemy_def_nato_ifv}
-								{tag_remove enemy_def_nato_ifv1}
-							}
-							{"delay" {time 0.5}}
-							("ed_place")
-							("ed_finish")
-						}
-						{"default"}
-					}
 				}
 			}
 
-			
-			
-			
-			
-			
-			
-			
+			{"enemy_defense/rusa_wpn"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 3}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 1}}
+						{"5.entities"
+							{selector {tag enemy_def_rusa_wpn}}
+							{count {op ">="} {value 4}}
+						}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+										{"set_i" {var "enemy_defense_stage$"} {op "="} {value 31}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY DEFENSE RUSA WEAPONS FIRETEAM"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group {select {tag {tag enemy_def_rusa_wpn}}}}
+							{amount 4}
+						}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_rusa_wpn}
+					}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
+					{"set_i" {var "enemy_defense_stage$"} {op "="} {value 32}}
+				}
+			}
+
+			{"enemy_defense/ukr_light"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 2}}
+						{"5.entities"
+							{selector {tag enemy_def_ukr_line}}
+							{count {op ">="} {value 3}}
+						}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+										{"set_i" {var "enemy_defense_stage$"} {op "="} {value 11}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY DEFENSE UKR LIGHT TEAM"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group {select {tag {tag enemy_def_ukr_line}}}}
+							{amount 3}
+						}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_ukr_line}
+					}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
+					{"set_i" {var "enemy_defense_stage$"} {op "="} {value 12}}
+				}
+			}
+
+			{"enemy_defense/ukr_line"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 2}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 2}}
+						{"5.entities"
+							{selector {tag enemy_def_ukr_line}}
+							{count {op ">="} {value 4}}
+						}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+										{"set_i" {var "enemy_defense_stage$"} {op "="} {value 21}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY DEFENSE UKR LINE FIRETEAM"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group {select {tag {tag enemy_def_ukr_line}}}}
+							{amount 4}
+						}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_ukr_line}
+					}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
+					{"set_i" {var "enemy_defense_stage$"} {op "="} {value 22}}
+				}
+			}
+
+			{"enemy_defense/ukr_wpn"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 3}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 2}}
+						{"5.entities"
+							{selector {tag enemy_def_ukr_wpn}}
+							{count {op ">="} {value 4}}
+						}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+										{"set_i" {var "enemy_defense_stage$"} {op "="} {value 31}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY DEFENSE UKR WEAPONS FIRETEAM"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group {select {tag {tag enemy_def_ukr_wpn}}}}
+							{amount 4}
+						}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_ukr_wpn}
+					}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
+					{"set_i" {var "enemy_defense_stage$"} {op "="} {value 32}}
+				}
+			}
+
+			{"enemy_defense/prc_light"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 4}}
+						{"5.entities"
+							{selector {tag enemy_def_prc_line}}
+							{count {op ">="} {value 3}}
+						}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+										{"set_i" {var "enemy_defense_stage$"} {op "="} {value 11}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY DEFENSE PRC LIGHT TEAM"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group {select {tag {tag enemy_def_prc_line}}}}
+							{amount 3}
+						}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_prc_line}
+					}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
+					{"set_i" {var "enemy_defense_stage$"} {op "="} {value 12}}
+				}
+			}
+
+			{"enemy_defense/prc_line"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 2}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 4}}
+						{"5.entities"
+							{selector {tag enemy_def_prc_line}}
+							{count {op ">="} {value 4}}
+						}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+										{"set_i" {var "enemy_defense_stage$"} {op "="} {value 21}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY DEFENSE PRC LINE FIRETEAM"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group {select {tag {tag enemy_def_prc_line}}}}
+							{amount 4}
+						}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_prc_line}
+					}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
+					{"set_i" {var "enemy_defense_stage$"} {op "="} {value 22}}
+				}
+			}
+
+			{"enemy_defense/prc_wpn"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 3}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 4}}
+						{"5.entities"
+							{selector {tag enemy_def_prc_wpn}}
+							{count {op ">="} {value 4}}
+						}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+										{"set_i" {var "enemy_defense_stage$"} {op "="} {value 31}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY DEFENSE PRC WEAPONS FIRETEAM"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group {select {tag {tag enemy_def_prc_wpn}}}}
+							{amount 4}
+						}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_prc_wpn}
+					}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
+					{"set_i" {var "enemy_defense_stage$"} {op "="} {value 32}}
+				}
+			}
+
 			{"enemy_defense/nato_light"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5"}
@@ -2363,4 +2868,42 @@
 				}
 			}
 
-			
+			{"enemy_defense/nato_wpn"
+				{condition
+					{expression "1 & 2 & 3 & 4 & 5"}
+					{terms
+						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "enemy_defense_wave_cmd$"} {op "=="} {value 3}}
+						{"3.cmp_i" {var "id_1st_enemy$"} {op ">"} {value 0}}
+						{"4.cmp_i" {var "enemy_defense_army$"} {op "=="} {value 3}}
+						{"5.entities"
+							{selector {tag enemy_def_nato_wpn}}
+							{count {op ">="} {value 4}}
+						}
+					}
+				}
+				{actions
+					{"set_i" {var "enemy_defense_wave_cmd$"} {op "="} {value 0}}
+										{"set_i" {var "enemy_defense_stage$"} {op "="} {value 31}}
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+							{"timer" {time 8} {title "ENEMY DEFENSE NATO WEAPONS FIRETEAM"}}
+						}
+						{"default"}
+					}
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group {select {tag {tag enemy_def_nato_wpn}}}}
+							{amount 4}
+						}
+						{tag_add enemy_def_deploy}
+						{tag_remove enemy_def_nato_wpn}
+					}
+					{"delay" {time 0.1}}
+					("ed_place")
+					("ed_finish")
+					{"set_i" {var "enemy_defense_stage$"} {op "="} {value 32}}
+				}
+			}

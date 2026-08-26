@@ -6,12 +6,6 @@
 			)
 			(define "st_del_ally"
 				("st_del" args ally_sup_%0)
-				("st_del" args support_e2_%0_helo)
-				("st_del" args support_e2_%0_helo_crew)
-				("st_del" args support_e2_%0_helo_team)
-				("st_del" args support_e2_%0_para)
-				("st_del" args support_e2_%0_para_crew)
-				("st_del" args support_e2_%0_para_pax)
 			)
 			(define "st_del_enemy"
 				("st_del" args enemy_def_%0)
@@ -194,5 +188,24 @@
 							("st_del_enemy" args prc)
 						}
 					}
+				}
+			}
+
+			{"support_templates/disable_wipe"
+				{condition
+					{expression "1 & 2 & 3"}
+					{terms
+						{"1.cmp_i" {var "support_templates_wiped$"} {op "=="} {value 0}}
+						{"2.cmp_i" {var "support_mission_roll_done$"} {op "=="} {value 1}}
+						{"3.cmp_i" {var "support_mission_enabled$"} {op "=="} {value 0}}
+					}
+				}
+				{actions
+					{"set_i" {var "support_templates_wiped$"} {op "="} {value 1}}
+					{"delete" {selector {ignore_captured_by_user 0} {tag ally_sup_tpl}}}
+					{"delete" {selector {ignore_captured_by_user 0} {tag enemy_def_tpl}}}
+					{"delete" {selector {ignore_captured_by_user 0} {tag attack_support_tpl}}}
+					{"delete" {selector {ignore_captured_by_user 0} {tag transport_enemy_tpl}}}
+					{"delete" {selector {ignore_captured_by_user 0} {tag flag_prop_tpl}}}
 				}
 			}

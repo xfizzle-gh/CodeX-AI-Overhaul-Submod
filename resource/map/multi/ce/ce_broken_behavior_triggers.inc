@@ -7417,7 +7417,8 @@
 				}
 			}
 
-			{"conquest_enhanced_mechanics/broken/leader_rally"
+			(define "leader_rally_p"
+			{"conquest_enhanced_mechanics/broken/leader_rally_p%slot"
 				{condition
 					{terms
 						{"1.cmp_i"
@@ -7437,6 +7438,10 @@
 									{include
 										{prop
 											{prop human}
+										}
+										{relation
+											{relation ally}
+											{player "%slot"}
 										}
 									}
 									{exclude
@@ -7469,6 +7474,10 @@
 									{include
 										{prop
 											{prop human}
+										}
+										{relation
+											{relation ally}
+											{player "%slot"}
 										}
 									}
 									{exclude
@@ -7503,6 +7512,12 @@
 										{tag aio_morale_leader_rally}
 									}
 								}
+								{include
+									{relation
+										{relation ally}
+										{player "%slot"}
+									}
+								}
 								{exclude
 									{state
 										{state dead}
@@ -7521,6 +7536,12 @@
 										{tag aio_morale_leader_rally}
 									}
 								}
+								{include
+									{relation
+										{relation ally}
+										{player "%slot"}
+									}
+								}
 								{exclude
 									{state
 										{state dead}
@@ -7535,7 +7556,20 @@
 					}
 					{"entity_state"
 						{selector
-							{tag aio_morale_leader_rally}
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_leader_rally}
+									}
+								}
+								{include
+									{relation
+										{relation ally}
+										{player "%slot"}
+									}
+								}
+							}
 						}
 						{tag_remove aio_morale_leader_rally}
 					}
@@ -7543,10 +7577,27 @@
 						{time 1}
 					}
 					{"trigger"
-						{name "conquest_enhanced_mechanics/broken/leader_rally"}
+						{name "conquest_enhanced_mechanics/broken/leader_rally_p%slot"}
 					}
 				}
 			}
+			)
+			("leader_rally_p" slot(1))
+			("leader_rally_p" slot(2))
+			("leader_rally_p" slot(3))
+			("leader_rally_p" slot(4))
+			("leader_rally_p" slot(5))
+			("leader_rally_p" slot(6))
+			("leader_rally_p" slot(7))
+			("leader_rally_p" slot(8))
+			("leader_rally_p" slot(9))
+			("leader_rally_p" slot(10))
+			("leader_rally_p" slot(11))
+			("leader_rally_p" slot(12))
+			("leader_rally_p" slot(13))
+			("leader_rally_p" slot(14))
+			("leader_rally_p" slot(15))
+			("leader_rally_p" slot(16))
 
 			{"conquest_enhanced_mechanics/broken/cleanup_dead"
 				{condition

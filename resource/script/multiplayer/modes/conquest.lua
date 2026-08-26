@@ -2,7 +2,7 @@ require([[/script/multiplayer/modes/utility]])
 require([[/script/multiplayer/modes/utility_ce]])
 
 -- [1.5.6] Code:X Reversion
-printDebug = true
+printDebug = false
 
 Context.SpawnSeekTimer = Context.SpawnSeekTimer or {}
 

@@ -1,6 +1,6 @@
 {game_entity
 	{#+ spriteview
-		{sprite "aio_morale_shaken"
+		{sprite "aio_morale_suppressed"
 			{timer
 				{mode play loop }
 				{duration 10}
