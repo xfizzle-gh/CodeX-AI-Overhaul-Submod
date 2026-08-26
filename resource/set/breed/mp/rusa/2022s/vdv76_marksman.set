@@ -34,6 +34,7 @@
 		{item "rus_fsb_abody_12_1"}
 		{item "drone_recon_ammo" 1}
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_sniper"}
 		{in_hands 0}
 	}
 }

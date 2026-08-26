@@ -33,6 +33,7 @@
 		{item "aio_marker_morale_regular"}
 		{item "secret_doc_bag2"}
 		{item "aio_morale_marker"}
+				{item "aio_marker_vet_5"}
 		{in_hands 4}
 	}
 }

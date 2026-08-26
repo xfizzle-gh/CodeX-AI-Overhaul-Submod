@@ -725,9 +725,13 @@
 	}
 	{on "aio_morale_just_broken"
 		{tags add "aio_morale_just_broken"}
+		{able "fight" 0}
 		{delay 5
 			{tags remove "aio_morale_just_broken"}
 		}
+	}
+	{on "aio_morale_resume_combat"
+		{able "fight" 1}
 	}
 	{on "aio_morale_player_lock"
 		{if tagged "player"
@@ -758,6 +762,7 @@
 		{tags add "aio_morale_suppressed"}
 		{call "aio_morale_just_suppressed"}
 		{call "recovering_from_suppressed"}
+		{call "aio_morale_resume_combat"}
 		{call "aio_morale_player_unlock"}
 		{call "aio_morale_refresh_icons"}
 	}
@@ -775,6 +780,7 @@
 	{on "aio_morale_refresh_icons"
 		{call "aio_morale_stop_icons"}
 		{if tagged "aio_morale_broken"
+			{able "fight" 0}
 			{call "start_aio_morale_broken"}
 		else tagged "aio_morale_panic"
 			{call "start_aio_morale_panic"}

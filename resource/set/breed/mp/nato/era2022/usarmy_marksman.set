@@ -30,6 +30,7 @@
 		{item "shovel_csa"}
 		{item "ng_vest"}
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_sniper"}
 		{in_hands 0}
 	}
 }

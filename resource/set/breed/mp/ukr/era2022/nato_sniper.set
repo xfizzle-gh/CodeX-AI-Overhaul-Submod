@@ -31,6 +31,7 @@
                 {item "ukr_backpack_01"}
 		{item "ukr_ua_body_a_2"}
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_sniper"}
 		{in_hands 0}
 	}
 }

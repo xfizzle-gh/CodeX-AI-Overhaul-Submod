@@ -32,6 +32,8 @@
 		{item "drone_fpv_ammo" filled}			
 		{item "drone_recon_ammo" 1}
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_sniper"}
+				{item "aio_marker_vet_3"}
 		{in_hands 0}
 	}
 }

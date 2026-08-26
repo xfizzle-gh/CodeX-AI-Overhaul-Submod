@@ -40,6 +40,7 @@
 		{item "ammo shotguns" 18}
 		{item "aio_marker_morale_regular"}
 		{item "aio_marker_cmd_primary"}
+				{item "aio_marker_vet_5"}
 		{in_hands 4}
 	}
 }

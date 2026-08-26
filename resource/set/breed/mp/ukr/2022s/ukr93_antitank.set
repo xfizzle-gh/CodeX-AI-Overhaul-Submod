@@ -36,6 +36,7 @@
 		{item "ukr_backpack_01"}
         {item "shovel_csa"}
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_vet_1"}
 		{in_hands 3}
 	}
 }

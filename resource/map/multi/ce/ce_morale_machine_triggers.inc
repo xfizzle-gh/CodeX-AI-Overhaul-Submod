@@ -597,6 +597,15 @@
 						{op "="}
 						{value 1}
 					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/acquire"}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/escape"}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/hold_fire"}
+					}
 					{"delay"
 						{time 3}
 					}

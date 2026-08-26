@@ -32,6 +32,7 @@
         {item "shovel_csa"}
         {item "pais_bron_vsu"}
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_vet_1"}
 		{in_hands 3}
 	}
 }

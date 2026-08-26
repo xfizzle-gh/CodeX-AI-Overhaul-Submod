@@ -35,6 +35,7 @@
                 {item "shovel_csa"}
 		{item "aio_marker_morale_trained"}
 		{item "aio_marker_cmd_junior"}
+				{item "aio_marker_sniper"}
 		{in_hands 0}
 	}
 }

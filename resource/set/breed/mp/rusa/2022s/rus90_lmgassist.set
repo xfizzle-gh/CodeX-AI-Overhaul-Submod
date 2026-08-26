@@ -28,6 +28,7 @@
 		{item "pk_box ammo" 400}
                 {item "shovel_rus"}
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_vet_5"}
 		{in_hands 3}
 	}
 }

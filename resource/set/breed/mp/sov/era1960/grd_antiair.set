@@ -35,6 +35,7 @@
 		{item "sov_gasmask_gp5"}
 
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_vet_3"}
 		{in_hands 0}
 	}
 }

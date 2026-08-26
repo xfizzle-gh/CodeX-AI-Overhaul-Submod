@@ -30,6 +30,7 @@
 		{item "6b2" 0.25 0.5}
 
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_sniper"}
 		{in_hands 0}
 	}
 }

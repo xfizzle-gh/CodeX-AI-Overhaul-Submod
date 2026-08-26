@@ -30,6 +30,7 @@
 		{item "shovel_rus"}
 		{item "rus_fsb_abody_12_1"}
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_vet_2"}
 		{in_hands 0}
 	}
 }

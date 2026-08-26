@@ -32,6 +32,7 @@
 		{item "ukr_ua_body_a_1"}
 		{item "at4cs_v1 weapon" 2 filled}		
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_vet_1"}
 		{in_hands 4}
 	}
 }

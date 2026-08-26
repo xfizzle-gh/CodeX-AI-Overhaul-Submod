@@ -651,6 +651,24 @@
 		{MID 9505}
 		{Able "-select"}
 	}
+	{Entity "gaz2975a_nsvt" 0xb2ce
+		{Position -6700 -36200}
+		{Player 0}
+		{MID 9506}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xb2cf
+		{Position -6695 -36200}
+		{Player 0}
+		{MID 9507}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xb2d0
+		{Position -6690 -36200}
+		{Player 0}
+		{MID 9508}
+		{Able "-select"}
+	}
 
 ; ----- ALLY PRC LIGHT VEH (1 hull+crew) -----
 	{Entity "dongfeng__mengshi_sk131" 0xb33a
@@ -675,6 +693,8 @@
 ; ----- VEHICLE CREW LINKS -----
 	{Link 0xb2cc {0xb2cb "driver"}}
 	{Link 0xb2cd {0xb2cb "gunner2"}}
+	{Link 0xb2cf {0xb2ce "driver"}}
+	{Link 0xb2d0 {0xb2ce "gunner2"}}
 	{Link 0xb33b {0xb33a "driver"}}
 	{Link 0xb33c {0xb33a "gunner2"}}
 	{Link 0xb307 {0xb306 "driver"}}
@@ -689,18 +709,68 @@
 	{Link 0xb37a {0xb378 "gunner2"}}
 
 
-; ===== RARE IFV PACKAGES (cmd 17, attack L2+/L3, cap 1) =====
+; ===== RARE IFV PACKAGES (wave 4, cap 1) =====
 ; MID 9700-9731 ids 0xb380+. y=-36400.
 
 ; ----- ALLY RUSA IFV -----
-
-; ----- ALLY UKR IFV -----
-
-; ----- ALLY PRC IFV -----
+	{Entity "bmp2_rus" 0xb380
+		{Position -6800 -36400}
+		{Player 0}
+		{MID 9700}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xb381
+		{Position -6795 -36400}
+		{Player 0}
+		{MID 9701}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xb382
+		{Position -6790 -36400}
+		{Player 0}
+		{MID 9702}
+		{Able "-select"}
+	}
+	{Human "mp/rusa/2022s/rus_vehicleman" 0xb383
+		{Position -6785 -36400}
+		{Player 0}
+		{MID 9703}
+		{Able "-select"}
+	}
 
 ; ----- ALLY NATO IFV -----
+	{Entity "strf9040c_n" 0xb390
+		{Position 3000 -36400}
+		{Player 0}
+		{MID 9710}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_vehicleman" 0xb391
+		{Position 3005 -36400}
+		{Player 0}
+		{MID 9711}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_vehicleman" 0xb392
+		{Position 3010 -36400}
+		{Player 0}
+		{MID 9712}
+		{Able "-select"}
+	}
+	{Human "mp/nato/2022s/nato_vehicleman" 0xb393
+		{Position 3015 -36400}
+		{Player 0}
+		{MID 9713}
+		{Able "-select"}
+	}
 
 ; ----- IFV CREW LINKS -----
+	{Link 0xb381 {0xb380 "driver"}}
+	{Link 0xb382 {0xb380 "gunner"}}
+	{Link 0xb383 {0xb380 "commander"}}
+	{Link 0xb391 {0xb390 "driver"}}
+	{Link 0xb392 {0xb390 "gunner"}}
+	{Link 0xb393 {0xb390 "commander"}}
 
 ;
 ; ===== MOTORIZED INSERT PACKAGES (cmd 19) =====
@@ -737,9 +807,6 @@
 
 ; ===== E2 AIR PACKAGE POOLS (default-off; West-81 supplies UH-60/C-130) =====
 ; IDs 0xb401-0xb42f, MIDs 9800-9846, y=-36800.
-	}
-	}
-	}
 
 ; ----- E2 CREW + PARATROOPER LINKS -----
 
@@ -827,6 +894,13 @@
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_veh" "ally_sup_rusa_veh1" "hidden" 0xb2cb}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_veh" "ally_sup_rusa_veh1" "hidden" 0xb2cc}
 	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_veh" "ally_sup_rusa_veh1" "hidden" 0xb2cd}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_veh" "ally_sup_rusa_veh2" "hidden" 0xb2ce}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_veh" "ally_sup_rusa_veh2" "hidden" 0xb2cf}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_veh" "ally_sup_rusa_veh2" "hidden" 0xb2d0}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "hidden" 0xb380}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "hidden" 0xb381}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "hidden" 0xb382}
+	{Tags "ally_sup_tpl" "ally_sup_rusa" "ally_sup_rusa_ifv" "ally_sup_rusa_ifv1" "hidden" 0xb383}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_veh" "ally_sup_prc_veh1" "hidden" 0xb33a}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_veh" "ally_sup_prc_veh1" "hidden" 0xb33b}
 	{Tags "ally_sup_tpl" "ally_sup_prc" "ally_sup_prc_veh" "ally_sup_prc_veh1" "hidden" 0xb33c}
@@ -845,6 +919,10 @@
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh2" "hidden" 0xb378}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh2" "hidden" 0xb379}
 	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_veh" "ally_sup_nato_veh2" "hidden" 0xb37a}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "hidden" 0xb390}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "hidden" 0xb391}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "hidden" 0xb392}
+	{Tags "ally_sup_tpl" "ally_sup_nato" "ally_sup_nato_ifv" "ally_sup_nato_ifv1" "hidden" 0xb393}
 
 
 ; BEGIN ENEMY NORMAL TRANSPORT TAGS

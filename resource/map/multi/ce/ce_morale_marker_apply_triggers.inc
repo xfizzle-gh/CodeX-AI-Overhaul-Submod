@@ -942,3 +942,189 @@
 					}
 				}
 			}
+			{"conquest_enhanced_mechanics/morale/apply_sniper"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{include
+										{prop
+											{prop human}
+										}
+										{with_item
+											{type existance}
+											{item "aio_marker_sniper"}
+										}
+									}
+									{exclude
+										{tag
+											{tag aio_sniper}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{include
+									{prop
+										{prop human}
+									}
+									{with_item
+										{type existance}
+										{item "aio_marker_sniper"}
+									}
+								}
+								{exclude
+									{tag
+										{tag aio_sniper}
+									}
+								}
+							}
+						}
+						{tag_add aio_sniper}
+					}
+					{"delay"
+						{time 0.1}
+					}
+					{"inventory"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_sniper}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+									{with_item
+										{type existance}
+										{item "aio_marker_sniper"}
+									}
+								}
+							}
+						}
+						{action remove}
+						{item "aio_marker_sniper"}
+					}
+					{"delay"
+						{time 0.1}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/morale/apply_sniper"}
+					}
+				}
+			}
+			(define "apply_vet"
+			{"conquest_enhanced_mechanics/morale/apply_vet_%lvl"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{include
+										{prop
+											{prop human}
+										}
+										{with_item
+											{type existance}
+											{item "aio_marker_vet_%lvl"}
+										}
+									}
+									{exclude
+										{tag
+											{tag aio_vet_%lvl}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
+					{"entity_state"
+						{selector
+							{source advanced}
+							{group
+								{include
+									{prop
+										{prop human}
+									}
+									{with_item
+										{type existance}
+										{item "aio_marker_vet_%lvl"}
+									}
+								}
+								{exclude
+									{tag
+										{tag aio_vet_%lvl}
+									}
+								}
+							}
+						}
+						{tag_add aio_vet_%lvl}
+					}
+					{"delay"
+						{time 0.1}
+					}
+					{"inventory"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_vet_%lvl}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+									{with_item
+										{type existance}
+										{item "aio_marker_vet_%lvl"}
+									}
+								}
+							}
+						}
+						{action remove}
+						{item "aio_marker_vet_%lvl"}
+					}
+					{"delay"
+						{time 0.1}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/morale/apply_vet_%lvl"}
+					}
+				}
+			}
+			)
+			("apply_vet" lvl(1))
+			("apply_vet" lvl(2))
+			("apply_vet" lvl(3))
+			("apply_vet" lvl(4))
+			("apply_vet" lvl(5))
+			("apply_vet" lvl(6))
+			("apply_vet" lvl(7))
+			("apply_vet" lvl(8))

@@ -32,6 +32,7 @@
 		{item "pais_bron_vsu"}
 		{item "aio_marker_morale_regular"}
 		{item "aio_marker_cmd_primary"}
+				{item "aio_marker_vet_1"}
 		{in_hands 3}
 	}
 }

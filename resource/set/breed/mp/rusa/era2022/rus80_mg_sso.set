@@ -31,6 +31,7 @@
 		{item "weapon RPG26" 2 filled}
 		{item "aio_marker_morale_elite"}
 		{item "aio_marker_cmd_independent"}
+				{item "aio_marker_vet_2"}
 		{in_hands 0}
 	}
 }

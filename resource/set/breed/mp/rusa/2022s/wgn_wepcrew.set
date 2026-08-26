@@ -26,6 +26,7 @@
 		{item "rus_wagner_body_2"}
 		{item "rgd5 grenade" 3}
 		{item "aio_marker_morale_elite"}
+				{item "aio_marker_vet_3"}
 		{in_hands 2}
 	}
 }

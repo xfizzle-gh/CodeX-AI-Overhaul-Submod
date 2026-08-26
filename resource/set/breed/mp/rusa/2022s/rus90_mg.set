@@ -29,6 +29,7 @@
                 {item "shovel_rus"}
                 {item "rus_backpack_02"}				
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_vet_5"}
 		{in_hands 3}
 	}
 }

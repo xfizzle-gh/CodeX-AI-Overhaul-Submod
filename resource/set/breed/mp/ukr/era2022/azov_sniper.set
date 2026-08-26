@@ -35,6 +35,7 @@
                 {item "ukr_ua_body_b_1" 1}
                 {item "shovel_csa"}
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_sniper"}
 		{in_hands 0}
 	}
 }

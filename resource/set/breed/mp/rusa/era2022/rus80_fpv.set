@@ -28,6 +28,7 @@
 {item "shovel_rus"}
 		{item "rdg2 grenade" 2}
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_vet_2"}
 		{in_hands 0}
 	}
 }

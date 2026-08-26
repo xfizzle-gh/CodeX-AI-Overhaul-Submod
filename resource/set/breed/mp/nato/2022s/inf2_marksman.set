@@ -29,6 +29,8 @@
 		{item "shovel_csa"}
 
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_sniper"}
+				{item "aio_marker_vet_2"}
 		{in_hands 0}
 	}
 }

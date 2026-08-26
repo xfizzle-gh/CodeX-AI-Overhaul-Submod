@@ -35,6 +35,7 @@
 		{item "aio_marker_morale_trained"}
 		{item "aio_marker_cmd_junior"}
 		{item "aio_marker_cmd_independent"}
+				{item "aio_marker_vet_5"}
 		{in_hands 0}
 	}
 }

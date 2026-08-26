@@ -29,6 +29,7 @@
         {item "shovel_csa"}
 		{item "gunbag_usa_m2"}	
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_vet_4"}
 		{in_hands 0}
 	}
 }

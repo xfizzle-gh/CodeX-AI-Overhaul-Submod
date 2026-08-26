@@ -30,6 +30,7 @@
 		{item "shovel_rus"}
 
 		{item "aio_marker_morale_low"}
+				{item "aio_marker_vet_2"}
 		{in_hands 0}
 	}
 }

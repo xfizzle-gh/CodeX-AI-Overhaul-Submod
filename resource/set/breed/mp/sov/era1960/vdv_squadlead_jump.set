@@ -37,6 +37,7 @@
 
 		{item "aio_marker_morale_trained"}
 		{item "aio_marker_cmd_primary"}
+				{item "aio_marker_vet_4"}
 		{in_hands 0}
 	}
 }

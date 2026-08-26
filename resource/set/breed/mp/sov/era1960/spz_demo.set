@@ -34,6 +34,7 @@
 
 		{item "aio_marker_morale_elite"}
 		{item "aio_marker_cmd_independent"}
+				{item "aio_marker_vet_4"}
 		{in_hands 0}
 	}
 }

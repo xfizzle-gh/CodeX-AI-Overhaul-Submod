@@ -30,6 +30,7 @@
         {item "pais_bron_vsu"}
 		{item "ukr_ua_body_st_06"}
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_vet_1"}
 		{in_hands 4}
 	}
 }

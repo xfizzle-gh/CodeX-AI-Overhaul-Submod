@@ -35,6 +35,7 @@
 		{item "gm94" filled}
 		{item "43mm he ammo" 12}
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_vet_3"}
 		{in_hands 0}
 	}
 }

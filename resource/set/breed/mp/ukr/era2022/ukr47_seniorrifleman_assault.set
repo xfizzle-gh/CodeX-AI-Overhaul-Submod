@@ -33,6 +33,7 @@
 		{item "ukr_ua_body_st_05"}
 		{item "aio_marker_morale_trained"}
 		{item "aio_marker_cmd_junior"}
+				{item "aio_marker_vet_1"}
 		{in_hands 4}
 	}
 }

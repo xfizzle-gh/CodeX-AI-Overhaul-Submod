@@ -1,5 +1,6 @@
 ; Broken escape: own spawn-side rear. Morale owns movement only while Broken.
 ; Writers must exclude aio_morale_owned. No player seizure. No POW/surrender.
+; hold_fire keeps weapons down. Do not drop orders there — that cancels dest-move.
 ; One-shot fast retreat: actor_state speed fast -> claim aio_morale_retreat_issued
 ; -> 0.25s -> dest move to spawn_a/spawn_b from enemy_spawnside$ + current side.
 ; Arrival at own rear rallies to Shaken and releases ownership.
@@ -78,6 +79,8 @@
 							}
 						}
 						{drop orders}
+						{fire_mode hold}
+						{weapon_prepare off}
 						{move_mode free}
 						{ai_move
 							{mode enable}
@@ -86,6 +89,7 @@
 							{speed fast}
 						}
 						{ai
+							{no_retreat off}
 							{advance_ratio "0.1"}
 							{retreat_ratio 4}
 						}
@@ -129,6 +133,77 @@
 					}
 					{"trigger"
 						{name "conquest_enhanced_mechanics/broken/acquire"}
+					}
+				}
+			}
+			{"conquest_enhanced_mechanics/broken/hold_fire"
+				{condition
+					{terms
+						{"1.cmp_i"
+							{var "enable_ce_morale_mechanic$"}
+							{op ">"}
+							{value 0}
+						}
+						{"2.entities"
+							{selector
+								{source advanced}
+								{group
+									{select
+										{tag
+											{tag aio_morale_broken}
+										}
+									}
+									{include
+										{prop
+											{prop human}
+										}
+									}
+									{exclude
+										{state
+											{state dead}
+										}
+										{state
+											{state inactive}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				{actions
+					{"actor_state"
+						{selector
+							{source advanced}
+							{group
+								{select
+									{tag
+										{tag aio_morale_broken}
+									}
+								}
+								{include
+									{prop
+										{prop human}
+									}
+								}
+								{exclude
+									{state
+										{state dead}
+									}
+									{state
+										{state inactive}
+									}
+								}
+							}
+						}
+						{fire_mode hold}
+						{weapon_prepare off}
+					}
+					{"delay"
+						{time 0.5}
+					}
+					{"trigger"
+						{name "conquest_enhanced_mechanics/broken/hold_fire"}
 					}
 				}
 			}
@@ -209,6 +284,8 @@
 							}
 						}
 						{drop orders}
+						{fire_mode hold}
+						{weapon_prepare off}
 						{move_mode free}
 						{ai_move
 							{mode enable}
@@ -217,6 +294,7 @@
 							{speed fast}
 						}
 						{ai
+							{no_retreat off}
 							{advance_ratio "0.1"}
 							{retreat_ratio 4}
 						}
@@ -4301,6 +4379,8 @@
 							}
 						}
 						{drop orders}
+						{fire_mode hold}
+						{weapon_prepare off}
 						{move_mode free}
 						{ai_move
 							{mode enable}
@@ -4309,6 +4389,7 @@
 							{speed fast}
 						}
 						{ai
+							{no_retreat off}
 							{advance_ratio "0.1"}
 							{retreat_ratio 4}
 						}

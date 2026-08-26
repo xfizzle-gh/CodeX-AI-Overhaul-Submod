@@ -29,6 +29,7 @@
 		{item "tt_308_v2" filled}
 		{item "ammo g28_ammo" 180}
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_sniper"}
 		{in_hands 4}
 	}
 }

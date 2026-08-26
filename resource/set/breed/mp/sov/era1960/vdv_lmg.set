@@ -31,6 +31,7 @@
 {item "6b2" 1}
 
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_vet_4"}
 		{in_hands 0}
 	}
 }

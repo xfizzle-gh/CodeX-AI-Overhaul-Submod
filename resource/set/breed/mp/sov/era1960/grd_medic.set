@@ -33,6 +33,7 @@
 		{item "shovel_rus"}
 		{item "6b2" 0.75 0.5}
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_vet_3"}
 		{in_hands 0}
 	}
 }

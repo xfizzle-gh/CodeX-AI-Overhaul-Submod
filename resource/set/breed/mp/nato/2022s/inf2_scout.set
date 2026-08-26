@@ -34,6 +34,7 @@
 		{item "drone_fpv_ammo" 3}	
 		{item "us_backpack_3"}			
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_vet_2"}
 		{in_hands 0}
 	}
 }

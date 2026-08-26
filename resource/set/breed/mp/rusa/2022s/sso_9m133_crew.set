@@ -33,6 +33,7 @@
 		{item "shovel_rus"}
 		{item "gunbag_9m133"}
 		{item "aio_marker_morale_elite"}
+				{item "aio_marker_vet_5"}
 		{in_hands 0}
 	}
 }

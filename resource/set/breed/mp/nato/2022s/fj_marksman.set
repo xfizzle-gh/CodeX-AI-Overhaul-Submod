@@ -36,6 +36,7 @@
 		{item "backpack_90"}
 		{item "c4pn" 1}	
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_sniper"}
 		{in_hands 0}
 	}
 }

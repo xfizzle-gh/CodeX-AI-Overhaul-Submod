@@ -35,6 +35,7 @@
 		{item "m72a7law weapon" 2 filled}			
 								
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_vet_1"}
 		{in_hands 3}
 	}
 }

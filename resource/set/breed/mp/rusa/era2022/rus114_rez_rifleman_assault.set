@@ -29,6 +29,7 @@
 		{item "bandage_rus" 3.5 0.5}
 
 		{item "aio_marker_morale_low"}
+				{item "aio_marker_vet_2"}
 		{in_hands 0}
 	}
 }

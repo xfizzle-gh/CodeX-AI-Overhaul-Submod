@@ -30,6 +30,8 @@
 		{item "svdk_v2" filled}
 		{item "svd ammo" 100}
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_sniper"}
+				{item "aio_marker_vet_1"}
 		{in_hands 4}
 	}
 }

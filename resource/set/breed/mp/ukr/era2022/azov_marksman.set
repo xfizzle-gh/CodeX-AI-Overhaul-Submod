@@ -35,6 +35,7 @@
 		{item "ukr_bron_4_azov" 1}
 
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_sniper"}
 		{in_hands 0}
 	}
 }

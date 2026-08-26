@@ -32,6 +32,7 @@
 		{item "rpg22" 2 filled }
 		{item "aio_marker_morale_low"}
 		{item "aio_marker_cmd_junior"}
+				{item "aio_marker_vet_2"}
 		{in_hands 0}
 	}
 }

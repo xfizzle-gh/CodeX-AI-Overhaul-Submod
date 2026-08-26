@@ -29,6 +29,7 @@
 		{item "m107a1" filling "ammo m107_ammo" 10}
 		{item "ammo m107_ammo" 100}
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_sniper"}
 		{in_hands 4}
 	}
 }

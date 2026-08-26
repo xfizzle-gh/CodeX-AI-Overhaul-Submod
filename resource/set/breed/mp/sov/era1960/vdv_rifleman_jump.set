@@ -30,6 +30,7 @@
 		{item "rus_afg_sh68" 1}
 
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_vet_4"}
 		{in_hands 0}
 	}
 }

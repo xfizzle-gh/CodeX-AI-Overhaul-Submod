@@ -33,6 +33,7 @@
 		{item "40mm_grenade ammo" 18}
 		{item "aio_marker_morale_trained"}
 		{item "aio_marker_cmd_primary"}
+				{item "aio_marker_vet_1"}
 		{in_hands 3}
 	}
 }

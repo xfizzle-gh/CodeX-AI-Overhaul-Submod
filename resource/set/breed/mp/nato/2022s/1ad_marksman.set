@@ -30,6 +30,7 @@
 
 		{item "us_backpack_1"}		
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_sniper"}
 		{in_hands 0}
 	}
 }

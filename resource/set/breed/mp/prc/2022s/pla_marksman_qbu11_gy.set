@@ -29,6 +29,7 @@
 
 		{item "t86 grenade" 2}				
 		{item "aio_marker_morale_regular"}
+				{item "aio_marker_sniper"}
 		{in_hands 0} {item "pla21_glass"}
 	}
 }

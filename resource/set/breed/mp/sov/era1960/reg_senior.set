@@ -38,6 +38,7 @@
 
 		{item "aio_marker_morale_regular"}
 		{item "aio_marker_cmd_junior"}
+				{item "aio_marker_vet_1"}
 		{in_hands 0}
 	}
 }

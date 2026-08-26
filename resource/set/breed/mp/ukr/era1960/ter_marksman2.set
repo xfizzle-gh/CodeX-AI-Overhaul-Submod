@@ -29,6 +29,7 @@
 		{item "shovel_rus"}
 
 		{item "aio_marker_morale_low"}
+				{item "aio_marker_sniper"}
 		{in_hands 0}
 	}
 }

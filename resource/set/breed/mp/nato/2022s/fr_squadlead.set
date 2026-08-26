@@ -40,6 +40,7 @@
 		{item "aio_marker_cmd_primary"}
 		{item "aio_marker_cmd_independent"}
 		{item "aio_marker_steadfast"}
+				{item "aio_marker_vet_5"}
 		{in_hands 0}
 	}
 }

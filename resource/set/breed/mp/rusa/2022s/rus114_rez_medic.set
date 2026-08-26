@@ -29,5 +29,6 @@
 		{item "bandage_rus" 22.5 2.5}
 		{item "tent_kit" 2}
 		{item "aio_marker_morale_low"}
+		{item "aio_marker_vet_2"}
 	}
 }

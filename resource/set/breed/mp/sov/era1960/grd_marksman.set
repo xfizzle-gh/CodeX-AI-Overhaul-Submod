@@ -31,6 +31,8 @@
 		{item "rus_afg_sh68" 1}
 		{item "6b2" 0.75 0.5}
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_sniper"}
+				{item "aio_marker_vet_3"}
 		{in_hands 0}
 	}
 }

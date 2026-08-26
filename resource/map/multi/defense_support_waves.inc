@@ -582,11 +582,11 @@
 				{"delay" {time 0.05}}
 			)
 
-			; Player nation -> faction_support_army$ (shared with attack support).
+			; Player nation -> faction_support_army$ (1 Kor / 3 ARF, shared with attack).
 			(define "ds_resolve_army"
 				{"switch"
-					{"case" {condition {type cmp_i} {var "user_nation$"} {op "=="} {value 2}} {"set_i" {var "faction_support_army$"} {op "="} {value 2}}}
-					{"case" {condition {type cmp_i} {var "user_nation$"} {op "=="} {value 6}} {"set_i" {var "faction_support_army$"} {op "="} {value 4}}}
+					{"case" {condition {type cmp_i} {var "user_nation$"} {op "=="} {value 2}} {"set_i" {var "faction_support_army$"} {op "="} {value 3}}}
+					{"case" {condition {type cmp_i} {var "user_nation$"} {op "=="} {value 6}} {"set_i" {var "faction_support_army$"} {op "="} {value 1}}}
 					{"case" {condition {type cmp_i} {var "user_nation$"} {op "=="} {value 1}} {"set_i" {var "faction_support_army$"} {op "="} {value 1}}}
 					{"case" {condition {type cmp_i} {var "user_nation$"} {op "=="} {value 5}} {"set_i" {var "faction_support_army$"} {op "="} {value 1}}}
 					{"case" {condition {type cmp_i} {var "user_nation$"} {op "=="} {value 8}} {"set_i" {var "faction_support_army$"} {op "="} {value 1}}}
@@ -602,57 +602,80 @@
 				}
 			)
 
+			(define "ds_claim_line"
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "defense_support_place$"} {op ">"} {value 0}}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_%0_line}}}} {amount 4}}
+							{tag_add def_sup_deploy}
+							{tag_remove ally_sup_%0_line}
+						}
+					}
+					{"case"
+						{condition {type cmp_i} {var "defense_support_wave_num$"} {op "=="} {value 1}}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_%0_line}}}} {amount 4}}
+							{tag_add def_sup_deploy}
+							{tag_remove ally_sup_%0_line}
+						}
+					}
+					{"default"
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_%0_line}}}} {amount 6}}
+							{tag_add def_sup_deploy}
+							{tag_remove ally_sup_%0_line}
+						}
+					}
+				}
+			)
 			(define "ds_poke_faction_line"
 				{"trigger" {name "defense_support/ally_rusa_line"}}
-				{"trigger" {name "defense_support/ally_ukr_line"}}
-				{"trigger" {name "defense_support/ally_prc_line"}}
 				{"trigger" {name "defense_support/ally_nato_line"}}
-			)
-			(define "ds_poke_faction_wpn"
-				{"trigger" {name "defense_support/ally_rusa_wpn"}}
-				{"trigger" {name "defense_support/ally_ukr_wpn"}}
-				{"trigger" {name "defense_support/ally_prc_wpn"}}
-				{"trigger" {name "defense_support/ally_nato_wpn"}}
-			)
-			(define "ds_poke_faction_recon"
-				{"trigger" {name "defense_support/ally_rusa_recon"}}
-				{"trigger" {name "defense_support/ally_ukr_recon"}}
-				{"trigger" {name "defense_support/ally_prc_recon"}}
-				{"trigger" {name "defense_support/ally_nato_recon"}}
-			)
-			(define "ds_poke_faction_assault"
-				{"trigger" {name "defense_support/ally_rusa_assault"}}
-				{"trigger" {name "defense_support/ally_ukr_assault"}}
-				{"trigger" {name "defense_support/ally_prc_assault"}}
-				{"trigger" {name "defense_support/ally_nato_assault"}}
-			)
-			(define "ds_poke_faction_eng"
-				{"trigger" {name "defense_support/ally_rusa_eng"}}
-				{"trigger" {name "defense_support/ally_ukr_eng"}}
-				{"trigger" {name "defense_support/ally_prc_eng"}}
-				{"trigger" {name "defense_support/ally_nato_eng"}}
 			)
 			(define "ds_poke_faction_air"
 				{"trigger" {name "defense_support/ally_rusa_air"}}
-				{"trigger" {name "defense_support/ally_ukr_air"}}
-				{"trigger" {name "defense_support/ally_prc_air"}}
 				{"trigger" {name "defense_support/ally_nato_air"}}
 			)
-
-			; One line (or rare recon) team onto the flag. Not from wave budget. No veh.
-			(define "ds_pick_garrison"
-				("ds_resolve_army")
+			(define "ds_poke_faction_veh"
+				{"trigger" {name "defense_support/ally_rusa_veh"}}
+				{"trigger" {name "defense_support/ally_nato_veh"}}
+			)
+			(define "ds_claim_veh"
 				{"switch"
 					{"case"
-						{condition {type rand} {value 0.25}}
-						{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 12}}
-						("ds_poke_faction_recon")
+						{condition {type cmp_i} {var "defense_support_veh_left$"} {op "=="} {value 2}}
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_%0_veh1}}}}}
+							{tag_add def_sup_deploy}
+							{tag_remove ally_sup_%0_veh}
+							{tag_remove ally_sup_%0_veh1}
+						}
 					}
 					{"default"
-						{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
-						("ds_poke_faction_line")
+						{"entity_state"
+							{selector {source advanced} {group {select {tag {tag ally_sup_%0_veh2}}}}}
+							{tag_add def_sup_deploy}
+							{tag_remove ally_sup_%0_veh}
+							{tag_remove ally_sup_%0_veh2}
+						}
 					}
 				}
+			)
+			(define "ds_claim_ifv"
+				{"entity_state"
+					{selector {source advanced} {group {select {tag {tag ally_sup_%0_ifv1}}}}}
+					{tag_add def_sup_deploy}
+					{tag_remove ally_sup_%0_ifv}
+					{tag_remove ally_sup_%0_ifv1}
+				}
+			)
+
+			; One 4-man line team onto the flag. Not from wave budget.
+			(define "ds_pick_garrison"
+				("ds_resolve_army")
+				{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
+				("ds_poke_faction_line")
 				{"delay" {time 4}}
 				{"switch"
 					{"case"
@@ -999,8 +1022,6 @@
 
 			(define "ds_poke_faction_motor"
 				{"trigger" {name "defense_support/ally_rusa_motor"}}
-				{"trigger" {name "defense_support/ally_ukr_motor"}}
-				{"trigger" {name "defense_support/ally_prc_motor"}}
 				{"trigger" {name "defense_support/ally_nato_motor"}}
 			)
 
@@ -1050,96 +1071,7 @@
 				}
 			}
 
-{"defense_support/ally_ukr_motor"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 19}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.cmp_i" {var "defense_support_motor_left$"} {op ">"} {value 0}}
-						{"6.entities" {selector {tag ally_sup_ukr_motor_hull}} {count {op ">="} {value 1}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT MOTORIZED INSERT"}}
-						}
-						{"default"}
-					}
-					; Claim whole package (hull + linked crew + pax).
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor}}}}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_ukr_motor}
-						{tag_remove ally_sup_ukr_motor_crew}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_hull}}}}}
-						{tag_add def_sup_motor_hull}
-						{tag_remove ally_sup_ukr_motor_hull}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_pax}}}}}
-						{tag_add def_sup_motor_pax}
-						{tag_remove ally_sup_ukr_motor_pax}
-					}
-					{"set_i" {var "defense_support_motor_left$"} {op "-"} {value 1}}
-					{"delay" {time 0.1}}
-					("ds_place_motor_visible")
-					("ds_finish_motor")
-				}
-			}
 
-{"defense_support/ally_prc_motor"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 19}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.cmp_i" {var "defense_support_motor_left$"} {op ">"} {value 0}}
-						{"6.entities" {selector {tag ally_sup_prc_motor_hull}} {count {op ">="} {value 1}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT MOTORIZED INSERT"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor}}}}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_prc_motor}
-						{tag_remove ally_sup_prc_motor_crew}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_hull}}}}}
-						{tag_add def_sup_motor_hull}
-						{tag_remove ally_sup_prc_motor_hull}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_pax}}}}}
-						{tag_add def_sup_motor_pax}
-						{tag_remove ally_sup_prc_motor_pax}
-					}
-					{"set_i" {var "defense_support_motor_left$"} {op "-"} {value 1}}
-					{"delay" {time 0.1}}
-					("ds_place_motor_visible")
-					("ds_finish_motor")
-				}
-			}
 
 {"defense_support/ally_nato_motor"
 				{condition
@@ -1338,66 +1270,6 @@
 				}
 			}
 
-			{"defense_support/normal_transport_ukr"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_armed$"} {op "=="} {value 1}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.cmp_i" {var "transport_ds_done$"} {op "=="} {value 0}}
-						{"6.entities" {selector {tag ally_sup_ukr_motor_hull}} {count {op ">="} {value 1}}}
-					}
-				}
-				{actions
-					{"set_i" {var "transport_ds_done$"} {op "="} {value 1}}
-					{"delay" {time 45}}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor}}}}}
-						{tag_add def_sup_deploy}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_hull}}}}}
-						{tag_add transport_ds_hull}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_motor_pax}}}}}
-						{tag_add transport_ds_pax}
-					}
-					("transport_ds_place")
-					{"entity_state"
-						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
-						{tag_remove ally_sup_tpl}
-						{tag_remove ally_sup_ukr_motor}
-						{tag_remove hidden}
-						{inactive off}
-						{impregnability disabled}
-						{discovered on}
-					}
-					{"delay" {time 0.2}}
-					("ds_own_to_defenderbot")
-					{"delay" {time 0.4}}
-					{"actor_state"
-						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
-						{control AI}
-						{ai_move {mode enable}}
-						{weapon_prepare on}
-						{fire_mode open}
-						{move_mode free}
-						{movement {speed normal} {kind normal} {type normal}}
-						{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}
-					}
-					{"set_i" {var "transport_ds_step$"} {op "="} {value 1}}
-					("transport_ds_issue_patrol")
-					{"entity_state"
-						{selector {tag def_sup_deploy}}
-						{tag_remove def_sup_deploy}
-					}
-					{"delay" {time 45}}
-					{"trigger" {name "defense_support/normal_transport_patrol"}}
-				}
-			}
 
 			{"defense_support/normal_transport_nato"
 				{condition
@@ -1460,66 +1332,6 @@
 				}
 			}
 
-			{"defense_support/normal_transport_prc"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5 & 6"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_armed$"} {op "=="} {value 1}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.cmp_i" {var "transport_ds_done$"} {op "=="} {value 0}}
-						{"6.entities" {selector {tag ally_sup_prc_motor_hull}} {count {op ">="} {value 1}}}
-					}
-				}
-				{actions
-					{"set_i" {var "transport_ds_done$"} {op "="} {value 1}}
-					{"delay" {time 45}}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor}}}}}
-						{tag_add def_sup_deploy}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_hull}}}}}
-						{tag_add transport_ds_hull}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_motor_pax}}}}}
-						{tag_add transport_ds_pax}
-					}
-					("transport_ds_place")
-					{"entity_state"
-						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
-						{tag_remove ally_sup_tpl}
-						{tag_remove ally_sup_prc_motor}
-						{tag_remove hidden}
-						{inactive off}
-						{impregnability disabled}
-						{discovered on}
-					}
-					{"delay" {time 0.2}}
-					("ds_own_to_defenderbot")
-					{"delay" {time 0.4}}
-					{"actor_state"
-						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
-						{control AI}
-						{ai_move {mode enable}}
-						{weapon_prepare on}
-						{fire_mode open}
-						{move_mode free}
-						{movement {speed normal} {kind normal} {type normal}}
-						{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}
-					}
-					{"set_i" {var "transport_ds_step$"} {op "="} {value 1}}
-					("transport_ds_issue_patrol")
-					{"entity_state"
-						{selector {tag def_sup_deploy}}
-						{tag_remove def_sup_deploy}
-					}
-					{"delay" {time 45}}
-					{"trigger" {name "defense_support/normal_transport_patrol"}}
-				}
-			}
 
 			; Route continues only while at least one tagged passenger remains within
 			; eight metres of the hull. Normal AI dismount under contact breaks that
@@ -1563,236 +1375,18 @@
 
 ; END FRIENDLY DEFENDER MOTOR ONE-SHOT
 
-			; L1/L2: 4-man line only on the defense edge (no parked car pool here).
-			(define "ds_pick_hybrid_non_nato"
-				{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
-				("ds_poke_faction_line")
+			; Player defense calls this as wave 2 then wave 4 only.
+			(define "ds_pick_composition"
+				("ds_resolve_army")
 				{"switch"
 					{"case"
-						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value -1}}
-						{"switch"
-							{"case"
-								{condition {type rand} {value 0.15}}
-								{"switch"
-									{"case"
-										{condition {type cmp_i} {var "defense_support_air_left$"} {op ">"} {value 0}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 18}}
-										("ds_poke_faction_air")
-									}
-									{"default"
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
-										("ds_poke_faction_line")
-									}
-								}
-							}
-							{"case"
-								{condition {type rand} {value 0.12}}
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 14}}
-								("ds_poke_faction_eng")
-							}
-							{"case"
-								{condition {type rand} {value 0.2}}
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 13}}
-								("ds_poke_faction_assault")
-							}
-							{"case"
-								{condition {type rand} {value 0.25}}
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 12}}
-								("ds_poke_faction_recon")
-							}
-							{"case"
-								{condition {type rand} {value 0.4}}
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 11}}
-								("ds_poke_faction_wpn")
-							}
-							{"default"
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
-								("ds_poke_faction_line")
-							}
-						}
-					}
-					{"case"
-						{condition {type cmp_i} {var "defense_level$"} {op "=="} {value -2}}
-						{"switch"
-							{"case"
-								{condition {type rand} {value 0.15}}
-								{"switch"
-									{"case"
-										{condition {type cmp_i} {var "defense_support_air_left$"} {op ">"} {value 0}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 18}}
-										("ds_poke_faction_air")
-									}
-									{"default"
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
-										("ds_poke_faction_line")
-									}
-								}
-							}
-							{"case"
-								{condition {type rand} {value 0.12}}
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 14}}
-								("ds_poke_faction_eng")
-							}
-							{"case"
-								{condition {type rand} {value 0.18}}
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 13}}
-								("ds_poke_faction_assault")
-							}
-							{"case"
-								{condition {type rand} {value 0.28}}
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 12}}
-								("ds_poke_faction_recon")
-							}
-							{"case"
-								{condition {type rand} {value 0.4}}
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 11}}
-								("ds_poke_faction_wpn")
-							}
-							{"default"
-								{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
-								("ds_poke_faction_line")
-							}
-						}
-					}
-					{"default"
+						{condition {type cmp_i} {var "defense_support_wave_num$"} {op "<="} {value 2}}
 						{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
 						("ds_poke_faction_line")
 					}
-				}
-			)
-
-			; L1/L2: 4-man faction line only.
-			(define "ds_pick_composition"
-				("ds_resolve_army")
-				{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 10}}
-				("ds_poke_faction_line")
-				{"switch"
-					{"case"
-						{condition {type cmp_i} {var "faction_support_army$"} {op "=="} {value -1}}
-						{"switch"
-							{"case"
-								{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
-								{"switch"
-									{"case"
-										{condition {type rand} {value 0.15}}
-										{"switch"
-											{"case"
-												{condition {type cmp_i} {var "defense_support_air_left$"} {op ">"} {value 0}}
-												{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 18}}
-												("ds_poke_faction_air")
-											}
-											{"default"
-												{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 1}}
-												{"trigger" {name "defense_support/comp_usmc"}}
-											}
-										}
-									}
-									{"case"
-										{condition {type rand} {value 0.1}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 14}}
-										("ds_poke_faction_eng")
-									}
-									{"case"
-										{condition {type rand} {value 0.14}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 12}}
-										("ds_poke_faction_recon")
-									}
-									{"case"
-										{condition {type rand} {value 0.12}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 13}}
-										("ds_poke_faction_assault")
-									}
-									{"case"
-										{condition {type rand} {value 0.3}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 3}}
-										{"trigger" {name "defense_support/comp_pzgd"}}
-									}
-									{"case"
-										{condition {type rand} {value 0.5}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 2}}
-										{"trigger" {name "defense_support/comp_1ad"}}
-									}
-									{"default"
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 1}}
-										{"trigger" {name "defense_support/comp_usmc"}}
-									}
-								}
-							}
-							{"case"
-								{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
-								{"switch"
-									{"case"
-										{condition {type rand} {value 0.15}}
-										{"switch"
-											{"case"
-												{condition {type cmp_i} {var "defense_support_air_left$"} {op ">"} {value 0}}
-												{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 18}}
-												("ds_poke_faction_air")
-											}
-											{"default"
-												{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 1}}
-												{"trigger" {name "defense_support/comp_usmc"}}
-											}
-										}
-									}
-									{"case"
-										{condition {type rand} {value 0.1}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 14}}
-										("ds_poke_faction_eng")
-									}
-									{"case"
-										{condition {type rand} {value 0.15}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 12}}
-										("ds_poke_faction_recon")
-									}
-									{"case"
-										{condition {type rand} {value 0.12}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 13}}
-										("ds_poke_faction_assault")
-									}
-									{"case"
-										{condition {type rand} {value 0.2}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 3}}
-										{"trigger" {name "defense_support/comp_pzgd"}}
-									}
-									{"case"
-										{condition {type rand} {value 0.5}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 2}}
-										{"trigger" {name "defense_support/comp_1ad"}}
-									}
-									{"default"
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 1}}
-										{"trigger" {name "defense_support/comp_usmc"}}
-									}
-								}
-							}
-							{"default"
-								{"switch"
-									{"case"
-										{condition {type rand} {value 0.2}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 12}}
-										("ds_poke_faction_recon")
-									}
-									{"case"
-										{condition {type rand} {value 0.3}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 5}}
-										{"trigger" {name "defense_support/comp_arf"}}
-									}
-									{"case"
-										{condition {type rand} {value 0.5}}
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 2}}
-										{"trigger" {name "defense_support/comp_1ad"}}
-									}
-									{"default"
-										{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 1}}
-										{"trigger" {name "defense_support/comp_usmc"}}
-									}
-								}
-							}
-						}
-					}
 					{"default"
-						("ds_pick_hybrid_non_nato")
+						{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 16}}
+						("ds_poke_faction_veh")
 					}
 				}
 				{"delay" {time 4}}
@@ -2334,40 +1928,8 @@
 					("ds_announce_wave")
 					{"set_i" {var "defense_support_wave_num$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_place$"} {op "="} {value 0}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 3}}
-							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 4}}
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L3, 4 WAVES"}}
-								}
-								{"default"}
-							}
-						}
-						{"case"
-							{condition {type cmp_i} {var "defense_level$"} {op "=="} {value 2}}
-							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 4}}
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L2, 3 WAVES"}}
-								}
-								{"default"}
-							}
-						}
-						{"default"
-							{"set_i" {var "defense_support_waves_left$"} {op "="} {value 3}}
-							{"switch"
-								{"case"
-									{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-									{"timer" {time 10} {title "DEFENSE EDGE WAVES - L1, 3 WAVES"}}
-								}
-								{"default"}
-							}
-						}
-					}
+					{"set_i" {var "defense_support_waves_left$"} {op "="} {value 2}}
+					{"set_i" {var "defense_support_veh_left$"} {op "="} {value 2}}
 					; If garrison lagged (identity late), claim anchors now.
 					{"switch"
 						{"case"
@@ -2390,7 +1952,7 @@
 							{"delay" {time 40}}
 						}
 					}
-					{"set_i" {var "defense_support_wave_num$"} {op "+"} {value 1}}
+					{"set_i" {var "defense_support_wave_num$"} {op "="} {value 2}}
 					{"set_i" {var "defense_support_waves_left$"} {op "-"} {value 1}}
 					{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
 					("ds_pick_composition")
@@ -2409,13 +1971,14 @@
 			; the condition stops matching and the loop ends.
 			{"defense_support/clock"
 				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
+					{expression "1 & 2 & 3 & 4 & 5 & 6"}
 					{terms
 						{"1.cmp_i" {var "defense_support_next_ok$"} {op "=="} {value 1}}
 						{"2.cmp_i" {var "defense_support_busy$"} {op "=="} {value 0}}
 						{"3.cmp_i" {var "defense_support_waves_left$"} {op ">"} {value 0}}
 						{"4.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
 						{"5.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
+						{"6.cmp_i" {var "disable_allied_support$"} {op "=="} {value 0}}
 					}
 				}
 				{actions
@@ -2443,7 +2006,7 @@
 						}
 					}
 					{"delay" {time 0.1}}
-					{"set_i" {var "defense_support_wave_num$"} {op "+"} {value 1}}
+					{"set_i" {var "defense_support_wave_num$"} {op "="} {value 4}}
 					{"set_i" {var "defense_support_waves_left$"} {op "-"} {value 1}}
 					{"switch"
 						{"case"
@@ -3146,170 +2709,14 @@
 			; pool is the deepest one the shared NATO pool ships. Taking the bodies
 			; strips the pool tag, so the gate below can simply count the tag to know
 			; what is still parked and available.
-			{"defense_support/comp_usmc"
-				{condition
-					{expression "1 & 2 & 3 & 4"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 1}}
-						{"3.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"4.entities"
-							{selector {tag attack_support_inf_usmc}}
-							{count {op ">="} {value 4}}
-						}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"set_i" {var "defense_support_stage$"} {op "="} {value 11}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT WAVE - USMC RIFLE TEAM"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group {select {tag {tag attack_support_inf_usmc}}}}
-							{amount 4}
-						}
-						{tag_add def_sup_deploy}
-						{tag_remove attack_support_inf_usmc}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-					{"set_i" {var "defense_support_stage$"} {op "="} {value 12}}
-				}
-			}
 
 			; COMPOSITION 2 - 4 1AD infantry.
-			{"defense_support/comp_1ad"
-				{condition
-					{expression "1 & 2 & 3 & 4"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 2}}
-						{"3.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"4.entities"
-							{selector {tag attack_support_inf_1ad}}
-							{count {op ">="} {value 4}}
-						}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"set_i" {var "defense_support_stage$"} {op "="} {value 21}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT WAVE - 1AD RIFLE TEAM"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group {select {tag {tag attack_support_inf_1ad}}}}
-							{amount 4}
-						}
-						{tag_add def_sup_deploy}
-						{tag_remove attack_support_inf_1ad}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-					{"set_i" {var "defense_support_stage$"} {op "="} {value 22}}
-				}
-			}
 
 			; COMPOSITION 5 - 4 ARF / NATO infantry.
-			{"defense_support/comp_arf"
-				{condition
-					{expression "1 & 2 & 3 & 4"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 5}}
-						{"3.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"4.entities"
-							{selector {tag attack_support_inf_arf}}
-							{count {op ">="} {value 4}}
-						}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"set_i" {var "defense_support_stage$"} {op "="} {value 51}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT WAVE - ARF RIFLE TEAM"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group {select {tag {tag attack_support_inf_arf}}}}
-							{amount 4}
-						}
-						{tag_add def_sup_deploy}
-						{tag_remove attack_support_inf_arf}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-					{"set_i" {var "defense_support_stage$"} {op "="} {value 52}}
-				}
-			}
 
 			; COMPOSITION 3 (level 2+) - 6 German pzgren, the heavy hold team. The shared
 			; pzgren pool is only twelve deep, so this fields two draws per mission and
 			; then the pool-short fallback steps the pick down to the USMC rifle team.
-			{"defense_support/comp_pzgd"
-				{condition
-					{expression "1 & 2 & 3 & 4"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 3}}
-						{"3.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"4.entities"
-							{selector {tag attack_support_inf_pzgd}}
-							{count {op ">="} {value 6}}
-						}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"set_i" {var "defense_support_stage$"} {op "="} {value 31}}
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT WAVE - PZGREN HOLD TEAM"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector
-							{source advanced}
-							{group {select {tag {tag attack_support_inf_pzgd}}}}
-							{amount 6}
-						}
-						{tag_add def_sup_deploy}
-						{tag_remove attack_support_inf_pzgd}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-					{"set_i" {var "defense_support_stage$"} {op "="} {value 32}}
-				}
-			}
 
 			; ===== FACTION LINE / WPN (player nation) — defense =====
 			{"defense_support/ally_rusa_line"
@@ -3333,73 +2740,7 @@
 						}
 						{"default"}
 					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_line}}}} {amount 4}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_rusa_line}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_ukr_line"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 10}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_ukr_line}} {count {op ">="} {value 4}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - UKR LINE"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_line}}}} {amount 4}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_ukr_line}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_prc_line"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 10}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_prc_line}} {count {op ">="} {value 4}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - PRC LINE"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_line}}}} {amount 4}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_prc_line}
-					}
+					("ds_claim_line" args rusa)
 					{"delay" {time 0.1}}
 					("ds_place_at_entry")
 					("ds_finish")
@@ -3426,514 +2767,84 @@
 						}
 						{"default"}
 					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_line}}}} {amount 4}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_nato_line}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_rusa_wpn"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 11}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_rusa_wpn}} {count {op ">="} {value 4}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA WEAPONS"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_wpn}}}} {amount 4}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_rusa_wpn}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_ukr_wpn"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 11}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_ukr_wpn}} {count {op ">="} {value 4}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - UKR WEAPONS"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_wpn}}}} {amount 4}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_ukr_wpn}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_prc_wpn"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 11}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_prc_wpn}} {count {op ">="} {value 4}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - PRC WEAPONS"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_wpn}}}} {amount 4}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_prc_wpn}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_nato_wpn"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 11}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_nato_wpn}} {count {op ">="} {value 4}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - NATO WEAPONS"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_wpn}}}} {amount 4}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_nato_wpn}
-					}
+					("ds_claim_line" args nato)
 					{"delay" {time 0.1}}
 					("ds_place_at_entry")
 					("ds_finish")
 				}
 			}
 
-			; ===== HYBRID defense (recon/assault/eng) — no light veh =====
-			{"defense_support/ally_rusa_recon"
+			{"defense_support/ally_rusa_veh"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5"}
 					{terms
 						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 12}}
+						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 16}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
 						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_rusa_recon}} {count {op ">="} {value 3}}}
+						{"5.cmp_i" {var "defense_support_veh_left$"} {op ">"} {value 0}}
 					}
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA RECON"}}
-						}
-						{"default"}
-					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_recon}}}} {amount 3}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_line}}}} {amount 6}}
 						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_rusa_recon}
+						{tag_remove ally_sup_rusa_line}
 					}
+					("ds_claim_veh" args rusa)
+					{"set_i" {var "defense_support_veh_left$"} {op "-"} {value 1}}
 					{"delay" {time 0.1}}
 					("ds_place_at_entry")
 					("ds_finish")
+					{"switch"
+						{"case"
+							{condition {type cmp_i} {var "defense_support_wave_num$"} {op ">="} {value 4}}
+							("ds_claim_ifv" args rusa)
+							{"delay" {time 0.5}}
+							("ds_place_at_entry")
+							("ds_finish")
+						}
+						{"default"}
+					}
 				}
 			}
-			{"defense_support/ally_ukr_recon"
+			{"defense_support/ally_nato_veh"
 				{condition
 					{expression "1 & 2 & 3 & 4 & 5"}
 					{terms
 						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 12}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_ukr_recon}} {count {op ">="} {value 3}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - UKR RECON"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_recon}}}} {amount 3}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_ukr_recon}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_prc_recon"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 12}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_prc_recon}} {count {op ">="} {value 3}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - PRC RECON"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_recon}}}} {amount 3}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_prc_recon}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_nato_recon"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 12}}
+						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 16}}
 						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
 						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_nato_recon}} {count {op ">="} {value 3}}}
+						{"5.cmp_i" {var "defense_support_veh_left$"} {op ">"} {value 0}}
 					}
 				}
 				{actions
 					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - NATO RECON"}}
-						}
-						{"default"}
-					}
 					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_recon}}}} {amount 3}}
+						{selector {source advanced} {group {select {tag {tag ally_sup_nato_line}}}} {amount 6}}
 						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_nato_recon}
+						{tag_remove ally_sup_nato_line}
 					}
+					("ds_claim_veh" args nato)
+					{"set_i" {var "defense_support_veh_left$"} {op "-"} {value 1}}
 					{"delay" {time 0.1}}
 					("ds_place_at_entry")
 					("ds_finish")
-				}
-			}
-			{"defense_support/ally_rusa_assault"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 13}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_rusa_assault}} {count {op ">="} {value 4}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
 					{"switch"
 						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA ASSAULT"}}
+							{condition {type cmp_i} {var "defense_support_wave_num$"} {op ">="} {value 4}}
+							("ds_claim_ifv" args nato)
+							{"delay" {time 0.5}}
+							("ds_place_at_entry")
+							("ds_finish")
 						}
 						{"default"}
 					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_assault}}}} {amount 4}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_rusa_assault}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
 				}
 			}
-			{"defense_support/ally_ukr_assault"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 13}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_ukr_assault}} {count {op ">="} {value 4}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - UKR ASSAULT"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_assault}}}} {amount 4}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_ukr_assault}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_prc_assault"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 13}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_prc_assault}} {count {op ">="} {value 4}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - PRC ASSAULT"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_assault}}}} {amount 4}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_prc_assault}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_nato_assault"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 13}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_nato_assault}} {count {op ">="} {value 4}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - NATO ASSAULT"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_assault}}}} {amount 4}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_nato_assault}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_rusa_eng"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 14}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 1}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_rusa_eng}} {count {op ">="} {value 3}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - RUSA ENGINEERS"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_rusa_eng}}}} {amount 3}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_rusa_eng}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_ukr_eng"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 14}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_ukr_eng}} {count {op ">="} {value 3}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - UKR ENGINEERS"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_ukr_eng}}}} {amount 3}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_ukr_eng}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_prc_eng"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 14}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_prc_eng}} {count {op ">="} {value 3}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - PRC ENGINEERS"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_prc_eng}}}} {amount 3}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_prc_eng}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
-			{"defense_support/ally_nato_eng"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 14}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 3}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.entities" {selector {tag ally_sup_nato_eng}} {count {op ">="} {value 3}}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					("ds_announce_wave")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT - NATO ENGINEERS"}}
-						}
-						{"default"}
-					}
-					{"entity_state"
-						{selector {source advanced} {group {select {tag {tag ally_sup_nato_eng}}}} {amount 3}}
-						{tag_add def_sup_deploy}
-						{tag_remove ally_sup_nato_eng}
-					}
-					{"delay" {time 0.1}}
-					("ds_place_at_entry")
-					("ds_finish")
-				}
-			}
+
 			; ===== DEFENSE AIRMOBILE (cmd 18, parity with attack) =====
 
 			{"defense_support/ally_rusa_air"
@@ -3960,18 +2871,6 @@
 					}
 					{"delay" {time 4.5}}
 					{"switch"
-						{"case"
-							{condition
-								{type entities}
-								{selector {tag ally_sup_rusa_recon}}
-								{count {op ">="} {value 4}}
-							}
-							{"entity_state"
-								{selector {source advanced} {group {select {tag {tag ally_sup_rusa_recon}}}} {amount 4}}
-								{tag_add def_sup_deploy}
-								{tag_remove ally_sup_rusa_recon}
-							}
-						}
 						{"case"
 							{condition
 								{type entities}
@@ -4021,175 +2920,7 @@
 				}
 			}
 
-			{"defense_support/ally_ukr_air"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 18}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 2}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.cmp_i" {var "defense_support_air_left$"} {op ">"} {value 0}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"set_i" {var "defense_support_place$"} {op "="} {value 0}}
-					("ds_announce_airborne")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT AIRMOBILE INSERT"}}
-						}
-						{"default"}
-					}
-					{"delay" {time 4.5}}
-					{"switch"
-						{"case"
-							{condition
-								{type entities}
-								{selector {tag ally_sup_ukr_recon}}
-								{count {op ">="} {value 4}}
-							}
-							{"entity_state"
-								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_recon}}}} {amount 4}}
-								{tag_add def_sup_deploy}
-								{tag_remove ally_sup_ukr_recon}
-							}
-						}
-						{"case"
-							{condition
-								{type entities}
-								{selector {tag ally_sup_ukr_line}}
-								{count {op ">="} {value 4}}
-							}
-							{"entity_state"
-								{selector {source advanced} {group {select {tag {tag ally_sup_ukr_line}}}} {amount 4}}
-								{tag_add def_sup_deploy}
-								{tag_remove ally_sup_ukr_line}
-							}
-						}
-						{"default"}
-					}
-					{"switch"
-						{"case"
-							{condition {type entities} {selector {tag def_sup_deploy}}}
-							; Enemy near LZ guard — if bots already within 120, fall back to edge pads.
-							{"switch"
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{ignore_captured_by_user 0}
-											{type human}
-											{state "not dead"}
-											{tag _bot}
-											{distance 120}
-										}
-										{count {op ">"} {value 0}}
-									}
-									{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}
-								}
-								{"default"
-									{"set_i" {var "defense_support_use_air$"} {op "="} {value 1}}
-								}
-							}
-							{"set_i" {var "defense_support_air_left$"} {op "-"} {value 1}}
-							{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
-							{"delay" {time 0.1}}
-							("ds_place_at_entry")
-							("ds_finish")
-							{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}
-						}
-						{"default"}
-					}
-				}
-			}
 
-			{"defense_support/ally_prc_air"
-				{condition
-					{expression "1 & 2 & 3 & 4 & 5"}
-					{terms
-						{"1.cmp_i" {var "user_is_defender$"} {op "=="} {value 1}}
-						{"2.cmp_i" {var "defense_support_wave_cmd$"} {op "=="} {value 18}}
-						{"3.cmp_i" {var "faction_support_army$"} {op "=="} {value 4}}
-						{"4.cmp_i" {var "id_defenderbot$"} {op ">"} {value 0}}
-						{"5.cmp_i" {var "defense_support_air_left$"} {op ">"} {value 0}}
-					}
-				}
-				{actions
-					{"set_i" {var "defense_support_wave_cmd$"} {op "="} {value 0}}
-					{"set_i" {var "defense_support_place$"} {op "="} {value 0}}
-					("ds_announce_airborne")
-					{"switch"
-						{"case"
-							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-							{"timer" {time 8} {title "DEFENSE SUPPORT AIRMOBILE INSERT"}}
-						}
-						{"default"}
-					}
-					{"delay" {time 4.5}}
-					{"switch"
-						{"case"
-							{condition
-								{type entities}
-								{selector {tag ally_sup_prc_recon}}
-								{count {op ">="} {value 4}}
-							}
-							{"entity_state"
-								{selector {source advanced} {group {select {tag {tag ally_sup_prc_recon}}}} {amount 4}}
-								{tag_add def_sup_deploy}
-								{tag_remove ally_sup_prc_recon}
-							}
-						}
-						{"case"
-							{condition
-								{type entities}
-								{selector {tag ally_sup_prc_line}}
-								{count {op ">="} {value 4}}
-							}
-							{"entity_state"
-								{selector {source advanced} {group {select {tag {tag ally_sup_prc_line}}}} {amount 4}}
-								{tag_add def_sup_deploy}
-								{tag_remove ally_sup_prc_line}
-							}
-						}
-						{"default"}
-					}
-					{"switch"
-						{"case"
-							{condition {type entities} {selector {tag def_sup_deploy}}}
-							; Enemy near LZ guard — if bots already within 120, fall back to edge pads.
-							{"switch"
-								{"case"
-									{condition
-										{type entities}
-										{selector
-											{ignore_captured_by_user 0}
-											{type human}
-											{state "not dead"}
-											{tag _bot}
-											{distance 120}
-										}
-										{count {op ">"} {value 0}}
-									}
-									{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}
-								}
-								{"default"
-									{"set_i" {var "defense_support_use_air$"} {op "="} {value 1}}
-								}
-							}
-							{"set_i" {var "defense_support_air_left$"} {op "-"} {value 1}}
-							{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
-							{"delay" {time 0.1}}
-							("ds_place_at_entry")
-							("ds_finish")
-							{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}
-						}
-						{"default"}
-					}
-				}
-			}
 
 			{"defense_support/ally_nato_air"
 				{condition
@@ -4215,18 +2946,6 @@
 					}
 					{"delay" {time 4.5}}
 					{"switch"
-						{"case"
-							{condition
-								{type entities}
-								{selector {tag ally_sup_nato_recon}}
-								{count {op ">="} {value 4}}
-							}
-							{"entity_state"
-								{selector {source advanced} {group {select {tag {tag ally_sup_nato_recon}}}} {amount 4}}
-								{tag_add def_sup_deploy}
-								{tag_remove ally_sup_nato_recon}
-							}
-						}
 						{"case"
 							{condition
 								{type entities}

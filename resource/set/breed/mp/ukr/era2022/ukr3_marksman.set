@@ -29,6 +29,7 @@
 		{item "svd" filled}
 		{item "svd ammo" 100}
 		{item "aio_marker_morale_trained"}
+				{item "aio_marker_sniper"}
 		{in_hands 4}
 	}
 }
