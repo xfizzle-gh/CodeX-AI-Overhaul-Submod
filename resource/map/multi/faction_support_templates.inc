@@ -504,7 +504,7 @@
 
 ; ===== HYBRID POOLS (recon/assault/eng/manpad/light veh) =====
 ; Ids 0xb2a0+, MIDs 9460+. y=-36000/-36200 clear of line/wpn at -35700.
-; Depth: recon 5x3, assault 4x4, eng 4x3, manpad 4x2; UKR 3 humvee, NATO 2 fennek.
+; Depth: recon 5x3, assault 4x4, eng 4x3, manpad 4x2; UKR 3 humvee, NATO 2 kipri.
 
 ; ----- ALLY RUSA RECON (15=5x3) -----
 
@@ -595,7 +595,7 @@
 ; ----- ALLY NATO MANPAD (8=4x2) -----
 
 ; ----- ALLY NATO LIGHT VEH (2 hull+crew) -----
-	{Entity "fennek" 0xb375
+	{Entity "kipri2" 0xb375
 		{Position 3000 -36200}
 		{Player 0}
 		{MID 9673}
@@ -613,7 +613,7 @@
 		{MID 9675}
 		{Able "-select"}
 	}
-	{Entity "fennek" 0xb378
+	{Entity "kipri2" 0xb378
 		{Position 3100 -36200}
 		{Player 0}
 		{MID 9676}

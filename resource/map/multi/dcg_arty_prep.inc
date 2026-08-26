@@ -340,397 +340,226 @@
 				}
 			}
 
-			{"codex/arty_counter/f1"
-				{condition
-					{terms
-						{"1.cmp_i"
-							{var "user_is_defender$"}
-							{op "=="}
-							{value 0}
-						}
-						{"2.cmp_i"
-							{var "prep_inform$"}
-							{op "=="}
-							{value 1}
-						}
-						{"3.cmp_i"
-							{var "arty_counter_cd$"}
-							{op "=="}
-							{value 0}
-						}
-						{"4.entities"
-							{selector
-								{source advanced}
-								{group
-									{select
-										{tag
-											{tag _user}
+			; Attack-only: 10s after the player enters a flag, one 120 mortar on that point.
+			(define "codex_arty_counter_flag"
+				{"codex/arty_counter/f%0"
+					{condition
+						{terms
+							{"1.cmp_i"
+								{var "arty_counter_attack$"}
+								{op "=="}
+								{value 1}
+							}
+							{"2.cmp_i"
+								{var "prep_inform$"}
+								{op "=="}
+								{value 1}
+							}
+							{"3.cmp_i"
+								{var "arty_counter_%0$"}
+								{op "=="}
+								{value 0}
+							}
+							{"4.entities"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag _user}
+											}
 										}
-									}
-									{include
-										{zone
-											{zone "fpc1"}
+										{include
+											{zone
+												{zone "fpc%0"}
+											}
+											{state
+												{state "operatable user_control"}
+											}
 										}
-										{state
-											{state "operatable user_control"}
-										}
-									}
-									{exclude
-										{state
-											{state dead}
-										}
-										{state
-											{state inactive}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
 										}
 									}
 								}
 							}
 						}
 					}
-				}
-				{actions
-					{"set_i"
-						{var "arty_counter_cd$"}
-						{op "="}
-						{value 1}
-					}
-					{"talk"
-						{selector
-							{ignore_captured_by_user 0}
-							{tag _user}
+					{actions
+						{"set_i"
+							{var "arty_counter_%0$"}
+							{op "="}
+							{value 1}
 						}
-						{text "mission/multi/calling_light_artillery_barrage"}
-					}
-					{"delay"
-						{time 4}
-					}
-					("codex_arty_by_intensity" wp(transport_patrol_flag_1))
-					{"delay"
-						{time 90}
-					}
-					{"set_i"
-						{var "arty_counter_cd$"}
-						{op "="}
-						{value 0}
-					}
-					{"trigger"
-						{name "codex/arty_counter/f1"}
+						{"talk"
+							{selector
+								{ignore_captured_by_user 0}
+								{tag _user}
+							}
+							{text "mission/multi/calling_light_artillery_barrage"}
+						}
+						{"delay"
+							{time 10}
+						}
+						{"spawn"
+							{entity "mortar_barrage_120"}
+							{waypoint "transport_patrol_flag_%0"}
+						}
 					}
 				}
-			}
+			)
+			("codex_arty_counter_flag" args 1)
+			("codex_arty_counter_flag" args 2)
+			("codex_arty_counter_flag" args 3)
+			("codex_arty_counter_flag" args 4)
+			("codex_arty_counter_flag" args 5)
 
-			{"codex/arty_counter/f2"
-				{condition
-					{terms
-						{"1.cmp_i"
-							{var "user_is_defender$"}
-							{op "=="}
-							{value 0}
-						}
-						{"2.cmp_i"
-							{var "prep_inform$"}
-							{op "=="}
-							{value 1}
-						}
-						{"3.cmp_i"
-							{var "arty_counter_cd$"}
-							{op "=="}
-							{value 0}
-						}
-						{"4.entities"
-							{selector
-								{source advanced}
-								{group
-									{select
-										{tag
-											{tag _user}
+			; Defense recap: 10s after entering a flag you do not own. Re-arms when you leave.
+			(define "codex_arty_recap_flag"
+				{"codex/arty_recap/f%0"
+					{condition
+						{terms
+							{"1.cmp_i"
+								{var "arty_counter_attack$"}
+								{op "=="}
+								{value 0}
+							}
+							{"2.cmp_i"
+								{var "prep_inform$"}
+								{op "=="}
+								{value 1}
+							}
+							{"3.cmp_i"
+								{var "arty_recap_%0$"}
+								{op "=="}
+								{value 1}
+							}
+							{"4.cmp_i"
+								{var "arty_counter_%0$"}
+								{op "=="}
+								{value 0}
+							}
+							{"5.entities"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag _user}
+											}
 										}
-									}
-									{include
-										{zone
-											{zone "fpc2"}
+										{include
+											{zone
+												{zone "fpc%0"}
+											}
+											{state
+												{state "operatable user_control"}
+											}
 										}
-										{state
-											{state "operatable user_control"}
-										}
-									}
-									{exclude
-										{state
-											{state dead}
-										}
-										{state
-											{state inactive}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
 										}
 									}
 								}
 							}
 						}
 					}
-				}
-				{actions
-					{"set_i"
-						{var "arty_counter_cd$"}
-						{op "="}
-						{value 1}
-					}
-					{"talk"
-						{selector
-							{ignore_captured_by_user 0}
-							{tag _user}
-						}
-						{text "mission/multi/calling_light_artillery_barrage"}
-					}
-					{"delay"
-						{time 4}
-					}
-					("codex_arty_by_intensity" wp(transport_patrol_flag_2))
-					{"delay"
-						{time 90}
-					}
-					{"set_i"
-						{var "arty_counter_cd$"}
-						{op "="}
-						{value 0}
-					}
-					{"trigger"
-						{name "codex/arty_counter/f2"}
-					}
-				}
-			}
-
-			{"codex/arty_counter/f3"
-				{condition
-					{terms
-						{"1.cmp_i"
-							{var "user_is_defender$"}
-							{op "=="}
-							{value 0}
-						}
-						{"2.cmp_i"
-							{var "prep_inform$"}
-							{op "=="}
+					{actions
+						{"set_i"
+							{var "arty_counter_%0$"}
+							{op "="}
 							{value 1}
 						}
-						{"3.cmp_i"
-							{var "arty_counter_cd$"}
-							{op "=="}
-							{value 0}
-						}
-						{"4.entities"
+						{"talk"
 							{selector
-								{source advanced}
-								{group
-									{select
-										{tag
-											{tag _user}
+								{ignore_captured_by_user 0}
+								{tag _user}
+							}
+							{text "mission/multi/calling_light_artillery_barrage"}
+						}
+						{"delay"
+							{time 10}
+						}
+						{"spawn"
+							{entity "mortar_barrage_120"}
+							{waypoint "transport_patrol_flag_%0"}
+						}
+					}
+				}
+				{"codex/arty_recap/reset_%0"
+					{condition
+						{terms
+							{"1.cmp_i"
+								{var "arty_counter_attack$"}
+								{op "=="}
+								{value 0}
+							}
+							{"2.cmp_i"
+								{var "arty_counter_%0$"}
+								{op "=="}
+								{value 1}
+							}
+							{"3.entities"
+								{selector
+									{source advanced}
+									{group
+										{select
+											{tag
+												{tag _user}
+											}
+										}
+										{include
+											{zone
+												{zone "fpc%0"}
+											}
+											{state
+												{state "operatable user_control"}
+											}
+										}
+										{exclude
+											{state
+												{state dead}
+											}
+											{state
+												{state inactive}
+											}
 										}
 									}
-									{include
-										{zone
-											{zone "fpc3"}
-										}
-										{state
-											{state "operatable user_control"}
-										}
-									}
-									{exclude
-										{state
-											{state dead}
-										}
-										{state
-											{state inactive}
-										}
-									}
+								}
+								{count
+									{op "=="}
+									{value 0}
 								}
 							}
 						}
 					}
-				}
-				{actions
-					{"set_i"
-						{var "arty_counter_cd$"}
-						{op "="}
-						{value 1}
-					}
-					{"talk"
-						{selector
-							{ignore_captured_by_user 0}
-							{tag _user}
-						}
-						{text "mission/multi/calling_light_artillery_barrage"}
-					}
-					{"delay"
-						{time 4}
-					}
-					("codex_arty_by_intensity" wp(transport_patrol_flag_3))
-					{"delay"
-						{time 90}
-					}
-					{"set_i"
-						{var "arty_counter_cd$"}
-						{op "="}
-						{value 0}
-					}
-					{"trigger"
-						{name "codex/arty_counter/f3"}
-					}
-				}
-			}
-
-			{"codex/arty_counter/f4"
-				{condition
-					{terms
-						{"1.cmp_i"
-							{var "user_is_defender$"}
-							{op "=="}
+					{actions
+						{"set_i"
+							{var "arty_counter_%0$"}
+							{op "="}
 							{value 0}
 						}
-						{"2.cmp_i"
-							{var "prep_inform$"}
-							{op "=="}
-							{value 1}
+						{"trigger"
+							{name "codex/arty_recap/f%0"}
 						}
-						{"3.cmp_i"
-							{var "arty_counter_cd$"}
-							{op "=="}
-							{value 0}
-						}
-						{"4.entities"
-							{selector
-								{source advanced}
-								{group
-									{select
-										{tag
-											{tag _user}
-										}
-									}
-									{include
-										{zone
-											{zone "fpc4"}
-										}
-										{state
-											{state "operatable user_control"}
-										}
-									}
-									{exclude
-										{state
-											{state dead}
-										}
-										{state
-											{state inactive}
-										}
-									}
-								}
-							}
+						{"trigger"
+							{name "codex/arty_recap/reset_%0"}
 						}
 					}
 				}
-				{actions
-					{"set_i"
-						{var "arty_counter_cd$"}
-						{op "="}
-						{value 1}
-					}
-					{"talk"
-						{selector
-							{ignore_captured_by_user 0}
-							{tag _user}
-						}
-						{text "mission/multi/calling_light_artillery_barrage"}
-					}
-					{"delay"
-						{time 4}
-					}
-					("codex_arty_by_intensity" wp(transport_patrol_flag_4))
-					{"delay"
-						{time 90}
-					}
-					{"set_i"
-						{var "arty_counter_cd$"}
-						{op "="}
-						{value 0}
-					}
-					{"trigger"
-						{name "codex/arty_counter/f4"}
-					}
-				}
-			}
-
-			{"codex/arty_counter/f5"
-				{condition
-					{terms
-						{"1.cmp_i"
-							{var "user_is_defender$"}
-							{op "=="}
-							{value 0}
-						}
-						{"2.cmp_i"
-							{var "prep_inform$"}
-							{op "=="}
-							{value 1}
-						}
-						{"3.cmp_i"
-							{var "arty_counter_cd$"}
-							{op "=="}
-							{value 0}
-						}
-						{"4.entities"
-							{selector
-								{source advanced}
-								{group
-									{select
-										{tag
-											{tag _user}
-										}
-									}
-									{include
-										{zone
-											{zone "fpc5"}
-										}
-										{state
-											{state "operatable user_control"}
-										}
-									}
-									{exclude
-										{state
-											{state dead}
-										}
-										{state
-											{state inactive}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				{actions
-					{"set_i"
-						{var "arty_counter_cd$"}
-						{op "="}
-						{value 1}
-					}
-					{"talk"
-						{selector
-							{ignore_captured_by_user 0}
-							{tag _user}
-						}
-						{text "mission/multi/calling_light_artillery_barrage"}
-					}
-					{"delay"
-						{time 4}
-					}
-					("codex_arty_by_intensity" wp(transport_patrol_flag_5))
-					{"delay"
-						{time 90}
-					}
-					{"set_i"
-						{var "arty_counter_cd$"}
-						{op "="}
-						{value 0}
-					}
-					{"trigger"
-						{name "codex/arty_counter/f5"}
-					}
-				}
-			}
+			)
+			("codex_arty_recap_flag" args 1)
+			("codex_arty_recap_flag" args 2)
+			("codex_arty_recap_flag" args 3)
+			("codex_arty_recap_flag" args 4)
+			("codex_arty_recap_flag" args 5)

@@ -172,6 +172,11 @@ local function setVarsInMissionScript()
 
 	-- Everything below is enemy-bot perspective and must have one writer.
 	BotApi.Scene:SetVar("user_is_defender", botDefender and 0 or 1)
+	if botDefender then
+		BotApi.Scene:SetVar("arty_counter_attack", 1)
+	else
+		BotApi.Scene:SetVar("arty_counter_attack", 0)
+	end
 	publishEnemySpawnSide()
 
 	local botNation = BotApi.Instance.army
@@ -310,6 +315,23 @@ local function requestWaveArty(wave)
 	BotApi.Scene:SetVar("arty_prep_wave", w)
 	BotApi.Scene:SetVar("arty_smoke", 1)
 	if printDebug then print("DCG arty_prep_wave requested", w, "slot", slot) end
+end
+
+local function publishArtyRecapFlags()
+	if botDefender then return end
+	if not isMissionAuthority or not isMissionAuthority() then return end
+	local botTeam = tostring((BotApi.Instance and BotApi.Instance.team) or "")
+	local playerTeam = (botTeam == "a") and "b" or "a"
+	local recap = {0, 0, 0, 0, 0}
+	for _, flag in pairs(BotApi.Scene.Flags or {}) do
+		local i = flagSlot(flag.name)
+		if i and flag.occupant ~= playerTeam then
+			recap[i] = 1
+		end
+	end
+	for i = 1, 5 do
+		BotApi.Scene:SetVar("arty_recap_" .. i, recap[i])
+	end
 end
 
 local function startAmbientArty()
@@ -695,6 +717,7 @@ local function ensureAttackPrepInform()
 	if not botDefender then return end -- bot is attacker => human is defender; wait for real prep
 	if not isMissionAuthority or not isMissionAuthority() then return end
 	BotApi.Scene:SetVar("prep_inform", 1)
+	BotApi.Scene:SetVar("arty_counter_attack", 1)
 	attackPrepInformPublished = true
 	startAmbientArty()
 	scheduleParaDrops()
@@ -704,6 +727,7 @@ end
 function OnGameQuant()
 	retryMissionIdentityOnce()
 	ensureAttackPrepInform()
+	publishArtyRecapFlags()
 	TrySpawnUnit()
 
 	-- Always keep order timers (waypoint maps used to skip this and only got a one-shot move).

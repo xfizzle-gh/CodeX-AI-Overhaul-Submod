@@ -30,6 +30,17 @@
 			{"arty_f5"}
 			{"arty_spare"}
 			{"arty_counter_cd"}
+			{"arty_counter_attack"}
+			{"arty_counter_1"}
+			{"arty_counter_2"}
+			{"arty_counter_3"}
+			{"arty_counter_4"}
+			{"arty_counter_5"}
+			{"arty_recap_1"}
+			{"arty_recap_2"}
+			{"arty_recap_3"}
+			{"arty_recap_4"}
+			{"arty_recap_5"}
 			{"arty_ambient"}
 			{"codex_para"}
 			{"codex_para_lz"}

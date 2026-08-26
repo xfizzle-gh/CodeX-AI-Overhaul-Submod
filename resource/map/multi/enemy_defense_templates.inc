@@ -602,7 +602,7 @@
 		{MID 9268}
 		{Able "-select"}
 	}
-	{Entity "fennek" 0xb1c9
+	{Entity "kipri2" 0xb1c9
 		{Position -6600 -35600}
 		{Player 0}
 		{MID 9269}
