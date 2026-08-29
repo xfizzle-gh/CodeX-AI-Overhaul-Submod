@@ -547,6 +547,47 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             self.assertIn("{state dead}", block)
             self.assertIn("{state inactive}", block)
 
+    def test_dead_humans_stop_morale_icons(self) -> None:
+        human = HUMAN.read_text(encoding="utf-8")
+        die = human.split('{on "die"', 1)[1].split("{on ", 1)[0]
+        self.assertIn("overload", die.split("\n", 1)[0])
+        self.assertIn("{inherited}", die)
+        self.assertIn('{call "aio_morale_stop_icons"}', die)
+        self.assertLess(die.find('{call "aio_morale_stop_icons"}'), die.find("{inherited}"))
+        bleed = human.split('{on "die_without_blood"', 1)[1].split("{on ", 1)[0]
+        self.assertIn("overload", bleed.split("\n", 1)[0])
+        self.assertIn("{inherited}", bleed)
+        self.assertIn('{call "aio_morale_stop_icons"}', bleed)
+        self.assertLess(bleed.find('{call "aio_morale_stop_icons"}'), bleed.find("{inherited}"))
+        engine_die = human.split("{on die", 1)[1].split("{on ", 1)[0]
+        self.assertNotIn("overload", engine_die.split("\n", 1)[0])
+        self.assertIn('{call "aio_morale_stop_icons"}', engine_die)
+        stop = human.split('{on "aio_morale_stop_icons"', 1)[1].split("{on ", 1)[0]
+        for view in (
+            "aio_morale_suppressed",
+            "aio_morale_panic",
+            "white_flag",
+            "aio_cmd_junior",
+            "aio_cmd_primary",
+            "aio_cmd_senior",
+            "aio_cmd_lost",
+        ):
+            self.assertIn('{view pause "%s"}' % view, stop)
+            self.assertIn('{view stop "%s"}' % view, stop)
+            self.assertIn('{view hide "%s"}' % view, stop)
+        for name in (
+            "start_aio_morale_suppressed",
+            "start_aio_morale_panic",
+            "start_aio_morale_broken",
+            "start_aio_cmd_junior",
+            "start_aio_cmd_primary",
+            "start_aio_cmd_senior",
+            "start_no_comd",
+        ):
+            body = human.split('{on "%s"' % name, 1)[1].split("{on ", 1)[0]
+            self.assertIn("{if not dead", body)
+            self.assertIn("{view start", body)
+
 
 if __name__ == "__main__":
     unittest.main()
