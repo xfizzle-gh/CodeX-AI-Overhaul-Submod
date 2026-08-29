@@ -2036,9 +2036,6 @@
 											{tag
 												{tag _lua_mi}
 											}
-											{tag
-												{tag aio_morale_owned}
-											}
 										}
 									}
 								}
@@ -2148,9 +2145,6 @@
 										}
 										{tag
 											{tag repairing}
-										}
-										{tag
-											{tag aio_morale_owned}
 										}
 										{tag
 											{tag _lua_ignore}
@@ -3163,11 +3157,6 @@
 											{state user_control}
 										}
 									}
-									{exclude
-										{tag
-											{tag aio_morale_surrendering}
-										}
-									}
 								}
 								{group
 									{select
@@ -3178,11 +3167,6 @@
 									{include
 										{state
 											{state operatable}
-										}
-									}
-									{exclude
-										{tag
-											{tag aio_morale_surrendering}
 										}
 									}
 								}
@@ -3258,11 +3242,6 @@
 											{state user_control}
 										}
 									}
-									{exclude
-										{tag
-											{tag aio_morale_surrendering}
-										}
-									}
 								}
 								{group
 									{select
@@ -3273,11 +3252,6 @@
 									{include
 										{state
 											{state operatable}
-										}
-									}
-									{exclude
-										{tag
-											{tag aio_morale_surrendering}
 										}
 									}
 								}
@@ -4949,9 +4923,6 @@
 										{tag
 											{tag repairing}
 										}
-										{tag
-											{tag aio_morale_owned}
-										}
 										{state
 											{state inactive}
 										}
@@ -6150,9 +6121,6 @@
 										{tag
 											{tag repairing}
 										}
-										{tag
-											{tag aio_morale_owned}
-										}
 										{state
 											{state inactive}
 										}
@@ -6941,9 +6909,6 @@
 									{prop
 										{prop airborne}
 									}
-									{tag
-										{tag aio_morale_surrendering}
-									}
 								}
 								}
 								{amount 1
@@ -7166,9 +7131,6 @@
 										}
 										{tag
 											{tag repairing}
-										}
-										{tag
-											{tag aio_morale_owned}
 										}
 										{state
 											{state inactive}

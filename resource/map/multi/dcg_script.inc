@@ -11,14 +11,9 @@
 (include "/map/multi/ce/ce_generic_waypoint.inc")
 (include "/map/multi/ce/ce_mechanics_triggers.inc")
 (include "/map/multi/ce/ce_player_triggers.inc")
-(include "/map/multi/ce/ce_morale_marker_apply_triggers.inc")
-(include "/map/multi/ce/ce_morale_classification_triggers.inc")
-; FPS: production-loaded morale diagnostics. Re-enable for morale/POW debug only.
-;(include "/map/multi/ce/ce_morale_probe_report.inc")
-;(include "/map/multi/ce/ce_morale_diag_triggers.inc")
-(include "/map/multi/ce/ce_morale_machine_triggers.inc")
-(include "/map/multi/ce/ce_command_cohesion_triggers.inc")
-(include "/map/multi/ce/ce_broken_behavior_triggers.inc")
+; Roots cull: morale / POW / command-cohesion includes removed.
+; Pack maps still include ce_morale_helpers.inc — that file is a no-op stub.
+(include "/map/multi/support_mission_roll.inc")
 
 (include "/map/blow_panels_trigger.inc")
 (include "/map/nikral's trigger.mi")
@@ -277,7 +272,7 @@
 										{prop {prop human}}
 									}
 									{exclude
-										{tag {tag aio_morale_surrendering}}
+										
 									}
 								}
 							}
@@ -326,7 +321,7 @@
 										{prop {prop human}}
 									}
 									{exclude
-										{tag {tag aio_morale_surrendering}}
+										
 									}
 								}
 							}
@@ -375,7 +370,7 @@
 										{prop {prop human}}
 									}
 									{exclude
-										{tag {tag aio_morale_surrendering}}
+										
 									}
 								}
 							}
@@ -3556,7 +3551,7 @@
 							}
 							{"actor_state"
 								{selector
-									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc1"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
+									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc1"}} {prop {prop human}}} {exclude {state {state dead}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3571,7 +3566,7 @@
 							}
 							{"actor_state"
 								{selector
-									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc1"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
+									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc1"}} {prop {prop human}}} {exclude {state {state dead}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3677,7 +3672,7 @@
 							}
 							{"actor_state"
 								{selector
-									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc2"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
+									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc2"}} {prop {prop human}}} {exclude {state {state dead}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3692,7 +3687,7 @@
 							}
 							{"actor_state"
 								{selector
-									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc2"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
+									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc2"}} {prop {prop human}}} {exclude {state {state dead}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3798,7 +3793,7 @@
 							}
 							{"actor_state"
 								{selector
-									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc3"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
+									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc3"}} {prop {prop human}}} {exclude {state {state dead}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3813,7 +3808,7 @@
 							}
 							{"actor_state"
 								{selector
-									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc3"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
+									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc3"}} {prop {prop human}}} {exclude {state {state dead}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3919,7 +3914,7 @@
 							}
 							{"actor_state"
 								{selector
-									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc4"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
+									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc4"}} {prop {prop human}}} {exclude {state {state dead}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -3934,7 +3929,7 @@
 							}
 							{"actor_state"
 								{selector
-									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc4"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
+									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc4"}} {prop {prop human}}} {exclude {state {state dead}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -4040,7 +4035,7 @@
 							}
 							{"actor_state"
 								{selector
-									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc5"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
+									{source advanced} {ignore_captured_by_user 0} {amount 6} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc5"}} {prop {prop human}}} {exclude {state {state dead}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -4055,7 +4050,7 @@
 							}
 							{"actor_state"
 								{selector
-									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc5"}} {prop {prop human}}} {exclude {state {state dead}} {tag {tag aio_morale_owned}}}}}
+									{source advanced} {ignore_captured_by_user 0} {amount 4} {group {select {tag {tag cmp_def}}} {include {zone {zone "fpc5"}} {prop {prop human}}} {exclude {state {state dead}}}}}
 								{move_mode zone}
 								{move_radius 20}
 								{ai
@@ -4303,9 +4298,6 @@
 								{exclude
 									{state
 										{state dead}
-									}
-									{tag
-										{tag aio_morale_owned}
 									}
 								}
 							}
@@ -15136,11 +15128,6 @@
 											{state user_control}
 										}
 									}
-									{exclude
-										{tag
-											{tag aio_morale_surrendering}
-										}
-									}
 								}
 							}
 							{distance
@@ -15206,11 +15193,6 @@
 										}
 										{state
 											{state user_control}
-										}
-									}
-									{exclude
-										{tag
-											{tag aio_morale_surrendering}
 										}
 									}
 								}
@@ -16788,9 +16770,6 @@
 										}
 										{tag
 											{tag repairing}
-										}
-										{tag
-											{tag aio_morale_owned}
 										}
 										{state
 											{state inactive}
@@ -19355,9 +19334,6 @@
 										{tag
 											{tag repairing}
 										}
-										{tag
-											{tag aio_morale_owned}
-										}
 										{state
 											{state inactive}
 										}
@@ -19961,9 +19937,6 @@
 										}
 										{tag
 											{tag repairing}
-										}
-										{tag
-											{tag aio_morale_owned}
 										}
 										{state
 											{state inactive}
@@ -21447,9 +21420,6 @@
 											{tag
 												{tag _lua_mi}
 											}
-											{tag
-												{tag aio_morale_owned}
-											}
 										}
 									}
 								}
@@ -21558,9 +21528,6 @@
 										}
 										{tag
 											{tag repairing}
-										}
-										{tag
-											{tag aio_morale_owned}
 										}
 										{tag
 											{tag _lua_ignore}

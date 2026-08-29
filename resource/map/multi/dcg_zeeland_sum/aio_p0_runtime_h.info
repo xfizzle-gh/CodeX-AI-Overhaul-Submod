@@ -1,6 +1,0 @@
-;SDL
-{game
-	{maxPlayers 2}
-	{mission_options
-	}
-}

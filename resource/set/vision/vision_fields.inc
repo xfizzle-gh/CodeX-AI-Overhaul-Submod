@@ -13,7 +13,7 @@
 
 {"human"								; // Standard human vision
 	{uncover 10}
-    	("h_fov" h(100))
+    	("h_fov" h(150))				; // 270° cone (engine h() ×1.8; was h(100)=180°)
     	("v_fov" v(120))
     	("vision_human")
 }
