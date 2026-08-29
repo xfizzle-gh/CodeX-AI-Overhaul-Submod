@@ -547,6 +547,29 @@ class CeBrokenBehaviorTests(unittest.TestCase):
             self.assertIn("{state dead}", block)
             self.assertIn("{state inactive}", block)
 
+    def test_dead_humans_stop_morale_icons(self) -> None:
+        human = HUMAN.read_text(encoding="utf-8")
+        die = human.split('{on "die"', 1)[1].split("{on ", 1)[0]
+        self.assertIn("overload", die.split("\n", 1)[0])
+        self.assertIn("{inherited}", die)
+        self.assertIn('{call "aio_morale_stop_icons"}', die)
+        bleed = human.split('{on "die_without_blood"', 1)[1].split("{on ", 1)[0]
+        self.assertIn("overload", bleed.split("\n", 1)[0])
+        self.assertIn("{inherited}", bleed)
+        self.assertIn('{call "aio_morale_stop_icons"}', bleed)
+        for name in (
+            "start_aio_morale_suppressed",
+            "start_aio_morale_panic",
+            "start_aio_morale_broken",
+            "start_aio_cmd_junior",
+            "start_aio_cmd_primary",
+            "start_aio_cmd_senior",
+            "start_no_comd",
+        ):
+            body = human.split('{on "%s"' % name, 1)[1].split("{on ", 1)[0]
+            self.assertIn("{if not dead", body)
+            self.assertIn("{view start", body)
+
 
 if __name__ == "__main__":
     unittest.main()

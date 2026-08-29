@@ -390,7 +390,7 @@
 		}
 	}
 
-	{on "die"
+	{on "die" overload
 		{if tagged "ai_signaller"
 			{clear_inventory}
 			{tags remove "ai_signaller"}
@@ -425,6 +425,12 @@
 		{tags remove "aio_cmd_had_command"}
 		{view stop "beacon_fx"}
 		{call "aio_morale_stop_icons"}
+		{inherited}
+	}
+
+	{on "die_without_blood" overload
+		{call "aio_morale_stop_icons"}
+		{inherited}
 	}
 
 	{on bullet_hit
@@ -820,52 +826,66 @@
 		}
 	}
 	{on "start_no_comd"
-		{if not tagged "aio_icon_no_comd"
-			{tags add "aio_icon_no_comd"}
-			{add_view "aio_cmd_lost" "aio_cmd_lost" "head"}
+		{if not dead
+			{if not tagged "aio_icon_no_comd"
+				{tags add "aio_icon_no_comd"}
+				{add_view "aio_cmd_lost" "aio_cmd_lost" "head"}
+			}
+			{view start "aio_cmd_lost"}
 		}
-		{view start "aio_cmd_lost"}
 	}
 	{on "start_aio_morale_suppressed"
-		{if not tagged "aio_icon_suppressed"
-			{tags add "aio_icon_suppressed"}
-			{add_view "aio_morale_broken" "aio_morale_suppressed" "head"}
+		{if not dead
+			{if not tagged "aio_icon_suppressed"
+				{tags add "aio_icon_suppressed"}
+				{add_view "aio_morale_broken" "aio_morale_suppressed" "head"}
+			}
+			{view start "aio_morale_suppressed"}
 		}
-		{view start "aio_morale_suppressed"}
 	}
 	{on "start_aio_morale_panic"
-		{if not tagged "aio_icon_panic"
-			{tags add "aio_icon_panic"}
-			{add_view "aio_morale_panic" "aio_morale_panic" "head"}
+		{if not dead
+			{if not tagged "aio_icon_panic"
+				{tags add "aio_icon_panic"}
+				{add_view "aio_morale_panic" "aio_morale_panic" "head"}
+			}
+			{view start "aio_morale_panic"}
 		}
-		{view start "aio_morale_panic"}
 	}
 	{on "start_aio_morale_broken"
-		{if not tagged "aio_icon_white_flag"
-			{tags add "aio_icon_white_flag"}
-			{add_view "white_flag" "white_flag" "head"}
+		{if not dead
+			{if not tagged "aio_icon_white_flag"
+				{tags add "aio_icon_white_flag"}
+				{add_view "white_flag" "white_flag" "head"}
+			}
+			{view start "white_flag"}
 		}
-		{view start "white_flag"}
 	}
 	{on "start_aio_cmd_junior"
-		{if not tagged "aio_icon_cmd_junior"
-			{tags add "aio_icon_cmd_junior"}
-			{add_view "aio_cmd_junior" "aio_cmd_junior" "head"}
+		{if not dead
+			{if not tagged "aio_icon_cmd_junior"
+				{tags add "aio_icon_cmd_junior"}
+				{add_view "aio_cmd_junior" "aio_cmd_junior" "head"}
+			}
+			{view start "aio_cmd_junior"}
 		}
-		{view start "aio_cmd_junior"}
 	}
 	{on "start_aio_cmd_primary"
-		{if not tagged "aio_icon_cmd_primary"
-			{tags add "aio_icon_cmd_primary"}
-			{add_view "aio_cmd_primary" "aio_cmd_primary" "head"}
+		{if not dead
+			{if not tagged "aio_icon_cmd_primary"
+				{tags add "aio_icon_cmd_primary"}
+				{add_view "aio_cmd_primary" "aio_cmd_primary" "head"}
+			}
+			{view start "aio_cmd_primary"}
 		}
-		{view start "aio_cmd_primary"}
 	}
 	{on "start_aio_cmd_senior"
-		{if not tagged "aio_icon_cmd_senior"
-			{tags add "aio_icon_cmd_senior"}
-			{add_view "aio_cmd_senior" "aio_cmd_senior" "head"}
+		{if not dead
+			{if not tagged "aio_icon_cmd_senior"
+				{tags add "aio_icon_cmd_senior"}
+				{add_view "aio_cmd_senior" "aio_cmd_senior" "head"}
+			}
+			{view start "aio_cmd_senior"}
 		}
-		{view start "aio_cmd_senior"}
 	}
 }
