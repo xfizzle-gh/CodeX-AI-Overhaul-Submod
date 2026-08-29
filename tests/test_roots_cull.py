@@ -195,6 +195,43 @@ class RootsCullGuard(unittest.TestCase):
                 hits.append(str(path.relative_to(ROOT)))
         self.assertEqual(hits, [], f"aim_range leftovers: {hits}")
 
+    def test_culled_localization_entries_are_gone(self):
+        loc_root = ROOT / "localizations"
+        loc_text = []
+        for path in loc_root.rglob("*"):
+            if path.suffix.lower() not in {".pot", ".po", ".csv", ".txt"}:
+                continue
+            loc_text.append(path.read_text(encoding="utf-8", errors="replace"))
+        blob = "\n".join(loc_text)
+        for token in (
+            "ce_morale_",
+            "ce_pow_",
+            "aio_morale_",
+            "white_flag",
+            "mission/multi/support/vehicle_inbound",
+            "mission/multi/support/flank_inbound",
+            "mission/multi/support/motorized_inbound",
+            "mission/multi/support/e2_helo_inbound",
+            "mission/multi/support/e2_para_inbound",
+            "mission/multi/support/e2_insert_failed",
+        ):
+            self.assertNotIn(token, blob, f"orphan loc leftover: {token}")
+        support = (
+            loc_root / "default/interface/text/mission/multi/support_events.pot"
+        ).read_text()
+        self.assertNotIn(
+            'msgctxt "mission/multi/support/airborne_inbound"',
+            support,
+        )
+        for token in (
+            "mission/multi/support/wave_inbound",
+            "mission/multi/support/defense_reinforced",
+            "mission/multi/support/enemy_activity",
+            "mission/multi/support/airborne_inbound_nato",
+            "mission/multi/support/waves_exhausted",
+        ):
+            self.assertIn(token, support)
+
     def test_preparation_time_untouched(self):
         text = (
             ROOT / "resource/set/multiplayer/games/campaign_capture_the_flag.set"
