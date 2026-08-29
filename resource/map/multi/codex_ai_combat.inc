@@ -1311,11 +1311,6 @@
 										{state user_control}
 									}
 								}
-								{exclude
-									{tag
-										{tag aio_morale_surrendering}
-									}
-								}
 							}
 							}
 							{distance
@@ -1384,11 +1379,6 @@
 									}
 									{state
 										{state user_control}
-									}
-								}
-								{exclude
-									{tag
-										{tag aio_morale_surrendering}
 									}
 								}
 							}
@@ -2968,9 +2958,6 @@
 										}
 										{tag
 											{tag repairing}
-										}
-										{tag
-											{tag aio_morale_owned}
 										}
 										{state
 											{state inactive}
@@ -4819,9 +4806,6 @@
 										{tag
 											{tag repairing}
 										}
-										{tag
-											{tag aio_morale_owned}
-										}
 										{state
 											{state inactive}
 										}
@@ -5427,9 +5411,6 @@
 										}
 										{tag
 											{tag repairing}
-										}
-										{tag
-											{tag aio_morale_owned}
 										}
 										{state
 											{state inactive}
@@ -7018,9 +6999,6 @@
 										}
 										{tag
 											{tag repairing}
-										}
-										{tag
-											{tag aio_morale_owned}
 										}
 										{tag
 											{tag _lua_ignore}

@@ -1,6 +1,7 @@
 -- Function to require and initialize the appropriate game mode .lua file.
--- Campaign CTF additionally routes the extra Team A bot into the attack support
--- diagnostic controller without replacing the existing DefenderBot.
+-- Campaign CTF routes the extra Team A bot into attack_support.lua (inert after
+-- the roots cull) so that slot cannot fall through to conquest.lua and
+-- purchase-spawn a second friendly army. DefenderBot stays on conquest.lua.
 
 local ROUTER_PREFIX = "CODEX_ATTACK_SUPPORT_ROUTER"
 

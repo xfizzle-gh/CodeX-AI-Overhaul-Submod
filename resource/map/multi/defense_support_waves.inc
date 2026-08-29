@@ -271,21 +271,21 @@
 							{"case"
 								{condition {type cmp_i} {var "defense_support_place$"} {op "=="} {value 1}}
 								{"placement"
-									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 									{target {ignore_captured_by_user 0} {tag def_sup_af1}}
 								}
 							}
 							{"case"
 								{condition {type cmp_i} {var "defense_support_place$"} {op "=="} {value 2}}
 								{"placement"
-									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 									{target {ignore_captured_by_user 0} {tag def_sup_af2}}
 								}
 							}
 							{"case"
 								{condition {type cmp_i} {var "defense_support_place$"} {op "=="} {value 3}}
 								{"placement"
-									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 									{target {ignore_captured_by_user 0} {tag def_sup_af3}}
 								}
 							}
@@ -297,20 +297,20 @@
 											{"case"
 												{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 												{"placement"
-													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 													{target_waypoint "attack_support_air_b1"}
 												}
 											}
 											{"case"
 												{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
 												{"placement"
-													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 													{target_waypoint "attack_support_air_a1"}
 												}
 											}
 											{"default"
 												{"placement"
-													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 													{target_waypoint "attack_support_air_b1"}
 												}
 											}
@@ -324,20 +324,20 @@
 											{"case"
 												{condition {type cmp_i} {var "defense_support_entry_rr$"} {op "=="} {value 2}}
 												{"placement"
-													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 													{target_waypoint "attack_support_rear_b2"}
 												}
 											}
 											{"case"
 												{condition {type cmp_i} {var "defense_support_entry_rr$"} {op "=="} {value 3}}
 												{"placement"
-													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 													{target_waypoint "attack_support_rear_b3"}
 												}
 											}
 											{"default"
 												{"placement"
-													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 													{target_waypoint "attack_support_rear_b1"}
 												}
 											}
@@ -349,20 +349,20 @@
 											{"case"
 												{condition {type cmp_i} {var "defense_support_entry_rr$"} {op "=="} {value 2}}
 												{"placement"
-													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 													{target_waypoint "attack_support_rear_a2"}
 												}
 											}
 											{"case"
 												{condition {type cmp_i} {var "defense_support_entry_rr$"} {op "=="} {value 3}}
 												{"placement"
-													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 													{target_waypoint "attack_support_rear_a3"}
 												}
 											}
 											{"default"
 												{"placement"
-													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 													{target_waypoint "attack_support_rear_a1"}
 												}
 											}
@@ -373,20 +373,20 @@
 											{"case"
 												{condition {type cmp_i} {var "defense_support_entry_rr$"} {op "=="} {value 2}}
 												{"placement"
-													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 													{target_waypoint "attack_support_rear_b2"}
 												}
 											}
 											{"case"
 												{condition {type cmp_i} {var "defense_support_entry_rr$"} {op "=="} {value 3}}
 												{"placement"
-													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 													{target_waypoint "attack_support_rear_b3"}
 												}
 											}
 											{"default"
 												{"placement"
-													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}} {exclude {tag {tag aio_morale_owned}}}}}
+													{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_place_one}}}}}
 													{target_waypoint "attack_support_rear_b1"}
 												}
 											}
@@ -767,22 +767,22 @@
 					}
 					{"default"
 						{"switch"
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 1}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "1"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 2}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "2"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 3}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "3"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 4}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "4"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 5}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "5"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 6}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "6"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 7}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "7"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 8}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "8"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 9}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "9"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 10}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "10"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 11}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "11"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 12}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "12"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 13}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "13"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 14}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "14"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 15}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "15"}}}
-					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 16}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "16"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 1}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "1"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 2}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "2"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 3}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "3"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 4}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 5}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 6}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 7}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 8}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 9}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 10}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 11}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 12}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 13}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 14}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 15}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 16}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}} {operation set} {player "16"}}}
 							{"default"}
 						}
 					}
@@ -1097,7 +1097,7 @@
 				("ds_own_to_defenderbot")
 				{"delay" {time 0.4}}
 				{"actor_state"
-					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 					{control AI}
 					{ai_move {mode enable}}
 					{weapon_prepare on}
@@ -1107,7 +1107,7 @@
 					{ai {no_retreat off} {advance_ratio 1} {retreat_ratio 0}}
 				}
 				{"ables"
-					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 					{remove select}
 				}
 				; Leave the pad immediately — no multi-second stack dwell at entry.
@@ -1123,7 +1123,7 @@
 							{"case"
 								{condition {type entities} {selector {tag def_sup_af2}}}
 								{"action"
-									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 									{drop orders}
 									{action advance}
 									{target {ignore_captured_by_user 0} {tag def_sup_af2}}
@@ -1131,7 +1131,7 @@
 							}
 							{"default"
 								{"action"
-									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 									{drop orders}
 									{action advance}
 									{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -1145,7 +1145,7 @@
 							{"case"
 								{condition {type entities} {selector {tag def_sup_af3}}}
 								{"action"
-									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 									{drop orders}
 									{action advance}
 									{target {ignore_captured_by_user 0} {tag def_sup_af3}}
@@ -1153,7 +1153,7 @@
 							}
 							{"default"
 								{"action"
-									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+									{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 									{drop orders}
 									{action advance}
 									{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -1163,7 +1163,7 @@
 					}
 					{"default"
 						{"action"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 							{drop orders}
 							{action advance}
 							{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -1181,7 +1181,7 @@
 					}
 				}
 				{"actor_to_cover"
-					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 				}
 				{"delay" {time 0.2}}
 				{"entity_state"
@@ -1203,20 +1203,20 @@
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 						{"placement"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 							{target_waypoint "attack_support_entry_b"}
 						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
 						{"placement"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 							{target_waypoint "attack_support_entry_a"}
 						}
 					}
 					{"default"
 						{"placement"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 							{target_waypoint "attack_support_entry_b"}
 						}
 					}
@@ -1241,7 +1241,7 @@
 				("ds_own_to_defenderbot")
 				{"delay" {time 0.4}}
 				{"actor_state"
-					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 					{control AI}
 					{ai_move {mode enable}}
 					{weapon_prepare on}
@@ -1251,7 +1251,7 @@
 					{ai {no_retreat on} {advance_ratio 1} {retreat_ratio 0}}
 				}
 				{"ables"
-					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 					{remove select}
 				}
 				{"delay" {time 0.25}}
@@ -1275,7 +1275,7 @@
 				{"delay" {time 0.1}}
 				; Truck drives toward the flag (standoff handled by emit after travel delay).
 				{"action"
-					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_motor_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_motor_hull}}}}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag def_sup_motor_flag}}
@@ -1297,7 +1297,7 @@
 				{"delay" {time 3}}
 				; Pax advance on foot; truck holds.
 				{"action"
-					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_motor_pax}}} {exclude {tag {tag aio_morale_owned}}}}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_motor_pax}}}}}
 					{drop orders}
 					{action advance}
 					{target {ignore_captured_by_user 0} {tag def_sup_motor_flag}}
@@ -1305,11 +1305,11 @@
 				; Driver leaves the field instead of idling: drive for waypoint "0" and the
 				; cleanup trigger below removes the hull 90s later, wreck included.
 				{"entity_state"
-					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_motor_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_motor_hull}}}}}
 					{tag_add def_sup_motor_leaving}
 				}
 				{"action"
-					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_motor_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
+					{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_motor_hull}}}}}
 					{drop orders}
 					{action move}
 					{waypoint "0"}
@@ -1456,20 +1456,20 @@
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 						{"placement"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 							{target_waypoint "attack_support_entry_b1"}
 						}
 					}
 					{"case"
 						{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 2}}
 						{"placement"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 							{target_waypoint "attack_support_entry_a1"}
 						}
 					}
 					{"default"
 						{"placement"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 							{target_waypoint "attack_support_entry_b1"}
 						}
 					}
@@ -1481,7 +1481,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_ds_step$"} {op "=="} {value 1}}
 						{"action"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ds_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ds_hull}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_1"}
@@ -1491,7 +1491,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_ds_step$"} {op "=="} {value 2}}
 						{"action"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ds_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ds_hull}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_2"}
@@ -1501,7 +1501,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_ds_step$"} {op "=="} {value 3}}
 						{"action"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ds_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ds_hull}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_3"}
@@ -1511,7 +1511,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_ds_step$"} {op "=="} {value 4}}
 						{"action"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ds_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ds_hull}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_4"}
@@ -1521,7 +1521,7 @@
 					{"case"
 						{condition {type cmp_i} {var "transport_ds_step$"} {op "=="} {value 5}}
 						{"action"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ds_hull}}} {exclude {tag {tag aio_morale_owned}}}}}
+							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag transport_ds_hull}}}}}
 							{drop orders}
 							{action move}
 							{waypoint "transport_patrol_flag_5"}
@@ -1563,7 +1563,7 @@
 					}
 					("transport_ds_place")
 					{"entity_state"
-						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 						{tag_remove ally_sup_tpl}
 						{tag_remove ally_sup_rusa_motor}
 						{tag_remove hidden}
@@ -1575,7 +1575,7 @@
 					("ds_own_to_defenderbot")
 					{"delay" {time 0.4}}
 					{"actor_state"
-						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 						{control AI}
 						{ai_move {mode enable}}
 						{weapon_prepare on}
@@ -1625,7 +1625,7 @@
 					}
 					("transport_ds_place")
 					{"entity_state"
-						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 						{tag_remove ally_sup_tpl}
 						{tag_remove ally_sup_nato_motor}
 						{tag_remove hidden}
@@ -1637,7 +1637,7 @@
 					("ds_own_to_defenderbot")
 					{"delay" {time 0.4}}
 					{"actor_state"
-						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
+						{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}}}}
 						{control AI}
 						{ai_move {mode enable}}
 						{weapon_prepare on}
@@ -1694,7 +1694,7 @@
 				}
 				{actions
 					{"delay" {time 90}}
-					{"delete" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_motor_leaving}}} {exclude {tag {tag aio_morale_owned}}}}}}
+					{"delete" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_motor_leaving}}}}}}
 				}
 			}
 
@@ -1784,7 +1784,7 @@
 									}
 									{"delay" {time 0.05}}
 									{"placement"
-										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}} {exclude {tag {tag aio_morale_owned}}}}}
+										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}}}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af1}}
 									}
 									{"entity_state"
@@ -1809,7 +1809,7 @@
 									}
 									{"delay" {time 0.05}}
 									{"placement"
-										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}} {exclude {tag {tag aio_morale_owned}}}}}
+										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}}}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af1}}
 									}
 									{"entity_state"
@@ -1834,7 +1834,7 @@
 									}
 									{"delay" {time 0.05}}
 									{"placement"
-										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}} {exclude {tag {tag aio_morale_owned}}}}}
+										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}}}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af1}}
 									}
 									{"entity_state"
@@ -1858,7 +1858,7 @@
 									}
 									{"delay" {time 0.05}}
 									{"placement"
-										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}} {exclude {tag {tag aio_morale_owned}}}}}
+										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}}}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af1}}
 									}
 									{"entity_state"
@@ -1897,7 +1897,7 @@
 									}
 									{"delay" {time 0.05}}
 									{"placement"
-										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}} {exclude {tag {tag aio_morale_owned}}}}}
+										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}}}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af2}}
 									}
 									{"entity_state"
@@ -1922,7 +1922,7 @@
 									}
 									{"delay" {time 0.05}}
 									{"placement"
-										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}} {exclude {tag {tag aio_morale_owned}}}}}
+										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}}}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af2}}
 									}
 									{"entity_state"
@@ -1947,7 +1947,7 @@
 									}
 									{"delay" {time 0.05}}
 									{"placement"
-										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}} {exclude {tag {tag aio_morale_owned}}}}}
+										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}}}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af2}}
 									}
 									{"entity_state"
@@ -1971,7 +1971,7 @@
 									}
 									{"delay" {time 0.05}}
 									{"placement"
-										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}} {exclude {tag {tag aio_morale_owned}}}}}
+										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}}}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af2}}
 									}
 									{"entity_state"
@@ -2010,7 +2010,7 @@
 									}
 									{"delay" {time 0.05}}
 									{"placement"
-										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}} {exclude {tag {tag aio_morale_owned}}}}}
+										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}}}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af3}}
 									}
 									{"entity_state"
@@ -2035,7 +2035,7 @@
 									}
 									{"delay" {time 0.05}}
 									{"placement"
-										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}} {exclude {tag {tag aio_morale_owned}}}}}
+										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}}}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af3}}
 									}
 									{"entity_state"
@@ -2060,7 +2060,7 @@
 									}
 									{"delay" {time 0.05}}
 									{"placement"
-										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}} {exclude {tag {tag aio_morale_owned}}}}}
+										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}}}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af3}}
 									}
 									{"entity_state"
@@ -2084,7 +2084,7 @@
 									}
 									{"delay" {time 0.05}}
 									{"placement"
-										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}} {exclude {tag {tag aio_morale_owned}}}}}
+										{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag flag_prop_move}}}}}
 										{target {ignore_captured_by_user 0} {tag def_sup_af3}}
 									}
 									{"entity_state"
@@ -2421,7 +2421,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_af1}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -2429,7 +2429,7 @@
 										}
 										{"default"
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af2}}
@@ -2443,7 +2443,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_af2}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af2}}
@@ -2451,7 +2451,7 @@
 										}
 										{"default"
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -2464,7 +2464,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_af3}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af3}}
@@ -2472,7 +2472,7 @@
 										}
 										{"default"
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -2483,7 +2483,7 @@
 							}
 							{"delay" {time 35}}
 							{"actor_to_cover"
-								{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+								{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 							}
 						}
 						{"default"
@@ -2495,7 +2495,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_r1}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_r1}}
@@ -2506,7 +2506,7 @@
 												{"case"
 													{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 													{"action"
-														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 														{drop orders}
 														{action move}
 														{waypoint "attack_support_entry_b1"}
@@ -2514,7 +2514,7 @@
 												}
 												{"default"
 													{"action"
-														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 														{drop orders}
 														{action move}
 														{waypoint "attack_support_entry_a1"}
@@ -2530,7 +2530,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_r2}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_r2}}
@@ -2541,7 +2541,7 @@
 												{"case"
 													{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 													{"action"
-														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 														{drop orders}
 														{action move}
 														{waypoint "attack_support_entry_b2"}
@@ -2549,7 +2549,7 @@
 												}
 												{"default"
 													{"action"
-														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 														{drop orders}
 														{action move}
 														{waypoint "attack_support_entry_a2"}
@@ -2564,7 +2564,7 @@
 										{"case"
 											{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 												{drop orders}
 												{action move}
 												{waypoint "attack_support_entry_b3"}
@@ -2572,7 +2572,7 @@
 										}
 										{"default"
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h1}}}}}
 												{drop orders}
 												{action move}
 												{waypoint "attack_support_entry_a3"}
@@ -2642,7 +2642,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_af1}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -2650,7 +2650,7 @@
 										}
 										{"default"
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af2}}
@@ -2664,7 +2664,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_af2}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af2}}
@@ -2672,7 +2672,7 @@
 										}
 										{"default"
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -2685,7 +2685,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_af3}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af3}}
@@ -2693,7 +2693,7 @@
 										}
 										{"default"
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -2704,7 +2704,7 @@
 							}
 							{"delay" {time 35}}
 							{"actor_to_cover"
-								{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+								{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 							}
 						}
 						{"default"
@@ -2716,7 +2716,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_r1}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_r1}}
@@ -2727,7 +2727,7 @@
 												{"case"
 													{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 													{"action"
-														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 														{drop orders}
 														{action move}
 														{waypoint "attack_support_entry_b1"}
@@ -2735,7 +2735,7 @@
 												}
 												{"default"
 													{"action"
-														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 														{drop orders}
 														{action move}
 														{waypoint "attack_support_entry_a1"}
@@ -2751,7 +2751,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_r2}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_r2}}
@@ -2762,7 +2762,7 @@
 												{"case"
 													{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 													{"action"
-														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 														{drop orders}
 														{action move}
 														{waypoint "attack_support_entry_b2"}
@@ -2770,7 +2770,7 @@
 												}
 												{"default"
 													{"action"
-														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 														{drop orders}
 														{action move}
 														{waypoint "attack_support_entry_a2"}
@@ -2785,7 +2785,7 @@
 										{"case"
 											{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 												{drop orders}
 												{action move}
 												{waypoint "attack_support_entry_b3"}
@@ -2793,7 +2793,7 @@
 										}
 										{"default"
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h2}}}}}
 												{drop orders}
 												{action move}
 												{waypoint "attack_support_entry_a3"}
@@ -2863,7 +2863,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_af1}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -2871,7 +2871,7 @@
 										}
 										{"default"
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af2}}
@@ -2885,7 +2885,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_af2}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af2}}
@@ -2893,7 +2893,7 @@
 										}
 										{"default"
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -2906,7 +2906,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_af3}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af3}}
@@ -2914,7 +2914,7 @@
 										}
 										{"default"
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_af1}}
@@ -2925,7 +2925,7 @@
 							}
 							{"delay" {time 35}}
 							{"actor_to_cover"
-								{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+								{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 							}
 						}
 						{"default"
@@ -2937,7 +2937,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_r1}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_r1}}
@@ -2948,7 +2948,7 @@
 												{"case"
 													{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 													{"action"
-														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 														{drop orders}
 														{action move}
 														{waypoint "attack_support_entry_b1"}
@@ -2956,7 +2956,7 @@
 												}
 												{"default"
 													{"action"
-														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 														{drop orders}
 														{action move}
 														{waypoint "attack_support_entry_a1"}
@@ -2972,7 +2972,7 @@
 										{"case"
 											{condition {type entities} {selector {tag def_sup_r2}}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 												{drop orders}
 												{action advance}
 												{target {ignore_captured_by_user 0} {tag def_sup_r2}}
@@ -2983,7 +2983,7 @@
 												{"case"
 													{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 													{"action"
-														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 														{drop orders}
 														{action move}
 														{waypoint "attack_support_entry_b2"}
@@ -2991,7 +2991,7 @@
 												}
 												{"default"
 													{"action"
-														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+														{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 														{drop orders}
 														{action move}
 														{waypoint "attack_support_entry_a2"}
@@ -3006,7 +3006,7 @@
 										{"case"
 											{condition {type cmp_i} {var "enemy_spawnside$"} {op "=="} {value 1}}
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 												{drop orders}
 												{action move}
 												{waypoint "attack_support_entry_b3"}
@@ -3014,7 +3014,7 @@
 										}
 										{"default"
 											{"action"
-												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}} {exclude {tag {tag aio_morale_owned}}}}}
+												{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_h3}}}}}
 												{drop orders}
 												{action move}
 												{waypoint "attack_support_entry_a3"}
