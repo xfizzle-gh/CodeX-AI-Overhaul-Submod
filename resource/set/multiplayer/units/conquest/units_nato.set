@@ -392,7 +392,7 @@ c1(usmc_teamlead:2) c2(usmc_mg:1) c3(usmc_rifleman:3) c4(usmc_m2hb_crew:1) c5(us
 }
 
 {"squad_pz10_fennek(nato)"
-	("squad_vehicle" period(2022s) min_stage(3) max_stage(99) side(nato) vehicle(fennek) cw(0) cp(4) crew(pzgd_vehicleman:3))
+	("squad_vehicle" period(2022s) min_stage(3) max_stage(99) side(nato) vehicle(humvee_m2hb_usa) cw(0) cp(4) crew(usmc_supcrew:3))
 }
 
 {"squad_pz10_fennek_gmg(nato)"

@@ -89,6 +89,9 @@
 			{"enemy_spawnside"}
 			{"id_attack_support"}
 			{"attack_support_ready"}
+			{"attack_support_owner"}
+			{"attack_support_owner_fail"}
+			{"attack_support_owner_resolved"}
 			{"enemy_defense_armed"}
 			{"enemy_defense_veh_left"}
 			{"enemy_defense_army"}
@@ -114,6 +117,7 @@
 			{"defense_support_next_ok"}
 			{"defense_support_group"}
 			{"defense_support_owner_fail"}
+			{"defense_support_owner"}
 			{"defense_support_place"}
 			{"defense_support_motor_left"}
 			{"defense_support_motor_test_done"}
@@ -128,6 +132,7 @@
 			{"enemy_attack_busy"}
 			{"enemy_attack_next_ok"}
 			{"enemy_attack_owner_fail"}
+			{"enemy_defense_owner_fail"}
 			{"enemy_attack_motor_left"}
 			{"attack_support_motor_test"}
 			{"attack_support_motor_test_done"}

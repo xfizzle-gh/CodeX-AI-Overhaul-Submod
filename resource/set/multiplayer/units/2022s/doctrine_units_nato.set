@@ -129,7 +129,7 @@
 
 ; Crew-only reconnaissance and mechanized vehicles.
 {"squad_pz10_fennek(nato)"
-	("mp_vehicle" side(nato) period(2022s) d(modern_nato_eu) vehicle(fennek) crew(pzgd_vehicleman:3))
+	("mp_vehicle" side(nato) period(2022s) d(modern_nato_eu) vehicle(humvee_m2hb_usa) crew(usmc_supcrew:3))
 }
 
 {"squad_pz10_ypr765_rifle(nato)"

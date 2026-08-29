@@ -24,16 +24,12 @@
 ; second set of prototypes has to be parked. A claim strips the pool tag it took from,
 ; so the pool tag still means "still parked and available" for whichever engine is live.
 ;
-; OWNERSHIP is a literal 1-16 {player} switch on id_defenderbot$ - the engine will not
-; accept a var in a {player} node. id_defenderbot$ is conquest.lua's DefenderBotId
-; (BotApi.Conquest.DefenderBotId, falling back to CampaignDefenderBotId), published by
-; publishConquestIds from every bot because it is perspective-neutral. It is the only
-; published id that can name a friendly AI defender: id_1st_player$ is the human's own
-; slot, id_1st_enemy$ is the enemy bot, and id_attack_support$ only exists on an attack
-; mission. UNLIKE the other three engines this one does NOT guess in its default branch:
-; if id_defenderbot$ is not a value the switch spells out, ds_own_to_defenderbot sets
-; defense_support_owner_fail$ and transfers nothing, so a wave is stranded off-map at
-; player 0 rather than handed to whoever happens to sit in slot 3. init logs the resolved
+; OWNERSHIP: resolve defense_support_owner$ then {player} switch 1-16 on that var.
+; Prefer id_defenderbot$ if 1-16 and != id_1st_enemy$ (CWA 2v2 friendly AI defender).
+; On vanilla 1v1 DefenderBotId is often the only bot = the enemy: REJECT it and fall
+; back to id_1st_player$. If the human is 0, SKIP the transfer (stay P0; P0 vs P0
+; is friendly). NEVER assign to id_1st_enemy$. NEVER guess player 3 in default.
+; The engine will not accept a var in a {player} node. init logs the resolved
 ; slot with a per-value diagnostic timer so a live run pins the real number.
 ;
 ; FACTION: follows user_nation$
@@ -413,52 +409,380 @@
 			)
 
 			(define "ds_place_at_entry"
-				("ds_entry_next")
-				("ds_place_one")
-				("ds_place_one")
-				("ds_place_one")
-				("ds_place_one")
-				("ds_place_one")
-				("ds_place_one")
-				("ds_place_one")
-				("ds_place_one")
-				{"entity_state"
-					{selector {tag def_sup_placed}}
-					{tag_remove def_sup_placed}
+				("ds_resolve_owner")
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "defense_support_owner_fail$"} {op "=="} {value 1}}
+					}
+					{"default"
+						("ds_entry_next")
+						("ds_place_one")
+						("ds_place_one")
+						("ds_place_one")
+						("ds_place_one")
+						("ds_place_one")
+						("ds_place_one")
+						("ds_place_one")
+						("ds_place_one")
+						{"entity_state"
+							{selector {tag def_sup_placed}}
+							{tag_remove def_sup_placed}
+						}
+					}
 				}
 			)
 
-			; Ownership. The engine will not accept a var in a {player} node, so all
-			; sixteen slots are spelled out against id_defenderbot$. The default branch
-			; deliberately does NOT transfer: an unresolved defender bot would otherwise
-			; hand a wave to a guessed slot, which on a defence mission could be the
-			; attacker. defense_support_owner_fail$ records that instead, and the wave
-			; simply stays at player 0 where it can do no harm.
-			(define "ds_own_to_defenderbot"
+			; Safe owner for FRIENDLY defense support. Never the enemy, never a guessed slot.
+			; Prefer id_defenderbot$ if 1-16 and != id_1st_enemy$ (CWA 2v2 ally defender).
+			; On vanilla 1v1 DefenderBotId is often the ONLY bot = the enemy: reject it.
+			; Else id_1st_player$. If the human is 0, stay P0 (P0 vs P0 is friendly).
+			; NEVER assign to id_1st_enemy$. NEVER guess player 3 in a default branch.
+			(define "ds_resolve_owner"
+				{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 0}}
+				{"set_i" {var "defense_support_owner$"} {op "="} {value 0}}
 				{"switch"
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 1}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "1"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 2}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "2"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 3}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "3"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 4}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "4"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 5}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "5"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 6}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "6"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 7}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "7"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 8}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "8"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 9}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "9"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 10}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "10"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 11}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "11"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 12}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "12"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 13}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "13"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 14}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "14"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 15}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "15"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 16}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "16"}}}
-					{"default"
-						{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 1}}
 						{"switch"
-							{"case"
-								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
-								{"timer" {time 10} {title "DEFENSE SUPPORT OWNER UNRESOLVED - NO TRANSFER"}}
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 1}}
 							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 1}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 2}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 2}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 2}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 3}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 3}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 3}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 4}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 4}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 4}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 5}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 5}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 5}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 6}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 6}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 6}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 7}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 7}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 7}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 8}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 8}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 8}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 9}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 9}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 9}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 10}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 10}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 10}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 11}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 11}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 11}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 12}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 12}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 12}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 13}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 13}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 13}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 14}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 14}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 14}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 15}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 15}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 15}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 16}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 16}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 16}}
+							}
+						}
+					}
+					{"default"}
+				}
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "defense_support_owner$"} {op ">"} {value 0}}
+					}
+					{"default"
+						{"switch"
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 1}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 1}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 1}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 2}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 2}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 2}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 3}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 3}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 3}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 4}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 4}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 4}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 5}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 5}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 5}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 6}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 6}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 6}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 7}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 7}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 7}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 8}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 8}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 8}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 9}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 9}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 9}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 10}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 10}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 10}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 11}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 11}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 11}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 12}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 12}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 12}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 13}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 13}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 13}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 14}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 14}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 14}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 15}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 15}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 15}}
+							}
+						}
+					}
+					{"case" {condition {type cmp_i} {var "id_1st_player$"} {op "=="} {value 16}}
+						{"switch"
+							{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 16}}
+								{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 1}}
+							}
+							{"default"
+								{"set_i" {var "defense_support_owner$"} {op "="} {value 16}}
+							}
+						}
+					}
+							{"default"}
+						}
+					}
+				}
+			)
+
+			(define "ds_own_to_defenderbot"
+				("ds_resolve_owner")
+				{"switch"
+					{"case"
+						{condition {type cmp_i} {var "defense_support_owner_fail$"} {op "=="} {value 1}}
+					}
+					{"default"
+						{"switch"
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 1}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "1"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 2}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "2"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 3}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "3"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 4}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "4"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 5}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "5"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 6}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "6"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 7}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "7"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 8}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "8"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 9}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "9"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 10}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "10"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 11}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "11"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 12}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "12"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 13}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "13"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 14}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "14"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 15}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "15"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 16}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag def_sup_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "16"}}}
 							{"default"}
 						}
 					}
@@ -469,23 +793,24 @@
 			; var, so the resolved defender-bot slot is reported by spelling out the
 			; sixteen possibilities. A live run reads the real number off this line.
 			(define "ds_report_owner"
+				("ds_resolve_owner")
 				{"switch"
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 1}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 1"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 2}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 2"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 3}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 3"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 4}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 4"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 5}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 5"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 6}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 6"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 7}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 7"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 8}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 8"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 9}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 9"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 10}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 10"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 11}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 11"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 12}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 12"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 13}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 13"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 14}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 14"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 15}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 15"}}} {"default"}}}
-					{"case" {condition {type cmp_i} {var "id_defenderbot$"} {op "=="} {value 16}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 16"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 1}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 1"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 2}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 2"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 3}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 3"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 4}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 4"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 5}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 5"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 6}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 6"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 7}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 7"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 8}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 8"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 9}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 9"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 10}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 10"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 11}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 11"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 12}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 12"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 13}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 13"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 14}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 14"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 15}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 15"}}} {"default"}}}
+					{"case" {condition {type cmp_i} {var "defense_support_owner$"} {op "=="} {value 16}} {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - SLOT 16"}}} {"default"}}}
 					{"default" {"switch" {"case" {condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}} {"timer" {time 10} {title "DEFENSE SUPPORT OWNER - UNRESOLVED"}}} {"default"}}}
 				}
 			)
@@ -1835,7 +2160,7 @@
 					{"set_i" {var "attack_support_air_test$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_place$"} {op "="} {value 0}}
 					{"set_i" {var "defense_support_group$"} {op "="} {value 1}}
-					{"set_i" {var "defense_support_owner_fail$"} {op "="} {value 0}}
+					("ds_resolve_owner")
 					{"switch"
 						{"case"
 							{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
@@ -1918,6 +2243,7 @@
 					}
 				}
 				{actions
+					("ds_resolve_owner")
 					{"set_i" {var "defense_support_armed$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_air_left$"} {op "="} {value 1}}
 					{"set_i" {var "defense_support_use_air$"} {op "="} {value 0}}

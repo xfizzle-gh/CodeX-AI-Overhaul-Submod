@@ -102,10 +102,13 @@
 					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 15}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag enemy_def_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "15"}}}
 					{"case" {condition {type cmp_i} {var "id_1st_enemy$"} {op "=="} {value 16}} {"player" {selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag enemy_def_deploy}}} {exclude {tag {tag aio_morale_owned}}}}} {operation set} {player "16"}}}
 					{"default"
-						{"player"
-							{selector {source advanced} {ignore_captured_by_user 0} {group {select {tag {tag enemy_def_deploy}}} {exclude {tag {tag aio_morale_owned}}}}}
-							{operation set}
-							{player "2"}
+						{"set_i" {var "enemy_defense_owner_fail$"} {op "="} {value 1}}
+						{"switch"
+							{"case"
+								{condition {type cmp_i} {var "support_debug$"} {op "=="} {value 1}}
+								{"timer" {time 10} {title "ENEMY DEFENSE OWNER UNRESOLVED - NO TRANSFER"}}
+							}
+							{"default"}
 						}
 					}
 				}

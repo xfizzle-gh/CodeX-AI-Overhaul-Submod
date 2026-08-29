@@ -64,7 +64,7 @@ local skirmish = {
 			{priority = 0.55, type = {"Infantry", "Team", "MG", "Support", "Class1"}, unit = "squad_gb3_rifle_mg(nato)"},
 			{priority = 0.50, type = {"Infantry", "Team", "AT", "Support", "Class1"}, unit = "squad_gb3_rifle_at_javelin(nato)"},
 
-			-- European crew-only reconnaissance and mechanized vehicles.
+			-- European crew-only reconnaissance and mechanized vehicles. Fennek slot is M2 Humvee.
 			{priority = 0.22, type = {"Armored", "Recon", "Class1"}, unit = "squad_pz10_fennek(nato)"},
 			{priority = 0.18, type = {"Ifv", "Class1"}, unit = "squad_pz10_ypr765_rifle(nato)"},
 			{priority = 0.16, type = {"Ifv", "Class2"}, unit = "squad_pz10_cv9030_rifle(nato)"},

@@ -269,13 +269,13 @@
 	{const "bomb/danger_zone_run" 	3}	
 	{const "bomb/danger_zone_jump" 	4}	
 	{const "bomb/danger_zone_hide" 	6}
-	{const "fight/distance"			1.5} 		;// was at 1.5
+	{const "fight/distance"			2} 		;// was at 1.5
 	{const "weapon/change_time"		20}		;// disable ai weapon switch for 20 seconds
 
 
 	{Properties
-		{advance_ratio 0.5}
-		{retreat_ratio 4}
+		{advance_ratio 0.8}
+		{retreat_ratio 0.8}
 	}
 }
 
