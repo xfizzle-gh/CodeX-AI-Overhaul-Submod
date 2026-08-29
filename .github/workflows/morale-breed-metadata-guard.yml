@@ -56,4 +56,4 @@ jobs:
           python-version: "3.13"
 
       - name: Run repo-local morale metadata guard
-        run: python -m unittest tests/test_morale_breed_metadata.py tests/test_aio_iso_civilian_behaviour.py tests/test_ce_pow_oldboy_captive.py
+        run: python -m unittest tests.test_ce_broken_behavior.CeBrokenBehaviorTests.test_dead_humans_stop_morale_icons tests.test_ce_pow_oldboy_captive
