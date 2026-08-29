@@ -433,6 +433,13 @@
 		{inherited}
 	}
 
+	{on die
+		{call "aio_morale_stop_icons"}
+		{delay 0.2
+			{call "aio_morale_stop_icons"}
+		}
+	}
+
 	{on bullet_hit
 		{delay 0.10
 			{if not dead
@@ -785,22 +792,31 @@
 		{call "aio_morale_refresh_icons"}
 	}
 	{on "aio_morale_stop_icons"
+		{view pause "white_flag"}
 		{view stop "white_flag"}
 		{view hide "white_flag"}
+		{view pause "no_comd"}
 		{view stop "no_comd"}
 		{view hide "no_comd"}
+		{view pause "aio_cmd_lost"}
 		{view stop "aio_cmd_lost"}
 		{view hide "aio_cmd_lost"}
+		{view pause "aio_morale_suppressed"}
 		{view stop "aio_morale_suppressed"}
 		{view hide "aio_morale_suppressed"}
+		{view pause "aio_morale_panic"}
 		{view stop "aio_morale_panic"}
 		{view hide "aio_morale_panic"}
+		{view pause "aio_morale_broken"}
 		{view stop "aio_morale_broken"}
 		{view hide "aio_morale_broken"}
+		{view pause "aio_cmd_junior"}
 		{view stop "aio_cmd_junior"}
 		{view hide "aio_cmd_junior"}
+		{view pause "aio_cmd_primary"}
 		{view stop "aio_cmd_primary"}
 		{view hide "aio_cmd_primary"}
+		{view pause "aio_cmd_senior"}
 		{view stop "aio_cmd_senior"}
 		{view hide "aio_cmd_senior"}
 	}
